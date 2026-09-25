@@ -1,0 +1,1136 @@
+[
+  {
+    "zone": "1",
+    "ward": "1",
+    "contact": "7358758923",
+    "officer": "INSPECTOR N.K. HEMA",
+    "address": "KATHIVAKKAM"
+  },
+  {
+    "zone": "1",
+    "ward": "2",
+    "contact": "7358758923",
+    "officer": "INSPECTOR N.K. HEMA",
+    "address": "CMC, NEHRU NAGAR, ENNORE"
+  },
+  {
+    "zone": "1",
+    "ward": "3",
+    "contact": "9940232311",
+    "officer": "COLLECTOR MR. MOHAN KUMAR",
+    "address": "CPS, AS NAGAR"
+  },
+  {
+    "zone": "1",
+    "ward": "4",
+    "contact": "9941273514",
+    "officer": "INSPECTOR B. SIVAKUMAR",
+    "address": "STREET, ERNAVOOR"
+  },
+  {
+    "zone": "1",
+    "ward": "5",
+    "contact": "9840247429",
+    "officer": "ASSESSOR C.K. SEKAR,",
+    "address": "SCHOOL, T.H.ROAD."
+  },
+  {
+    "zone": "1",
+    "ward": "6",
+    "contact": "9840002754",
+    "officer": "COLLECTOR MUNINATHAN,",
+    "address": "THIRUVOTRIYUR, CHENNAI.19."
+  },
+  {
+    "zone": "1",
+    "ward": "7",
+    "contact": "8190847006",
+    "officer": "COLLECTOR SUNDRAMOORTHY",
+    "address": "WEST, CHENNAI.19."
+  },
+  {
+    "zone": "1",
+    "ward": "8",
+    "contact": "9884373855",
+    "officer": "ASSESSOR P. BASKAR",
+    "address": "T.H.ROAD"
+  },
+  {
+    "zone": "1",
+    "ward": "9",
+    "contact": "9444631939",
+    "officer": "COLLECTOR M. KANNAN",
+    "address": "GOWRI ASHRAMAM, T.H.ROAD"
+  },
+  {
+    "zone": "1",
+    "ward": "10",
+    "contact": "9789024904",
+    "officer": "INSPECTOR D. DHANALAKSHMI",
+    "address": "THIRUVOTRIYUR, CHENNAI.19"
+  },
+  {
+    "zone": "1",
+    "ward": "11",
+    "contact": "9840487866",
+    "officer": "COLLECTOR S.SUNDRAMOORTHY",
+    "address": "CMS SCHOOL, MARKET LANE"
+  },
+  {
+    "zone": "1",
+    "ward": "12",
+    "contact": "9840487866",
+    "officer": "COLLECTOR S.SUNDRAMOORTHY",
+    "address": "SATHANGADU HIGH ROAD"
+  },
+  {
+    "zone": "2",
+    "ward": "15",
+    "contact": "9840240561",
+    "officer": "ASSESSOR S.SURESH",
+    "address": "SCHOOL"
+  },
+  {
+    "zone": "2",
+    "ward": "16",
+    "contact": "9941273514",
+    "officer": "INSPECTOR B. SIVAKUMAR",
+    "address": "CPS, KANNIAMMANPET"
+  },
+  {
+    "zone": "2",
+    "ward": "16",
+    "contact": "9499932937",
+    "officer": "INSPECTOR S. MANIVANNAN",
+    "address": "CPS, KULAKARAI"
+  },
+  {
+    "zone": "2",
+    "ward": "16",
+    "contact": "9499932707",
+    "officer": "COLLECTOR P.V RUTHRASAIRAM",
+    "address": "ANDARKUPPAM SCHOOL"
+  },
+  {
+    "zone": "2",
+    "ward": "17",
+    "contact": "9499932938",
+    "officer": "INSPECTOR J SHIELA SELVARANI",
+    "address": "HALL, VADAPERUMBAKKAM"
+  },
+  {
+    "zone": "2",
+    "ward": "17",
+    "contact": "8190847006",
+    "officer": "COLLECTOR SUNDRAMOORTHY",
+    "address": "KOSAPUR"
+  },
+  {
+    "zone": "2",
+    "ward": "18",
+    "contact": "9840240561",
+    "officer": "ASSESSOR S.SURESH",
+    "address": "CPCL POLYTECHNIC"
+  },
+  {
+    "zone": "2",
+    "ward": "19",
+    "contact": "9499933140",
+    "officer": "ASSESSOR N VASUDEVAN",
+    "address": "EVERGREEN SCHOOL"
+  },
+  {
+    "zone": "2",
+    "ward": "19",
+    "contact": "9789024904",
+    "officer": "INSPECTOR D. DHANALAKSHMI",
+    "address": "SCHOOL ROAD, MANAL"
+  },
+  {
+    "zone": "2",
+    "ward": "19",
+    "contact": "9444631939",
+    "officer": "COLLECTOR M. KANNAN",
+    "address": "MANJAMBAKKAM SCHOOL"
+  },
+  {
+    "zone": "2",
+    "ward": "21",
+    "contact": "9499932710",
+    "officer": "COLLECTOR G.SRINIVASAN",
+    "address": "MANALI"
+  },
+  {
+    "zone": "2",
+    "ward": "21",
+    "contact": "9499932710",
+    "officer": "COLLECTOR G.SRINIVASAN",
+    "address": "CPS AT PADASALAI STREET"
+  },
+  {
+    "zone": "3",
+    "ward": "22",
+    "contact": "9841492551",
+    "officer": "ASSESSOR E.ANBUMANI",
+    "address": "PUZHAL."
+  },
+  {
+    "zone": "3",
+    "ward": "22",
+    "contact": "9841492551",
+    "officer": "ASSESSOR E.ANBUMANI",
+    "address": "GANDHI ROAD, PUZHAL."
+  },
+  {
+    "zone": "4",
+    "ward": "25",
+    "contact": "9840214020",
+    "officer": "INSPECTOR S. SANKAR",
+    "address": "SCHOOL"
+  },
+  {
+    "zone": "4",
+    "ward": "27",
+    "contact": "9840479070",
+    "officer": "COLLECTOR N.KARUNANIDHI",
+    "address": "MIDDLE SCHOOL"
+  },
+  {
+    "zone": "4",
+    "ward": "34",
+    "contact": "9940519348",
+    "officer": "ASSESSOR K.GOPI",
+    "address": "TONDIARPET HIGH ROAD"
+  },
+  {
+    "zone": "4",
+    "ward": "35",
+    "contact": "9283231119",
+    "officer": "INSPECTOR S.AROKIAJOSEPH",
+    "address": "CMS TONDIARPET HIGH ROAD"
+  },
+  {
+    "zone": "4",
+    "ward": "36",
+    "contact": "9962201410",
+    "officer": "COLLECTOR N.G.SIVAKUMAR",
+    "address": "SHARMA NAGAR"
+  },
+  {
+    "zone": "4",
+    "ward": "36",
+    "contact": "9962201410",
+    "officer": "COLLECTOR N.G.SIVAKUMAR",
+    "address": "KODUNKAIYUR-118"
+  },
+  {
+    "zone": "4",
+    "ward": "37",
+    "contact": "8778991714",
+    "officer": "ASSESSOR G.SRINIVASAN",
+    "address": "CENTER"
+  },
+  {
+    "zone": "4",
+    "ward": "38",
+    "contact": "9884459589",
+    "officer": "ASSESSOR S.STALIN",
+    "address": "NETHAJI NAGAR TONDIARPET"
+  },
+  {
+    "zone": "4",
+    "ward": "38",
+    "contact": "9884459589",
+    "officer": "ASSESSOR S.STALIN",
+    "address": "NAGAR"
+  },
+  {
+    "zone": "4",
+    "ward": "38",
+    "contact": "8610843179",
+    "officer": "INSPECTOR P.SRINIVASULU",
+    "address": "CPS, PATEL NAGAR"
+  },
+  {
+    "zone": "4",
+    "ward": "38",
+    "contact": "8610843179",
+    "officer": "INSPECTOR P.SRINIVASULU",
+    "address": "CHSS PATEL NAGAR"
+  },
+  {
+    "zone": "4",
+    "ward": "39",
+    "contact": "7418412283",
+    "officer": "INSPECTOR K.SATHIYARAJ",
+    "address": "ROAD"
+  },
+  {
+    "zone": "4",
+    "ward": "39",
+    "contact": "7418412283",
+    "officer": "INSPECTOR K.SATHIYARAJ",
+    "address": "PATEL NAGAR."
+  },
+  {
+    "zone": "4",
+    "ward": "40",
+    "contact": "8778973659",
+    "officer": "COLLECTOR R.M.GOPINATHAN",
+    "address": "CHS KAMARAJ SALAI"
+  },
+  {
+    "zone": "4",
+    "ward": "46",
+    "contact": "8778991714",
+    "officer": "ASSESSOR G.SRINIVASAN",
+    "address": "MURTHINAGAR STREET."
+  },
+  {
+    "zone": "4",
+    "ward": "47",
+    "contact": "9940519348",
+    "officer": "ASSESSOR K.GOPI",
+    "address": "KORRUKUPET"
+  },
+  {
+    "zone": "4",
+    "ward": "47",
+    "contact": "9884657816",
+    "officer": "INSPECTOR P.SIVANESAN",
+    "address": "HIGH SCHOOL"
+  },
+  {
+    "zone": "4",
+    "ward": "48",
+    "contact": "9940421213",
+    "officer": "COLLECTOR MR.DHAMODARAN",
+    "address": "NAGAR"
+  },
+  {
+    "zone": "5",
+    "ward": "50",
+    "contact": "9841952155",
+    "officer": "ASSESSOR P. KASTHURI",
+    "address": "STREET."
+  },
+  {
+    "zone": "5",
+    "ward": "52",
+    "contact": "7708247744",
+    "officer": "INSPECTOR A.SAMSON",
+    "address": "CENTRE, THOPPAI STREET."
+  },
+  {
+    "zone": "5",
+    "ward": "54",
+    "contact": "9789930967",
+    "officer": "ASSESSOR A. ARUMUGAM",
+    "address": "KONDITHOPE,CHENNAI.79"
+  },
+  {
+    "zone": "5",
+    "ward": "55",
+    "contact": "9600291425",
+    "officer": "INSPECTOR G. VENKATESAN",
+    "address": "SEVEN WELLS"
+  },
+  {
+    "zone": "5",
+    "ward": "57",
+    "contact": "9443066795",
+    "officer": "ASSESSOR S. SURESH KUMAR",
+    "address": "CENTRE, ANNAPILLAI ;STREET."
+  },
+  {
+    "zone": "5",
+    "ward": "58",
+    "contact": "9380088607",
+    "officer": "COLLECTOR K.RAJENDIRAN",
+    "address": "CENTRE, KANNAPPAR THIDAL."
+  },
+  {
+    "zone": "5",
+    "ward": "59",
+    "contact": "9566043672",
+    "officer": "ASSESSOR P.VIJAYAKRISHNAN",
+    "address": "NAGAR."
+  },
+  {
+    "zone": "5",
+    "ward": "61",
+    "contact": "9543709298",
+    "officer": "INSPECTOR G PADMANABAN",
+    "address": "EGMORE."
+  },
+  {
+    "zone": "5",
+    "ward": "62",
+    "contact": "9543709298",
+    "officer": "INSPECTOR S. MANIKANDAN",
+    "address": "ST, CHINDADRIPET."
+  },
+  {
+    "zone": "5",
+    "ward": "62",
+    "contact": "9543709298",
+    "officer": "INSPECTOR S. MANIKANDAN",
+    "address": "COOVAM ROAD, PUDUPET."
+  },
+  {
+    "zone": "5",
+    "ward": "63",
+    "contact": "9551077940",
+    "officer": "ASSESSOR G.MATHANAGOPAL",
+    "address": "GOYYATHOPPU ST, PUDUPET."
+  },
+  {
+    "zone": "6",
+    "ward": "65",
+    "contact": "9884497671",
+    "officer": "ASSESSOR C.SAMRAJ",
+    "address": "COLONEY, CHENNAI.82."
+  },
+  {
+    "zone": "6",
+    "ward": "70",
+    "contact": "9444308695",
+    "officer": "ASSESSOR SHERIFF",
+    "address": "METTUPALAYAM, CHENNAI-33."
+  },
+  {
+    "zone": "6",
+    "ward": "70",
+    "contact": "9940616170",
+    "officer": "INSPECTOR N.M.MURALI",
+    "address": "CHENNAI-11."
+  },
+  {
+    "zone": "6",
+    "ward": "73",
+    "contact": "9003187965",
+    "officer": "ASSESSOR KANAGAVALLI",
+    "address": "PULIANTHOPE, CHENNAI.12."
+  },
+  {
+    "zone": "6",
+    "ward": "74",
+    "contact": "9840160377",
+    "officer": "INSPECTOR S.GOPALAKRISHNAN",
+    "address": "12."
+  },
+  {
+    "zone": "6",
+    "ward": "74",
+    "contact": "9840226285",
+    "officer": "COLLECTOR N.ELAVARASU",
+    "address": "NAMMALWARPET, CHENNAI.12"
+  },
+  {
+    "zone": "6",
+    "ward": "75",
+    "contact": "9840254237",
+    "officer": "ASSESSOR M.RAJKUMAR",
+    "address": "PURASAIWAKKAM, CHENNAI.7."
+  },
+  {
+    "zone": "6",
+    "ward": "75",
+    "contact": "9380320297",
+    "officer": "COLLECTOR A.RASOOL AHMED",
+    "address": "PURASAIWAKKAM,CHENNAI.7"
+  },
+  {
+    "zone": "6",
+    "ward": "76",
+    "contact": "9884324355",
+    "officer": "ASSESSOR PRADEEPSURYAKAR",
+    "address": "PATTALAM, CHENNAI.11."
+  },
+  {
+    "zone": "6",
+    "ward": "76",
+    "contact": "9884324355",
+    "officer": "ASSESSOR PRADEEPSURYAKAR",
+    "address": "CENTRE, AMGALA AMMAN"
+  },
+  {
+    "zone": "6",
+    "ward": "77",
+    "contact": "9840254237",
+    "officer": "ASSESSOR M.RAJKUMAR",
+    "address": "PULIANTHOPE, CH.12."
+  },
+  {
+    "zone": "6",
+    "ward": "77",
+    "contact": "9445122231",
+    "officer": "INSPECTOR P.RAMESHKUMAR",
+    "address": "PULIANTHOPE, CH.12."
+  },
+  {
+    "zone": "6",
+    "ward": "77",
+    "contact": "9445122231",
+    "officer": "INSPECTOR P.RAMESHKUMAR",
+    "address": "PULIANTHOPE. CHENNAI.12."
+  },
+  {
+    "zone": "6",
+    "ward": "78",
+    "contact": "9840189034",
+    "officer": "COLLECTOR G.SURENDRABABU",
+    "address": "PURASAIWAKKAM, CH.7."
+  },
+  {
+    "zone": "6",
+    "ward": "78",
+    "contact": "9840189034",
+    "officer": "COLLECTOR G.SURENDRABABU",
+    "address": "CHENNAI.12."
+  },
+  {
+    "zone": "7",
+    "ward": "79",
+    "contact": "9444517936",
+    "officer": "ASSESSOR K. KESAVAN",
+    "address": "ROAD, ORAGADAM"
+  },
+  {
+    "zone": "7",
+    "ward": "80",
+    "contact": "9444517936",
+    "officer": "ASSESSOR K. KESAVAN",
+    "address": "CMS, CHITORAGADAM"
+  },
+  {
+    "zone": "7",
+    "ward": "81",
+    "contact": "9840094062",
+    "officer": "INSPECTOR M. KAMALAKANNAN",
+    "address": "CHOLAPURAM"
+  },
+  {
+    "zone": "7",
+    "ward": "82",
+    "contact": "9600147606",
+    "officer": "COLLECTOR SELVA GANESAN",
+    "address": "KALLIKUPPAM"
+  },
+  {
+    "zone": "7",
+    "ward": "83",
+    "contact": "9941199132",
+    "officer": "ASSESSOR D.PURUSHOTHAMAN",
+    "address": "KORATTUR"
+  },
+  {
+    "zone": "7",
+    "ward": "85",
+    "contact": "7010580923",
+    "officer": "ASSESSOR T. M. KANNAN",
+    "address": "KAMARAJAPURAM"
+  },
+  {
+    "zone": "7",
+    "ward": "86",
+    "contact": "7871768909",
+    "officer": "INSPECTOR SELVAN",
+    "address": "ATHIPATTU"
+  },
+  {
+    "zone": "7",
+    "ward": "87",
+    "contact": "9841727222",
+    "officer": "ASSESSOR L.PARAMANANTHAM",
+    "address": "SCHOOL RAJ STREET"
+  },
+  {
+    "zone": "7",
+    "ward": "87",
+    "contact": "8838501897",
+    "officer": "INSPECTOR K DURAIARASAN",
+    "address": "CMS DR. MOORTHI NAGAR"
+  },
+  {
+    "zone": "7",
+    "ward": "88",
+    "contact": "8667226365",
+    "officer": "ASSESSOR J. JAYABABU",
+    "address": "KALAIVANAR NAGAR"
+  },
+  {
+    "zone": "7",
+    "ward": "89",
+    "contact": "8939908999",
+    "officer": "INSPECTOR AMALORPAVAM",
+    "address": "COLONY"
+  },
+  {
+    "zone": "7",
+    "ward": "90",
+    "contact": "9444249854",
+    "officer": "COLLECTOR K.JAYASHANKAR",
+    "address": "NAGAR WEST EXT"
+  },
+  {
+    "zone": "7",
+    "ward": "92",
+    "contact": "9840094062",
+    "officer": "INSPECTOR K. KAMALADHASAN",
+    "address": "MOGAPPAIR"
+  },
+  {
+    "zone": "7",
+    "ward": "93",
+    "contact": "9444806952",
+    "officer": "COLLECTOR S. BASKARAN",
+    "address": "BETHANI PRIMARY SCHOOL"
+  },
+  {
+    "zone": "8",
+    "ward": "94",
+    "contact": "9962624391",
+    "officer": "ASSESSOR MANIKAVELU",
+    "address": "ROAD, VILLIWAKKAM"
+  },
+  {
+    "zone": "8",
+    "ward": "96",
+    "contact": "8122491986",
+    "officer": "INSPECTOR V. VENKATESAN",
+    "address": "CHENNAI"
+  },
+  {
+    "zone": "8",
+    "ward": "96",
+    "contact": "9884495076",
+    "officer": "COLLECTOR MURALI. E",
+    "address": "AYANPURAM, CHENNAI.23"
+  },
+  {
+    "zone": "8",
+    "ward": "97",
+    "contact": "9841970786",
+    "officer": "ASSESSOR I. DEEN AMANULLA",
+    "address": "CHENNAI.23"
+  },
+  {
+    "zone": "8",
+    "ward": "99",
+    "contact": "9444652478",
+    "officer": "ASSESSOR A.K. THANGAMANI",
+    "address": "SATHYA SAI NAGAR CHRUCH"
+  },
+  {
+    "zone": "8",
+    "ward": "100",
+    "contact": "9841590164",
+    "officer": "ASSESSOR P. KARUNAKARAN",
+    "address": "CH.106"
+  },
+  {
+    "zone": "8",
+    "ward": "101",
+    "contact": "9381092595",
+    "officer": "ASSESSOR R. SHANKAR",
+    "address": "NADUVAKKARAI, CHENNAI.40"
+  },
+  {
+    "zone": "8",
+    "ward": "102",
+    "contact": "9791184911",
+    "officer": "INSPECTOR M. ANNADURAI",
+    "address": "SHENOY NAGAR"
+  },
+  {
+    "zone": "8",
+    "ward": "104",
+    "contact": "7871247007",
+    "officer": "ASSESSOR B. SARAVANAN",
+    "address": "CH.84."
+  },
+  {
+    "zone": "8",
+    "ward": "105",
+    "contact": "9941797037",
+    "officer": "ASSESSOR P. USHA",
+    "address": "SCHOOL"
+  },
+  {
+    "zone": "8",
+    "ward": "107",
+    "contact": "9884468728",
+    "officer": "ASSESSOR Y. CHANDRAMURALI",
+    "address": "SUBBARAYAN STREET"
+  },
+  {
+    "zone": "9",
+    "ward": "109",
+    "contact": "9789859304",
+    "officer": "ASSESSOR C.KUMAR",
+    "address": "CHENNAI.94"
+  },
+  {
+    "zone": "9",
+    "ward": "109",
+    "contact": "9171512177",
+    "officer": "INSPECTOR JOSEPH",
+    "address": "NAMACHIVAYAPURAM"
+  },
+  {
+    "zone": "9",
+    "ward": "123",
+    "contact": "9444664169",
+    "officer": "ASSESSOR V. JAYASEELAN",
+    "address": "ALWARPET, CHENNAI.600 018"
+  },
+  {
+    "zone": "9",
+    "ward": "124",
+    "contact": "9444379899",
+    "officer": "INSPECTOR VIJAYAKUMAR",
+    "address": "MYLAPORE, CHENNAI.4."
+  },
+  {
+    "zone": "9",
+    "ward": "125",
+    "contact": "9962480316",
+    "officer": "ASSESSOR M. GOVINDARAJ",
+    "address": "MYLAPORE, CHENNAI.4"
+  },
+  {
+    "zone": "10",
+    "ward": "127",
+    "contact": "9840183314",
+    "officer": "ASSESSOR D.ARUMUGAM",
+    "address": "ARUMBAKKAM, CH.106"
+  },
+  {
+    "zone": "10",
+    "ward": "127",
+    "contact": "9840183314",
+    "officer": "ASSESSOR D.ARUMUGAM",
+    "address": "CHENNAI.107."
+  },
+  {
+    "zone": "10",
+    "ward": "128",
+    "contact": "9841796357",
+    "officer": "ASSESSOR K.NARAYANAN",
+    "address": "SCHOOL ST, VIRUGAMBAKKAM"
+  },
+  {
+    "zone": "10",
+    "ward": "137",
+    "contact": "9382884459",
+    "officer": "INSPECTOR V. DURAIRAJ",
+    "address": "CMS AT KAMARAJAR ST"
+  },
+  {
+    "zone": "10",
+    "ward": "138",
+    "contact": "9171718877",
+    "officer": "ASSESSOR K.NAGENDIRAN",
+    "address": "CPS, GOVINDASWAMY STREET"
+  },
+  {
+    "zone": "10",
+    "ward": "139",
+    "contact": "9345669458",
+    "officer": "ASSESSOR M. KARUNANIDHI",
+    "address": "CHS JAFFERKHAN PET"
+  },
+  {
+    "zone": "10",
+    "ward": "141",
+    "contact": "9789519276",
+    "officer": "COLLECTOR HARIKRISHNAN",
+    "address": "NAGAR, CH.17"
+  },
+  {
+    "zone": "10",
+    "ward": "142",
+    "contact": "9445168870",
+    "officer": "ASSESSOR M.SANDHANAM",
+    "address": "CH.15"
+  },
+  {
+    "zone": "11",
+    "ward": "143",
+    "contact": "9444272415",
+    "officer": "INSPECTOR G.MUNIRETHINAM",
+    "address": "NOLAMBUR"
+  },
+  {
+    "zone": "11",
+    "ward": "144",
+    "contact": "7904013139",
+    "officer": "ASSESSOR J.SUBHASHINI",
+    "address": "MADURAVOYAL"
+  },
+  {
+    "zone": "11",
+    "ward": "146",
+    "contact": "9445332358",
+    "officer": "INSPECTOR N.ANURADHA",
+    "address": "MADURAVOYAL"
+  },
+  {
+    "zone": "11",
+    "ward": "148",
+    "contact": "9445392957",
+    "officer": "ASSESSOR S. JAGANNATHAN",
+    "address": "RANI MAHAL, NERKUNDRAM"
+  },
+  {
+    "zone": "11",
+    "ward": "155",
+    "contact": "9003055925",
+    "officer": "ASSESSOR K.MURUGAN",
+    "address": "RAMAPURAM"
+  },
+  {
+    "zone": "12",
+    "ward": "156",
+    "contact": "6380254301",
+    "officer": "ASSESSOR K.Prakash",
+    "address": "PADASALAI STREET"
+  },
+  {
+    "zone": "12",
+    "ward": "157",
+    "contact": "6380254301",
+    "officer": "ASSESSOR K.Prakash",
+    "address": "CMS MG SALAI"
+  },
+  {
+    "zone": "12",
+    "ward": "158",
+    "contact": "8056495720",
+    "officer": "ASSESSOR J.V. RANGARAJAN",
+    "address": "NANDAMBAKKAM"
+  },
+  {
+    "zone": "12",
+    "ward": "158",
+    "contact": "8124898276",
+    "officer": "ASSESSOR M. Mohammed Iqbal",
+    "address": "MOUNT POONAMALLEE"
+  },
+  {
+    "zone": "12",
+    "ward": "159",
+    "contact": "9171729698",
+    "officer": "INSPECTOR K.MohanRaj",
+    "address": "MEENAMBAKKAM"
+  },
+  {
+    "zone": "12",
+    "ward": "161",
+    "contact": "8056495720",
+    "officer": "ASSESSOR J.V. RANGARAJAN",
+    "address": "KOIL ST"
+  },
+  {
+    "zone": "12",
+    "ward": "162",
+    "contact": "9840925087",
+    "officer": "INSPECTOR D. BASKARAN",
+    "address": "BUILDING"
+  },
+  {
+    "zone": "12",
+    "ward": "165",
+    "contact": "9566270882",
+    "officer": "ASSESSOR A.JAYASHREE",
+    "address": "CORP SCHOOL NANGANALLUR"
+  },
+  {
+    "zone": "12",
+    "ward": "166",
+    "contact": "9841807940",
+    "officer": "INSPECTOR B. SAKTHIVEL",
+    "address": "CORP PRIMARY SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "168",
+    "contact": "9841475139",
+    "officer": "ASSESSOR P.KUPPAN",
+    "address": "ST. THOMAS PRIMARY SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "169",
+    "contact": "9952951647",
+    "officer": "INSPECTOR N",
+    "address": "ST AMMAN KOIL ST"
+  },
+  {
+    "zone": "13",
+    "ward": "170",
+    "contact": "9444840800",
+    "officer": "ASSESSOR VISWESHVARAN",
+    "address": "CHENNAI.32."
+  },
+  {
+    "zone": "13",
+    "ward": "170",
+    "contact": "9444840800",
+    "officer": "ASSESSOR VISWESHVARAN",
+    "address": "CHENNAI.32."
+  },
+  {
+    "zone": "13",
+    "ward": "171",
+    "contact": "9941224142",
+    "officer": "ASSESSOR VENKATESH",
+    "address": "SAIDAPET, CHENNAI.15"
+  },
+  {
+    "zone": "13",
+    "ward": "171",
+    "contact": "9600198812",
+    "officer": "INSPECTOR B.JAYAKUMAR",
+    "address": "SCHOOL, SAIDAPET, CH.15."
+  },
+  {
+    "zone": "13",
+    "ward": "171",
+    "contact": "8124219533",
+    "officer": "COLLECTOR M.R.ANJANEYALU",
+    "address": "LITTLE MOUNT, CHENNAI.15"
+  },
+  {
+    "zone": "13",
+    "ward": "172",
+    "contact": "9884221360",
+    "officer": "ASSESSOR K.MOHANRAO",
+    "address": "ROAD, KOTTURPURAM, CH.25"
+  },
+  {
+    "zone": "13",
+    "ward": "172",
+    "contact": "9884221360",
+    "officer": "ASSESSOR K.MOHANRAO",
+    "address": "CHENNAI.22"
+  },
+  {
+    "zone": "13",
+    "ward": "172",
+    "contact": "9940347996",
+    "officer": "COLLECTOR G. GRACYAS",
+    "address": "CHENNAI.25"
+  },
+  {
+    "zone": "13",
+    "ward": "172",
+    "contact": "9940347996",
+    "officer": "COLLECTOR G. GRACYAS",
+    "address": "KOTTURPURAM, CHENNAI.85"
+  },
+  {
+    "zone": "13",
+    "ward": "173",
+    "contact": "6380804870",
+    "officer": "ASSESSOR S.I.RAZUL MOHIDEEN",
+    "address": "ROAD, CHENNAI.28"
+  },
+  {
+    "zone": "13",
+    "ward": "173",
+    "contact": "9444436587",
+    "officer": "COLLECTOR M SRINIVASAN",
+    "address": "R.A.PURAM. CHENNAI.28"
+  },
+  {
+    "zone": "13",
+    "ward": "175",
+    "contact": "9444162255",
+    "officer": "INSPECTOR K.KOTHANDARAMAN",
+    "address": "INDIRA NAGAR, CH.20"
+  },
+  {
+    "zone": "13",
+    "ward": "175",
+    "contact": "9382718719",
+    "officer": "COLLECTOR N MURUGAN",
+    "address": "CHENNAI.20"
+  },
+  {
+    "zone": "13",
+    "ward": "176",
+    "contact": "9884045959",
+    "officer": "ASSESSOR S KANNAN",
+    "address": "CHENNAI-20"
+  },
+  {
+    "zone": "13",
+    "ward": "178",
+    "contact": "9677081338",
+    "officer": "ASSESSOR B.SAMBASIVAM",
+    "address": "VELACHERY, CHENNAI.42"
+  },
+  {
+    "zone": "13",
+    "ward": "179",
+    "contact": "9444435050",
+    "officer": "COLLECTOR K.SENTHILKUMAR",
+    "address": "RAJALAKSHMI NAGAR, CH.42"
+  },
+  {
+    "zone": "13",
+    "ward": "179",
+    "contact": "9444435050",
+    "officer": "COLLECTOR K.SENTHILKUMAR",
+    "address": "STREET, VELACHERY, CH.42"
+  },
+  {
+    "zone": "13",
+    "ward": "180",
+    "contact": "8778625129",
+    "officer": "COLLECTOR S.BALAJI",
+    "address": "THARAMANI, CHENNAI.113"
+  },
+  {
+    "zone": "13",
+    "ward": "181",
+    "contact": "9710390121",
+    "officer": "INSPECTOR G GANDHI",
+    "address": "THIURVANMIYUR, CH.41"
+  },
+  {
+    "zone": "13",
+    "ward": "182",
+    "contact": "9444152269",
+    "officer": "ASSESSOR S THANGAVELU",
+    "address": "THIRUVANMMIYUR, CH.41"
+  },
+  {
+    "zone": "14",
+    "ward": "183",
+    "contact": "9094645576",
+    "officer": "ASSESSOR L.RAJI",
+    "address": "NELLAI NADAR SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "183",
+    "contact": "9094645576",
+    "officer": "ASSESSOR L.RAJI",
+    "address": "ST ANTONY SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "183",
+    "contact": "8807225527",
+    "officer": "COLLECTOR VENKATESHVARALU",
+    "address": "KUPPAM PRIMARY SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "184",
+    "contact": "9940160944",
+    "officer": "COLLECTOR E.MURUGAN",
+    "address": "OFFICE - 184)"
+  },
+  {
+    "zone": "14",
+    "ward": "185",
+    "contact": "9884586150",
+    "officer": "INSPECTOR P. SRIHARI",
+    "address": "ECR ADI DRAVIDAR SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "185",
+    "contact": "9884586150",
+    "officer": "INSPECTOR P. SRIHARI",
+    "address": "DRAVIDAR PRIMARY SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "186",
+    "contact": "9940375445",
+    "officer": "COLLECTOR R. DEVARAJALU",
+    "address": "SCHOOL,CHEMMENCHERY"
+  },
+  {
+    "zone": "14",
+    "ward": "188",
+    "contact": "9444417929",
+    "officer": "ASSESSOR S. MURUGESAN",
+    "address": "MANDAPAM"
+  },
+  {
+    "zone": "14",
+    "ward": "189",
+    "contact": "8667640421",
+    "officer": "COLLECTOR A. VIJAYAKUMAR",
+    "address": "ST. ANTONY SCHOOL"
+  },
+  {
+    "zone": "14",
+    "ward": "190",
+    "contact": "9444574063",
+    "officer": "COLLECTOR N. GANESAN",
+    "address": "ROAD, PALLIKARANAI"
+  },
+  {
+    "zone": "14",
+    "ward": "190",
+    "contact": "9444574063",
+    "officer": "COLLECTOR N. GANESAN",
+    "address": "PALLIKARANAI, CHENNAI.100."
+  },
+  {
+    "zone": "14",
+    "ward": "191",
+    "contact": "9790800805",
+    "officer": "ASSESSOR C. PRABHAKARAN",
+    "address": "UNION MIDDLE SCHOOL"
+  },
+  {
+    "zone": "15",
+    "ward": "192",
+    "contact": "9941359524",
+    "officer": "ASSESSOR S.DINESH",
+    "address": "THORAIPAKKAM"
+  },
+  {
+    "zone": "15",
+    "ward": "192",
+    "contact": "9444057128",
+    "officer": "INSPECTOR M.MARIYADASAN",
+    "address": "NEELANKARA"
+  },
+  {
+    "zone": "15",
+    "ward": "196",
+    "contact": "9444083575",
+    "officer": "ASSESSOR K.PREMKUMAR",
+    "address": "SCHOOL, CHEMMENCHERY."
+  },
+  {
+    "zone": "15",
+    "ward": "196",
+    "contact": "9444083575",
+    "officer": "ASSESSOR K.PREMKUMAR",
+    "address": "VETTUVANGENI"
+  },
+  {
+    "zone": "15",
+    "ward": "196",
+    "contact": "9444083575",
+    "officer": "ASSESSOR K.PREMKUMAR",
+    "address": "INJAMBAKKAM"
+  },
+  {
+    "zone": "15",
+    "ward": "200",
+    "contact": "9941155489",
+    "officer": "ASSESSOR C.RAMKUMAR",
+    "address": "KUDUMIYANDITHOPPU"
+  }
+]

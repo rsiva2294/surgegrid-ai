@@ -1,0 +1,6451 @@
+{
+  "metadata": {
+    "satellite_missions": "Google Earth Engine: NASA SRTM 30m DEM + Google Dynamic World 10m (2024-2026) + Copernicus Sentinel-2 MSI MNDWI (2024-2026)",
+    "scope": "Chennai Metropolitan Area (Up to Sept 2026)",
+    "total_substations": 242,
+    "critical_surge_count": 9,
+    "high_waterlogging_count": 19,
+    "moderate_count": 73,
+    "safe_count": 141
+  },
+  "substations": [
+    {
+      "name": "33/11 KV THORAIPAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.23789,
+        12.92545
+      ],
+      "elevation_m": -1,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.312,
+      "historical_q3_2026_outages": 6,
+      "connected_feeders_count": 6,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Sakthi Garden",
+        "PTC",
+        "Sholinganallur",
+        "Karapakkam 2",
+        "DTS",
+        "VPG"
+      ],
+      "sections": [
+        "AE/O&M/KARAPAKKAM",
+        "AE/O&M/THORAIPAKKAM"
+      ],
+      "composite_risk_score": 65.5,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "110/33-11 KV ETL SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.20887,
+        12.95085
+      ],
+      "elevation_m": -1,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.293,
+      "historical_q3_2026_outages": 5,
+      "connected_feeders_count": 5,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 KV MCN Nagar and 11 KV Ring Road",
+        "Pallikaranai",
+        "11 KV Telephone Nagar and Panchayat Roads",
+        "IIT Colony 11 kV",
+        "11 KV Telephone Nagar and Panchayat Road"
+      ],
+      "sections": [
+        "AE/O&M/PERUNGUDI NORTH",
+        "AE/O&M/MCN NAGAR",
+        "AE/O&M/PALLIKARANAI"
+      ],
+      "composite_risk_score": 61.9,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "33/11 KV HIRANANDANI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.2196,
+        12.84856
+      ],
+      "elevation_m": 3,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.292,
+      "historical_q3_2026_outages": 8,
+      "connected_feeders_count": 7,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 KV Kanathur and 11 KV Muttukadu feeder",
+        "11 kV Hiranandani-2",
+        "11kV Sriram Nagar",
+        "33 kV Siruseri and 33 kV Sholinganallur",
+        "33kV Siruseri and 33kV Sholinganallur incoming feeder lines",
+        "Kanathur, Muttukadu",
+        "Kanathur"
+      ],
+      "sections": [
+        "AE/O&M/INDRA NAGAR",
+        "AE/O&M/SIRUSERI"
+      ],
+      "composite_risk_score": 55.8,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "PALLIKARANAI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.20887,
+        12.95085
+      ],
+      "elevation_m": -1,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.293,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11kV Mylai Balaji Nagar",
+        "11 kV Adhipureeswarar",
+        "Krishna Nagar"
+      ],
+      "sections": [
+        "AE/O&M/PALLIKARANAI"
+      ],
+      "composite_risk_score": 54.4,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "33/11 KV DLF SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.20505,
+        12.87998
+      ],
+      "elevation_m": 0,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.163,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Ezhil Nagar"
+      ],
+      "sections": [
+        "AE/O&M/SITHALAPAKKAM"
+      ],
+      "composite_risk_score": 47.7,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "110/33-11 KV TIDEL PARK SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.2508,
+        12.9856
+      ],
+      "elevation_m": 1,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.8,
+      "sentinel2_mndwi_2026": -0.448,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "CMRL",
+        "Tharamani Bus Stand"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/TIDEL PARK"
+      ],
+      "composite_risk_score": 46.9,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "230/110KV SIRUSERI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.2196,
+        12.84856
+      ],
+      "elevation_m": 3,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.292,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "GC-1",
+        "11 kV SIPCOT-1, 11 kV Navalur, 11 kV Thalambur, 11 kV SIPCOT-2, 11 kV Industrial, 11 kV Kazhipattur, 11 kV CTS, 11 kV Egattur, 11 kV VRM, 11 kV Sivan Kovil"
+      ],
+      "sections": [
+        "AE/O&M/SIRUSERI"
+      ],
+      "composite_risk_score": 45.8,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "33/11 KV KOTTIVAKKAM  SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.26216,
+        12.97703
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.306,
+      "historical_q3_2026_outages": 14,
+      "connected_feeders_count": 11,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 kV K.K.D Road",
+        "11 kVA Kurinji",
+        "Journalist Colony",
+        "11 kV Sangam Colony",
+        "11 kV ECR",
+        "K.K. Road",
+        "Sangam Colony",
+        "ECR",
+        "Palkalai Nagar",
+        "11 kV Kurinji Nagar",
+        "11 KV Thiruvanmiyur Tank"
+      ],
+      "sections": [
+        "AE/O&M/SASTRI NAGAR",
+        "Unknown Section",
+        "AE/O&M/PALAVAKKAM",
+        "AE/O&M/KOTTIVAKKAM"
+      ],
+      "composite_risk_score": 44.0,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV BESANT NAGAR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.26467,
+        12.99693
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.361,
+      "historical_q3_2026_outages": 14,
+      "connected_feeders_count": 13,
+      "connected_sections_count": 5,
+      "feeders": [
+        "11 kV 1st Avenue",
+        "11 KV Beach Home Avenue",
+        "11 KV Lakshmipuram",
+        "33 kV Beach Home Avenue",
+        "Malviya Avenue",
+        "11 kV 2nd Avenue",
+        "11 KV 3rd Avenue",
+        "11 KV Gangai Street",
+        "11 kV Beach Home Avenue",
+        "11 KV MG Road",
+        "J.R. Nagar",
+        "Beach Home Avenue",
+        "11 kV Valmiki Nagar"
+      ],
+      "sections": [
+        "AE/O&M/BESANT NAGAR",
+        "AE/O&M/MGR NAGAR",
+        "AE/O&M/SASTRI NAGAR",
+        "AE/O&M/ADYAR",
+        "Unknown Section"
+      ],
+      "composite_risk_score": 44.0,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV NANGANALLUR SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19869,
+        12.96286
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.23,
+      "historical_q3_2026_outages": 8,
+      "connected_feeders_count": 8,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 KV MMTC",
+        "Rajeswari Nagar feeder",
+        "11KV Vanuvampet",
+        "11 kV MMTC Colony",
+        "11 KV Macmillan Colony",
+        "11 kV Rajeshwari Nagar",
+        "11 kV M.M.D.C. Colony",
+        "MMTC Colony"
+      ],
+      "sections": [
+        "AE/O&M/MOOVARASAMPET",
+        "AE/O&M/NANGANALLUR",
+        "AE/O&M/PUZHUTHIVAKKAM"
+      ],
+      "composite_risk_score": 43.8,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV MADIPAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19869,
+        12.96286
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.23,
+      "historical_q3_2026_outages": 9,
+      "connected_feeders_count": 7,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Karthikeyapuram",
+        "Karthekeyapuram",
+        "Ponniamman",
+        "Ponniyamman",
+        "Vishal Nagar",
+        "11 kV Balaiah Garden",
+        "11kV Karthikeyapuram"
+      ],
+      "sections": [
+        "AE/O&M/MOOVARASAMPET",
+        "AE/O&M/MADIPAKKAM"
+      ],
+      "composite_risk_score": 43.8,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "110/33-11 KV SHOLINGANALLUR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.22694,
+        12.89258
+      ],
+      "elevation_m": 3,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.352,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11kV Prestige",
+        "Prestige",
+        "Kumaran Nagar"
+      ],
+      "sections": [
+        "AE/O&M/SHOLINGANALLUR",
+        "AE/O&M/GUINDY",
+        "Unknown Section"
+      ],
+      "composite_risk_score": 42.2,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "230/110/33/11 KV MANALI SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25248,
+        13.16609
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.197,
+      "historical_q3_2026_outages": 6,
+      "connected_feeders_count": 5,
+      "connected_sections_count": 3,
+      "feeders": [
+        "Police Quarters",
+        "11kV Ayyappan Kovil",
+        "11 kV Periyasekadu",
+        "11 kV Rural, 11 kV Manali and 11 kV Nagpals",
+        "Periya Sekkadu"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/MANALI",
+        "AE/O&M/MANALI NEW TOWN"
+      ],
+      "composite_risk_score": 41.3,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11KV GANDHI NAGAR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.24334,
+        13.12482
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.352,
+      "historical_q3_2026_outages": 6,
+      "connected_feeders_count": 6,
+      "connected_sections_count": 3,
+      "feeders": [
+        "Chandrabrabhu Colony 11 kV",
+        "Kakkanji",
+        "11 KV 1st Main Road",
+        "11 kV Kamaraj Ave",
+        "2nd Main Road",
+        "Kamarajar Avenue"
+      ],
+      "sections": [
+        "AE/O&M/GANDHI NAGAR",
+        "AE/O&M/GUINDY",
+        "AE/O&M/INDRA NAGAR"
+      ],
+      "composite_risk_score": 41.2,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "110/33-11 KV PERUMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.19815,
+        12.87881
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 5.7,
+      "sentinel2_mndwi_2026": -0.298,
+      "historical_q3_2026_outages": 10,
+      "connected_feeders_count": 8,
+      "connected_sections_count": 6,
+      "feeders": [
+        "Medavakkam",
+        "11 KV TCS",
+        "TCS",
+        "11 kV Muthamizh Nagar",
+        "Pallikaranai 33 KV",
+        "Perumal Kovil",
+        "Gowrivakkam",
+        "Arasankeni"
+      ],
+      "sections": [
+        "AE/O&M/NANMANGALAM",
+        "AE/O&M/MEDAVAKKAM",
+        "AE/O&M/GOWRIVAKKAM",
+        "AE/O&M/NARAYANAPURAM",
+        "AE/O&M/BALAJI NAGAR",
+        "AE/O&M/PERUMBAKKAM"
+      ],
+      "composite_risk_score": 40.9,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV KALADIPET SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.30266,
+        13.15563
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.291,
+      "historical_q3_2026_outages": 9,
+      "connected_feeders_count": 6,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Shanthi Street",
+        "PKN Colony, Ennore Express, Sathangadu, Rajakadai and Thiruvottiyurs",
+        "Ennore Express",
+        "Sathangadu",
+        "11KV Santhankadu",
+        "Thiruvottiyur"
+      ],
+      "sections": [
+        "AE/O&M/KALADIPET SS"
+      ],
+      "composite_risk_score": 40.0,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "110/33-11 KV VELACHERRY SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.22057,
+        12.98024
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.335,
+      "historical_q3_2026_outages": 15,
+      "connected_feeders_count": 14,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 KV Raj Bhavan",
+        "Tharamani",
+        "11KV MGR Nagar",
+        "Bypass",
+        "Adhambakkam",
+        "11 KV Adambakkam",
+        "11 KV Ram Nagar",
+        "11 kV Velachery",
+        "Adambakkam",
+        "11 KV Seetharam Nagar",
+        "Local",
+        "Anna Nagar",
+        "Bye Pass Road",
+        "11 KV Kathipara"
+      ],
+      "sections": [
+        "AE/O&M/ADAMBAKKAM",
+        "AE/O&M/VELACHERY EAST",
+        "AE/O&M/VELACHERY WEST",
+        "AE/O&M/VELACHERY CENTRAL"
+      ],
+      "composite_risk_score": 39.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV PERUNGUDI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.25821,
+        12.95036
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.4,
+      "sentinel2_mndwi_2026": -0.41,
+      "historical_q3_2026_outages": 23,
+      "connected_feeders_count": 13,
+      "connected_sections_count": 5,
+      "feeders": [
+        "Neelankarai",
+        "Kasura Garden",
+        "11 kV Kandanchavadi",
+        "Sangam Colony",
+        "Neelangarai",
+        "Palavakkam",
+        "Kandanchavadi",
+        "ALL 11 kV FEEDERS",
+        "Uthandi",
+        "11(kV) Kandanchavadi",
+        "11 kV Palavakkam",
+        "11 KV Uthandi",
+        "11kV Palavakkam"
+      ],
+      "sections": [
+        "AE/O&M/PERUNGUDI SOUTH",
+        "AE/O&M/KANDHANCHAVADI",
+        "Unknown Section",
+        "AE/O&M/NEELANKARAI",
+        "AE/O&M/PALAVAKKAM"
+      ],
+      "composite_risk_score": 39.7,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV EZHIL NAGAR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.25821,
+        12.95036
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.4,
+      "sentinel2_mndwi_2026": -0.41,
+      "historical_q3_2026_outages": 10,
+      "connected_feeders_count": 7,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 (kV) Ganesh Nagar",
+        "11 kV Ganesh Nagar",
+        "Ganesh Nagar",
+        "11 kV Kasturibai Nagar",
+        "Secretariat Colony",
+        "11 KV Arihant",
+        "11 kV Kasthuribai Nagar"
+      ],
+      "sections": [
+        "AE/O&M/ADYAR",
+        "AE/O&M/NEELANKARAI",
+        "AE/O&M/THORAIPAKKAM",
+        "AE/O&M/ENJAMBAKKAM"
+      ],
+      "composite_risk_score": 39.7,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Kandanchavadi",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.2437,
+        12.97559
+      ],
+      "elevation_m": 2,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.6,
+      "sentinel2_mndwi_2026": -0.199,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Rajiv Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KANDHANCHAVADI"
+      ],
+      "composite_risk_score": 39.1,
+      "risk_category": "CRITICAL_SURGE_RISK",
+      "anticipatory_sop": "Controlled Pre-Landfall De-energization (T-2h); Deploy Submersible Pumps & Sandbags; Transfer critical loads"
+    },
+    {
+      "name": "33/11 KV VYASARPADI IE SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25868,
+        13.13164
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.366,
+      "historical_q3_2026_outages": 7,
+      "connected_feeders_count": 7,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV BV Colony",
+        "11 kV JJR Nagar",
+        "11 kV Industrial 1",
+        "11 kV J.J.R. Nagar",
+        "11KV BV Colony",
+        "S.A. Colony",
+        "JJR Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KRISHNAMOORTHY NAGAR",
+        "AE/O&M/VYASARPADI"
+      ],
+      "composite_risk_score": 38.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV THIRUVANMIYUR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.255,
+        12.9828
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.439,
+      "historical_q3_2026_outages": 17,
+      "connected_feeders_count": 11,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 KV Kottivakkam",
+        "Ranganathapuram",
+        "11 kV CPT",
+        "Kalakshetra Road",
+        "11 kV Kalakshetra",
+        "Pallavakkam",
+        "Indira Nagar",
+        "11 KV Ranganathapuram",
+        "Kalakshetra",
+        "Palavakkam",
+        "Valmiki Nagar"
+      ],
+      "sections": [
+        "AE/O&M/THIRUVANMIYUR",
+        "AE/O&M/TIDEL PARK",
+        "AE/O&M/INDRA NAGAR",
+        "AE/O&M/SASTRI NAGAR"
+      ],
+      "composite_risk_score": 36.0,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33/11 KV CHINDHATRIPET SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.27245,
+        13.07672
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.294,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Pudupet",
+        "11 kV Pudupet"
+      ],
+      "sections": [
+        "AE/O&M/PUDUPET"
+      ],
+      "composite_risk_score": 34.5,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "110/33-11KV RKNAGAR SUBSTATION",
+      "circle": "Chennai",
+      "district": "Chennai",
+      "coordinates": [
+        80.28589,
+        13.12473
+      ],
+      "elevation_m": 5,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.436,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "S.A. Koil, Thilagar Nagar and Ilaya Mudali",
+        "S.A. Kovil, Thilagar Nagar, Ilaya Mudhali",
+        "11kV Kalmandapam LT 240 Main Cable"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/KALMANDAPAM"
+      ],
+      "composite_risk_score": 34.0,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV ENJAMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.25217,
+        12.91979
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.339,
+      "historical_q3_2026_outages": 18,
+      "connected_feeders_count": 13,
+      "connected_sections_count": 4,
+      "feeders": [
+        "Prathana, Bluebeach, Casurina Drive",
+        "Blue Beach",
+        "11 kV Enjambakkam",
+        "11 (kV) Prarthana, Blue Beach and Casuarina Drive",
+        "VGP",
+        "11 KV Neelankarai",
+        "11 KV Pradhana",
+        "11 KV Akkarai",
+        "Prarthana",
+        "Injambakkam",
+        "ISKCON",
+        "11 KV Prarthana",
+        "Uthandi"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/NEELANKARAI",
+        "AE/O&M/PANAIYUR",
+        "AE/O&M/ENJAMBAKKAM"
+      ],
+      "composite_risk_score": 33.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV SAIDAPET SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.23037,
+        13.02385
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 7.5,
+      "sentinel2_mndwi_2026": -0.166,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Tod Hunter Nagar",
+        "11 kV O.250MHU"
+      ],
+      "sections": [
+        "AE/O&M/SAIDAPET/EAST"
+      ],
+      "composite_risk_score": 32.4,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV FLOWER BAZAAR SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.28173,
+        13.08792
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 6.3,
+      "sentinel2_mndwi_2026": -0.344,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 3,
+      "feeders": [
+        "PWD",
+        "Parry & Co",
+        "Ayyapillai",
+        "Jatkapuram"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/SOWCARPET/EAST",
+        "AE/O&M/FLOWER BAZAAR"
+      ],
+      "composite_risk_score": 31.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "R A Puram Sub Station",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.27195,
+        13.01703
+      ],
+      "elevation_m": 4,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.282,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/R.A.PURAM"
+      ],
+      "composite_risk_score": 30.7,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV TONDIARPET SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.27849,
+        13.12993
+      ],
+      "elevation_m": 5,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.307,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Nethaji Nagar"
+      ],
+      "sections": [
+        "AE/O&M/TONDIARPET SS"
+      ],
+      "composite_risk_score": 30.4,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "GUINDY 230KV SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.21065,
+        13.01186
+      ],
+      "elevation_m": 12,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 2.5,
+      "sentinel2_mndwi_2026": 0.024,
+      "historical_q3_2026_outages": 10,
+      "connected_feeders_count": 10,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Tiny Sector 14",
+        "11 KV Labour Colony",
+        "11 KV Kalaimagal",
+        "Moped, Eveready, HTL, Olympia-I, Olympia-II, TTC, Reliance, SKCL, RR Towers, Necco Tools",
+        "11 kV Suri",
+        "11 KV Local",
+        "R R Tower",
+        "11 KV Sardar Colony 17",
+        "11 KV RPM",
+        "11 KV Reddy Street 15"
+      ],
+      "sections": [
+        "AE/O&M/GUINDY"
+      ],
+      "composite_risk_score": 30.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV PALLAVARAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.15979,
+        12.97616
+      ],
+      "elevation_m": 20,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.139,
+      "historical_q3_2026_outages": 15,
+      "connected_feeders_count": 15,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV Mallika Nagar",
+        "11 kV Kattabomman Nagar",
+        "11 kV Pammal",
+        "Ponds Bridge",
+        "11kV Thirusulam",
+        "Dargah Road",
+        "Bhavani Nagar",
+        "Pammal",
+        "11 KV Bharathi Nagar",
+        "11 kV Kalaivanar Nagar",
+        "Meenachi Nagar",
+        "Meenakshi Nagar",
+        "11KV Bharathi Nagar",
+        "11 kV LRC",
+        "11 kV Keelkattalai"
+      ],
+      "sections": [
+        "AE/O&M/PALLAVARAM WEST",
+        "AE/O&M/PALLAVARAM EAST"
+      ],
+      "composite_risk_score": 29.0,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV NEW KOLATHUR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.22509,
+        13.12385
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.109,
+      "historical_q3_2026_outages": 10,
+      "connected_feeders_count": 9,
+      "connected_sections_count": 4,
+      "feeders": [
+        "Jayaram Nagar",
+        "11kV Sai Nagar",
+        "Kolathur",
+        "33/11kV C.G. Garden",
+        "Venus",
+        "KC Garden",
+        "11KV Kambar Nagar",
+        "Vettri Nagar",
+        "Kambar Nagar"
+      ],
+      "sections": [
+        "AE/O&M/RETTERI",
+        "AE/O&M/THIRU VI KA NAGAR",
+        "AE/O&M/POOMBUHAR NAGAR",
+        "AE/O&M/KOLATHUR"
+      ],
+      "composite_risk_score": 28.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/11 KV RAMAPURAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.18777,
+        13.02576
+      ],
+      "elevation_m": 14,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.176,
+      "historical_q3_2026_outages": 13,
+      "connected_feeders_count": 12,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 KV IAS / IPS Colony",
+        "11 kV MIOT",
+        "11kV Manapakkam",
+        "Bhatia Garden",
+        "11 KV G.P.S Colony and 11 KV Appus",
+        "11 kV TNHB",
+        "Ramapuram",
+        "11 KV GPS Colony and 11 KV Appus",
+        "Manapakkam",
+        "River View",
+        "Sabari Nagar",
+        "11 kV India Shoe"
+      ],
+      "sections": [
+        "AE/O&M/NANDHAMBAKKAM",
+        "AE/O&M/RAMAPURAM",
+        "AE/O&M/GUINDY",
+        "AE/O&M/MANAPAKKAM"
+      ],
+      "composite_risk_score": 28.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33/11KV MANGADU SS",
+      "circle": "Chennai Central Electricity Distribution Circle",
+      "district": "Chennai",
+      "coordinates": [
+        80.10317,
+        13.03286
+      ],
+      "elevation_m": 21,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.6,
+      "sentinel2_mndwi_2026": -0.238,
+      "historical_q3_2026_outages": 23,
+      "connected_feeders_count": 16,
+      "connected_sections_count": 4,
+      "feeders": [
+        "Malayambakkam",
+        "Altis",
+        "Kamatchi",
+        "Kozhumuivakkam",
+        "11KV Chakra Nagar",
+        "11 kV Pattur",
+        "11 kV Sikkarayapuram and 11 kV Malayambakkams",
+        "11 kV Kozhumuivakkam",
+        "11KV Malayambakkam",
+        "11 kV Kamatchi",
+        "11 kV Malayambakkam",
+        "11 kV Chikrayapuram",
+        "11 kV Raghunathapuram",
+        "11 kV Chakra Nagar",
+        "11 kV Altis",
+        "Chakra Nagar"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/MANGADU",
+        "AE/O&M/POONAMALLEE SOUTH",
+        "AE/O&M/PARANIPUTHUR"
+      ],
+      "composite_risk_score": 28.3,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV AVADI SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.10457,
+        13.14408
+      ],
+      "elevation_m": 28,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.6,
+      "sentinel2_mndwi_2026": -0.235,
+      "historical_q3_2026_outages": 9,
+      "connected_feeders_count": 8,
+      "connected_sections_count": 5,
+      "feeders": [
+        "11kV Panchayat Street",
+        "Best",
+        "11 kV Annanur and 11 kV TNHBs",
+        "11kV Poombuzhil Nagar",
+        "11kV Saraswathi Nagar",
+        "11 kV Alternate",
+        "11 kV AMS",
+        "11kV Pattabiram"
+      ],
+      "sections": [
+        "AE/KOVILPATHAGAI",
+        "AE/AVADI SOUTH",
+        "AE/SHANTHI COLONY",
+        "AE/AVADI NORTH",
+        "AE/THIRUMULLAIVOYAL"
+      ],
+      "composite_risk_score": 28.3,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Vyasarpadi Industrial Estate",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25868,
+        13.13164
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.366,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Tamil Nadu Housing Board (TNHB)",
+        "TNHB",
+        "B.V. Colony",
+        "J.J.R"
+      ],
+      "sections": [
+        "AE/O&M/KRISHNAMOORTHY NAGAR",
+        "AE/O&M/VYASARPADI"
+      ],
+      "composite_risk_score": 28.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV POONAMALLEE SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.11256,
+        13.05233
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.329,
+      "historical_q3_2026_outages": 9,
+      "connected_feeders_count": 7,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 kV North",
+        "11 KV Trunk Road",
+        "11kV Amman Nagar",
+        "Karayanchavadi",
+        "Ambal City 11 kV and Chithirai SS3 RMU 250 kVA Transformer",
+        "Elecon",
+        "Mangadu"
+      ],
+      "sections": [
+        "AE/O&M/POONAMALLEE SOUTH",
+        "AE/O&M/POONAMALLEE NORTH",
+        "AE/O&M/MANGADU",
+        "AE/O&M/KUMANANCHAVADI"
+      ],
+      "composite_risk_score": 28.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV KODAMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.22022,
+        13.05314
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.284,
+      "historical_q3_2026_outages": 17,
+      "connected_feeders_count": 13,
+      "connected_sections_count": 4,
+      "feeders": [
+        "11 KV Nungambakkam",
+        "11 kV Nungambakkam",
+        "Bajanai Kovil",
+        "11 kV Mahendra",
+        "11 kV Rangarajapuram",
+        "Mahendra",
+        "Marvel",
+        "Nungambakkam",
+        "Bhajanai Kovil",
+        "11 KV Rangarajapuram",
+        "Rangarajapuram",
+        "Nungambakkam 11 kV",
+        "Trustpuram"
+      ],
+      "sections": [
+        "AE/O&M/RANGARAJAPURAM",
+        "AE/O&M/KODAMBAKKAM",
+        "AE/O&M/ALAGIRI NAGAR",
+        "AE/O&M/CHOOLAIMEDU"
+      ],
+      "composite_risk_score": 28.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV ARUMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.22041,
+        13.05321
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.281,
+      "historical_q3_2026_outages": 8,
+      "connected_feeders_count": 6,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 KV Kalki Nagar",
+        "11 KV N.M. Road",
+        "11 KV Jayammal",
+        "Shanmuganar Salai",
+        "Jayamal",
+        "Valluvar Salai"
+      ],
+      "sections": [
+        "AE/ARUMBAKKAM",
+        "AE/O&M/CHOOLAIMEDU",
+        "AE/MMDA"
+      ],
+      "composite_risk_score": 28.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV RAJAKEELPAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.14936,
+        12.92452
+      ],
+      "elevation_m": 19,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.403,
+      "historical_q3_2026_outages": 9,
+      "connected_feeders_count": 8,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 KV VGP Pon Nagar",
+        "Erikkarai",
+        "Venugopal Samy Nagar, VGP Ponnagar",
+        "Rajakilpakkam-I and-II",
+        "11KV Gowrivakkam",
+        "Sembakkam",
+        "Erikarai",
+        "11 kV Tellus Avenue"
+      ],
+      "sections": [
+        "AE/O&M/SEMBAKKAM",
+        "Unknown Section",
+        "AE/O&M/THARAMANI"
+      ],
+      "composite_risk_score": 27.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV MADAMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.16318,
+        12.90167
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.253,
+      "historical_q3_2026_outages": 12,
+      "connected_feeders_count": 8,
+      "connected_sections_count": 4,
+      "feeders": [
+        "Express",
+        "Gurusamy Nagar",
+        "Annai Sathya Nagar",
+        "11 kV Rajaji Nagar",
+        "11 KV Express",
+        "K.K. Salai",
+        "Kovilanchery",
+        "Annai Sathya Nagar, Thiruvenchery"
+      ],
+      "sections": [
+        "AE/O&M/ADAMBAKKAM",
+        "AE/O&M/MADAMBAKKAM",
+        "AE/O&M/BALAJI NAGAR",
+        "AE/O&M/GOWRIVAKKAM"
+      ],
+      "composite_risk_score": 27.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "230/110 KV THIRUVERKADU",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.12602,
+        13.04565
+      ],
+      "elevation_m": 19,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.4,
+      "sentinel2_mndwi_2026": -0.26,
+      "historical_q3_2026_outages": 7,
+      "connected_feeders_count": 7,
+      "connected_sections_count": 6,
+      "feeders": [
+        "11 KV Veeraragavapuram feeder",
+        "11KV Puliyambedu",
+        "Senneerkuppam",
+        "11 kV Savitha",
+        "Puliyambedu",
+        "Savitha",
+        "Mahalakshmi"
+      ],
+      "sections": [
+        "AE/O&M/KUMANANCHAVADI",
+        "AE/PULIAMBEDU",
+        "AE/O&M/PARIVAKKAM",
+        "AE/O&M/POONAMALLEE NORTH",
+        "AE/THIRUVERKADU",
+        "AE/VELLAPPANCHAVADI"
+      ],
+      "composite_risk_score": 27.7,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11KV ENNORE SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.31596,
+        13.21058
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 6.0,
+      "sentinel2_mndwi_2026": -0.45,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Industrial III",
+        "Industrial 1",
+        "11 kV ICI, 11 kV Industrial 1, 2 & 3, 11 kV Kothari 1 & 2, 11 kV ALEL 1 & 2"
+      ],
+      "sections": [
+        "AE/O&M/ENNORE"
+      ],
+      "composite_risk_score": 27.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV ANNA SALAI SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.26802,
+        13.06661
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 5.9,
+      "sentinel2_mndwi_2026": -0.364,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "New Telephone Exchange",
+        "GP Road"
+      ],
+      "sections": [
+        "AE/O&M/ANNA SALAI",
+        "AE/O&M/PUDUPET"
+      ],
+      "composite_risk_score": 27.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV THIRUVOTTIYUR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.30574,
+        13.17217
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.46,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Tollgate",
+        "Ernavur, MRF, Pankaj, R.K. Nagar, Ruby, Tollgate, TNSCB",
+        "TNSCB"
+      ],
+      "sections": [
+        "AE/O&M/THIRUVOTRIYUR O&M"
+      ],
+      "composite_risk_score": 26.4,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV TOLLGATE SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.30266,
+        13.15563
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.291,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV Tolgate",
+        "Cherry Road",
+        "11 kV Northern"
+      ],
+      "sections": [
+        "AE/O&M/NEW WASHERMENPET",
+        "AE/O&M/KALADIPET SS"
+      ],
+      "composite_risk_score": 26.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "MATHUR 33/11 KV SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.24857,
+        13.17038
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.275,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Ring Road",
+        "11 kV Chettimedu",
+        "11KV Vadaperumbakkam, 11KV Site & Service, 11KV Aavin, 11KV Ring Road, 11KV Chinna Mathur and 11KV Settimedus"
+      ],
+      "sections": [
+        "AE/O&M/MATHUR",
+        "AE/O&M/VADAPERUMBAKKAM"
+      ],
+      "composite_risk_score": 26.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV MADHAVARAMLEATHEREST",
+      "circle": "Chennai North",
+      "district": "Chennai",
+      "coordinates": [
+        80.24122,
+        13.13521
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.285,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 4,
+      "feeders": [
+        "KKR Town",
+        "11 kV CMRL"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/MANALI",
+        "AE/O&M/MANJAMBAKKAM",
+        "AE/O&M/KODUNGAIYUR"
+      ],
+      "composite_risk_score": 25.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV SEMBIUM SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.24123,
+        13.12657
+      ],
+      "elevation_m": 11,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.283,
+      "historical_q3_2026_outages": 6,
+      "connected_feeders_count": 6,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Perambur",
+        "Redhills",
+        "11KV Madhavaram",
+        "11 kV Perambur 3",
+        "11kV Thiru V Ka Nagar",
+        "11 KV Perambur II"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/SEMBIUM"
+      ],
+      "composite_risk_score": 25.4,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV KODUNGAIYUR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25868,
+        13.13164
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.366,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Krishnamoorthy Nagar",
+        "Dumping Yard",
+        "Krishnamurthy Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KRISHNAMOORTHY NAGAR",
+        "AE/O&M/KODUNGAIYUR"
+      ],
+      "composite_risk_score": 24.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11KV AIRLAND SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.31596,
+        13.21058
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 6.0,
+      "sentinel2_mndwi_2026": -0.45,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "ME Road",
+        "AS Nagar"
+      ],
+      "sections": [
+        "AE/O&M/THIRUVOTRIYUR SS",
+        "AE/O&M/ENNORE"
+      ],
+      "composite_risk_score": 23.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/22KV ANAMALAI SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.27245,
+        13.07672
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.294,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Athiyanar"
+      ],
+      "sections": [
+        "AE/O&M/PUDUPET"
+      ],
+      "composite_risk_score": 23.2,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33 kV OHP",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.29747,
+        13.11365
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.363,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Shaik Maistry"
+      ],
+      "sections": [
+        "AE/O&M/KALMANDAPAM"
+      ],
+      "composite_risk_score": 23.1,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "110/33/11 KV COOKS ROAD SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.25195,
+        13.10115
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.182,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11KV Bashyam Reddy"
+      ],
+      "sections": [
+        "AE/O&M/COOKS ROAD"
+      ],
+      "composite_risk_score": 23.1,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 kV Vyasarpadi Industrial Estate",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25616,
+        13.1196
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.319,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV J.J.R. Nagar",
+        "11 kV B.V. Colony"
+      ],
+      "sections": [
+        "AE/O&M/VYASARPADI"
+      ],
+      "composite_risk_score": 22.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Visalodge Thottam SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.2619,
+        13.03155
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.301,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 2,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/NANDANAM",
+        "AE/O&M/MANDAVELI"
+      ],
+      "composite_risk_score": 22.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Ayyappa Nagar",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19869,
+        12.96286
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.23,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/MOOVARASAMPET"
+      ],
+      "composite_risk_score": 22.6,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "110/11 KV SS MYLAPORE",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.2666,
+        13.04478
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.256,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "West Cott 2"
+      ],
+      "sections": [
+        "AE/O&M/MYLAPORE/WEST"
+      ],
+      "composite_risk_score": 22.6,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "Vyasarpadi Industrial Estate SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25834,
+        13.13219
+      ],
+      "elevation_m": 6,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.329,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Industrial 1"
+      ],
+      "sections": [
+        "AE/O&M/MR NAGAR"
+      ],
+      "composite_risk_score": 22.5,
+      "risk_category": "HIGH_WATERLOGGING_RISK",
+      "anticipatory_sop": "Live Feeder Telemetry Monitoring; Pre-stage Mobile Diesel Generators; Standby Line Crews"
+    },
+    {
+      "name": "33/11 KV SARDARJUNG GARDEN SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.26709,
+        13.05459
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.293,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Amir Mahal",
+        "11 KV Amir Mahal"
+      ],
+      "sections": [
+        "AEE/O&M/ROYAPETTAH-II",
+        "AE/O&M/BALAJI NAGAR"
+      ],
+      "composite_risk_score": 22.3,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV EGMORE SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.25218,
+        13.07373
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.363,
+      "historical_q3_2026_outages": 5,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Everest",
+        "Pantheon Road",
+        "11 kV Everest"
+      ],
+      "sections": [
+        "AEE/O&M/EGMORE",
+        "AEE/O&M/PERIYAMET"
+      ],
+      "composite_risk_score": 22.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV KOVILAMBAKKAM",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.18712,
+        12.94174
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.271,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Vellakkal",
+        "11 kV Nanmangalam",
+        "BHEL Nagar",
+        "Pushpa Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KOVILAMBAKKAM"
+      ],
+      "composite_risk_score": 21.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/11 KV PUZHAL SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.1945,
+        13.20183
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.288,
+      "historical_q3_2026_outages": 5,
+      "connected_feeders_count": 5,
+      "connected_sections_count": 3,
+      "feeders": [
+        "All 11kVs",
+        "11kV Kavangarai, 11kV Dream, and 11kV Vilangadupakkams",
+        "All 11 KVs",
+        "Vilangadupakkam",
+        "11kV Vilangadupakkam"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/PUZHAL",
+        "AE/GRANDLYON"
+      ],
+      "composite_risk_score": 21.7,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV KILPAUK SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.25011,
+        13.08555
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.205,
+      "historical_q3_2026_outages": 5,
+      "connected_feeders_count": 5,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 KV Kilpauk",
+        "11 KV Secretariat Colony",
+        "Secretariat Colony",
+        "Taylors Road",
+        "11 kV Kilpauk"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/NAMMALWARPET",
+        "AE/O&M/KELLYS"
+      ],
+      "composite_risk_score": 21.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV KILPAUK POLICE QUARTERS SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.24501,
+        13.08628
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 8.4,
+      "sentinel2_mndwi_2026": -0.267,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KILPAUK"
+      ],
+      "composite_risk_score": 20.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV MELUR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.27345,
+        13.25997
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.354,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Vichoor"
+      ],
+      "sections": [
+        "AE/O&M/MELUR"
+      ],
+      "composite_risk_score": 20.0,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV SIDCO SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.20056,
+        13.10484
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.054,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11KV Krishnan Koil",
+        "Sidco 1",
+        "Sidco II"
+      ],
+      "sections": [
+        "AE/O&M/MANNADI",
+        "AE/O&M/SIDCO"
+      ],
+      "composite_risk_score": 19.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/22 KV ANNUR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.31596,
+        13.21058
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 6.0,
+      "sentinel2_mndwi_2026": -0.45,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/ENNORE"
+      ],
+      "composite_risk_score": 19.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Vyasarpadi Industrial Estate (I.E.)",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25616,
+        13.1196
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.319,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "JJR"
+      ],
+      "sections": [
+        "AE/O&M/VYASARPADI"
+      ],
+      "composite_risk_score": 19.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "E.G.T.",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.28588,
+        13.08572
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.6,
+      "sentinel2_mndwi_2026": -0.425,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Thambu Chetty"
+      ],
+      "sections": [
+        "AE/O&M/SK NAGAR"
+      ],
+      "composite_risk_score": 19.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33/11 kV MKB Nagar",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25611,
+        13.11958
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.319,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV MKB Nagar, 11 kV Krishnamoorthi Nagar, 11 kV Thiruvalluvar Nagar"
+      ],
+      "sections": [
+        "AE/O&M/MKB NAGAR"
+      ],
+      "composite_risk_score": 19.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV PULIANTHOPE SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.26856,
+        13.09917
+      ],
+      "elevation_m": 7,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.251,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/PULIANTHOPE"
+      ],
+      "composite_risk_score": 18.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV ANNAI NAGAR SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.19231,
+        13.12523
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 5.1,
+      "sentinel2_mndwi_2026": -0.268,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 kV Mathanaguppam",
+        "11kV Annai Nagar, Srinivasapuram, Kandigais",
+        "11 kV TVS Nagar, Alliance - 1, Alliance - 2, Kondingai, Seethavasapuram, Moogambigai Nagar"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/PUZHAL",
+        "AE/ANNAI NAGAR"
+      ],
+      "composite_risk_score": 18.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11KV IIT SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.25501,
+        12.9828
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.439,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Cancer Hospital"
+      ],
+      "sections": [
+        "AE/O&M/INDRA NAGAR"
+      ],
+      "composite_risk_score": 18.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV THARAMANI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.24726,
+        13.01015
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.403,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 3,
+      "feeders": [
+        "Kurinji Nagar",
+        "Kandanchavadi",
+        "Concord",
+        "Kamarajar Nagar"
+      ],
+      "sections": [
+        "AE/O&M/PERUNGUDI NORTH",
+        "AE/O&M/KANDHANCHAVADI",
+        "AE/O&M/THARAMANI"
+      ],
+      "composite_risk_score": 18.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "ALWARTHIRUNAGAR SS II",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.18272,
+        13.04777
+      ],
+      "elevation_m": 17,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.286,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV Arcot Road",
+        "Kamakoti Nagar",
+        "Sivan Kovil"
+      ],
+      "sections": [
+        "AE/O&M/VALASARAVAKKAM",
+        "AE/O&M/ALWARTHIRUNAGAR"
+      ],
+      "composite_risk_score": 18.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV CHEMBARAMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.07591,
+        13.04202
+      ],
+      "elevation_m": 29,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.227,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Ring Road",
+        "Chelliamman",
+        "Metro Water",
+        "11 kV Chettipedu"
+      ],
+      "sections": [
+        "AE/O&M/NAZARATHPET"
+      ],
+      "composite_risk_score": 17.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV MADURAVOYAL SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.17489,
+        13.06521
+      ],
+      "elevation_m": 14,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.254,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11KV VRW",
+        "11 kV Navy Quarters",
+        "Navy Quarters",
+        "Vanagaram"
+      ],
+      "sections": [
+        "AE/ALAPAKKAM",
+        "AE/MADURAVOYAL NORTH",
+        "AE/MADURAVOYAL SOUTH"
+      ],
+      "composite_risk_score": 17.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV PAMMAL SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.1318,
+        12.97481
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.353,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Nehru Nagar",
+        "11 kV Gandhi Nagar",
+        "Gandhi"
+      ],
+      "sections": [
+        "AE/O&M/CHROMPET",
+        "AE/O&M/PAMMAL"
+      ],
+      "composite_risk_score": 17.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV SITHALAPAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.16318,
+        12.90167
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.253,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 3,
+      "feeders": [
+        "11 KV Nuthancheri",
+        "Kovilanchery",
+        "School",
+        "Pushpa Nagar"
+      ],
+      "sections": [
+        "AE/O&M/ADAMBAKKAM",
+        "AE/O&M/MADAMBAKKAM",
+        "AE/O&M/SITHALAPAKKAM"
+      ],
+      "composite_risk_score": 17.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV MUDICHUR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.07147,
+        12.9166
+      ],
+      "elevation_m": 16,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.426,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Rayappa Nagar",
+        "Mudichur",
+        "Lakshmi Nagar",
+        "11 kV Varadharajapuram"
+      ],
+      "sections": [
+        "AE/O&M/MUDICHUR"
+      ],
+      "composite_risk_score": 17.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV RR COLONY SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20551,
+        13.04186
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 2.9,
+      "sentinel2_mndwi_2026": -0.179,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 4,
+      "connected_sections_count": 3,
+      "feeders": [
+        "Nallankuppam",
+        "11 kV Jones Road",
+        "Anjaneya",
+        "Anjaneyar"
+      ],
+      "sections": [
+        "AE/O&M/GUINDY",
+        "AE/O&M/ASHOK NAGAR EAST",
+        "AE/O&M/SAIDAPET/WEST"
+      ],
+      "composite_risk_score": 17.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Kannadasan Nagar",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25868,
+        13.13164
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.366,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Krishnamurthy Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KRISHNAMOORTHY NAGAR"
+      ],
+      "composite_risk_score": 17.0,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/11 KV AYAPAKKAM SUBSTATION",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.12929,
+        13.10415
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 5.2,
+      "sentinel2_mndwi_2026": -0.281,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11KV 9s",
+        "11kV Ayyappakkam, ICF, Ayanambakkams",
+        "11 kV SS Puram"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/AYAPAKKAM"
+      ],
+      "composite_risk_score": 16.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "AMBIKAPURAM 110/33-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.73588,
+        10.7872
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Industrial Colony",
+        "K K Kotai, Kalamalai, Keela Kurichi, Sakthi Nagar, Ariyamangalam, Kattur, Industrial Colony"
+      ],
+      "sections": [
+        "AE/O&M/KALKANDARKOTTAI"
+      ],
+      "composite_risk_score": 16.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KATTUPUTHUR 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.22333,
+        11.00812
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 4,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KATTUPUTHUR"
+      ],
+      "composite_risk_score": 16.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Pulianthope, Nehru Stadium",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.26857,
+        13.09919
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 5.6,
+      "sentinel2_mndwi_2026": -0.46,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Demellows Road, Anjaneyar Kovil, Sivaraw, Southern 1, Choolai High Road, Southern Railway, Edapalayam"
+      ],
+      "sections": [
+        "AE/O&M/CHOOLAI"
+      ],
+      "composite_risk_score": 15.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33KV Nehru Stadium SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.26857,
+        13.09919
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 5.6,
+      "sentinel2_mndwi_2026": -0.46,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11KV Local"
+      ],
+      "sections": [
+        "AE/O&M/CHOOLAI"
+      ],
+      "composite_risk_score": 15.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV CHINMAYA NAGAR SS",
+      "circle": "Kanyakumari",
+      "district": "Chennai",
+      "coordinates": [
+        80.18837,
+        13.05719
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 5.0,
+      "sentinel2_mndwi_2026": -0.233,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Konam"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 15.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV Vyasarpadi Industrial Estate",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.30574,
+        13.17217
+      ],
+      "elevation_m": 8,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.46,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV B.V. Colony"
+      ],
+      "sections": [
+        "AE/O&M/THIRUVOTRIYUR O&M"
+      ],
+      "composite_risk_score": 15.2,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV ICF SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.21615,
+        13.10525
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 5.4,
+      "sentinel2_mndwi_2026": -0.25,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Villivakkam 2",
+        "11 KV Villivakkam 1",
+        "11 kV Cooks Road"
+      ],
+      "sections": [
+        "AE/O&M/ICF"
+      ],
+      "composite_risk_score": 14.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 PUDUTHANGAL SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.10164,
+        12.92901
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.8,
+      "sentinel2_mndwi_2026": -0.305,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kishkinta 11 KV",
+        "Tambaram Town",
+        "11 KV CTO Colony"
+      ],
+      "sections": [
+        "AE/O&M/TAMBARAM"
+      ],
+      "composite_risk_score": 14.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "T.H. Road",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.28917,
+        13.10807
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.382,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Vallalar Nagar",
+        "G.A. Road"
+      ],
+      "sections": [
+        "AE/O&M/VALLALAR NAGAR",
+        "AE/O&M/TONDIARPET SS"
+      ],
+      "composite_risk_score": 14.7,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33/11 KV ANNA NAGAR SS",
+      "circle": "Madurai Metro EDC",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.22541,
+        13.08653
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.32,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 KV TP Chatram"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/AMINJIKARAI"
+      ],
+      "composite_risk_score": 14.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "KEMPATTY 110/33-11 KV SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.22251,
+        13.14421
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.243,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV Ponniamman Medu",
+        "33/11 kV Express",
+        "Kanniamman"
+      ],
+      "sections": [
+        "AE/O&M/MADHAVARAM II",
+        "AE/O&M/VADAPERUMBAKKAM"
+      ],
+      "composite_risk_score": 14.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33/11KV KILUPAK WATER WORKS SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.234,
+        13.088
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.389,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV ESI",
+        "11kV Mettu Street",
+        "11 kV Mettu Street"
+      ],
+      "sections": [
+        "AE/O&M/AYANAVARAM"
+      ],
+      "composite_risk_score": 14.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV BELLS ROAD SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.27789,
+        13.06133
+      ],
+      "elevation_m": 12,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.391,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Mosque",
+        "Big",
+        "Masjid"
+      ],
+      "sections": [
+        "AE/O&M/CHEPAUK"
+      ],
+      "composite_risk_score": 14.3,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV REDHILLS SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.1945,
+        13.20183
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.288,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Grand Lyon, Kosapur, Kanapalayam",
+        "11 kV Aqua, Tharkas, Karanodai, Ganampalayam, Lake, Gomathi Amman Nagars"
+      ],
+      "sections": [
+        "AE/GRANDLYON",
+        "AE/REDHILLS-II"
+      ],
+      "composite_risk_score": 14.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV AYYAPPANTHANGAL SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.13156,
+        13.04053
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.206,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV Vaikundaperumal",
+        "Jayalakshmi Nagar, Krishna Nagar",
+        "Jayalakshmi Nagar and Krishna Nagars"
+      ],
+      "sections": [
+        "AE/O&M/AYYAPANTHANGAL",
+        "AE/O&M/PARANIPUTHUR"
+      ],
+      "composite_risk_score": 14.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV NOLAMBUR SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.17119,
+        13.07862
+      ],
+      "elevation_m": 11,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.283,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11kV",
+        "All 11 KVs"
+      ],
+      "sections": [
+        "AE/JJ NAGAR WEST",
+        "AE/NOLAMBUR"
+      ],
+      "composite_risk_score": 14.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "D.G. Nagar",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19479,
+        12.99184
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.316,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Balaji Nagar",
+        "Palammal Nagar"
+      ],
+      "sections": [
+        "AE/O&M/TG NAGAR",
+        "AE/O&M/PUZHUTHIVAKKAM"
+      ],
+      "composite_risk_score": 14.1,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "KAYARAMBEDU 33/11KV SS",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.07541,
+        12.80909
+      ],
+      "elevation_m": 43,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.374,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Adhvani",
+        "Kannivakkam"
+      ],
+      "sections": [
+        "KAYARAMBEDU"
+      ],
+      "composite_risk_score": 14.1,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11KV KADAPERI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.12076,
+        12.93782
+      ],
+      "elevation_m": 32,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.322,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 KV Nehru Nagar & 11 KV Radha Nagar",
+        "11KV Chitlapakkam"
+      ],
+      "sections": [
+        "AE/O&M/KADAPPERI",
+        "AE/O&M/NEW COLONY"
+      ],
+      "composite_risk_score": 14.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV ANAKAPUTHUR GIS SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.13183,
+        12.97496
+      ],
+      "elevation_m": 21,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.2,
+      "sentinel2_mndwi_2026": -0.297,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 KV Thendral Nagar",
+        "Kalaignar Road",
+        "Kalaigner Road"
+      ],
+      "sections": [
+        "AE/O&M/PAMMAL",
+        "AE/O&M/ANAGAPUTHUR"
+      ],
+      "composite_risk_score": 13.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV IAF SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.14256,
+        12.91779
+      ],
+      "elevation_m": 27,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.346,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 kV Poondi Bazaar, 11 kV Adhi Nagar"
+      ],
+      "sections": [
+        "AE/O&M/CHITLAPAKKAM",
+        "AE/O&M/ERUMBULIYUR"
+      ],
+      "composite_risk_score": 12.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/22-11 KV KAVUNDAMPALAYAM SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        76.96915,
+        11.02532
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "22 kV Lenin Nagar",
+        "Cheran Nagar"
+      ],
+      "sections": [
+        "RATHINAPURI",
+        "SANGANOOR"
+      ],
+      "composite_risk_score": 12.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "THANGANAGAR 33/11 KV SUBSTATION",
+      "circle": "Trichy Metro EDC",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.47284,
+        11.19196
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 3,
+      "feeders": [
+        "Eragudi, Kombai, S.M.Pudur, Badharpettai"
+      ],
+      "sections": [
+        "Unknown Section",
+        "AE/O&M/VENKATACHALAPURAM",
+        "AE/O&M/ERAGUDI"
+      ],
+      "composite_risk_score": 12.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "TRICHY 110/33-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.59921,
+        10.76021
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/RURAL/TRICHY"
+      ],
+      "composite_risk_score": 12.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "SIRUGANUR 110/22-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.79559,
+        11.01455
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Thirupattur, Reddimangudi, Industrial, GK"
+      ],
+      "sections": [
+        "AE/O&M/SIRUGANOOR"
+      ],
+      "composite_risk_score": 12.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV THUVARANKURICHI SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.3781,
+        10.38633
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Thuvarankurichi, Sevalpatti, Kanchanayakkanpatti"
+      ],
+      "sections": [
+        "AE/O&M/THARAMANI",
+        "AE/O&M/SOUTH/THUVARANKURICHI"
+      ],
+      "composite_risk_score": 12.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV RACECOURSE  SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        76.98387,
+        11.00508
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 3,
+      "connected_feeders_count": 3,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Avinashi Road, Olympus, Pankaja Mills, K.S. Nagar",
+        "K.S. Nagar",
+        "Thomas Park"
+      ],
+      "sections": [
+        "PULIYAKULAM",
+        "RACE COURSE"
+      ],
+      "composite_risk_score": 12.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV RAMASAMY SALAI SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20278,
+        13.04023
+      ],
+      "elevation_m": 17,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.149,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Ashok Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KKNAGAR EAST",
+        "AE/O&M/ASHOK NAGAR WEST"
+      ],
+      "composite_risk_score": 11.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 kV Velachery Central",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.22091,
+        12.98027
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.289,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Dhandeeswaram"
+      ],
+      "sections": [
+        "AE/O&M/VELACHERY CENTRAL"
+      ],
+      "composite_risk_score": 10.9,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "P.T. Rajan Road",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20333,
+        13.03524
+      ],
+      "elevation_m": 12,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.338,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 2,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/ASHOK NAGAR WEST",
+        "AE/O&M/KKNAGAR WEST"
+      ],
+      "composite_risk_score": 10.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/22KV DHARAPURAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.24726,
+        13.01015
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.403,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kottur",
+        "Erikari"
+      ],
+      "sections": [
+        "AE/O&M/THARAMANI"
+      ],
+      "composite_risk_score": 10.7,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV RAJBHAVAN SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.22107,
+        13.00664
+      ],
+      "elevation_m": 19,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.353,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Race Course",
+        "Kannikapuram"
+      ],
+      "sections": [
+        "AE/O&M/RAJBHAVAN"
+      ],
+      "composite_risk_score": 10.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV CORPORATION COLONY SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.22028,
+        13.05322
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.284,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Ragavendra",
+        "11 KV Ragavendra feeder"
+      ],
+      "sections": [
+        "AE/O&M/RANGARAJAPURAM"
+      ],
+      "composite_risk_score": 10.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KAVANUR 33/11KV SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.08679,
+        12.9963
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.277,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Sirukalathur",
+        "11KV Sirukalathur,11KV Periyar Nagar,11KV Pooniamman Kovil,11KV Murugan Kovil"
+      ],
+      "sections": [
+        "AE/O&M/KUNDRATHUR RURAL"
+      ],
+      "composite_risk_score": 10.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV KOVOOR SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.08679,
+        12.9963
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.277,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11(kV) Thandalam"
+      ],
+      "sections": [
+        "AE/O&M/KOVOOR",
+        "AE/O&M/KUNDRATHUR RURAL"
+      ],
+      "composite_risk_score": 10.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33/11 KV SEVEN WELLS SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.28174,
+        13.09952
+      ],
+      "elevation_m": 9,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.344,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Amman Koil"
+      ],
+      "sections": [
+        "AE/O&M/SOWCARPET/EAST"
+      ],
+      "composite_risk_score": 10.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV TI CYCLE",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.14554,
+        13.11425
+      ],
+      "elevation_m": 21,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.366,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "11 KV Cholapuram",
+        "11kV TASS"
+      ],
+      "sections": [
+        "AE/AMBATTUR CENTRAL",
+        "AE/THIRUVENKATA NAGAR"
+      ],
+      "composite_risk_score": 10.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV NEHRU INDOOR STADIUM SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.26194,
+        13.08141
+      ],
+      "elevation_m": 11,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.287,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Veterinary College"
+      ],
+      "sections": [
+        "AEE/O&M/PERIYAMET"
+      ],
+      "composite_risk_score": 10.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV PAPER MILLS ROAD SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.23871,
+        13.11142
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.212,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Bandar Garden",
+        "Ragavan"
+      ],
+      "sections": [
+        "AE/O&M/PERUMBUR EAST"
+      ],
+      "composite_risk_score": 10.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV SIDCO THIRUMULLAIVOYAL SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.1945,
+        13.20183
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.288,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Vellanoor, SIDCO, SIDCO Pudhur, Kollumedu",
+        "All 11 KVs"
+      ],
+      "sections": [
+        "AE/SIDCO THIRUMULLAIVOYAL",
+        "AE/REDHILLS-II"
+      ],
+      "composite_risk_score": 10.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV RADHA NAGAR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.14445,
+        12.95453
+      ],
+      "elevation_m": 32,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.295,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Radha Nagar",
+        "Nemilichery"
+      ],
+      "sections": [
+        "AE/O&M/RADHA NAGAR"
+      ],
+      "composite_risk_score": 10.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "PADAPPAI SS",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.04,
+        12.89497
+      ],
+      "elevation_m": 26,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.562,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kolappakkam",
+        "11 kVs"
+      ],
+      "sections": [
+        "PADAPPAI"
+      ],
+      "composite_risk_score": 10.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11KV TNSCB SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.18895,
+        12.91271
+      ],
+      "elevation_m": 12,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.2,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Nesamani Nagar",
+        "Sithalapakkam, Sankarapuram"
+      ],
+      "sections": [
+        "AE/O&M/SITHALAPAKKAM",
+        "AE/O&M/MEDAVAKKAM"
+      ],
+      "composite_risk_score": 10.3,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11 KV KK NAGAR SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20551,
+        13.04186
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 2.9,
+      "sentinel2_mndwi_2026": -0.179,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Police Quarters"
+      ],
+      "sections": [
+        "AE/O&M/ASHOK NAGAR EAST"
+      ],
+      "composite_risk_score": 10.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/ 11KV UNAMANCHERRY SS",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.10087,
+        12.86198
+      ],
+      "elevation_m": 32,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.317,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Karanai Puducherry",
+        "Karanaipuducherry"
+      ],
+      "sections": [
+        "KOLAPAKKAM",
+        "AE/O&M/THORAIPAKKAM"
+      ],
+      "composite_risk_score": 10.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV PATTABIRAM SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.07728,
+        13.11774
+      ],
+      "elevation_m": 26,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 3.2,
+      "sentinel2_mndwi_2026": -0.401,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Gopalapuram"
+      ],
+      "sections": [
+        "AE/SEKKADU"
+      ],
+      "composite_risk_score": 10.1,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "COURT 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.68466,
+        10.81192
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AEE/O&M/CANTONMENT"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "THURAIYUR 110/22-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.59129,
+        11.13347
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 2,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/SOUTH/THURAIYUR",
+        "AE/O&M/KANNANOOR"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV AMMAPETTAI SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.70255,
+        10.75633
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 2,
+      "feeders": [
+        "Thayanur Sandhai, Kallakudi, All India Radio (AIR), Ennamkulathur, Alampattipudurs"
+      ],
+      "sections": [
+        "AE/O&M/RURAL/TRICHY",
+        "AEE/O&M/SEMPATTU"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "POOVALUR 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.76313,
+        10.79302
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Lalgudi 3, Nannimangalam, Poovalur, Kothari, Vellanoor, Pinnavaasal and Anbil feeders"
+      ],
+      "sections": [
+        "AE/O&M/KATTUR"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "SAMAYAPURAM 110/22-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.73487,
+        10.92343
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Thenoor 22 kV, Industrial, Samayapuram, Kudineer, Ayakudi, Tollgate, Nochiyam, Idayapatti 11 kV and Thalapatti"
+      ],
+      "sections": [
+        "AE/O&M/SAMAYAPURAM"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "PUTHANATHAM 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.37167,
+        10.47305
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 2,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/PUTHANATHAM",
+        "AE/O&M/METTUPATTY"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "METTUPATTY SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.46745,
+        10.48162
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/METTUPATTY"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "THENNUR 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69059,
+        10.81791
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/THENNUR"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "EDAMALAIPATTYPUDUR 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.67355,
+        10.77621
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Edamalaipattipudur",
+        "Edamalaipattypudur"
+      ],
+      "sections": [
+        "AEE/O&M/CRAW FORD"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Thiruvanaikovil",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.70169,
+        10.84745
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 2,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/THIRUVANAIKOVIL",
+        "AE/O&M/SRIRANGAM"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV MUSIRI SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.44795,
+        10.95968
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/TOWN/MUSIRI"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110KV ACHARAPAKKAM SS",
+      "circle": "Chennai",
+      "district": "Chengalpattu",
+      "coordinates": [
+        79.8126,
+        12.41248
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 2,
+      "connected_feeders_count": 2,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Thilaga Mount Bricks",
+        "All 11 kVs"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 8.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11 KV SRMC SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.12632,
+        13.02103
+      ],
+      "elevation_m": 19,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 3.4,
+      "sentinel2_mndwi_2026": -0.342,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Paraniputhur"
+      ],
+      "sections": [
+        "AE/O&M/PARANIPUTHUR"
+      ],
+      "composite_risk_score": 8.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV MHU SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.23732,
+        13.03014
+      ],
+      "elevation_m": 16,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 6.8,
+      "sentinel2_mndwi_2026": -0.368,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "LVI"
+      ],
+      "sections": [
+        "AE/O&M/CIT NAGAR-II"
+      ],
+      "composite_risk_score": 8.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "400/230/110 KV ALAMATHY",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.0901,
+        13.18177
+      ],
+      "elevation_m": 34,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 2.9,
+      "sentinel2_mndwi_2026": -0.323,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "TSP Camp"
+      ],
+      "sections": [
+        "AE/VEERAPURAM"
+      ],
+      "composite_risk_score": 8.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV  MITTANAMALLI SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.0901,
+        13.18177
+      ],
+      "elevation_m": 34,
+      "slope_degrees": 0,
+      "satellite_water_probability_2026_pct": 2.9,
+      "sentinel2_mndwi_2026": -0.323,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Murugan Kovil"
+      ],
+      "sections": [
+        "AE/VEERAPURAM"
+      ],
+      "composite_risk_score": 8.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV GANESH NAGAR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.2007,
+        13.10483
+      ],
+      "elevation_m": 14,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.144,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Villivakkam Road"
+      ],
+      "sections": [
+        "AE/O&M/VILLIVAKKAM"
+      ],
+      "composite_risk_score": 7.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11KV PANJETTY SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.14921,
+        13.29749
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.0,
+      "sentinel2_mndwi_2026": -0.092,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Industrial 1, 2, 3s"
+      ],
+      "sections": [
+        "AE/O&M/PANJETTY"
+      ],
+      "composite_risk_score": 7.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/22 kV Bhawani Barrage, 110/33-22 kV Madampatti, 110/11 kV Devarayapuram, 110/22 kV Marudur, 110/22 kV Periyanaickenpalayams",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.22509,
+        13.12385
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.5,
+      "sentinel2_mndwi_2026": -0.109,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KOLATHUR"
+      ],
+      "composite_risk_score": 7.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "East Mogappair",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.1842,
+        13.08777
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.18,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Platinum"
+      ],
+      "sections": [
+        "AE/KRISHNA NAGAR"
+      ],
+      "composite_risk_score": 7.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "POTHERI 110KV/11KV SS",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.06482,
+        12.85057
+      ],
+      "elevation_m": 30,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.33,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "GUDUVANCHERRY WEST"
+      ],
+      "composite_risk_score": 7.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Sriram Property",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.10164,
+        12.92901
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.8,
+      "sentinel2_mndwi_2026": -0.305,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/TAMBARAM"
+      ],
+      "composite_risk_score": 7.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33KV GUDUVANCHERI",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.06482,
+        12.85057
+      ],
+      "elevation_m": 30,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.9,
+      "sentinel2_mndwi_2026": -0.33,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Perumattunallur"
+      ],
+      "sections": [
+        "GUDUVANCHERRY WEST"
+      ],
+      "composite_risk_score": 7.2,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Sriram Properties",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.09776,
+        12.90413
+      ],
+      "elevation_m": 26,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.274,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Iraniyamman"
+      ],
+      "sections": [
+        "AE/O&M/PERUNGALATHUR"
+      ],
+      "composite_risk_score": 7.1,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "11/33 KV Sriram Properties",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.09776,
+        12.90413
+      ],
+      "elevation_m": 26,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.274,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Koorthamman"
+      ],
+      "sections": [
+        "AE/O&M/PERUNGALATHUR"
+      ],
+      "composite_risk_score": 7.1,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KURINJI NAGAR",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.09776,
+        12.90413
+      ],
+      "elevation_m": 26,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.7,
+      "sentinel2_mndwi_2026": -0.274,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Gundumedu"
+      ],
+      "sections": [
+        "AE/O&M/PERUNGALATHUR"
+      ],
+      "composite_risk_score": 7.1,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33/11KV Mangadu Pattur",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.10289,
+        13.03284
+      ],
+      "elevation_m": 19,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.302,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/MANGADU"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33 kV Madhavaram CMBT",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.22251,
+        13.14421
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.243,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Ring Road"
+      ],
+      "sections": [
+        "AE/O&M/VADAPERUMBAKKAM"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110 kV Ambattur Industrial Estate",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.11417,
+        13.01034
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.4,
+      "sentinel2_mndwi_2026": -0.293,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KOVOOR"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33 KV Madhavaram CMBTT",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.22251,
+        13.14421
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 4.5,
+      "sentinel2_mndwi_2026": -0.243,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV V.S. Mani Nagar"
+      ],
+      "sections": [
+        "AE/O&M/VADAPERUMBAKKAM"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Koyambedu Games Village",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.21231,
+        13.05457
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.179,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Loganathan Nagar"
+      ],
+      "sections": [
+        "AE/O&M/ALAGIRI NAGAR"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV THIRUMUDIVAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.03595,
+        12.94792
+      ],
+      "elevation_m": 24,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.6,
+      "sentinel2_mndwi_2026": -0.405,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Somangalam"
+      ],
+      "sections": [
+        "AE/O&M/SOMANGALAM"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Thendral Nagar",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.13222,
+        13.13758
+      ],
+      "elevation_m": 30,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.187,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Ragavendhira"
+      ],
+      "sections": [
+        "AE/THIRUMULLAIVOYAL"
+      ],
+      "composite_risk_score": 7.0,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33kV Kilpauk Water Board",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.234,
+        13.088
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.389,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11kV Mettu Street"
+      ],
+      "sections": [
+        "AE/O&M/AYANAVARAM"
+      ],
+      "composite_risk_score": 6.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV 6TH AVENUE SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.21026,
+        13.08803
+      ],
+      "elevation_m": 14,
+      "slope_degrees": 5,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.363,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11kV Z block feeder"
+      ],
+      "sections": [
+        "AE/ANNANAGAR NORTH"
+      ],
+      "composite_risk_score": 6.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11KV SRIRAM SS",
+      "circle": "Chennai",
+      "district": "Chennai",
+      "coordinates": [
+        80.09041,
+        12.8974
+      ],
+      "elevation_m": 36,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.3,
+      "sentinel2_mndwi_2026": -0.401,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 6.9,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33KV T.H. Road",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.28724,
+        13.12169
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.333,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11KV Agasthiya"
+      ],
+      "sections": [
+        "AE/O&M/TONDIARPET O&M"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Poovirundavalli",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.11233,
+        13.05157
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.353,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kundrathur"
+      ],
+      "sections": [
+        "AE/O&M/KUMANANCHAVADI"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "R.A.PURAM 230/33 KV SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.26061,
+        13.00613
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.425,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Indira Nagar"
+      ],
+      "sections": [
+        "AE/O&M/ADYAR"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Arunachalam 2",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.27789,
+        13.06133
+      ],
+      "elevation_m": 12,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.391,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/CHEPAUK"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV T.H. Road",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.28724,
+        13.12169
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.333,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV K.A. Kovil and Agathiyas"
+      ],
+      "sections": [
+        "AE/O&M/TONDIARPET O&M"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110/33-11 KV PORUR SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.15357,
+        13.03111
+      ],
+      "elevation_m": 17,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.264,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Lakshmi Nagar"
+      ],
+      "sections": [
+        "AE/O&M/PORUR RURAL"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110 KV ANNA CENTENARY LIBRARY",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.24043,
+        13.00648
+      ],
+      "elevation_m": 14,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.329,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Rangarajapuram"
+      ],
+      "sections": [
+        "AE/O&M/CHINNAMALAI"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KEELKATTALAI",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.1807,
+        12.9543
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.303,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Ambal Nagar, Balamurugan Nagar"
+      ],
+      "sections": [
+        "AE/O&M/KILKATTALAI"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "230/110/33/11  KV KORATTUR",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.18273,
+        13.0969
+      ],
+      "elevation_m": 16,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.25,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV R.S. Road, K.R. Nagar, AIIMA, TVS, Kamaraj Nagar, Bharathi Nagar & Mugappair Road"
+      ],
+      "sections": [
+        "AE/KORATTUR"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33KV THIRUMANGALAM SOUTH SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.19326,
+        13.06572
+      ],
+      "elevation_m": 11,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.289,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV CMRL"
+      ],
+      "sections": [
+        "AE/NERKUNDRAM EAST"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33 kV St. Thomas Mount",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20779,
+        13.00376
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 4.2,
+      "sentinel2_mndwi_2026": -0.275,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Adambakkam"
+      ],
+      "sections": [
+        "AE/O&M/ALANDUR"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Thandavaraya Gramani SS-1",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.28724,
+        13.12169
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.333,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/TONDIARPET O&M"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "TH Road",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.28724,
+        13.12169
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.333,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Agasthiya"
+      ],
+      "sections": [
+        "AE/O&M/TONDIARPET O&M"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "Ambattur 3rd Main Road",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.17119,
+        13.07862
+      ],
+      "elevation_m": 11,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.283,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Baba Nagar"
+      ],
+      "sections": [
+        "AE/JJ NAGAR WEST"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV KODAMBAKAM GIS SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.22022,
+        13.05314
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.1,
+      "sentinel2_mndwi_2026": -0.284,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Raghavan Street"
+      ],
+      "sections": [
+        "AE/O&M/KODAMBAKKAM"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33KV TH Road SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.28724,
+        13.12169
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 4.0,
+      "sentinel2_mndwi_2026": -0.333,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/TONDIARPET O&M"
+      ],
+      "composite_risk_score": 6.8,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "110kV Puzhal, 11kV Redhills",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.1945,
+        13.20183
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.288,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Redhills"
+      ],
+      "sections": [
+        "AE/REDHILLS-II"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV CHITLAPAKKAM SS",
+      "circle": "Chennai Electricity Distribution Circle",
+      "district": "Chennai",
+      "coordinates": [
+        80.13775,
+        12.9394
+      ],
+      "elevation_m": 32,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.34,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11kV Pamban Samigal Salai"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV SHANTHI COLONY SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.21677,
+        13.08117
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.266,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Alls"
+      ],
+      "sections": [
+        "AE/SHANTHI COLONY"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV NERMAINAGAR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.23872,
+        13.11147
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.212,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Anbazhagan"
+      ],
+      "sections": [
+        "AE/O&M/PERAMBUR WEST"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 kV IPL",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.23871,
+        13.11142
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.212,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV CMWSSB"
+      ],
+      "sections": [
+        "AE/O&M/PERUMBUR EAST"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Vadapalani GIS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20338,
+        13.05272
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.296,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/SALIGRAMAM"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110 KV Thendral Nagar",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.21677,
+        13.08117
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.266,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Kaligambal"
+      ],
+      "sections": [
+        "AE/SHANTHI COLONY"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV PT RAJAN SALAI SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20338,
+        13.05272
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.296,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Vikrama"
+      ],
+      "sections": [
+        "AE/O&M/SALIGRAMAM"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV VIRUKAMBAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20338,
+        13.05272
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.8,
+      "sentinel2_mndwi_2026": -0.296,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/SALIGRAMAM"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV MENAMBEDU SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.17594,
+        13.13182
+      ],
+      "elevation_m": 16,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.201,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Pasumpon Nagar and 11 kV Murugambedus"
+      ],
+      "sections": [
+        "AE/KALLIKUPPAM"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV THIRUVELLAVOYAL SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "coordinates": [
+        80.25925,
+        13.27928
+      ],
+      "elevation_m": 13,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.9,
+      "sentinel2_mndwi_2026": -0.258,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kattur, Neidavoyal, Kalpakkam, Kattupalli"
+      ],
+      "sections": [
+        "AE/O&M/MINJUR TOWN"
+      ],
+      "composite_risk_score": 6.7,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV WEST MAMBALAM SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "coordinates": [
+        80.22569,
+        13.03415
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.224,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Lake View Road"
+      ],
+      "sections": [
+        "AEE/O&M/WEST MAMBALAM - II"
+      ],
+      "composite_risk_score": 6.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV MOUNT SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20663,
+        13.03266
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.222,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Meenambakkam"
+      ],
+      "sections": [
+        "AE/O&M/KKNAGAR SOUTH"
+      ],
+      "composite_risk_score": 6.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KELAMBAKKAM",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.2197,
+        12.7893
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.422,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Thayur, OMR 1, Periya Pilleri, Veeranam, Jothi Nagar, Chettinad, Beach, OMR 11"
+      ],
+      "sections": [
+        "KELAMBAKKAM"
+      ],
+      "composite_risk_score": 6.6,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11KV SUBSTATION",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "coordinates": [
+        80.12818,
+        12.95985
+      ],
+      "elevation_m": 18,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.7,
+      "sentinel2_mndwi_2026": -0.298,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/CHROMPET"
+      ],
+      "composite_risk_score": 6.6,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33/22/11 KV THAMARAIPADI SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20551,
+        13.04186
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 2.9,
+      "sentinel2_mndwi_2026": -0.179,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Pudur feeder, Nallankuppam feeder"
+      ],
+      "sections": [
+        "AE/O&M/ASHOK NAGAR EAST"
+      ],
+      "composite_risk_score": 6.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV ALANDUR SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19479,
+        12.99187
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.316,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "NGO Colony"
+      ],
+      "sections": [
+        "AE/O&M/ADAMBAKKAM"
+      ],
+      "composite_risk_score": 6.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33 kV T.G. Nagar",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19479,
+        12.99187
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.316,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV E.B. Colony"
+      ],
+      "sections": [
+        "AE/O&M/ADAMBAKKAM"
+      ],
+      "composite_risk_score": 6.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "RR Colony SS, P&T SS I & II, Corporation Colony SS, Karnan SS II",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.20551,
+        13.04186
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 2.9,
+      "sentinel2_mndwi_2026": -0.179,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Nallankuppam, Karnan"
+      ],
+      "sections": [
+        "AE/O&M/ASHOK NAGAR EAST"
+      ],
+      "composite_risk_score": 6.5,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "TG Nagar",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.19479,
+        12.99184
+      ],
+      "elevation_m": 10,
+      "slope_degrees": 2,
+      "satellite_water_probability_2026_pct": 3.6,
+      "sentinel2_mndwi_2026": -0.316,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Saraswathi Nagar"
+      ],
+      "sections": [
+        "AE/O&M/TG NAGAR"
+      ],
+      "composite_risk_score": 6.5,
+      "risk_category": "MODERATE_RISK",
+      "anticipatory_sop": "Feeder Load Balancing; Clear Overhead Tree Encroachments along 11kV lines"
+    },
+    {
+      "name": "33/11 KV KAMARAJ NAGAR SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.09741,
+        13.10487
+      ],
+      "elevation_m": 34,
+      "slope_degrees": 3,
+      "satellite_water_probability_2026_pct": 3.3,
+      "sentinel2_mndwi_2026": -0.251,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/KAMRAJ NAGAR"
+      ],
+      "composite_risk_score": 6.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV POONAMALLEE BYE PASS ROAD SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.09637,
+        13.06524
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.3,
+      "sentinel2_mndwi_2026": -0.27,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kaduvetty"
+      ],
+      "sections": [
+        "AE/O&M/PARIVAKKAM"
+      ],
+      "composite_risk_score": 6.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "PERAMBAKKAM",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "coordinates": [
+        80.09637,
+        13.06524
+      ],
+      "elevation_m": 22,
+      "slope_degrees": 1,
+      "satellite_water_probability_2026_pct": 3.3,
+      "sentinel2_mndwi_2026": -0.27,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Meppur"
+      ],
+      "sections": [
+        "AE/O&M/PARIVAKKAM"
+      ],
+      "composite_risk_score": 6.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Thiruverkadu SS, Kamaraj Nagar SS",
+      "circle": "WEST",
+      "district": "Tiruvallur",
+      "coordinates": [
+        80.10951,
+        13.10069
+      ],
+      "elevation_m": 27,
+      "slope_degrees": 4,
+      "satellite_water_probability_2026_pct": 3.3,
+      "sentinel2_mndwi_2026": -0.319,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "33 KV Thiruverkadu – Kamaraj Nagar Cable"
+      ],
+      "sections": [
+        "AE/PARUTHIPATTU"
+      ],
+      "composite_risk_score": 6.4,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "VARAGANERY 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69021,
+        10.81793
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Thanjavur Road, EDA Street, Viswas Nagar and Malligaipuram feeders"
+      ],
+      "sections": [
+        "AE/O&M/THILLAI NAGAR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "PASUMALAI SS",
+      "circle": "Madurai Metro EDC",
+      "district": "Madurai",
+      "coordinates": [
+        78.08223,
+        9.90586
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11 KV MG NAGAR SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        77.04793,
+        11.00293
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Amman Nagar, Ganga Nagar, Nethajipuram, Textool, Vasantham Nagar"
+      ],
+      "sections": [
+        "ONDIPUDUR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "33/11KV VILANKURICHI SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        77.0206,
+        11.03917
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Maheshwari Nagar, Thaneerpandhal, SV Nagar, Lakshmi Nagar, Kumudham Nagar 11 kVs"
+      ],
+      "sections": [
+        "THANEERPANDAL"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Balakrishnapatty",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.4855,
+        11.23218
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KOTTAPALAYAM"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "VALADI 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.75891,
+        10.87389
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/VALADY"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Samayapuram Sub Station",
+      "circle": "KANCHIPURAM",
+      "district": "Kancheepuram",
+      "coordinates": [
+        79.90945,
+        12.76295
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "RURAL PALUR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "MANNARPURAM 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69272,
+        10.78659
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AEE/O&M/MANNARPURAM"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "K.SATHANUR 110/33-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69284,
+        10.75169
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AEE/O&M/K.K.NAGAR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KALLAKUDI 110/22-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.94636,
+        10.97262
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KALLAKUDI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KK Nagar 11 KV Feeder",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69284,
+        10.75169
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "KK Nagar 11 KV"
+      ],
+      "sections": [
+        "AEE/O&M/K.K.NAGAR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "BALAKRISHNAMPATTY 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.4855,
+        11.23218
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KOTTAPALAYAM"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "GANABATHYNAGAR SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69034,
+        10.8176
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/CHINTHAMANI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33-11 KV KALAPATTY SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        77.04677,
+        11.05601
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "HUDCO"
+      ],
+      "sections": [
+        "CHINNIYAMPALAYAM WEST"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV PATTANAM SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        77.07408,
+        11.00892
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 KV Kamban Nagar"
+      ],
+      "sections": [
+        "GANDHINAGAR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "KAMBARASAMPETTAI 110/33-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.69034,
+        10.8176
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Nandhi Kovil"
+      ],
+      "sections": [
+        "AE/O&M/CHINTHAMANI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Thathaiyangarpettai",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.4548,
+        11.12245
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/RURAL/THATHAYANKARPETTAI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "MELAKOTHAMPATTI 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.54709,
+        11.08537
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/KANNANOOR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/22 KV ARASARADI SS",
+      "circle": "Madurai Metro",
+      "district": "Thoothukudi",
+      "coordinates": [
+        78.13376,
+        8.88565
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Kochadai"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "VENGAMBAKKAM",
+      "circle": "CHENGALPET",
+      "district": "Chengalpattu",
+      "coordinates": [
+        80.16016,
+        12.52586
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11KV Sadras"
+      ],
+      "sections": [
+        "SADRAS"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11KV PEELAMEDU SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        76.9933,
+        11.02058
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Ramakrishnapuram"
+      ],
+      "sections": [
+        "TOWN PEELAMEDU"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "L.ABISHEGAPURAM 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.81813,
+        10.87752
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Paramasivapuram, A K Nagar, Idaiyatru Mangalam"
+      ],
+      "sections": [
+        "AE/O&M/RURAL_II/LALGUDI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "230/22 KV KOVILOOR.SS",
+      "circle": "Chennai South I",
+      "district": "Sivagangai",
+      "coordinates": [
+        78.73456,
+        10.07831
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "All 11 kVs"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/33/11 KV SOMANUR",
+      "circle": "Madurai Metro EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        77.18385,
+        11.08785
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Express"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "110/11 KV IRUGUR SS",
+      "circle": "CBE/ METRO EDC",
+      "district": "Coimbatore",
+      "coordinates": [
+        77.04793,
+        11.00293
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "11 kV Ondipudur"
+      ],
+      "sections": [
+        "ONDIPUDUR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "SRIRANGAM 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.6834,
+        10.8563
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/AMMAMANDAPAM"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "THIRUVERUMBUR 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.76312,
+        10.79303
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/THIRUVERUMBUR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "NADUPATTY 33/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.23546,
+        10.52859
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/NADUPATTY"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "JAGADEVI 33/11 KV SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.70169,
+        10.84745
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/THIRUVANAIKOVIL"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "PARANDUR 33 KV SS",
+      "circle": "Kanchipuram",
+      "district": "Kancheepuram",
+      "coordinates": [
+        79.74459,
+        12.93487
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Edayarpakkam"
+      ],
+      "sections": [
+        "Unknown Section"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "PUTHANAMPATTI 110/22-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.68359,
+        11.07233
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/PUTHANAMPATTY"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "Tiruchirappalli Sub Station",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.68466,
+        10.81192
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AEE/O&M/CANTONMENT"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "THOTTIYAM 110/33-11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.32616,
+        10.99261
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/THOTTIAM"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "ATHAVATHUR 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.62525,
+        10.80605
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/SOMARASAMPETTAI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "VALAVANTHANKOTTAI 110/11 KV SUBSTATION",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.66692,
+        10.78769
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 1,
+      "connected_sections_count": 1,
+      "feeders": [
+        "Ayyampatti, Devarajaneri, SIPCOT (SIPCO), Kumaresapuram, Ezhil Nagars"
+      ],
+      "sections": [
+        "AE/O&M/PONNAGAR"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    },
+    {
+      "name": "THUVAKUDY 230KV SS",
+      "circle": "TRICHY METRO",
+      "district": "Tiruchirapalli",
+      "coordinates": [
+        78.80792,
+        10.76284
+      ],
+      "elevation_m": 15,
+      "slope_degrees": 0.5,
+      "satellite_water_probability_2026_pct": 0,
+      "sentinel2_mndwi_2026": -0.3,
+      "historical_q3_2026_outages": 1,
+      "connected_feeders_count": 0,
+      "connected_sections_count": 1,
+      "feeders": [],
+      "sections": [
+        "AE/O&M/SOUTH/THUVAKUDI"
+      ],
+      "composite_risk_score": 4.8,
+      "risk_category": "LOW_ELEVATION_RISK",
+      "anticipatory_sop": "Standard Storm Protocol; Monitor High-Wind Gust Tripping"
+    }
+  ]
+}

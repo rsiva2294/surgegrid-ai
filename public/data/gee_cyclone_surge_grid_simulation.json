@@ -1,0 +1,496 @@
+{
+  "model": "GEE_NASA_SRTM_30M_CYCLONE_SURGE_V1",
+  "bay_of_bengal_cyclone_scenario": "Category 2/3 Cyclone (1.5m - 3.0m Surge)",
+  "total_substations_evaluated": 242,
+  "critical_substations_count": 9,
+  "moderate_substations_count": 17,
+  "safe_substations_count": 216,
+  "critical_substations": [
+    {
+      "name": "33/11 KV THORAIPAKKAM SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": -1,
+      "coordinates": [
+        80.23789,
+        12.92545
+      ],
+      "historical_q3_outages": 6,
+      "connected_feeders_count": 6,
+      "sample_feeders": [
+        "VPG",
+        "Sholinganallur",
+        "Sakthi Garden",
+        "DTS",
+        "Karapakkam 2"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "110/33-11 KV ETL SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": -1,
+      "coordinates": [
+        80.20887,
+        12.95085
+      ],
+      "historical_q3_outages": 5,
+      "connected_feeders_count": 5,
+      "sample_feeders": [
+        "11 KV Telephone Nagar and Panchayat Roads",
+        "Pallikaranai",
+        "11 KV MCN Nagar and 11 KV Ring Road",
+        "11 KV Telephone Nagar and Panchayat Road",
+        "IIT Colony 11 kV"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "PALLIKARANAI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": -1,
+      "coordinates": [
+        80.20887,
+        12.95085
+      ],
+      "historical_q3_outages": 3,
+      "connected_feeders_count": 3,
+      "sample_feeders": [
+        "11kV Mylai Balaji Nagar",
+        "Krishna Nagar",
+        "11 kV Adhipureeswarar"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "33/11 KV DLF SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 0,
+      "coordinates": [
+        80.20505,
+        12.87998
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "Ezhil Nagar"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "110/33-11 KV TIDEL PARK SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 1,
+      "coordinates": [
+        80.2508,
+        12.9856
+      ],
+      "historical_q3_outages": 2,
+      "connected_feeders_count": 2,
+      "sample_feeders": [
+        "CMRL",
+        "Tharamani Bus Stand"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "Kandanchavadi",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 2,
+      "coordinates": [
+        80.2437,
+        12.97559
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "Rajiv Nagar"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "33/11 KV HIRANANDANI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 3,
+      "coordinates": [
+        80.2196,
+        12.84856
+      ],
+      "historical_q3_outages": 8,
+      "connected_feeders_count": 7,
+      "sample_feeders": [
+        "11kV Sriram Nagar",
+        "33kV Siruseri and 33kV Sholinganallur incoming feeder lines",
+        "Kanathur",
+        "11 KV Kanathur and 11 KV Muttukadu feeder",
+        "33 kV Siruseri and 33 kV Sholinganallur"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "230/110KV SIRUSERI SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 3,
+      "coordinates": [
+        80.2196,
+        12.84856
+      ],
+      "historical_q3_outages": 4,
+      "connected_feeders_count": 2,
+      "sample_feeders": [
+        "11 kV SIPCOT-1, 11 kV Navalur, 11 kV Thalambur, 11 kV SIPCOT-2, 11 kV Industrial, 11 kV Kazhipattur, 11 kV CTS, 11 kV Egattur, 11 kV VRM, 11 kV Sivan Kovil",
+        "GC-1"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    },
+    {
+      "name": "110/33-11 KV SHOLINGANALLUR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 3,
+      "coordinates": [
+        80.22694,
+        12.89258
+      ],
+      "historical_q3_outages": 3,
+      "connected_feeders_count": 3,
+      "sample_feeders": [
+        "11kV Prestige",
+        "Prestige",
+        "Kumaran Nagar"
+      ],
+      "risk_level": "CRITICAL_SURGE_RISK",
+      "recommended_action": "Pre-landfall selective isolation (T-2h); sandbagging basement switchgears"
+    }
+  ],
+  "moderate_substations": [
+    {
+      "name": "R A Puram Sub Station",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "elevation_m": 4,
+      "coordinates": [
+        80.27195,
+        13.01703
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 0,
+      "sample_feeders": [],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "110/33-11KV RKNAGAR SUBSTATION",
+      "circle": "Chennai",
+      "district": "Chennai",
+      "elevation_m": 5,
+      "coordinates": [
+        80.28589,
+        13.12473
+      ],
+      "historical_q3_outages": 3,
+      "connected_feeders_count": 3,
+      "sample_feeders": [
+        "S.A. Kovil, Thilagar Nagar, Ilaya Mudhali",
+        "11kV Kalmandapam LT 240 Main Cable",
+        "S.A. Koil, Thilagar Nagar and Ilaya Mudali"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11 KV TONDIARPET SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "elevation_m": 5,
+      "coordinates": [
+        80.27849,
+        13.12993
+      ],
+      "historical_q3_outages": 2,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "Nethaji Nagar"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11 KV KOTTIVAKKAM  SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.26216,
+        12.97703
+      ],
+      "historical_q3_outages": 14,
+      "connected_feeders_count": 11,
+      "sample_feeders": [
+        "11 kV Kurinji Nagar",
+        "11 kV K.K.D Road",
+        "11 kV ECR",
+        "ECR",
+        "K.K. Road"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11 KV BESANT NAGAR SS",
+      "circle": "CHENNAI SOUTH 2",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.26467,
+        12.99693
+      ],
+      "historical_q3_outages": 14,
+      "connected_feeders_count": 13,
+      "sample_feeders": [
+        "11 KV 3rd Avenue",
+        "11 KV Beach Home Avenue",
+        "J.R. Nagar",
+        "11 kV Beach Home Avenue",
+        "Malviya Avenue"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11 KV MADIPAKKAM SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.19869,
+        12.96286
+      ],
+      "historical_q3_outages": 9,
+      "connected_feeders_count": 7,
+      "sample_feeders": [
+        "Ponniamman",
+        "Karthikeyapuram",
+        "Ponniyamman",
+        "11 kV Balaiah Garden",
+        "Vishal Nagar"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11 KV NANGANALLUR SS",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.19869,
+        12.96286
+      ],
+      "historical_q3_outages": 8,
+      "connected_feeders_count": 8,
+      "sample_feeders": [
+        "11 kV Rajeshwari Nagar",
+        "11 KV MMTC",
+        "11 kV MMTC Colony",
+        "MMTC Colony",
+        "Rajeswari Nagar feeder"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11KV GANDHI NAGAR SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.24334,
+        13.12482
+      ],
+      "historical_q3_outages": 6,
+      "connected_feeders_count": 6,
+      "sample_feeders": [
+        "Kamarajar Avenue",
+        "11 KV 1st Main Road",
+        "11 kV Kamaraj Ave",
+        "Chandrabrabhu Colony 11 kV",
+        "2nd Main Road"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "230/110/33/11 KV MANALI SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.25248,
+        13.16609
+      ],
+      "historical_q3_outages": 6,
+      "connected_feeders_count": 5,
+      "sample_feeders": [
+        "11 kV Rural, 11 kV Manali and 11 kV Nagpals",
+        "11kV Ayyappan Kovil",
+        "Periya Sekkadu",
+        "Police Quarters",
+        "11 kV Periyasekadu"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "110/33/11 KV CHINDHATRIPET SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.27245,
+        13.07672
+      ],
+      "historical_q3_outages": 4,
+      "connected_feeders_count": 2,
+      "sample_feeders": [
+        "11 kV Pudupet",
+        "Pudupet"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33/11 KV SAIDAPET SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.23037,
+        13.02385
+      ],
+      "historical_q3_outages": 3,
+      "connected_feeders_count": 2,
+      "sample_feeders": [
+        "Tod Hunter Nagar",
+        "11 kV O.250MHU"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "33 kV OHP",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.29747,
+        13.11365
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "11 kV Shaik Maistry"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "Ayyappa Nagar",
+      "circle": "CHENNAI SOUTH 1",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.19869,
+        12.96286
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 0,
+      "sample_feeders": [],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "110/11 KV SS MYLAPORE",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.2666,
+        13.04478
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "West Cott 2"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "Vyasarpadi Industrial Estate SS",
+      "circle": "NORTH",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.25834,
+        13.13219
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "Industrial 1"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "110/22KV ANAMALAI SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.27245,
+        13.07672
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "11 kV Athiyanar"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    },
+    {
+      "name": "110/33/11 KV COOKS ROAD SS",
+      "circle": "CENTRAL",
+      "district": "Chennai",
+      "elevation_m": 6,
+      "coordinates": [
+        80.25195,
+        13.10115
+      ],
+      "historical_q3_outages": 1,
+      "connected_feeders_count": 1,
+      "sample_feeders": [
+        "11KV Bashyam Reddy"
+      ],
+      "risk_level": "MODERATE_WATERLOGGING_RISK",
+      "recommended_action": "Continuous telemetry monitoring; deploy mobile diesel de-watering pumps"
+    }
+  ]
+}

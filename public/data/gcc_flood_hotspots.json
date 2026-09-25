@@ -1,0 +1,966 @@
+{
+  "type": "FeatureCollection",
+  "name": "gcc_flood_hotspots",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.298886,
+          13.180149
+        ]
+      },
+      "properties": {
+        "name": "Jothi Nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 1,
+        "slno": 1
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.292376,
+          13.173009
+        ]
+      },
+      "properties": {
+        "name": "Rajaji Nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 2,
+        "slno": 2
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.213682,
+          13.171351
+        ]
+      },
+      "properties": {
+        "name": "Thirumalai Nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 3,
+        "slno": 3
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.214804,
+          13.138832
+        ]
+      },
+      "properties": {
+        "name": "Siva Ganapathi Nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 4,
+        "slno": 4
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.208234,
+          13.140403
+        ]
+      },
+      "properties": {
+        "name": "Parimalam Nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 5,
+        "slno": 5
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.170611,
+          13.11714
+        ]
+      },
+      "properties": {
+        "name": "Karukku Main Road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 6,
+        "slno": 6
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.189743,
+          13.11392
+        ]
+      },
+      "properties": {
+        "name": "TVS nagar east, Balaji nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 7,
+        "slno": 7
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.199086,
+          13.12844
+        ]
+      },
+      "properties": {
+        "name": "Ayyappa Nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 8,
+        "slno": 8
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.191336,
+          13.114769
+        ]
+      },
+      "properties": {
+        "name": "Balaji nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 9,
+        "slno": 9
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.163433,
+          13.086308
+        ]
+      },
+      "properties": {
+        "name": "Jaswant nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 10,
+        "slno": 10
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.176188,
+          13.086582
+        ]
+      },
+      "properties": {
+        "name": "Vellalar nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 11,
+        "slno": 11
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.187803,
+          13.081504
+        ]
+      },
+      "properties": {
+        "name": "Parikuppam main road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 12,
+        "slno": 12
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.20611,
+          13.103851
+        ]
+      },
+      "properties": {
+        "name": "MTH Road Near Villivakkam Police Station",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 13,
+        "slno": 13
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.254362,
+          13.081737
+        ]
+      },
+      "properties": {
+        "name": "Dr Alagappa Road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 14,
+        "slno": 14
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.251833,
+          13.087392
+        ]
+      },
+      "properties": {
+        "name": "Sundaram Lane",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 15,
+        "slno": 15
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.17124,
+          13.06088
+        ]
+      },
+      "properties": {
+        "name": "Nagendhran Street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 16,
+        "slno": 16
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.146011,
+          13.043715
+        ]
+      },
+      "properties": {
+        "name": "Chettiyar Agaram Main road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 17,
+        "slno": 17
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.211175,
+          12.966293
+        ]
+      },
+      "properties": {
+        "name": "Ram nagar 1st street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 18,
+        "slno": 18
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.211175,
+          12.966783
+        ]
+      },
+      "properties": {
+        "name": "Ram nagar 2nd street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 19,
+        "slno": 19
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.211279,
+          12.967314
+        ]
+      },
+      "properties": {
+        "name": "Ram nagar 3rd street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 20,
+        "slno": 20
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.211237,
+          12.968346
+        ]
+      },
+      "properties": {
+        "name": "Ram nagar 5th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 21,
+        "slno": 21
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.211279,
+          12.969441
+        ]
+      },
+      "properties": {
+        "name": "Ram nagar 7th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 22,
+        "slno": 22
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.211248,
+          12.969972
+        ]
+      },
+      "properties": {
+        "name": "Ram nagar 8th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 23,
+        "slno": 23
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.206551,
+          12.972748
+        ]
+      },
+      "properties": {
+        "name": "Sivaprakasam Nagar 1st street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 24,
+        "slno": 24
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.205368,
+          12.974205
+        ]
+      },
+      "properties": {
+        "name": "Balaji nagar 24th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 25,
+        "slno": 25
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.203544,
+          12.97086
+        ]
+      },
+      "properties": {
+        "name": "Annai therasa Nagar 7th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 26,
+        "slno": 26
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.205055,
+          12.968754
+        ]
+      },
+      "properties": {
+        "name": "Annai Therasa NagAR 4TH STREET",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 27,
+        "slno": 27
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.204615,
+          12.972335
+        ]
+      },
+      "properties": {
+        "name": "Annai therasa nagar 14th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 28,
+        "slno": 28
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.208,
+          12.970623
+        ]
+      },
+      "properties": {
+        "name": "Sivasubramanian street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 29,
+        "slno": 29
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.206822,
+          12.970935
+        ]
+      },
+      "properties": {
+        "name": "Sivaprakasam nagar 1st street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 30,
+        "slno": 30
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.210309,
+          12.965869
+        ]
+      },
+      "properties": {
+        "name": "Ramalingam nagar main road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 31,
+        "slno": 31
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.202056,
+          12.974495
+        ]
+      },
+      "properties": {
+        "name": "Jaya nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 32,
+        "slno": 32
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.259012,
+          12.974128
+        ]
+      },
+      "properties": {
+        "name": "Division office Ward 183",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 33,
+        "slno": 33
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.195496,
+          12.965528
+        ]
+      },
+      "properties": {
+        "name": "Saraswathi street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 34,
+        "slno": 34
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.254388,
+          12.947977
+        ]
+      },
+      "properties": {
+        "name": "Infront of Maharasthra bank Neelankarai",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 35,
+        "slno": 35
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.250385,
+          12.948273
+        ]
+      },
+      "properties": {
+        "name": "Ellaiamman koil 4th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 36,
+        "slno": 36
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.246579,
+          12.937638
+        ]
+      },
+      "properties": {
+        "name": "Mahatma Gandhi 2nd main road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 37,
+        "slno": 37
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.246909,
+          12.937695
+        ]
+      },
+      "properties": {
+        "name": "Karpaga Vinayaga nagar 3rd street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 38,
+        "slno": 38
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.247785,
+          12.937674
+        ]
+      },
+      "properties": {
+        "name": "Karpaga Vinayaga nagar 4th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 39,
+        "slno": 39
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.248118,
+          12.937622
+        ]
+      },
+      "properties": {
+        "name": "Karpaga Vinayaga nagar 5th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 40,
+        "slno": 40
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.24865,
+          12.937513
+        ]
+      },
+      "properties": {
+        "name": "Karpaga Vinayaga nagar 7th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 41,
+        "slno": 41
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.247847,
+          12.936455
+        ]
+      },
+      "properties": {
+        "name": "Karpaga Vinayaga nagar 10th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 42,
+        "slno": 42
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.240359,
+          12.935886
+        ]
+      },
+      "properties": {
+        "name": "Balaji nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 43,
+        "slno": 43
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.239655,
+          12.937252
+        ]
+      },
+      "properties": {
+        "name": "Bharathiyar nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 44,
+        "slno": 44
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.230685,
+          12.931753
+        ]
+      },
+      "properties": {
+        "name": "Saraswathi nagar 4th cross street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 45,
+        "slno": 45
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.251367,
+          12.919357
+        ]
+      },
+      "properties": {
+        "name": "ECR Road Philominal School",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 46,
+        "slno": 46
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.249188,
+          12.932315
+        ]
+      },
+      "properties": {
+        "name": "Ramalinga nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 47,
+        "slno": 47
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.229085,
+          12.910769
+        ]
+      },
+      "properties": {
+        "name": "Annai fathima school",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 48,
+        "slno": 48
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.215,
+          12.896352
+        ]
+      },
+      "properties": {
+        "name": "Classic farms avenue 1st street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 49,
+        "slno": 49
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.228613,
+          12.883188
+        ]
+      },
+      "properties": {
+        "name": "Ponniyamman koil",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 50,
+        "slno": 50
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.230687,
+          12.875755
+        ]
+      },
+      "properties": {
+        "name": "Thiruvalluvar nagar",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 51,
+        "slno": 51
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.213715,
+          12.862756
+        ]
+      },
+      "properties": {
+        "name": "Jawahar nagar 6th 7th street",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 52,
+        "slno": 52
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          80.210719,
+          12.87949
+        ]
+      },
+      "properties": {
+        "name": "Nookampalayam Main road",
+        "category": "GCC Official Flood Hotspot",
+        "monsoon": "Northeast Monsoon (NEM)",
+        "source": "Greater Chennai Corporation SDSS",
+        "id": 53,
+        "slno": 53
+      }
+    }
+  ]
+}
