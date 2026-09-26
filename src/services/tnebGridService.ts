@@ -13,17 +13,17 @@ export function isValidPhysicalGridConnection(connection: PrecomputedConnection)
   const v = (connection.voltage || '').toLowerCase();
   const label = (connection.label || '').toLowerCase();
 
-  // 33kV & 11kV distribution lines cannot operate across > 8.5 km in urban networks
-  if (v.includes('33') || v.includes('11') || label.includes('33') || label.includes('11')) {
-    return dist <= 8.5;
+  // 230kV / 400kV bulk transmission corridors
+  if (v.includes('230') || v.includes('400') || label.includes('230') || label.includes('400')) {
+    return dist <= 35.0;
   }
   // 110kV sub-transmission trunks
   if (v.includes('110') || label.includes('110')) {
-    return dist <= 12.0;
+    return dist <= 20.0;
   }
-  // 230kV / 400kV bulk transmission corridors
-  if (v.includes('230') || v.includes('400') || label.includes('230') || label.includes('400')) {
-    return dist <= 30.0;
+  // 33kV & 11kV distribution lines cannot operate across > 8.5 km in urban networks
+  if (v.includes('33') || v.includes('11') || label.includes('33') || label.includes('11')) {
+    return dist <= 8.5;
   }
   return dist <= 10.0;
 }

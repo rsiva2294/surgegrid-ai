@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
+import { getFeederGeometry, getFeederTransformers } from '../../services/feederGeometryService';
 import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star, Columns2, Minimize2, Info } from 'lucide-react';
 
 interface TnebGridMapProps {
@@ -162,84 +163,6 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
   }
 }
 
-function computeFeederCorridor(
-  substation: TnebSubstation,
-  feeder: FeederDetail,
-  substations: TnebSubstation[],
-  sections: TnebSection[]
-): { path: { lat: number; lng: number }[]; dtrs: { id: string; name: string; lat: number; lng: number; consumers: number }[] } {
-  const originLat = substation.lat;
-  const originLng = substation.lng;
-  const feederUpper = feeder.name.toUpperCase();
-
-  let targetLat: number | null = null;
-  let targetLng: number | null = null;
-
-  // 1. Look for known name match in sections or substations
-  const matchedSubstation = substations.find(s => s.code !== substation.code && feederUpper.includes(s.cleanName.toUpperCase()));
-  if (matchedSubstation) {
-    targetLat = matchedSubstation.lat;
-    targetLng = matchedSubstation.lng;
-  } else {
-    const matchedSection = sections.find(s => feederUpper.includes(s.cleanName.toUpperCase()));
-    if (matchedSection) {
-      targetLat = matchedSection.lat;
-      targetLng = matchedSection.lng;
-    }
-  }
-
-  // 2. If no direct match, generate deterministic angle radiating from substation
-  if (targetLat === null || targetLng === null) {
-    let hash = 0;
-    for (let i = 0; i < feeder.name.length; i++) {
-      hash = (hash << 5) - hash + feeder.name.charCodeAt(i);
-      hash |= 0;
-    }
-    const angleRad = ((Math.abs(hash) % 360) * Math.PI) / 180;
-    const effectiveKm = Math.min(Math.max(feeder.lengthKm || 2.5, 1.5), 4.2);
-    const dLat = (effectiveKm * Math.cos(angleRad)) / 111;
-    const dLng = (effectiveKm * Math.sin(angleRad)) / 108;
-    targetLat = originLat + dLat;
-    targetLng = originLng + dLng;
-  }
-
-  // Generate organic 4-segment street corridor
-  const waypoints: { lat: number; lng: number }[] = [{ lat: originLat, lng: originLng }];
-  const steps = 4;
-  for (let i = 1; i <= steps; i++) {
-    const t = i / steps;
-    const perpOffset = Math.sin(t * Math.PI) * 0.0012 * ((feeder.name.length % 2 === 0) ? 1 : -1);
-    const lat = originLat + (targetLat - originLat) * t + perpOffset * 0.5;
-    const lng = originLng + (targetLng - originLng) * t + perpOffset;
-    waypoints.push({ lat, lng });
-  }
-
-  // Place DTRs along the path
-  const dtrCount = Math.min(Math.max(feeder.transformers || 8, 3), 35);
-  const avgConsumers = Math.round((feeder.consumers || (dtrCount * 120)) / dtrCount);
-  const dtrs: { id: string; name: string; lat: number; lng: number; consumers: number }[] = [];
-
-  for (let i = 1; i <= dtrCount; i++) {
-    const fraction = 0.15 + (i / (dtrCount + 1)) * 0.8;
-    const segmentIndex = Math.min(Math.floor(fraction * (waypoints.length - 1)), waypoints.length - 2);
-    const segT = (fraction * (waypoints.length - 1)) - segmentIndex;
-    const p1 = waypoints[segmentIndex];
-    const p2 = waypoints[segmentIndex + 1];
-
-    const jitterLat = Math.sin(i * 3.7) * 0.00015;
-    const jitterLng = Math.cos(i * 3.7) * 0.00015;
-
-    dtrs.push({
-      id: `${feeder.code}_dtr_${i}`,
-      name: `DTR #${i < 10 ? '0' + i : i}`,
-      lat: p1.lat + (p2.lat - p1.lat) * segT + jitterLat,
-      lng: p1.lng + (p2.lng - p1.lng) * segT + jitterLng,
-      consumers: Math.round(avgConsumers * (0.8 + (Math.abs(Math.sin(i * 1.5)) * 0.4)))
-    });
-  }
-
-  return { path: waypoints, dtrs };
-}
 
 function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean, isLight: boolean): google.maps.Symbol {
   let color = isLight ? '#0284C7' : '#06B6D4';
@@ -442,8 +365,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const prevSelectedSectionCodeRef = useRef<string | null>(null);
   const selectionHaloRef = useRef<google.maps.Marker | null>(null);
   const sectionBoundaryPolygonsRef = useRef<google.maps.Polygon[]>([]);
-  const feederLineRef = useRef<google.maps.Polyline | null>(null);
-  const feederGlowLineRef = useRef<google.maps.Polyline | null>(null);
+  const feederLinesRef = useRef<google.maps.Polyline[]>([]);
+  const feederGlowLinesRef = useRef<google.maps.Polyline[]>([]);
   const dtrMarkersRef = useRef<google.maps.Marker[]>([]);
   const dtrInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
@@ -968,17 +891,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [selectedSubstation, electricalNodes, mapLoaded, showConnections]);
 
-  // Render on-demand Feeder Corridor and DTR markers when a feeder is selected
+  // Render on-demand Ground-Truth Feeder Wire Geometry and DTR markers when a feeder is selected
   useEffect(() => {
-    // Clear previous feeder line and DTR markers
-    if (feederLineRef.current) {
-      feederLineRef.current.setMap(null);
-      feederLineRef.current = null;
-    }
-    if (feederGlowLineRef.current) {
-      feederGlowLineRef.current.setMap(null);
-      feederGlowLineRef.current = null;
-    }
+    // Clear previous feeder lines and DTR markers
+    feederLinesRef.current.forEach(l => l.setMap(null));
+    feederLinesRef.current = [];
+    feederGlowLinesRef.current.forEach(l => l.setMap(null));
+    feederGlowLinesRef.current = [];
     dtrMarkersRef.current.forEach(m => m.setMap(null));
     dtrMarkersRef.current = [];
     if (dtrInfoWindowRef.current) {
@@ -989,108 +908,163 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       return;
     }
 
+    let isMounted = true;
     const map = mapRef.current;
     const isLight = theme === 'light';
-    const corridor = computeFeederCorridor(selectedSubstation, selectedFeeder, substations, sections);
     const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
     const isNonCut = selectedFeeder.priorityLevel === 'P1_NON_CUT';
-
-    // 1. Glow outer polyline
-    feederGlowLineRef.current = new google.maps.Polyline({
-      path: corridor.path,
-      strokeColor: themeColors.glow,
-      strokeOpacity: isLight ? 0.38 : 0.48,
-      strokeWeight: isNonCut ? 10 : 8,
-      zIndex: 48,
-      map
-    });
-
-    // 2. Core sharp feeder line with directional flow arrows
-    feederLineRef.current = new google.maps.Polyline({
-      path: corridor.path,
-      strokeColor: themeColors.core,
-      strokeOpacity: 0.95,
-      strokeWeight: isNonCut ? 4 : 3.5,
-      zIndex: 50,
-      icons: [
-        {
-          icon: {
-            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-            scale: 2.2,
-            strokeColor: themeColors.core,
-            fillColor: themeColors.core,
-            fillOpacity: 1
-          },
-          offset: '50%',
-          repeat: '90px'
-        }
-      ],
-      map
-    });
-
-    // 3. Render DTR markers along the corridor
-    if (!dtrInfoWindowRef.current) {
-      dtrInfoWindowRef.current = new google.maps.InfoWindow();
-    }
-
-    const dtrIcon = getDtrMarkerIcon(isLight, selectedFeeder.lifelineCategory);
-    const lifelineBadge = getFeederLifelineBadge(selectedFeeder, isLight);
-
-    corridor.dtrs.forEach(dtr => {
-      const marker = new google.maps.Marker({
-        position: { lat: dtr.lat, lng: dtr.lng },
-        icon: dtrIcon,
-        zIndex: 55,
-        title: `${dtr.name} (${selectedFeeder.name} Feeder)`,
-        map
-      });
-
-      marker.addListener('click', () => {
-        dtrInfoWindowRef.current?.setContent(`
-          <div style="font-family: system-ui, -apple-system, sans-serif; padding: 6px; color: #0f172a; max-width: 230px; line-height: 1.35;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-              <span style="font-weight: 800; font-size: 13px; color: ${isNonCut ? '#e11d48' : '#b45309'};">⚡ ${dtr.name}</span>
-              <span style="font-size: 10px; font-family: monospace; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-weight: 700;">DTR / DTS</span>
-            </div>
-            ${lifelineBadge ? `
-              <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: ${selectedFeeder.lifelineCategory === 'hospital' ? '#ffe4e6; color: #9f1239' : selectedFeeder.lifelineCategory === 'water' ? '#e0f2fe; color: #0369a1' : selectedFeeder.lifelineCategory === 'transit' ? '#f3e8ff; color: #6b21a8' : '#fef3c7; color: #92400e'};">
-                <span>${lifelineBadge.icon}</span>
-                <span>${lifelineBadge.label}</span>
-                <span style="margin-left: auto; font-family: monospace; font-size: 9px; opacity: 0.9;">${lifelineBadge.prioText}</span>
-              </div>
-            ` : ''}
-            <div style="font-size: 11px; color: #475569; margin-bottom: 4px;">
-              <strong>Step-Down:</strong> 11,000V → 240V / 415V
-            </div>
-            <div style="font-size: 11px; font-weight: 600; color: #0369a1; margin-bottom: 2px;">
-              👥 Feeds ~${dtr.consumers.toLocaleString()} Consumers
-            </div>
-            <div style="font-size: 10px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px;">
-              Feeder: <strong>${selectedFeeder.name}</strong> (${selectedFeeder.voltage})
-              ${selectedFeeder.isDedicated ? '<br><span style="color: #64748b; font-style: italic;">• Dedicated Service Line (HT)</span>' : ''}
-            </div>
-          </div>
-        `);
-        dtrInfoWindowRef.current?.open(map, marker);
-      });
-
-      dtrMarkersRef.current.push(marker);
-    });
-
-    // 4. Auto-fit camera bounds around the active feeder corridor
     const bounds = new google.maps.LatLngBounds();
-    corridor.path.forEach(pt => bounds.extend(pt));
-    corridor.dtrs.forEach(d => bounds.extend({ lat: d.lat, lng: d.lng }));
-    map.fitBounds(bounds, { top: 90, right: 460, bottom: 90, left: 90 });
+
+    // 1. Fetch real surveyed MultiLineString street routes on-demand
+    getFeederGeometry(selectedSubstation.circleCode, selectedFeeder.code).then(geo => {
+      if (!isMounted || !mapRef.current) return;
+
+      if (geo && geo.coords) {
+        const rawSegments = geo.type === 'MultiLineString'
+          ? (geo.coords as [number, number][][])
+          : [(geo.coords as [number, number][])];
+
+        rawSegments.forEach(seg => {
+          if (!seg || seg.length < 2) return;
+          const path = seg.map(pt => ({ lat: pt[1], lng: pt[0] }));
+          path.forEach(pt => bounds.extend(pt));
+
+          // Outer high-visibility glow line
+          const glowLine = new google.maps.Polyline({
+            path,
+            strokeColor: themeColors.glow,
+            strokeOpacity: isLight ? 0.38 : 0.48,
+            strokeWeight: isNonCut ? 10 : 8,
+            zIndex: 48,
+            map
+          });
+          feederGlowLinesRef.current.push(glowLine);
+
+          // Sharp core line with directional flow arrows
+          const coreLine = new google.maps.Polyline({
+            path,
+            strokeColor: themeColors.core,
+            strokeOpacity: 0.95,
+            strokeWeight: isNonCut ? 4 : 3.5,
+            zIndex: 50,
+            icons: [
+              {
+                icon: {
+                  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  scale: 2.0,
+                  strokeColor: themeColors.core,
+                  fillColor: themeColors.core,
+                  fillOpacity: 1
+                },
+                offset: '50%',
+                repeat: '100px'
+              }
+            ],
+            map
+          });
+          feederLinesRef.current.push(coreLine);
+        });
+      } else {
+        // Deterministic local radial spur strictly within local neighborhood (<= 1.2 km)
+        let hash = 0;
+        for (let i = 0; i < selectedFeeder.name.length; i++) {
+          hash = (hash << 5) - hash + selectedFeeder.name.charCodeAt(i);
+        }
+        const angleRad = ((Math.abs(hash) % 360) * Math.PI) / 180;
+        const effectiveKm = Math.min(Math.max(selectedFeeder.lengthKm || 1.2, 0.8), 1.6);
+        const dLat = (effectiveKm * Math.cos(angleRad)) / 111;
+        const dLng = (effectiveKm * Math.sin(angleRad)) / 108;
+        const path = [
+          { lat: selectedSubstation.lat, lng: selectedSubstation.lng },
+          { lat: selectedSubstation.lat + dLat, lng: selectedSubstation.lng + dLng }
+        ];
+        path.forEach(pt => bounds.extend(pt));
+
+        const coreLine = new google.maps.Polyline({
+          path,
+          strokeColor: themeColors.core,
+          strokeOpacity: 0.95,
+          strokeWeight: 3.5,
+          zIndex: 50,
+          map
+        });
+        feederLinesRef.current.push(coreLine);
+      }
+
+      // 2. Fetch real surveyed Distribution Transformers (DTs) on-demand
+      getFeederTransformers(selectedSubstation.circleCode, selectedFeeder.code).then(dtrs => {
+        if (!isMounted || !mapRef.current) return;
+
+        if (!dtrInfoWindowRef.current) {
+          dtrInfoWindowRef.current = new google.maps.InfoWindow();
+        }
+
+        const dtrIcon = getDtrMarkerIcon(isLight, selectedFeeder.lifelineCategory);
+        const lifelineBadge = getFeederLifelineBadge(selectedFeeder, isLight);
+
+        if (dtrs && dtrs.length > 0) {
+          dtrs.forEach(dtr => {
+            bounds.extend({ lat: dtr.lat, lng: dtr.lng });
+            const marker = new google.maps.Marker({
+              position: { lat: dtr.lat, lng: dtr.lng },
+              icon: dtrIcon,
+              zIndex: 55,
+              title: `${dtr.name} (${selectedFeeder.name} Feeder)`,
+              map
+            });
+
+            marker.addListener('click', () => {
+              dtrInfoWindowRef.current?.setContent(`
+                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 6px; color: #0f172a; max-width: 240px; line-height: 1.35;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+                    <span style="font-weight: 800; font-size: 13px; color: ${isNonCut ? '#e11d48' : '#b45309'};">⚡ ${dtr.name}</span>
+                    <span style="font-size: 10px; font-family: monospace; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${dtr.kva ? dtr.kva + ' kVA' : 'DTR'}</span>
+                  </div>
+                  ${lifelineBadge ? `
+                    <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: ${selectedFeeder.lifelineCategory === 'hospital' ? '#ffe4e6; color: #9f1239' : selectedFeeder.lifelineCategory === 'water' ? '#e0f2fe; color: #0369a1' : selectedFeeder.lifelineCategory === 'transit' ? '#f3e8ff; color: #6b21a8' : '#fef3c7; color: #92400e'};">
+                      <span>${lifelineBadge.icon}</span>
+                      <span>${lifelineBadge.label}</span>
+                      <span style="margin-left: auto; font-family: monospace; font-size: 9px; opacity: 0.9;">${lifelineBadge.prioText}</span>
+                    </div>
+                  ` : ''}
+                  <div style="font-size: 11px; color: #475569; margin-bottom: 4px;">
+                    <strong>Asset Code:</strong> ${dtr.id}<br>
+                    <strong>Step-Down:</strong> 11,000V → 240V / 415V
+                  </div>
+                  <div style="font-size: 11px; font-weight: 600; color: #0369a1; margin-bottom: 2px;">
+                    👥 Feeds ~${(dtr.cons || 0).toLocaleString()} Metered Consumers
+                  </div>
+                  <div style="font-size: 10px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px;">
+                    Feeder: <strong>${selectedFeeder.name}</strong> (${selectedFeeder.voltage})
+                    ${selectedFeeder.isDedicated ? '<br><span style="color: #64748b; font-style: italic;">• Dedicated Service Line (HT)</span>' : ''}
+                  </div>
+                </div>
+              `);
+              dtrInfoWindowRef.current?.open(map, marker);
+            });
+
+            dtrMarkersRef.current.push(marker);
+          });
+        }
+
+        // Fit map camera around real feeder extent
+        if (!bounds.isEmpty()) {
+          map.fitBounds(bounds, { top: 90, right: 460, bottom: 90, left: 90 });
+        }
+      });
+    });
 
     return () => {
-      if (feederLineRef.current) feederLineRef.current.setMap(null);
-      if (feederGlowLineRef.current) feederGlowLineRef.current.setMap(null);
+      isMounted = false;
+      feederLinesRef.current.forEach(l => l.setMap(null));
+      feederLinesRef.current = [];
+      feederGlowLinesRef.current.forEach(l => l.setMap(null));
+      feederGlowLinesRef.current = [];
       dtrMarkersRef.current.forEach(m => m.setMap(null));
       dtrMarkersRef.current = [];
       if (dtrInfoWindowRef.current) dtrInfoWindowRef.current.close();
     };
-  }, [selectedFeeder, selectedSubstation, mapLoaded, theme, substations, sections]);
+  }, [selectedFeeder, selectedSubstation, mapLoaded, theme]);
 
   // Filtered search list
   const searchResults = useMemo<{ substations: TnebSubstation[]; sections: TnebSection[] }>(() => {
