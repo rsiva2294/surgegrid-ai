@@ -23,6 +23,7 @@ import {
   RotateCw,
 } from 'lucide-react';
 import type { Substation, LostWaterBody, FloodHotspot, ReliefShelter, WeatherStep } from '../types';
+import riverCorridors from '../data/chennai_river_flood_corridors.json';
 
 interface GoogleGridMapProps {
   substations: Substation[];
@@ -534,6 +535,7 @@ const MapOverlays: React.FC<{
 
     const circles: google.maps.Circle[] = [];
     const polylines: google.maps.Polyline[] = [];
+    const polygons: google.maps.Polygon[] = [];
 
     // 1. Draw 15 Lost Water Bodies (ancestral lakebeds)
     if (showLostLakes) {
@@ -607,86 +609,118 @@ const MapOverlays: React.FC<{
       });
       circles.push(innerEyewallCircle);
 
-      // 3. Adyar River Sluice Discharge Fluvial Overflow Corridor
+      // 3. Adyar River Sluice Discharge: Sinuous River Channel & Dynamic Flood Inundation Polygon
       if (hoursToLandfall <= 36) {
-        const adyarCoords = [
-          { lat: 13.008, lng: 80.005 }, // Chembarambakkam sluice gates
-          { lat: 13.01, lng: 80.06 }, // Poonamallee bypass
-          { lat: 13.012, lng: 80.11 }, // Kundrathur
-          { lat: 13.015, lng: 80.155 }, // Ramapuram
-          { lat: 13.018, lng: 80.195 }, // Saidapet Bridge
-          { lat: 13.015, lng: 80.225 }, // Kotturpuram
-          { lat: 13.01, lng: 80.258 }, // Adyar Estuary
-        ];
+        const adyarFloodCoords =
+          hoursToLandfall <= 0
+            ? riverCorridors.rivers.adyar.flood_polygons.t0
+            : hoursToLandfall <= 12
+            ? riverCorridors.rivers.adyar.flood_polygons.t12
+            : riverCorridors.rivers.adyar.flood_polygons.t36;
 
+        // Flood Inundation Hazard Basin (Saidapet, Kotturpuram, Jafferkhanpet, Ramapuram)
+        const adyarPolygon = new google.maps.Polygon({
+          paths: adyarFloodCoords,
+          fillColor: '#ef4444',
+          fillOpacity: hoursToLandfall <= 0 ? 0.35 : hoursToLandfall <= 12 ? 0.25 : 0.16,
+          strokeColor: '#dc2626',
+          strokeWeight: 1.5,
+          strokeOpacity: 0.8,
+          map,
+          clickable: false,
+        });
+        polygons.push(adyarPolygon);
+
+        // Curved River Channel Centerline
         const adyarLine = new google.maps.Polyline({
-          path: adyarCoords,
+          path: riverCorridors.rivers.adyar.centerline,
           geodesic: true,
-          strokeColor: hoursToLandfall <= 12 ? '#dc2626' : '#ea580c',
-          strokeOpacity: hoursToLandfall <= 12 ? 0.85 : 0.65,
-          strokeWeight:
-            hoursToLandfall <= 0 ? 18 : hoursToLandfall <= 12 ? 14 : hoursToLandfall <= 24 ? 10 : 6,
+          strokeColor: hoursToLandfall <= 12 ? '#991b1b' : '#c2410c',
+          strokeOpacity: 0.95,
+          strokeWeight: hoursToLandfall <= 0 ? 4 : hoursToLandfall <= 12 ? 3 : 2,
           map,
         });
         polylines.push(adyarLine);
       }
 
-      // 4. Cooum River Flash Flood Overflow Corridor
+      // 4. Cooum River Flash Flood: Sinuous River Channel & Dynamic Flood Inundation Polygon
       if (hoursToLandfall <= 24) {
-        const cooumCoords = [
-          { lat: 13.075, lng: 80.11 }, // Thiruverkadu
-          { lat: 13.073, lng: 80.17 }, // Maduravoyal
-          { lat: 13.072, lng: 80.21 }, // Koyambedu
-          { lat: 13.076, lng: 80.245 }, // Chetpet / Egmore
-          { lat: 13.069, lng: 80.285 }, // Napier Bridge / Marina
-        ];
+        const cooumFloodCoords =
+          hoursToLandfall <= 0
+            ? riverCorridors.rivers.cooum.flood_polygons.t0
+            : hoursToLandfall <= 12
+            ? riverCorridors.rivers.cooum.flood_polygons.t12
+            : riverCorridors.rivers.cooum.flood_polygons.t24;
 
+        // Flood Inundation Hazard Basin (Koyambedu, Chetpet, Egmore, Chintadripet)
+        const cooumPolygon = new google.maps.Polygon({
+          paths: cooumFloodCoords,
+          fillColor: '#f97316',
+          fillOpacity: hoursToLandfall <= 0 ? 0.32 : hoursToLandfall <= 12 ? 0.22 : 0.14,
+          strokeColor: '#ea580c',
+          strokeWeight: 1.5,
+          strokeOpacity: 0.8,
+          map,
+          clickable: false,
+        });
+        polygons.push(cooumPolygon);
+
+        // Curved River Channel Centerline
         const cooumLine = new google.maps.Polyline({
-          path: cooumCoords,
+          path: riverCorridors.rivers.cooum.centerline,
           geodesic: true,
-          strokeColor: hoursToLandfall <= 12 ? '#dc2626' : '#f97316',
-          strokeOpacity: hoursToLandfall <= 12 ? 0.8 : 0.55,
-          strokeWeight: hoursToLandfall <= 0 ? 14 : hoursToLandfall <= 12 ? 10 : 6,
+          strokeColor: hoursToLandfall <= 12 ? '#9a3412' : '#ea580c',
+          strokeOpacity: 0.95,
+          strokeWeight: hoursToLandfall <= 0 ? 3.5 : hoursToLandfall <= 12 ? 2.5 : 1.8,
           map,
         });
         polylines.push(cooumLine);
       }
 
-      // 5. Coastal Storm Surge Inundation Ribbon along Bay of Bengal
-      const coastalSurgeCoords = [
-        { lat: 13.36, lng: 80.34 }, // Minjur / Ennore Outer Port
-        { lat: 13.25, lng: 80.33 }, // Ennore Creek
-        { lat: 13.16, lng: 80.31 }, // Kasimedu Harbour
-        { lat: 13.08, lng: 80.29 }, // Chennai Port
-        { lat: 13.04, lng: 80.28 }, // Marina Beach
-        { lat: 12.99, lng: 80.27 }, // Besant Nagar
-        { lat: 12.92, lng: 80.26 }, // Thiruvanmiyur
-        { lat: 12.83, lng: 80.25 }, // ECR / Kovalam
-      ];
+      // 5. Coastal Storm Surge: Shoreline Contour & Marine Inundation Polygon
+      const coastalSurgeCoords =
+        hoursToLandfall <= 0
+          ? riverCorridors.rivers.coastal_surge.surge_polygons.t0
+          : hoursToLandfall <= 12
+          ? riverCorridors.rivers.coastal_surge.surge_polygons.t12
+          : hoursToLandfall <= 24
+          ? riverCorridors.rivers.coastal_surge.surge_polygons.t24
+          : riverCorridors.rivers.coastal_surge.surge_polygons.t48;
 
-      const coastalSurgeLine = new google.maps.Polyline({
-        path: coastalSurgeCoords,
-        geodesic: true,
-        strokeColor: hoursToLandfall <= 12 ? '#0284c7' : '#38bdf8',
-        strokeOpacity: hoursToLandfall <= 12 ? 0.75 : 0.45,
-        strokeWeight:
+      const coastalPolygon = new google.maps.Polygon({
+        paths: coastalSurgeCoords,
+        fillColor: '#0284c7',
+        fillOpacity:
           hoursToLandfall <= 0
-            ? 26
+            ? 0.38
             : hoursToLandfall <= 12
-            ? 18
+            ? 0.28
             : hoursToLandfall <= 24
-            ? 12
-            : hoursToLandfall <= 36
-            ? 8
-            : 4,
+            ? 0.18
+            : 0.10,
+        strokeColor: '#0ea5e9',
+        strokeWeight: 1.5,
+        strokeOpacity: 0.75,
+        map,
+        clickable: false,
+      });
+      polygons.push(coastalPolygon);
+
+      const coastalShoreline = new google.maps.Polyline({
+        path: riverCorridors.rivers.coastal_surge.shoreline,
+        geodesic: true,
+        strokeColor: '#0369a1',
+        strokeOpacity: 0.9,
+        strokeWeight: 3,
         map,
       });
-      polylines.push(coastalSurgeLine);
+      polylines.push(coastalShoreline);
     }
 
     return () => {
       circles.forEach((c) => c.setMap(null));
       polylines.forEach((p) => p.setMap(null));
+      polygons.forEach((p) => p.setMap(null));
     };
   }, [map, lostLakes, showLostLakes, onSelectLake, isLive, hoursToLandfall]);
 
@@ -1465,12 +1499,16 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                   <span>Compromised Relief Shelter (Inundated)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-1.5 rounded-full bg-rose-600 shrink-0"></div>
-                  <span>Adyar & Cooum River Fluvial Overflow</span>
+                  <div className="w-4 h-3 rounded bg-red-500/30 border border-red-600 flex items-center justify-center shrink-0">
+                    <div className="w-full h-0.5 bg-red-700"></div>
+                  </div>
+                  <span>Adyar & Cooum Riverbank Floodplains</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-2 rounded-full bg-sky-500 shrink-0"></div>
-                  <span>Coastal Storm Surge Ribbon (+4.05m)</span>
+                  <div className="w-4 h-3 rounded bg-sky-500/30 border border-sky-500 flex items-center justify-center shrink-0">
+                    <div className="w-full h-0.5 bg-sky-700"></div>
+                  </div>
+                  <span>Bay of Bengal Coastal Surge Zone (+4.05m)</span>
                 </div>
               </>
             )}
