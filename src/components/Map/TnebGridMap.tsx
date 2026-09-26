@@ -926,46 +926,84 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           ? (geo.coords as [number, number][][])
           : [(geo.coords as [number, number][])];
 
+        let closestTakeoffPt: { lat: number; lng: number } | null = null;
+        let minTakeoffDist = Infinity;
+
         rawSegments.forEach(seg => {
           if (!seg || seg.length < 2) return;
           const path = seg.map(pt => ({ lat: pt[1], lng: pt[0] }));
-          path.forEach(pt => bounds.extend(pt));
+          path.forEach(pt => {
+            bounds.extend(pt);
+            const dLat = pt.lat - selectedSubstation.lat;
+            const dLng = pt.lng - selectedSubstation.lng;
+            const distM = Math.sqrt(dLat * dLat + dLng * dLng) * 111000;
+            if (distM < minTakeoffDist) {
+              minTakeoffDist = distM;
+              closestTakeoffPt = pt;
+            }
+          });
 
-          // Outer high-visibility glow line
+          // Outer high-visibility ambient glow line
           const glowLine = new google.maps.Polyline({
             path,
             strokeColor: themeColors.glow,
-            strokeOpacity: isLight ? 0.38 : 0.48,
-            strokeWeight: isNonCut ? 10 : 8,
+            strokeOpacity: isLight ? 0.35 : 0.45,
+            strokeWeight: isNonCut ? 8 : 6,
             zIndex: 48,
             map
           });
           feederGlowLinesRef.current.push(glowLine);
 
-          // Sharp core line with directional flow arrows
+          // Crisp solid utility-grade conductor cable
           const coreLine = new google.maps.Polyline({
             path,
             strokeColor: themeColors.core,
-            strokeOpacity: 0.95,
-            strokeWeight: isNonCut ? 4 : 3.5,
+            strokeOpacity: 1.0,
+            strokeWeight: isNonCut ? 3.8 : 3.0,
             zIndex: 50,
-            icons: [
-              {
-                icon: {
-                  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                  scale: 2.0,
-                  strokeColor: themeColors.core,
-                  fillColor: themeColors.core,
-                  fillOpacity: 1
-                },
-                offset: '50%',
-                repeat: '100px'
-              }
-            ],
             map
           });
           feederLinesRef.current.push(coreLine);
         });
+
+        // Substation switchyard takeoff tie line (if feeder begins outside the fence within 500m)
+        if (closestTakeoffPt && minTakeoffDist > 15 && minTakeoffDist < 500) {
+          const takeoffPath = [
+            { lat: selectedSubstation.lat, lng: selectedSubstation.lng },
+            closestTakeoffPt
+          ];
+          const takeoffLine = new google.maps.Polyline({
+            path: takeoffPath,
+            strokeColor: themeColors.core,
+            strokeOpacity: 0.85,
+            strokeWeight: 2.5,
+            zIndex: 49,
+            icons: [
+              {
+                icon: {
+                  path: 'M 0,-1 0,1',
+                  strokeOpacity: 0.9,
+                  scale: 2,
+                  strokeColor: themeColors.core
+                },
+                offset: '0',
+                repeat: '8px'
+              },
+              {
+                icon: {
+                  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  scale: 2.2,
+                  strokeColor: themeColors.core,
+                  fillColor: themeColors.core,
+                  fillOpacity: 1
+                },
+                offset: '60%'
+              }
+            ],
+            map
+          });
+          feederLinesRef.current.push(takeoffLine);
+        }
       } else {
         // Deterministic local radial spur strictly within local neighborhood (<= 1.2 km)
         let hash = 0;
