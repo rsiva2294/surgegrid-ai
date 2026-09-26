@@ -1,5 +1,8 @@
 export type VoltageTier = 'bulk' | 'subtransmission' | 'distribution';
 
+export type LifelineCategory = 'hospital' | 'water' | 'transit' | 'governance' | 'industrial_ht';
+export type PriorityLevel = 'P1_CRITICAL' | 'P1_NON_CUT' | 'P2_ESSENTIAL' | 'P3_COMMERCIAL';
+
 export interface FeederDetail {
   name: string;
   code: string;
@@ -9,6 +12,10 @@ export interface FeederDetail {
   consumers: number; // conscount
   config: string; // "UG", "Overhead", "Mixed"
   type: string; // "Distribution", "Dedicated (HT Service)", "Interconnector"
+  isDedicated?: boolean;
+  lifelineCategory?: LifelineCategory;
+  lifelineLabel?: string;
+  priorityLevel?: PriorityLevel;
 }
 
 export interface PrecomputedConnection {

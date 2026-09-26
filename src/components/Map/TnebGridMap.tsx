@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
-import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star } from 'lucide-react';
 
 interface TnebGridMapProps {
   theme: 'light' | 'dark';
@@ -41,15 +41,120 @@ function getNodeColor(tier: string, type: 'substation' | 'section', isLight: boo
   return isLight ? '#0284c7' : '#06b6d4';
 }
 
-function getDtrMarkerIcon(isLight: boolean): google.maps.Symbol {
+function getFeederThemeColors(category?: string, isLight?: boolean) {
+  switch (category) {
+    case 'hospital':
+      return {
+        glow: isLight ? '#E11D48' : '#F43F5E',
+        core: isLight ? '#BE123C' : '#FB7185',
+        name: 'Hospital Lifeline (P1 Non-Cut)',
+        icon: '🏥'
+      };
+    case 'water':
+      return {
+        glow: isLight ? '#0284C7' : '#06B6D4',
+        core: isLight ? '#0369A1' : '#38BDF8',
+        name: 'Water & Sewage Lifeline (P1 Non-Cut)',
+        icon: '🚰'
+      };
+    case 'transit':
+      return {
+        glow: isLight ? '#7C3AED' : '#8B5CF6',
+        core: isLight ? '#6D28D9' : '#A78BFA',
+        name: 'Mass Transit Lifeline (P2 Essential)',
+        icon: '🚆'
+      };
+    case 'governance':
+      return {
+        glow: isLight ? '#D97706' : '#F59E0B',
+        core: isLight ? '#B45309' : '#FBBF24',
+        name: 'Gov / Defense HQ (P2 Essential)',
+        icon: '🏛️'
+      };
+    case 'industrial_ht':
+      return {
+        glow: isLight ? '#475569' : '#64748B',
+        core: isLight ? '#334155' : '#94A3B8',
+        name: 'Dedicated Commercial / Industrial HT',
+        icon: '🏭'
+      };
+    default:
+      return {
+        glow: isLight ? '#0284C7' : '#06B6D4',
+        core: isLight ? '#0369A1' : '#22D3EE',
+        name: '11kV Distribution Feeder',
+        icon: '⚡'
+      };
+  }
+}
+
+function getDtrMarkerIcon(isLight: boolean, category?: string): google.maps.Symbol {
+  let fillColor = isLight ? '#D97706' : '#F59E0B';
+  if (category === 'hospital') {
+    fillColor = isLight ? '#E11D48' : '#F43F5E';
+  } else if (category === 'water') {
+    fillColor = isLight ? '#0284C7' : '#06B6D4';
+  } else if (category === 'transit') {
+    fillColor = isLight ? '#7C3AED' : '#8B5CF6';
+  }
+
   return {
     path: 'M -3,-3 L 3,-3 L 3,3 L -3,3 Z',
-    fillColor: isLight ? '#D97706' : '#F59E0B',
+    fillColor,
     fillOpacity: 1,
     strokeColor: isLight ? '#0F172A' : '#FFFFFF',
     strokeWeight: 1.5,
     scale: 1.8
   };
+}
+
+function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
+  if (!feeder.lifelineCategory) return null;
+
+  switch (feeder.lifelineCategory) {
+    case 'hospital':
+      return {
+        icon: '🏥',
+        label: feeder.lifelineLabel || 'Hospital Lifeline',
+        prioText: 'P1 NON-CUT',
+        badgeBg: isLight ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-300 border-rose-500/40',
+        prioBg: isLight ? 'bg-rose-600 text-white font-bold' : 'bg-rose-500 text-slate-950 font-black'
+      };
+    case 'water':
+      return {
+        icon: '🚰',
+        label: feeder.lifelineLabel || 'Water / Sewage',
+        prioText: 'P1 NON-CUT',
+        badgeBg: isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
+        prioBg: isLight ? 'bg-sky-600 text-white font-bold' : 'bg-cyan-400 text-slate-950 font-black'
+      };
+    case 'transit':
+      return {
+        icon: '🚆',
+        label: feeder.lifelineLabel || 'Metro / Rail',
+        prioText: 'P2 ESSENTIAL',
+        badgeBg: isLight ? 'bg-purple-100 text-purple-800 border-purple-300' : 'bg-purple-500/20 text-purple-300 border-purple-500/40',
+        prioBg: isLight ? 'bg-purple-600 text-white font-bold' : 'bg-purple-400 text-slate-950 font-black'
+      };
+    case 'governance':
+      return {
+        icon: '🏛️',
+        label: feeder.lifelineLabel || 'Gov / Defense',
+        prioText: 'P2 ESSENTIAL',
+        badgeBg: isLight ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+        prioBg: isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-400 text-slate-950 font-black'
+      };
+    case 'industrial_ht':
+      return {
+        icon: '🏭',
+        label: feeder.lifelineLabel || 'Commercial / HT',
+        prioText: 'P3 COMMERCIAL',
+        badgeBg: isLight ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-slate-800/80 text-slate-300 border-slate-700',
+        prioBg: isLight ? 'bg-slate-600 text-white font-bold' : 'bg-slate-600 text-white font-bold'
+      };
+    default:
+      return null;
+  }
 }
 
 function computeFeederCorridor(
@@ -348,14 +453,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [isSatellite, setIsSatellite] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [feederFilter, setFeederFilter] = useState('');
+  const [feederCategoryFilter, setFeederCategoryFilter] = useState<'all' | 'lifelines'>('all');
   const [showConnections, setShowConnections] = useState(false);
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
 
-  // Reset showConnections and selectedFeeder when selected substation changes
+  // Reset showConnections, selectedFeeder, and feederCategoryFilter when selected substation changes
   useEffect(() => {
     setShowConnections(false);
     setSelectedFeeder(null);
+    setFeederCategoryFilter('all');
   }, [selectedSubstation]);
 
   // Fast O(1) Entity Maps
@@ -877,13 +984,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     const map = mapRef.current;
     const isLight = theme === 'light';
     const corridor = computeFeederCorridor(selectedSubstation, selectedFeeder, substations, sections);
+    const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
+    const isNonCut = selectedFeeder.priorityLevel === 'P1_NON_CUT';
 
     // 1. Glow outer polyline
     feederGlowLineRef.current = new google.maps.Polyline({
       path: corridor.path,
-      strokeColor: isLight ? '#0284C7' : '#06B6D4',
-      strokeOpacity: isLight ? 0.35 : 0.45,
-      strokeWeight: 8,
+      strokeColor: themeColors.glow,
+      strokeOpacity: isLight ? 0.38 : 0.48,
+      strokeWeight: isNonCut ? 10 : 8,
       zIndex: 48,
       map
     });
@@ -891,17 +1000,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     // 2. Core sharp feeder line with directional flow arrows
     feederLineRef.current = new google.maps.Polyline({
       path: corridor.path,
-      strokeColor: isLight ? '#0369A1' : '#22D3EE',
+      strokeColor: themeColors.core,
       strokeOpacity: 0.95,
-      strokeWeight: 3.5,
+      strokeWeight: isNonCut ? 4 : 3.5,
       zIndex: 50,
       icons: [
         {
           icon: {
             path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
             scale: 2.2,
-            strokeColor: isLight ? '#0369A1' : '#22D3EE',
-            fillColor: isLight ? '#0369A1' : '#22D3EE',
+            strokeColor: themeColors.core,
+            fillColor: themeColors.core,
             fillOpacity: 1
           },
           offset: '50%',
@@ -916,10 +1025,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       dtrInfoWindowRef.current = new google.maps.InfoWindow();
     }
 
+    const dtrIcon = getDtrMarkerIcon(isLight, selectedFeeder.lifelineCategory);
+    const lifelineBadge = getFeederLifelineBadge(selectedFeeder, isLight);
+
     corridor.dtrs.forEach(dtr => {
       const marker = new google.maps.Marker({
         position: { lat: dtr.lat, lng: dtr.lng },
-        icon: getDtrMarkerIcon(isLight),
+        icon: dtrIcon,
         zIndex: 55,
         title: `${dtr.name} (${selectedFeeder.name} Feeder)`,
         map
@@ -927,11 +1039,18 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
       marker.addListener('click', () => {
         dtrInfoWindowRef.current?.setContent(`
-          <div style="font-family: system-ui, -apple-system, sans-serif; padding: 6px; color: #0f172a; max-width: 220px; line-height: 1.3;">
+          <div style="font-family: system-ui, -apple-system, sans-serif; padding: 6px; color: #0f172a; max-width: 230px; line-height: 1.35;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-              <span style="font-weight: 800; font-size: 13px; color: #b45309;">⚡ ${dtr.name}</span>
+              <span style="font-weight: 800; font-size: 13px; color: ${isNonCut ? '#e11d48' : '#b45309'};">⚡ ${dtr.name}</span>
               <span style="font-size: 10px; font-family: monospace; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-weight: 700;">DTR / DTS</span>
             </div>
+            ${lifelineBadge ? `
+              <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: ${selectedFeeder.lifelineCategory === 'hospital' ? '#ffe4e6; color: #9f1239' : selectedFeeder.lifelineCategory === 'water' ? '#e0f2fe; color: #0369a1' : selectedFeeder.lifelineCategory === 'transit' ? '#f3e8ff; color: #6b21a8' : '#fef3c7; color: #92400e'};">
+                <span>${lifelineBadge.icon}</span>
+                <span>${lifelineBadge.label}</span>
+                <span style="margin-left: auto; font-family: monospace; font-size: 9px; opacity: 0.9;">${lifelineBadge.prioText}</span>
+              </div>
+            ` : ''}
             <div style="font-size: 11px; color: #475569; margin-bottom: 4px;">
               <strong>Step-Down:</strong> 11,000V → 240V / 415V
             </div>
@@ -940,6 +1059,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             </div>
             <div style="font-size: 10px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px;">
               Feeder: <strong>${selectedFeeder.name}</strong> (${selectedFeeder.voltage})
+              ${selectedFeeder.isDedicated ? '<br><span style="color: #64748b; font-style: italic;">• Dedicated Service Line (HT)</span>' : ''}
             </div>
           </div>
         `);
@@ -977,15 +1097,30 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return { substations: matchedSS, sections: matchedSec };
   }, [searchQuery, substations, sections]);
 
+  // Total count of lifeline feeders on the selected substation
+  const lifelineFeedersCount = useMemo(() => {
+    if (!selectedSubstation || !selectedSubstation.feeders) return 0;
+    return selectedSubstation.feeders.filter(f => Boolean(f.lifelineCategory)).length;
+  }, [selectedSubstation]);
+
   // Filtered feeders for selected substation
   const filteredFeeders = useMemo(() => {
     if (!selectedSubstation || !selectedSubstation.feeders) return [];
-    if (!feederFilter.trim()) return selectedSubstation.feeders;
-    const q = feederFilter.toLowerCase();
-    return selectedSubstation.feeders.filter(f =>
-      f.name.toLowerCase().includes(q) || f.code.includes(q) || f.voltage.toLowerCase().includes(q)
-    );
-  }, [selectedSubstation, feederFilter]);
+    let list = selectedSubstation.feeders;
+    if (feederCategoryFilter === 'lifelines') {
+      list = list.filter(f => Boolean(f.lifelineCategory));
+    }
+    if (feederFilter.trim()) {
+      const q = feederFilter.toLowerCase();
+      list = list.filter(f =>
+        f.name.toLowerCase().includes(q) ||
+        f.code.includes(q) ||
+        f.voltage.toLowerCase().includes(q) ||
+        (f.lifelineLabel && f.lifelineLabel.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }, [selectedSubstation, feederFilter, feederCategoryFilter]);
 
   const isLight = theme === 'light';
 
@@ -1519,11 +1654,49 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     </span>
                   </div>
 
+                  {/* Quick Category Filter Tabs (when substation has critical lifelines) */}
+                  {lifelineFeedersCount > 0 && (
+                    <div className={`flex items-center gap-1 p-1 rounded-xl border text-[11px] ${
+                      isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950/70 border-slate-800'
+                    }`}>
+                      <button
+                        type="button"
+                        onClick={() => setFeederCategoryFilter('all')}
+                        className={`flex-1 py-1 px-2 rounded-lg font-semibold transition-all text-center ${
+                          feederCategoryFilter === 'all'
+                            ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
+                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
+                        }`}
+                      >
+                        All ({selectedSubstation.feeders.length})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFeederCategoryFilter('lifelines')}
+                        className={`flex-1 py-1 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                          feederCategoryFilter === 'lifelines'
+                            ? (isLight ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-500 text-slate-950 shadow-sm')
+                            : (isLight ? 'text-rose-700 hover:bg-rose-50' : 'text-rose-400 hover:bg-rose-950/40')
+                        }`}
+                      >
+                        <Star className="w-3 h-3 fill-current" />
+                        <span>Critical Lifelines</span>
+                        <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold ${
+                          feederCategoryFilter === 'lifelines'
+                            ? (isLight ? 'bg-rose-700 text-white' : 'bg-slate-950 text-rose-300')
+                            : (isLight ? 'bg-rose-200 text-rose-900' : 'bg-rose-500/30 text-rose-300')
+                        }`}>
+                          {lifelineFeedersCount}
+                        </span>
+                      </button>
+                    </div>
+                  )}
+
                   {/* Feeder Search Filter if more than 5 feeders */}
                   {selectedSubstation.feeders.length > 5 && (
                     <input
                       type="text"
-                      placeholder="Filter feeder by name..."
+                      placeholder={feederCategoryFilter === 'lifelines' ? "Filter lifeline feeders..." : "Filter feeder by name..."}
                       value={feederFilter}
                       onChange={(e) => setFeederFilter(e.target.value)}
                       className={`w-full px-2.5 py-1 text-xs rounded-lg border outline-none ${
@@ -1535,34 +1708,67 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   )}
 
                   {/* Active Feeder Banner */}
-                  {selectedFeeder && (
-                    <div className={`p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all ${
-                      isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200'
-                    }`}>
-                      <div className="flex items-center gap-2 truncate">
-                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
-                        <span className="truncate text-[11px]">
-                          Corridor: <strong>{selectedFeeder.name}</strong> • {selectedFeeder.transformers || 8} DTRs on map
-                        </span>
+                  {selectedFeeder && (() => {
+                    const badge = getFeederLifelineBadge(selectedFeeder, isLight);
+                    const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
+                    return (
+                      <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 transition-all ${
+                        selectedFeeder.priorityLevel === 'P1_NON_CUT'
+                          ? (isLight ? 'bg-rose-50 border-rose-300 text-rose-950 ring-1 ring-rose-400/30' : 'bg-rose-950/60 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30')
+                          : (isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200')
+                      }`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 truncate">
+                            <span
+                              className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0"
+                              style={{ backgroundColor: themeColors.core }}
+                            />
+                            <div className="truncate">
+                              <span className="font-bold text-xs truncate block">{selectedFeeder.name}</span>
+                              <span className={`text-[10px] block truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                                Corridor • {selectedFeeder.transformers || 8} DTRs on map
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => setSelectedFeeder(null)}
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
+                              isLight
+                                ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
+                                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                            }`}
+                          >
+                            Clear
+                          </button>
+                        </div>
+
+                        {/* Lifeline Priority Alert / Badge */}
+                        {badge && (
+                          <div className="flex items-center gap-1.5 pt-1 border-t border-current/10 flex-wrap">
+                            <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
+                              <span>{badge.icon}</span>
+                              <span>{badge.label}</span>
+                            </span>
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${badge.prioBg}`}>
+                              {badge.prioText}
+                            </span>
+                            <span className={`text-[9px] font-mono ml-auto ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                              {selectedFeeder.isDedicated ? 'Dedicated Service (HT)' : 'Shared Distribution'}
+                            </span>
+                          </div>
+                        )}
                       </div>
-                      <button
-                        onClick={() => setSelectedFeeder(null)}
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
-                          isLight
-                            ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
-                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
-                        }`}
-                      >
-                        Clear
-                      </button>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Feeders Scroll List */}
                   {filteredFeeders.length > 0 ? (
-                    <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+                    <div className="max-h-52 overflow-y-auto space-y-1.5 pr-1">
                       {filteredFeeders.map((f, idx) => {
                         const isFeederActive = selectedFeeder?.code === f.code;
+                        const badge = getFeederLifelineBadge(f, isLight);
+                        const isNonCut = f.priorityLevel === 'P1_NON_CUT';
+
                         return (
                           <button
                             key={idx}
@@ -1570,9 +1776,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                             onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
                             className={`w-full text-left p-2 rounded-xl text-xs border transition-all ${
                               isFeederActive
-                                ? (isLight
-                                    ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300 shadow-sm'
-                                    : 'bg-cyan-950/70 border-cyan-400 ring-2 ring-cyan-500/40 shadow-sm')
+                                ? (isNonCut
+                                    ? (isLight
+                                        ? 'bg-rose-50 border-rose-400 ring-2 ring-rose-300 shadow-sm'
+                                        : 'bg-rose-950/70 border-rose-400 ring-2 ring-rose-500/40 shadow-sm')
+                                    : (isLight
+                                        ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300 shadow-sm'
+                                        : 'bg-cyan-950/70 border-cyan-400 ring-2 ring-cyan-500/40 shadow-sm'))
                                 : (isLight
                                     ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300'
                                     : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80 hover:border-slate-700')
@@ -1582,13 +1792,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               <div className="flex items-center gap-1.5 truncate">
                                 <span className={`font-semibold text-xs truncate ${
                                   isFeederActive
-                                    ? (isLight ? 'text-sky-950 font-bold' : 'text-cyan-200 font-bold')
+                                    ? (isNonCut
+                                        ? (isLight ? 'text-rose-950 font-bold' : 'text-rose-200 font-bold')
+                                        : (isLight ? 'text-sky-950 font-bold' : 'text-cyan-200 font-bold'))
                                     : (isLight ? 'text-slate-900' : 'text-slate-100')
                                 }`}>
                                   {f.name}
                                 </span>
                                 {isFeederActive && (
-                                  <span className="text-[9px] font-bold font-mono px-1 py-0.2 rounded bg-cyan-500 text-slate-950 shrink-0">
+                                  <span className={`text-[9px] font-bold font-mono px-1 py-0.2 rounded shrink-0 ${
+                                    isNonCut ? 'bg-rose-500 text-slate-950' : 'bg-cyan-500 text-slate-950'
+                                  }`}>
                                     ON MAP
                                   </span>
                                 )}
@@ -1608,6 +1822,24 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 </span>
                               </div>
                             </div>
+
+                            {/* Lifeline Tag Banner if categorized */}
+                            {badge && (
+                              <div className="flex items-center gap-1.5 my-1 flex-wrap">
+                                <span className={`px-1.5 py-0.2 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
+                                  <span>{badge.icon}</span>
+                                  <span>{badge.label}</span>
+                                </span>
+                                <span className={`px-1 py-0.2 rounded text-[9px] font-mono font-bold ${badge.prioBg}`}>
+                                  {badge.prioText}
+                                </span>
+                                {f.isDedicated && (
+                                  <span className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                    • Dedicated HT
+                                  </span>
+                                )}
+                              </div>
+                            )}
 
                             <div className={`flex items-center justify-between text-[11px] font-mono ${
                               isLight ? 'text-slate-600' : 'text-slate-400'
@@ -1632,7 +1864,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 )}
                                 <span className={`text-[10px] underline ${
                                   isFeederActive
-                                    ? (isLight ? 'text-sky-700 font-bold' : 'text-cyan-400 font-bold')
+                                    ? (isNonCut
+                                        ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold')
+                                        : (isLight ? 'text-sky-700 font-bold' : 'text-cyan-400 font-bold'))
                                     : (isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200')
                                 }`}>
                                   {isFeederActive ? 'Dismiss' : 'View on Map'}
@@ -1647,7 +1881,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     <div className={`p-3 text-center rounded-xl border text-xs ${
                       isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
                     }`}>
-                      {feederFilter ? 'No feeders match your search filter.' : 'Primary extra-high-voltage bulk grid node.'}
+                      {feederFilter
+                        ? 'No feeders match your search filter.'
+                        : feederCategoryFilter === 'lifelines'
+                        ? 'No critical lifeline feeders identified on this substation.'
+                        : 'Primary extra-high-voltage bulk grid node.'}
                     </div>
                   )}
                 </div>

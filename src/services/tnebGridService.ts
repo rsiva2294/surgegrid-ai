@@ -1,4 +1,64 @@
-import type { ChennaiGridData, TnebSubstation, TnebSection } from '../types/tneb';
+import type { ChennaiGridData, TnebSubstation, TnebSection, FeederDetail } from '../types/tneb';
+
+const LIFELINE_PATTERNS = {
+  hospital: {
+    regex: /\b(HOSPITAL|MEDIC|MEDICAL|CLINIC|CANCER|APOLLO|KMC|STANLEY|STANLY|SRM|MIOT|HEALTH|RSRM|PHC|DISPENSARY)\b/i,
+    labelDedicated: '🏥 Hospital (Dedicated HT)',
+    labelShared: '🏥 Hospital Feeder (Area Line)',
+    priority: 'P1_CRITICAL' as const
+  },
+  water: {
+    regex: /\b(CMWSSB|WATER|DRAINAGE|SEWAGE|PUMP|PUMPING|METROWATER|WATERWORKS|WATER WORKS|STP|WTP)\b/i,
+    labelDedicated: '🚰 Water / Sewage Pumping (Dedicated)',
+    labelShared: '🚰 Water Pumping Station (Area Line)',
+    priority: 'P1_CRITICAL' as const
+  },
+  transit: {
+    regex: /\b(CMRL|METRO|RAILWAY|SOUTHERN RAILWAY|PORT TRUST|PORT|MTC|AIRPORT)\b/i,
+    labelDedicated: '🚇 Metro / Rail / Port (Dedicated HT)',
+    labelShared: '🚇 Transit Corridor Feeder',
+    priority: 'P2_ESSENTIAL' as const
+  },
+  governance: {
+    regex: /\b(SECRETARIAT|HIGH COURT|CROWN COURT|COURT|POLICE|COLLECTOR|COMMISSIONER|PRISON|JAIL|FIRE STATION|DEFENCE|AIR FORCE|NAVY)\b/i,
+    labelDedicated: '🏛️ Govt / Emergency HQ (Dedicated)',
+    labelShared: '🏛️ Emergency & Civil Services Line',
+    priority: 'P2_ESSENTIAL' as const
+  }
+};
+
+export function classifyFeeder(feeder: FeederDetail): FeederDetail {
+  const name = feeder.name.toUpperCase();
+  const isDedicated = feeder.type.toLowerCase().includes('dedicated') || (feeder.transformers === 0 && feeder.consumers <= 5);
+
+  for (const [cat, conf] of Object.entries(LIFELINE_PATTERNS)) {
+    if (conf.regex.test(name)) {
+      return {
+        ...feeder,
+        isDedicated,
+        lifelineCategory: cat as any,
+        lifelineLabel: isDedicated ? conf.labelDedicated : conf.labelShared,
+        priorityLevel: conf.priority
+      };
+    }
+  }
+
+  // Check if dedicated industrial/commercial HT
+  if (isDedicated && feeder.type.toLowerCase().includes('dedicated')) {
+    return {
+      ...feeder,
+      isDedicated: true,
+      lifelineCategory: 'industrial_ht',
+      lifelineLabel: '🏭 Dedicated HT Commercial/Industrial',
+      priorityLevel: 'P3_COMMERCIAL'
+    };
+  }
+
+  return {
+    ...feeder,
+    isDedicated
+  };
+}
 
 let cachedGrid: ChennaiGridData | null = null;
 
@@ -11,6 +71,11 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
       throw new Error(`Failed to load chennai_tneb_grid.json: ${res.status}`);
     }
     const data: ChennaiGridData = await res.json();
+    data.substations.forEach(s => {
+      if (s.feeders) {
+        s.feeders = s.feeders.map(classifyFeeder);
+      }
+    });
     cachedGrid = data;
     return data;
   } catch (err) {
