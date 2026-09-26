@@ -60,6 +60,11 @@ export interface TnebSubstation {
   distanceToCoastKm?: number;
   anticipatorySop?: string;
   historicalOutagesCount?: number;
+  powerTransformersCount?: number;
+  totalCapacityMva?: number;
+  incomingFeedersCount?: number;
+  incomingFeederNames?: string[];
+  peakDemandMva?: number;
 }
 
 export interface TnebSection {
