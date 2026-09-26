@@ -236,51 +236,183 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-const ehtConnectionsMap = new Map();
+const connectionsBySubstation = new Map();
+function addConn(fromCode, conn) {
+  if (!connectionsBySubstation.has(fromCode)) connectionsBySubstation.set(fromCode, new Map());
+  const map = connectionsBySubstation.get(fromCode);
+  if (!map.has(conn.id) || map.get(conn.id).distanceKm > conn.distanceKm) {
+    map.set(conn.id, conn);
+  }
+}
+
+// 5a. Surveyed Physical EHT Transmission Corridors (400kV, 230kV, 110kV)
+const ehtGroups = new Map();
 ehtData.features.forEach(f => {
   const p = f.properties;
   if (!p) return;
-  const ssCode = String(p.legacy_sscode || p.ss_code || '');
-  if (!subCoordMap.has(ssCode)) return;
+  const key = String(p.fdr_code || p.FEEDER_NAME || p.fdr_name || '');
+  if (!key) return;
+  if (!ehtGroups.has(key)) ehtGroups.set(key, []);
+  ehtGroups.get(key).push(f);
+});
 
-  const fdrName = String(p.fdr_name || p.FEEDER_NAME || '');
-  const fdrVolt = String(p.fdr_volt || p.VOLTAGE || '110');
-  const voltNum = Number(fdrVolt) || 110;
+for (const [key, features] of ehtGroups.entries()) {
+  const allPts = [];
+  let volt = 110, fdrName = '';
+  features.forEach(f => {
+    if (f.properties.fdr_volt) volt = Math.max(volt, Number(f.properties.fdr_volt) || 110);
+    if (!fdrName) fdrName = f.properties.fdr_name || f.properties.FEEDER_NAME || '';
+    if (f.geometry && f.geometry.coordinates) {
+      allPts.push(...f.geometry.coordinates);
+    }
+  });
 
-  // Max distance depends on voltage: 400kV=35km, 230kV=28km, 110kV=18km
-  const maxAllowedDist = voltNum >= 400 ? 35.0 : (voltNum >= 230 ? 28.0 : 18.0);
+  if (allPts.length < 2) continue;
 
-  for (const [targetCode, targetInfo] of subCoordMap.entries()) {
-    if (targetCode === ssCode) continue;
-
-    const cleanTarget = targetInfo.name.replace(/^\d+[\/\-]\d+[\/\-]?\d*\s*KV\s*/i, '').replace(/\s*SS.*$/i, '').trim().toUpperCase();
-    if (cleanTarget.length >= 4 && fdrName.toUpperCase().includes(cleanTarget)) {
-      const origin = subCoordMap.get(ssCode);
-      const dist = haversineKm(origin.lat, origin.lng, targetInfo.lat, targetInfo.lng);
-
-      if (dist <= maxAllowedDist) {
-        if (!ehtConnectionsMap.has(ssCode)) ehtConnectionsMap.set(ssCode, new Map());
-        const subLinks = ehtConnectionsMap.get(ssCode);
-        if (!subLinks.has(targetCode) || subLinks.get(targetCode).distanceKm > dist) {
-          subLinks.set(targetCode, {
-            id: targetCode,
-            name: targetInfo.name,
-            type: 'substation',
-            relation: 'transmission_line',
-            label: `⚡ ${fdrVolt} kV Bulk EHT Line: ${fdrName}`,
-            voltage: fdrVolt,
-            tier: voltNum >= 230 ? 'bulk' : 'subtransmission',
-            distanceKm: Number(dist.toFixed(2)),
-            lat: targetInfo.lat,
-            lng: targetInfo.lng,
-            method: 'eht_surveyed_corridor'
-          });
-        }
+  let maxD = 0, p1 = null, p2 = null;
+  const step = Math.max(1, Math.floor(allPts.length / 40));
+  for (let i = 0; i < allPts.length; i += step) {
+    for (let j = i + 1; j < allPts.length; j += step) {
+      const dKm = haversineKm(allPts[i][1], allPts[i][0], allPts[j][1], allPts[j][0]);
+      if (dKm > maxD) {
+        maxD = dKm;
+        p1 = allPts[i];
+        p2 = allPts[j];
       }
     }
   }
+
+  if (maxD < 0.5) continue;
+
+  function getClosestSS(pt, maxDist) {
+    let best = null, minD = maxDist;
+    subCoordMap.forEach((sub, code) => {
+      const dKm = haversineKm(pt[1], pt[0], sub.lat, sub.lng);
+      if (dKm < minD) { minD = dKm; best = { code, ...sub }; }
+    });
+    return best ? { ss: best, dist: minD } : null;
+  }
+
+  const c1 = getClosestSS(p1, 1.2);
+  const c2 = getClosestSS(p2, 1.2);
+
+  if (c1 && c2 && c1.ss.code !== c2.ss.code) {
+    const s1 = c1.ss, s2 = c2.ss;
+    const dist = Number(maxD.toFixed(2));
+    const voltNum = Number(volt) || 110;
+    const tier1 = voltNum >= 230 ? 'bulk' : 'subtransmission';
+    const tier2 = voltNum >= 230 ? 'bulk' : 'subtransmission';
+
+    addConn(s1.code, {
+      id: s2.code,
+      name: s2.name,
+      type: 'substation',
+      relation: 'incoming_feeder',
+      label: `⚡ ${volt} kV Bulk Transmission: ${fdrName}`,
+      voltage: `${volt} kV`,
+      tier: tier2,
+      distanceKm: dist,
+      lat: s2.lat,
+      lng: s2.lng,
+      method: 'surveyed_eht_line'
+    });
+    addConn(s2.code, {
+      id: s1.code,
+      name: s1.name,
+      type: 'substation',
+      relation: 'incoming_feeder',
+      label: `⚡ ${volt} kV Bulk Transmission: ${fdrName}`,
+      voltage: `${volt} kV`,
+      tier: tier1,
+      distanceKm: dist,
+      lat: s1.lat,
+      lng: s1.lng,
+      method: 'surveyed_eht_line'
+    });
+  }
+}
+
+// 5b. Step-Down Bulk Source Hierarchy (< 1.5 km between distribution & bulk/subtransmission nodes)
+subCoordMap.forEach((s, code) => {
+  const highVolt = Number(s.voltRatio.split(/[\/\-]/)[0]) || 33;
+  const isDist = highVolt < 66;
+  if (!isDist) return;
+
+  let nearestBulk = null, minD = 1.5;
+  subCoordMap.forEach((other, otherCode) => {
+    if (otherCode === code) return;
+    const otherHighVolt = Number(other.voltRatio.split(/[\/\-]/)[0]) || 33;
+    if (otherHighVolt < 66) return; // only link to higher voltage source
+
+    const dKm = haversineKm(s.lat, s.lng, other.lat, other.lng);
+    if (dKm < minD) {
+      minD = dKm;
+      nearestBulk = { code: otherCode, ...other };
+    }
+  });
+
+  if (nearestBulk) {
+    const bulkTier = Number(nearestBulk.voltRatio.split(/[\/\-]/)[0]) >= 230 ? 'bulk' : 'subtransmission';
+    addConn(code, {
+      id: nearestBulk.code,
+      name: nearestBulk.name,
+      type: 'substation',
+      relation: 'incoming_feeder',
+      label: `⚡ Bulk Step-Down Feed from ${nearestBulk.name} (${minD.toFixed(1)} km)`,
+      voltage: nearestBulk.voltRatio,
+      tier: bulkTier,
+      distanceKm: Number(minD.toFixed(2)),
+      lat: nearestBulk.lat,
+      lng: nearestBulk.lng,
+      method: 'collocated_stepdown'
+    });
+    addConn(nearestBulk.code, {
+      id: code,
+      name: s.name,
+      type: 'substation',
+      relation: 'outgoing_feeder',
+      label: `⚡ Distribution Step-Down to ${s.name} (${minD.toFixed(1)} km)`,
+      voltage: s.voltRatio,
+      tier: 'distribution',
+      distanceKm: Number(minD.toFixed(2)),
+      lat: s.lat,
+      lng: s.lng,
+      method: 'collocated_stepdown'
+    });
+  }
 });
-console.log(`Mapped verified EHT transmission lines for ${ehtConnectionsMap.size} substations.`);
+
+// 5c. Responsible Campus AE Section Office (< 3.0 km)
+subCoordMap.forEach((s, code) => {
+  const subEnrich = enrichmentMap.get(code) || {};
+  let closestSec = null, minD = 3.0;
+  cleanSections.forEach(sec => {
+    if (!sec.lat || !sec.lng) return;
+    if (subEnrich.circleCode && sec.circleCode && subEnrich.circleCode !== sec.circleCode) return;
+    const dKm = haversineKm(s.lat, s.lng, sec.lat, sec.lng);
+    if (dKm < minD) {
+      minD = dKm;
+      closestSec = sec;
+    }
+  });
+
+  if (closestSec) {
+    addConn(code, {
+      id: `sec_${closestSec.code}`,
+      name: closestSec.name,
+      type: 'section',
+      relation: 'campus_section',
+      label: `🏛️ ${closestSec.cleanName} AE Section (${minD.toFixed(1)} km)`,
+      voltage: undefined,
+      tier: undefined,
+      distanceKm: Number(minD.toFixed(2)),
+      lat: closestSec.lat,
+      lng: closestSec.lng,
+      method: 'jurisdictional_office'
+    });
+  }
+});
+console.log(`Mapped Option A Ground-Truth Grid Links for ${connectionsBySubstation.size} substations.`);
 
 // 6. Build the 286 Canonical Substations
 console.log('\nPhase 6: Assembling 286 Canonical Substations...');
@@ -302,7 +434,7 @@ canonicalCodes.forEach(code => {
   const totalTransformers = feeders.reduce((sum, f) => sum + (f.transformers || 0), 0);
   const totalConsumers = feeders.reduce((sum, f) => sum + (f.consumers || 0), 0);
 
-  const rawConns = ehtConnectionsMap.get(code);
+  const rawConns = connectionsBySubstation.get(code);
   const connections = rawConns ? Array.from(rawConns.values()) : [];
 
   const enrich = enrichmentMap.get(code) || {};
