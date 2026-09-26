@@ -1,0 +1,150 @@
+{
+  "city": "chennai",
+  "observed_at": "2026-09-26T08:00:00+05:30",
+  "data_source": "CMWSSB Daily Lake Level Bulletin (cmwssb.tn.gov.in/lake-level)",
+  "summary": {
+    "total_capacity_mcft": 13222,
+    "total_storage_mcft": 11398,
+    "storage_pct": 86.2,
+    "total_headroom_mcft": 1824,
+    "tightest_margin_reservoir": "Kannankottai Thervoy Kandigai (92.0%) / Chembarambakkam (89.4%)",
+    "overall_fluvial_threat": "CRITICAL",
+    "fluvial_threat_summary": "Chembarambakkam & Poondi reservoirs exceed 89% storage. Over 33,000 cusecs combined emergency sluice release currently surging down Adyar and Kosasthalaiyar rivers."
+  },
+  "reservoirs": [
+    {
+      "id": "chembarambakkam",
+      "name": "Chembarambakkam Lake",
+      "name_ta": "செம்பரம்பாக்கம் ஏரி",
+      "river_basin": "Adyar River",
+      "capacity_mcft": 3645,
+      "current_storage_mcft": 3258,
+      "storage_pct": 89.4,
+      "headroom_mcft": 387,
+      "full_tank_level_ft": 85.4,
+      "current_level_ft": 83.15,
+      "inflow_cusecs": 24200,
+      "outflow_cusecs": 18500,
+      "rainfall_24h_mm": 312,
+      "emergency_sluice_threat": "CRITICAL",
+      "fluvial_corridor_warning": "Adyar River downstream surge wave: 18,500 cusecs flowing towards Saidapet & Kotturpuram.",
+      "threatened_substations": [
+        "Guindy 230/110kV SS",
+        "Saidapet 110kV SS",
+        "Kotturpuram 110kV SS",
+        "Jafferkhanpet 33kV SS",
+        "Alandur SS"
+      ],
+      "catchment_area_sqkm": 358
+    },
+    {
+      "id": "poondi",
+      "name": "Poondi (Sathyamurthy Sagar)",
+      "name_ta": "பூண்டி நீர்த்தேக்கம்",
+      "river_basin": "Kosasthalaiyar River",
+      "capacity_mcft": 3231,
+      "current_storage_mcft": 2890,
+      "storage_pct": 89.4,
+      "headroom_mcft": 341,
+      "full_tank_level_ft": 140,
+      "current_level_ft": 137.8,
+      "inflow_cusecs": 19800,
+      "outflow_cusecs": 15200,
+      "rainfall_24h_mm": 285,
+      "emergency_sluice_threat": "CRITICAL",
+      "fluvial_corridor_warning": "Kosasthalaiyar River discharge wave reaching Manali and Ennore Creek.",
+      "threatened_substations": [
+        "Manali 230/110kV SS",
+        "Ennore 110kV SS",
+        "Madhavaram SS"
+      ],
+      "catchment_area_sqkm": 2280
+    },
+    {
+      "id": "red_hills",
+      "name": "Red Hills (Puzhal Lake)",
+      "name_ta": "புழல் ஏரி",
+      "river_basin": "Otteri Nullah / Central Basin",
+      "capacity_mcft": 3300,
+      "current_storage_mcft": 2820,
+      "storage_pct": 85.5,
+      "headroom_mcft": 480,
+      "full_tank_level_ft": 50.2,
+      "current_level_ft": 48.65,
+      "inflow_cusecs": 12400,
+      "outflow_cusecs": 8200,
+      "rainfall_24h_mm": 298,
+      "emergency_sluice_threat": "HIGH",
+      "fluvial_corridor_warning": "Surplus course discharge into Puzhal surplus channel & Otteri Nullah.",
+      "threatened_substations": [
+        "Puzhal SS",
+        "Kolathur SS",
+        "Villivakkam SS"
+      ],
+      "catchment_area_sqkm": 178
+    },
+    {
+      "id": "cholavaram",
+      "name": "Cholavaram Lake",
+      "name_ta": "சோழவரம் ஏரி",
+      "river_basin": "Kosasthalaiyar Basin",
+      "capacity_mcft": 1081,
+      "current_storage_mcft": 750,
+      "storage_pct": 69.4,
+      "headroom_mcft": 331,
+      "full_tank_level_ft": 64.5,
+      "current_level_ft": 60.2,
+      "inflow_cusecs": 3400,
+      "outflow_cusecs": 1800,
+      "rainfall_24h_mm": 240,
+      "emergency_sluice_threat": "MODERATE",
+      "fluvial_corridor_warning": "Moderate overflow into tributary canal.",
+      "threatened_substations": [
+        "Cholavaram SS"
+      ],
+      "catchment_area_sqkm": 72
+    },
+    {
+      "id": "thervoy_kandigai",
+      "name": "Kannankottai Thervoy Kandigai",
+      "name_ta": "கண்ணன்கோட்டை தேர்வாய் கண்டிகை",
+      "river_basin": "Northern Feeder",
+      "capacity_mcft": 500,
+      "current_storage_mcft": 460,
+      "storage_pct": 92,
+      "headroom_mcft": 40,
+      "full_tank_level_ft": 36.61,
+      "current_level_ft": 35.8,
+      "inflow_cusecs": 1200,
+      "outflow_cusecs": 950,
+      "rainfall_24h_mm": 220,
+      "emergency_sluice_threat": "HIGH",
+      "fluvial_corridor_warning": "Full capacity reached; 950 cusecs spilling into local surplus weir.",
+      "threatened_substations": [
+        "Gummidipoondi SS"
+      ],
+      "catchment_area_sqkm": 45
+    },
+    {
+      "id": "veeranam",
+      "name": "Veeranam Lake (Cauvery Link)",
+      "name_ta": "வீராணம் ஏரி",
+      "river_basin": "Kollidam / Cauvery",
+      "capacity_mcft": 1465,
+      "current_storage_mcft": 1220,
+      "storage_pct": 83.3,
+      "headroom_mcft": 245,
+      "full_tank_level_ft": 47.5,
+      "current_level_ft": 46.1,
+      "inflow_cusecs": 4800,
+      "outflow_cusecs": 3500,
+      "rainfall_24h_mm": 195,
+      "emergency_sluice_threat": "MODERATE",
+      "fluvial_corridor_warning": "Intake pumps operational; pipeline pumping to Porur booster at capacity.",
+      "threatened_substations": [
+        "Porur Booster SS"
+      ],
+      "catchment_area_sqkm": 512
+    }
+  ]
+}

@@ -49,7 +49,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Manali Wetlands floodplain (1248m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z1_W3",
@@ -94,7 +96,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W15",
@@ -139,7 +143,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.6m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W173",
@@ -184,7 +190,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W173",
@@ -229,7 +237,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W2",
@@ -274,7 +284,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.6m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Ennore Creek Wetlands floodplain (1297m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z2_W18",
@@ -319,7 +331,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Manali Wetlands floodplain (1750m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z2_W16",
@@ -364,7 +378,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W16",
@@ -409,7 +425,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W16",
@@ -454,7 +472,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W59",
@@ -476,7 +496,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 25,
         "total_network_km": 5.61,
-        "uphill_backflow_risk_pct": 20.0,
+        "uphill_backflow_risk_pct": 20,
         "min_road_elevation_m": 2.8
       },
       "grid_power_resilience": {
@@ -499,7 +519,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W17",
@@ -544,7 +566,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.8m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W17",
@@ -589,7 +613,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.8m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W176",
@@ -634,7 +660,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z15_W196",
@@ -679,7 +707,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z15_W196",
@@ -724,7 +754,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z15_W196",
@@ -769,7 +801,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W37",
@@ -792,7 +826,7 @@
         "drain_segments_count": 51,
         "total_network_km": 6.71,
         "uphill_backflow_risk_pct": 33.3,
-        "min_road_elevation_m": 3.0
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -814,7 +848,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W25",
@@ -859,7 +895,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W188",
@@ -904,7 +942,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~2.8m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (2074m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z14_W189",
@@ -949,7 +989,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~1.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (593m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z4_W38",
@@ -994,7 +1036,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W38",
@@ -1039,7 +1083,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W38",
@@ -1084,7 +1130,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W38",
@@ -1129,7 +1177,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W175",
@@ -1151,7 +1201,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 111,
         "total_network_km": 14.48,
-        "uphill_backflow_risk_pct": 27.0,
+        "uphill_backflow_risk_pct": 27,
         "min_road_elevation_m": 3.7
       },
       "grid_power_resilience": {
@@ -1174,7 +1224,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W175",
@@ -1196,7 +1248,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 111,
         "total_network_km": 14.48,
-        "uphill_backflow_risk_pct": 27.0,
+        "uphill_backflow_risk_pct": 27,
         "min_road_elevation_m": 3.7
       },
       "grid_power_resilience": {
@@ -1219,7 +1271,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W6",
@@ -1264,7 +1318,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W21",
@@ -1309,7 +1365,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Manali Wetlands floodplain (911m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z2_W21",
@@ -1354,7 +1412,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Manali Wetlands floodplain (911m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z7_W83",
@@ -1399,7 +1459,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W190",
@@ -1413,7 +1475,7 @@
         12.92878
       ],
       "ward_topography": {
-        "mean_elevation_msl": 4.0,
+        "mean_elevation_msl": 4,
         "min_elevation_msl": -5,
         "water_probability_2026_pct": 9.99,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -1444,7 +1506,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (2827m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z14_W190",
@@ -1458,7 +1522,7 @@
         12.92878
       ],
       "ward_topography": {
-        "mean_elevation_msl": 4.0,
+        "mean_elevation_msl": 4,
         "min_elevation_msl": -5,
         "water_probability_2026_pct": 9.99,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -1489,7 +1553,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (2827m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z15_W200",
@@ -1534,7 +1600,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W172",
@@ -1579,7 +1647,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W172",
@@ -1624,7 +1694,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W172",
@@ -1669,7 +1741,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W172",
@@ -1714,7 +1788,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W4",
@@ -1759,7 +1835,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W169",
@@ -1804,7 +1882,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.6m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (3108m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z14_W184",
@@ -1818,7 +1898,7 @@
         12.96806
       ],
       "ward_topography": {
-        "mean_elevation_msl": 4.0,
+        "mean_elevation_msl": 4,
         "min_elevation_msl": -4,
         "water_probability_2026_pct": 8.11,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -1849,7 +1929,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (3068m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z15_W192",
@@ -1894,7 +1976,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z15_W192",
@@ -1939,7 +2023,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W179",
@@ -1961,7 +2047,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 169,
         "total_network_km": 16.95,
-        "uphill_backflow_risk_pct": 29.0,
+        "uphill_backflow_risk_pct": 29,
         "min_road_elevation_m": 2.1
       },
       "grid_power_resilience": {
@@ -1984,7 +2070,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W179",
@@ -2006,7 +2094,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 169,
         "total_network_km": 16.95,
-        "uphill_backflow_risk_pct": 29.0,
+        "uphill_backflow_risk_pct": 29,
         "min_road_elevation_m": 2.1
       },
       "grid_power_resilience": {
@@ -2029,7 +2117,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W178",
@@ -2074,7 +2164,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W46",
@@ -2119,7 +2211,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~4.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W19",
@@ -2164,7 +2258,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W19",
@@ -2209,7 +2305,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z2_W19",
@@ -2254,7 +2352,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W157",
@@ -2299,7 +2399,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W186",
@@ -2344,7 +2446,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Pallikaranai Marsh floodplain (2399m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z13_W181",
@@ -2389,7 +2493,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W50",
@@ -2412,7 +2518,7 @@
         "drain_segments_count": 36,
         "total_network_km": 4.26,
         "uphill_backflow_risk_pct": 27.8,
-        "min_road_elevation_m": 3.0
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2434,7 +2540,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W180",
@@ -2479,7 +2587,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W107",
@@ -2501,7 +2611,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 40,
         "total_network_km": 3.8,
-        "uphill_backflow_risk_pct": 20.0,
+        "uphill_backflow_risk_pct": 20,
         "min_road_elevation_m": 5.1
       },
       "grid_power_resilience": {
@@ -2524,7 +2634,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Chetpet Lake (Reduced) floodplain (376m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z1_W5",
@@ -2538,7 +2650,7 @@
         13.17895
       ],
       "ward_topography": {
-        "mean_elevation_msl": 7.0,
+        "mean_elevation_msl": 7,
         "min_elevation_msl": -2,
         "water_probability_2026_pct": 6.49,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -2569,7 +2681,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W191",
@@ -2614,7 +2728,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W47",
@@ -2637,7 +2753,7 @@
         "drain_segments_count": 9,
         "total_network_km": 1.06,
         "uphill_backflow_risk_pct": 44.4,
-        "min_road_elevation_m": 3.0
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2659,7 +2775,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W47",
@@ -2682,7 +2800,7 @@
         "drain_segments_count": 9,
         "total_network_km": 1.06,
         "uphill_backflow_risk_pct": 44.4,
-        "min_road_elevation_m": 3.0
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2704,7 +2822,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W70",
@@ -2727,7 +2847,7 @@
         "drain_segments_count": 68,
         "total_network_km": 14.78,
         "uphill_backflow_risk_pct": 39.7,
-        "min_road_elevation_m": 4.0
+        "min_road_elevation_m": 4
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2749,7 +2869,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.8m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W70",
@@ -2772,7 +2894,7 @@
         "drain_segments_count": 68,
         "total_network_km": 14.78,
         "uphill_backflow_risk_pct": 39.7,
-        "min_road_elevation_m": 4.0
+        "min_road_elevation_m": 4
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2794,7 +2916,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.8m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W96",
@@ -2817,7 +2941,7 @@
         "drain_segments_count": 63,
         "total_network_km": 6.81,
         "uphill_backflow_risk_pct": 31.7,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2839,7 +2963,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W96",
@@ -2862,7 +2988,7 @@
         "drain_segments_count": 63,
         "total_network_km": 6.81,
         "uphill_backflow_risk_pct": 31.7,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2884,7 +3010,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W170",
@@ -2907,7 +3035,7 @@
         "drain_segments_count": 135,
         "total_network_km": 14.38,
         "uphill_backflow_risk_pct": 28.9,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2929,7 +3057,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W170",
@@ -2952,7 +3082,7 @@
         "drain_segments_count": 135,
         "total_network_km": 14.38,
         "uphill_backflow_risk_pct": 28.9,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -2974,7 +3104,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W171",
@@ -2995,7 +3127,7 @@
       },
       "stormwater_drainage": {
         "drain_segments_count": 76,
-        "total_network_km": 8.0,
+        "total_network_km": 8,
         "uphill_backflow_risk_pct": 28.9,
         "min_road_elevation_m": 4.1
       },
@@ -3011,7 +3143,7 @@
           "name": "33/11 KV MHU SS",
           "circle": "CENTRAL",
           "elevation_m": 16,
-          "distance_km": 1.0
+          "distance_km": 1
         },
         "shelter_grid_status": "AT_RISK_GRID_ISOLATION",
         "anticipatory_power_protocol": "Pre-landfall load transfer from 33/11 KV SAIDAPET SS (Elev: 6m) to Safe Substation 33/11 KV MHU SS (Elev: 16m MSL, 1.0km away). Deploy mobile 50kVA DG set."
@@ -3019,7 +3151,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W171",
@@ -3040,7 +3174,7 @@
       },
       "stormwater_drainage": {
         "drain_segments_count": 76,
-        "total_network_km": 8.0,
+        "total_network_km": 8,
         "uphill_backflow_risk_pct": 28.9,
         "min_road_elevation_m": 4.1
       },
@@ -3056,7 +3190,7 @@
           "name": "33/11 KV MHU SS",
           "circle": "CENTRAL",
           "elevation_m": 16,
-          "distance_km": 1.0
+          "distance_km": 1
         },
         "shelter_grid_status": "AT_RISK_GRID_ISOLATION",
         "anticipatory_power_protocol": "Pre-landfall load transfer from 33/11 KV SAIDAPET SS (Elev: 6m) to Safe Substation 33/11 KV MHU SS (Elev: 16m MSL, 1.0km away). Deploy mobile 50kVA DG set."
@@ -3064,7 +3198,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W171",
@@ -3085,7 +3221,7 @@
       },
       "stormwater_drainage": {
         "drain_segments_count": 76,
-        "total_network_km": 8.0,
+        "total_network_km": 8,
         "uphill_backflow_risk_pct": 28.9,
         "min_road_elevation_m": 4.1
       },
@@ -3101,7 +3237,7 @@
           "name": "33/11 KV MHU SS",
           "circle": "CENTRAL",
           "elevation_m": 16,
-          "distance_km": 1.0
+          "distance_km": 1
         },
         "shelter_grid_status": "AT_RISK_GRID_ISOLATION",
         "anticipatory_power_protocol": "Pre-landfall load transfer from 33/11 KV SAIDAPET SS (Elev: 6m) to Safe Substation 33/11 KV MHU SS (Elev: 16m MSL, 1.0km away). Deploy mobile 50kVA DG set."
@@ -3109,7 +3245,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W58",
@@ -3154,7 +3292,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Long Tank (Otteri Nullah) floodplain (753m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z1_W8",
@@ -3199,7 +3339,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W183",
@@ -3213,7 +3355,7 @@
         12.97349
       ],
       "ward_topography": {
-        "mean_elevation_msl": 5.0,
+        "mean_elevation_msl": 5,
         "min_elevation_msl": -1,
         "water_probability_2026_pct": 4.5,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3229,7 +3371,7 @@
           "name": "33/11 KV KOTTIVAKKAM  SS",
           "circle": "CHENNAI SOUTH 2",
           "elevation_m": 6,
-          "distance_km": 1.0,
+          "distance_km": 1,
           "risk_category": "HIGH_WATERLOGGING_RISK"
         },
         "backup_safe_substation": {
@@ -3244,7 +3386,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W183",
@@ -3258,7 +3402,7 @@
         12.97349
       ],
       "ward_topography": {
-        "mean_elevation_msl": 5.0,
+        "mean_elevation_msl": 5,
         "min_elevation_msl": -1,
         "water_probability_2026_pct": 4.5,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3274,7 +3418,7 @@
           "name": "33/11 KV KOTTIVAKKAM  SS",
           "circle": "CHENNAI SOUTH 2",
           "elevation_m": 6,
-          "distance_km": 1.0,
+          "distance_km": 1,
           "risk_category": "HIGH_WATERLOGGING_RISK"
         },
         "backup_safe_substation": {
@@ -3289,7 +3433,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W183",
@@ -3303,7 +3449,7 @@
         12.97349
       ],
       "ward_topography": {
-        "mean_elevation_msl": 5.0,
+        "mean_elevation_msl": 5,
         "min_elevation_msl": -1,
         "water_probability_2026_pct": 4.5,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3319,7 +3465,7 @@
           "name": "33/11 KV KOTTIVAKKAM  SS",
           "circle": "CHENNAI SOUTH 2",
           "elevation_m": 6,
-          "distance_km": 1.0,
+          "distance_km": 1,
           "risk_category": "HIGH_WATERLOGGING_RISK"
         },
         "backup_safe_substation": {
@@ -3334,7 +3480,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W185",
@@ -3379,7 +3527,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W185",
@@ -3424,7 +3574,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~5.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W34",
@@ -3438,7 +3590,7 @@
         13.13967
       ],
       "ward_topography": {
-        "mean_elevation_msl": 8.0,
+        "mean_elevation_msl": 8,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 3.88,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3446,7 +3598,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 20,
         "total_network_km": 2.12,
-        "uphill_backflow_risk_pct": 50.0,
+        "uphill_backflow_risk_pct": 50,
         "min_road_elevation_m": 5.8
       },
       "grid_power_resilience": {
@@ -3469,7 +3621,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z13_W182",
@@ -3491,7 +3645,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 65,
         "total_network_km": 8.13,
-        "uphill_backflow_risk_pct": 40.0,
+        "uphill_backflow_risk_pct": 40,
         "min_road_elevation_m": 2.7
       },
       "grid_power_resilience": {
@@ -3514,7 +3668,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z9_W125",
@@ -3537,7 +3693,7 @@
         "drain_segments_count": 17,
         "total_network_km": 1.68,
         "uphill_backflow_risk_pct": 35.3,
-        "min_road_elevation_m": 3.0
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -3551,7 +3707,7 @@
           "name": "33/11 KV SARDARJUNG GARDEN SS",
           "circle": "CENTRAL",
           "elevation_m": 8,
-          "distance_km": 2.0
+          "distance_km": 2
         },
         "shelter_grid_status": "AT_RISK_GRID_ISOLATION",
         "anticipatory_power_protocol": "Pre-landfall load transfer from 110/11 KV SS MYLAPORE (Elev: 6m) to Safe Substation 33/11 KV SARDARJUNG GARDEN SS (Elev: 8m MSL, 2.0km away). Deploy mobile 50kVA DG set."
@@ -3559,7 +3715,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W77",
@@ -3573,7 +3731,7 @@
         13.0959
       ],
       "ward_topography": {
-        "mean_elevation_msl": 6.0,
+        "mean_elevation_msl": 6,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 4.6,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3604,7 +3762,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W77",
@@ -3618,7 +3778,7 @@
         13.0959
       ],
       "ward_topography": {
-        "mean_elevation_msl": 6.0,
+        "mean_elevation_msl": 6,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 4.6,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3649,7 +3809,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W77",
@@ -3663,7 +3825,7 @@
         13.0959
       ],
       "ward_topography": {
-        "mean_elevation_msl": 6.0,
+        "mean_elevation_msl": 6,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 4.6,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3694,7 +3856,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~6.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z9_W124",
@@ -3708,7 +3872,7 @@
         13.03443
       ],
       "ward_topography": {
-        "mean_elevation_msl": 10.0,
+        "mean_elevation_msl": 10,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 5.56,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3716,7 +3880,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 5,
         "total_network_km": 0.57,
-        "uphill_backflow_risk_pct": 20.0,
+        "uphill_backflow_risk_pct": 20,
         "min_road_elevation_m": 3.2
       },
       "grid_power_resilience": {
@@ -3739,7 +3903,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W142",
@@ -3761,7 +3927,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 21,
         "total_network_km": 1.75,
-        "uphill_backflow_risk_pct": 19.0,
+        "uphill_backflow_risk_pct": 19,
         "min_road_elevation_m": 5.4
       },
       "grid_power_resilience": {
@@ -3784,7 +3950,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W1",
@@ -3829,7 +3997,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~3.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Ennore Creek Wetlands floodplain (1400m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z1_W9",
@@ -3874,7 +4044,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W11",
@@ -3919,7 +4091,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z3_W22",
@@ -3933,7 +4107,7 @@
         13.17158
       ],
       "ward_topography": {
-        "mean_elevation_msl": 11.0,
+        "mean_elevation_msl": 11,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 4.12,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -3964,7 +4138,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z3_W22",
@@ -3978,7 +4154,7 @@
         13.17158
       ],
       "ward_topography": {
-        "mean_elevation_msl": 11.0,
+        "mean_elevation_msl": 11,
         "min_elevation_msl": 0,
         "water_probability_2026_pct": 4.12,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -4009,7 +4185,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W139",
@@ -4054,7 +4232,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W159",
@@ -4099,7 +4279,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W165",
@@ -4144,7 +4326,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W52",
@@ -4166,7 +4350,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 14,
         "total_network_km": 1.91,
-        "uphill_backflow_risk_pct": 50.0,
+        "uphill_backflow_risk_pct": 50,
         "min_road_elevation_m": 3.8
       },
       "grid_power_resilience": {
@@ -4189,7 +4373,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W62",
@@ -4234,7 +4420,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Long Tank (Otteri Nullah) floodplain (858m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z5_W62",
@@ -4279,7 +4467,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Long Tank (Otteri Nullah) floodplain (858m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z4_W40",
@@ -4324,7 +4514,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W54",
@@ -4369,7 +4561,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W74",
@@ -4391,7 +4585,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 40,
         "total_network_km": 5.51,
-        "uphill_backflow_risk_pct": 30.0,
+        "uphill_backflow_risk_pct": 30,
         "min_road_elevation_m": 3.7
       },
       "grid_power_resilience": {
@@ -4414,7 +4608,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W74",
@@ -4436,7 +4632,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 40,
         "total_network_km": 5.51,
-        "uphill_backflow_risk_pct": 30.0,
+        "uphill_backflow_risk_pct": 30,
         "min_road_elevation_m": 3.7
       },
       "grid_power_resilience": {
@@ -4459,7 +4655,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W61",
@@ -4504,7 +4702,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "COMPROMISED_INUNDATION",
+      "compromised_reason": "Located within Long Tank (Otteri Nullah) floodplain (872m). Ground floor and approach roads submerge."
     },
     {
       "shelter_id": "GCC_Z4_W35",
@@ -4549,7 +4749,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.8m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W57",
@@ -4571,8 +4773,8 @@
       "stormwater_drainage": {
         "drain_segments_count": 21,
         "total_network_km": 3.43,
-        "uphill_backflow_risk_pct": 19.0,
-        "min_road_elevation_m": 3.0
+        "uphill_backflow_risk_pct": 19,
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -4594,7 +4796,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W104",
@@ -4639,7 +4843,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~9.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W10",
@@ -4684,7 +4890,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W27",
@@ -4729,7 +4937,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W36",
@@ -4774,7 +4984,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W36",
@@ -4819,7 +5031,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W73",
@@ -4833,7 +5047,7 @@
         13.10054
       ],
       "ward_topography": {
-        "mean_elevation_msl": 7.0,
+        "mean_elevation_msl": 7,
         "min_elevation_msl": 1,
         "water_probability_2026_pct": 4.94,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -4841,7 +5055,7 @@
       "stormwater_drainage": {
         "drain_segments_count": 7,
         "total_network_km": 1.07,
-        "uphill_backflow_risk_pct": 0.0,
+        "uphill_backflow_risk_pct": 0,
         "min_road_elevation_m": 3.4
       },
       "grid_power_resilience": {
@@ -4864,7 +5078,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~7.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W137",
@@ -4909,7 +5125,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~13.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W138",
@@ -4954,7 +5172,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.1m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W158",
@@ -4999,7 +5219,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W158",
@@ -5044,7 +5266,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W100",
@@ -5089,7 +5313,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~13.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z9_W123",
@@ -5134,7 +5360,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~11.3m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z9_W109",
@@ -5179,7 +5407,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z9_W109",
@@ -5224,7 +5454,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.4m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W63",
@@ -5269,7 +5501,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.9m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W39",
@@ -5314,7 +5548,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W39",
@@ -5359,7 +5595,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~8.7m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z11_W155",
@@ -5404,7 +5642,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~13.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W162",
@@ -5449,7 +5689,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.5m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z14_W168",
@@ -5494,7 +5736,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~10.2m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W65",
@@ -5539,7 +5783,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.4m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W76",
@@ -5553,7 +5799,7 @@
         13.09607
       ],
       "ward_topography": {
-        "mean_elevation_msl": 7.0,
+        "mean_elevation_msl": 7,
         "min_elevation_msl": 3,
         "water_probability_2026_pct": 3.94,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -5584,7 +5830,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~7.0m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W76",
@@ -5598,7 +5846,7 @@
         13.09607
       ],
       "ward_topography": {
-        "mean_elevation_msl": 7.0,
+        "mean_elevation_msl": 7,
         "min_elevation_msl": 3,
         "water_probability_2026_pct": 3.94,
         "flood_category": "SEVERE_INUNDATION_ZONE"
@@ -5629,7 +5877,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~7.0m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W75",
@@ -5651,8 +5901,8 @@
       "stormwater_drainage": {
         "drain_segments_count": 16,
         "total_network_km": 1.34,
-        "uphill_backflow_risk_pct": 25.0,
-        "min_road_elevation_m": 3.0
+        "uphill_backflow_risk_pct": 25,
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -5674,7 +5924,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~7.5m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W75",
@@ -5696,8 +5948,8 @@
       "stormwater_drainage": {
         "drain_segments_count": 16,
         "total_network_km": 1.34,
-        "uphill_backflow_risk_pct": 25.0,
-        "min_road_elevation_m": 3.0
+        "uphill_backflow_risk_pct": 25,
+        "min_road_elevation_m": 3
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -5719,7 +5971,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~7.5m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z1_W12",
@@ -5764,7 +6018,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~8.6m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W78",
@@ -5809,7 +6065,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~8.4m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z6_W78",
@@ -5854,7 +6112,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~8.4m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z4_W48",
@@ -5899,7 +6159,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~8.9m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z11_W144",
@@ -5944,7 +6206,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~13.2m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W102",
@@ -5989,7 +6253,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.1m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z5_W55",
@@ -6034,7 +6300,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~11.5m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W127",
@@ -6079,7 +6347,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.4m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W127",
@@ -6124,7 +6394,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.4m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W90",
@@ -6146,8 +6418,8 @@
       "stormwater_drainage": {
         "drain_segments_count": 122,
         "total_network_km": 13.94,
-        "uphill_backflow_risk_pct": 23.0,
-        "min_road_elevation_m": 1.0
+        "uphill_backflow_risk_pct": 23,
+        "min_road_elevation_m": 1
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6169,7 +6441,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~14.2m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W93",
@@ -6192,7 +6466,7 @@
         "drain_segments_count": 99,
         "total_network_km": 13.61,
         "uphill_backflow_risk_pct": 21.2,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6214,7 +6488,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.1m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W141",
@@ -6237,7 +6513,7 @@
         "drain_segments_count": 56,
         "total_network_km": 9.12,
         "uphill_backflow_risk_pct": 7.1,
-        "min_road_elevation_m": 5.0
+        "min_road_elevation_m": 5
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6259,7 +6535,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~10.6m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z11_W143",
@@ -6304,7 +6582,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.6m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W156",
@@ -6349,7 +6629,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~13.7m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W161",
@@ -6394,7 +6676,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.9m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z12_W166",
@@ -6439,7 +6723,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~18.3m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W97",
@@ -6453,7 +6739,7 @@
         13.0955
       ],
       "ward_topography": {
-        "mean_elevation_msl": 12.0,
+        "mean_elevation_msl": 12,
         "min_elevation_msl": 6,
         "water_probability_2026_pct": 3.77,
         "flood_category": "LOW_FLOOD_RISK_ZONE"
@@ -6484,7 +6770,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": true,
         "evacuation_advisory": "Road access elevation ~12.0m MSL. ⚠️ High waterlogging risk on access roads; use elevated high-ground ramps."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W101",
@@ -6498,7 +6786,7 @@
         13.08413
       ],
       "ward_topography": {
-        "mean_elevation_msl": 13.0,
+        "mean_elevation_msl": 13,
         "min_elevation_msl": 6,
         "water_probability_2026_pct": 4.09,
         "flood_category": "LOW_FLOOD_RISK_ZONE"
@@ -6507,7 +6795,7 @@
         "drain_segments_count": 195,
         "total_network_km": 21.33,
         "uphill_backflow_risk_pct": 24.1,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6529,7 +6817,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~13.0m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W105",
@@ -6552,7 +6842,7 @@
         "drain_segments_count": 86,
         "total_network_km": 12.39,
         "uphill_backflow_risk_pct": 20.9,
-        "min_road_elevation_m": 8.0
+        "min_road_elevation_m": 8
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6574,7 +6864,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~13.3m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W92",
@@ -6619,7 +6911,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~14.8m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z11_W148",
@@ -6633,7 +6927,7 @@
         13.0552
       ],
       "ward_topography": {
-        "mean_elevation_msl": 12.0,
+        "mean_elevation_msl": 12,
         "min_elevation_msl": 6,
         "water_probability_2026_pct": 3.75,
         "flood_category": "LOW_FLOOD_RISK_ZONE"
@@ -6664,7 +6958,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~12.0m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W99",
@@ -6687,7 +6983,7 @@
         "drain_segments_count": 44,
         "total_network_km": 6.69,
         "uphill_backflow_risk_pct": 29.5,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6709,7 +7005,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~14.4m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z11_W146",
@@ -6754,7 +7052,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~14.3m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z8_W94",
@@ -6777,7 +7077,7 @@
         "drain_segments_count": 69,
         "total_network_km": 8.95,
         "uphill_backflow_risk_pct": 36.2,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6799,7 +7099,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~13.6m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W82",
@@ -6844,7 +7146,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~16.6m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W85",
@@ -6889,7 +7193,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~17.5m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z10_W128",
@@ -6912,7 +7218,7 @@
         "drain_segments_count": 130,
         "total_network_km": 15.11,
         "uphill_backflow_risk_pct": 6.9,
-        "min_road_elevation_m": 6.0
+        "min_road_elevation_m": 6
       },
       "grid_power_resilience": {
         "primary_substation": {
@@ -6934,7 +7240,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~14.8m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W80",
@@ -6979,7 +7287,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~21.9m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W86",
@@ -7024,7 +7334,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~16.5m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W88",
@@ -7069,7 +7381,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~15.2m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W89",
@@ -7083,7 +7397,7 @@
         13.09048
       ],
       "ward_topography": {
-        "mean_elevation_msl": 16.0,
+        "mean_elevation_msl": 16,
         "min_elevation_msl": 10,
         "water_probability_2026_pct": 4.01,
         "flood_category": "LOW_FLOOD_RISK_ZONE"
@@ -7114,7 +7428,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~16.0m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W79",
@@ -7128,7 +7444,7 @@
         13.13411
       ],
       "ward_topography": {
-        "mean_elevation_msl": 22.0,
+        "mean_elevation_msl": 22,
         "min_elevation_msl": 11,
         "water_probability_2026_pct": 4.43,
         "flood_category": "LOW_FLOOD_RISK_ZONE"
@@ -7159,7 +7475,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~22.0m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W87",
@@ -7204,7 +7522,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~16.3m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W87",
@@ -7249,7 +7569,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~16.3m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     },
     {
       "shelter_id": "GCC_Z7_W81",
@@ -7294,7 +7616,9 @@
       "evacuation_route_status": {
         "is_access_road_submerged": false,
         "evacuation_advisory": "Road access elevation ~25.9m MSL. ✅ Gravity stormwater drainage active; clear vehicular corridor."
-      }
+      },
+      "shelter_viability_status": "SAFE_HAVEN",
+      "recommended_safe_shelter": null
     }
   ]
 }

@@ -1,0 +1,153 @@
+{
+  "city": "Chennai",
+  "observed_at": "2026-09-26T08:30:00+05:30",
+  "bulletin_date": "26/09/2026",
+  "data_source": "Chennai Metropolitan Water Supply and Sewerage Board (CMWSSB) Daily Bulletin",
+  "source_url": "https://cmwssb.tn.gov.in/lake-level",
+  "is_live": true,
+  "summary": {
+    "total_capacity_mcft": 13222,
+    "total_storage_mcft": 5106.56,
+    "storage_pct": 38.62,
+    "total_headroom_mcft": 8115.44,
+    "tightest_margin_reservoir": "Kannankottai Thervoy Kandigai",
+    "overall_fluvial_threat": "SAFE_BASELINE",
+    "fluvial_threat_summary": "All Chennai reservoirs currently hold safe storage (38.62% combined capacity). Sluice gates are operating at routine baseline outflow (815 cusecs total across CMA). Ample buffer headroom of 8,115.44 MCFT is available to absorb prospective Northeast Monsoon inflow."
+  },
+  "reservoirs": [
+    {
+      "id": "poondi",
+      "name": "Poondi Reservoir (Sathyamurthy Sagar)",
+      "name_ta": "பூண்டி நீர்த்தேக்கம் (சத்தியமூர்த்தி சாகர்)",
+      "river_basin": "Kosasthalaiyar",
+      "capacity_mcft": 3231,
+      "current_storage_mcft": 1032,
+      "storage_pct": 31.94,
+      "headroom_mcft": 2199,
+      "full_tank_level_ft": 140,
+      "current_level_ft": 131.29,
+      "inflow_cusecs": 120,
+      "outflow_cusecs": 294,
+      "rainfall_24h_mm": 4,
+      "emergency_sluice_threat": "LOW",
+      "fluvial_corridor_warning": "Normal release. Discharge well below Kosasthalaiyar river bank capacity.",
+      "threatened_substations": [
+        "Manali 230kV",
+        "Ennore 110kV",
+        "Madhavaram 110kV"
+      ],
+      "catchment_area_sqkm": 1980
+    },
+    {
+      "id": "cholavaram",
+      "name": "Cholavaram Lake",
+      "name_ta": "சோழவரம் ஏரி",
+      "river_basin": "Kosasthalaiyar",
+      "capacity_mcft": 1081,
+      "current_storage_mcft": 140,
+      "storage_pct": 12.95,
+      "headroom_mcft": 941,
+      "full_tank_level_ft": 65.5,
+      "current_level_ft": 49.89,
+      "inflow_cusecs": 0,
+      "outflow_cusecs": 8,
+      "rainfall_24h_mm": 0,
+      "emergency_sluice_threat": "LOW",
+      "fluvial_corridor_warning": "Lake storage minimal at 12.95%. 941 MCFT buffer capacity available.",
+      "threatened_substations": [
+        "Redhills 110kV"
+      ],
+      "catchment_area_sqkm": 520
+    },
+    {
+      "id": "puzhal",
+      "name": "Red Hills Lake (Puzhal)",
+      "name_ta": "புழல் ஏரி (ரெட் ஹில்ஸ்)",
+      "river_basin": "Kosasthalaiyar / Puzhal Surplus",
+      "capacity_mcft": 3300,
+      "current_storage_mcft": 1853,
+      "storage_pct": 56.15,
+      "headroom_mcft": 1447,
+      "full_tank_level_ft": 50.2,
+      "current_level_ft": 42.86,
+      "inflow_cusecs": 210,
+      "outflow_cusecs": 206,
+      "rainfall_24h_mm": 0,
+      "emergency_sluice_threat": "LOW",
+      "fluvial_corridor_warning": "Stable drinking water supply balancing. Controlled municipal withdrawal.",
+      "threatened_substations": [
+        "Puzhal 230kV",
+        "Kolathur 110kV",
+        "Perambur 110kV"
+      ],
+      "catchment_area_sqkm": 740
+    },
+    {
+      "id": "kannankottai",
+      "name": "Kannankottai Thervoy Kandigai",
+      "name_ta": "கண்ணன்கோட்டை தேர்வாய் கண்டிகை",
+      "river_basin": "Araniyar",
+      "capacity_mcft": 500,
+      "current_storage_mcft": 268,
+      "storage_pct": 53.6,
+      "headroom_mcft": 232,
+      "full_tank_level_ft": 115.35,
+      "current_level_ft": 107.87,
+      "inflow_cusecs": 0,
+      "outflow_cusecs": 19,
+      "rainfall_24h_mm": 0,
+      "emergency_sluice_threat": "LOW",
+      "fluvial_corridor_warning": "Normal operation. Buffer headroom 232 MCFT.",
+      "threatened_substations": [
+        "Gummidipoondi 110kV"
+      ],
+      "catchment_area_sqkm": 180
+    },
+    {
+      "id": "chembarambakkam",
+      "name": "Chembarambakkam Lake",
+      "name_ta": "செம்பரம்பாக்கம் ஏரி",
+      "river_basin": "Adyar",
+      "capacity_mcft": 3645,
+      "current_storage_mcft": 1382,
+      "storage_pct": 37.91,
+      "headroom_mcft": 2263,
+      "full_tank_level_ft": 85.4,
+      "current_level_ft": 75.57,
+      "inflow_cusecs": 0,
+      "outflow_cusecs": 215,
+      "rainfall_24h_mm": 0,
+      "emergency_sluice_threat": "LOW",
+      "fluvial_corridor_warning": "Safe baseline: 2,263 MCFT buffer headroom available. Adyar river corridor clear with zero fluvial surge threat today.",
+      "threatened_substations": [
+        "Kadapakkam 110kV",
+        "Porur 230kV",
+        "Saidapet 110kV",
+        "Kotturpuram 110kV",
+        "Mylapore 110kV"
+      ],
+      "catchment_area_sqkm": 358
+    },
+    {
+      "id": "veeranam",
+      "name": "Veeranam Lake",
+      "name_ta": "வீராணம் ஏரி",
+      "river_basin": "Vellar / Kollidam feeder",
+      "capacity_mcft": 1465,
+      "current_storage_mcft": 431.56,
+      "storage_pct": 29.46,
+      "headroom_mcft": 1033.44,
+      "full_tank_level_ft": 47.5,
+      "current_level_ft": 42.54,
+      "inflow_cusecs": 195,
+      "outflow_cusecs": 73,
+      "rainfall_24h_mm": 0,
+      "emergency_sluice_threat": "LOW",
+      "fluvial_corridor_warning": "Pumping to Chennai city water mains at routine baseline rate.",
+      "threatened_substations": [
+        "South Chennai Grid Interconnect"
+      ],
+      "catchment_area_sqkm": 900
+    }
+  ]
+}
