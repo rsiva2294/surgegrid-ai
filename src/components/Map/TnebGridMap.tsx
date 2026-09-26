@@ -1488,16 +1488,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                       <div className={`px-3 py-2 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
                         isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
                       }`}>
-                        <div className="flex items-center gap-3 divide-x divide-slate-200 dark:divide-slate-800 min-w-0">
-                          <div className="min-w-0">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="flex-1 min-w-0">
                             <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                               Circle
                             </span>
-                            <span className={`font-semibold text-xs truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                            <span className={`font-semibold text-xs truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`} title={selectedSubstation.circle}>
                               {selectedSubstation.circle || 'Chennai EDC'}
                             </span>
                           </div>
-                          <div className="pl-3 shrink-0">
+                          <div className="pl-3 shrink-0 border-l border-slate-200 dark:border-slate-800 text-center">
                             <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                               Region
                             </span>
@@ -2397,16 +2397,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
                           isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800'
                         }`}>
-                          <div className="flex items-center gap-4 divide-x divide-slate-200 dark:divide-slate-800 min-w-0">
-                            <div className="min-w-0">
+                          <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                            <div className="flex-1 min-w-0">
                               <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                                 Circle
                               </span>
-                              <span className={`text-xs font-bold truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                              <span className={`text-xs font-bold truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`} title={selectedSubstation.circle}>
                                 {selectedSubstation.circle || 'Chennai EDC'}
                               </span>
                             </div>
-                            <div className="pl-4 shrink-0">
+                            <div className="pl-3.5 shrink-0 border-l border-slate-200 dark:border-slate-800 text-center">
                               <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                                 Region
                               </span>
@@ -2420,7 +2420,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                             href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 group ${
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 group ${
                               isLight
                                 ? 'bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-900 border-slate-200 hover:border-sky-300 shadow-xs'
                                 : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-slate-800 hover:border-cyan-500/50 shadow-xs'
