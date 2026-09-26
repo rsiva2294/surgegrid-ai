@@ -943,23 +943,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             }
           });
 
-          // Outer high-visibility ambient glow line
-          const glowLine = new google.maps.Polyline({
-            path,
-            strokeColor: themeColors.glow,
-            strokeOpacity: isLight ? 0.35 : 0.45,
-            strokeWeight: isNonCut ? 8 : 6,
-            zIndex: 48,
-            map
-          });
-          feederGlowLinesRef.current.push(glowLine);
-
-          // Crisp solid utility-grade conductor cable
+          // Razor-sharp solid utility-grade conductor cable (100% crisp opacity, zero blur)
           const coreLine = new google.maps.Polyline({
             path,
             strokeColor: themeColors.core,
             strokeOpacity: 1.0,
-            strokeWeight: isNonCut ? 3.8 : 3.0,
+            strokeWeight: isNonCut ? 4.0 : 3.2,
             zIndex: 50,
             map
           });
