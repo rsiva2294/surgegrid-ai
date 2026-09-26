@@ -49,6 +49,25 @@ export interface LostWaterBody {
     source: string;
     notes: string;
     notes_ta?: string;
+    coinciding_hotspots?: string[];
+  };
+}
+
+export interface FloodHotspot {
+  type: string;
+  geometry: {
+    type: string;
+    coordinates: [number, number]; // [lng, lat]
+  };
+  properties: {
+    id: number;
+    slno: number;
+    name: string;
+    category: string;
+    monsoon: string;
+    source: string;
+    coinciding_lost_lake?: string;
+    dist_to_lost_lake_m?: number;
   };
 }
 

@@ -6,7 +6,6 @@ import {
   InfoWindow,
   useMap,
 } from '@vis.gl/react-google-maps';
-import type { Substation, LostWaterBody, ReliefShelter, WeatherStep } from '../types';
 import type { LiveWeatherReport } from '../services/liveDataService';
 import {
   Zap,
@@ -23,10 +22,12 @@ import {
   CloudLightning,
   RotateCw,
 } from 'lucide-react';
+import type { Substation, LostWaterBody, FloodHotspot, ReliefShelter, WeatherStep } from '../types';
 
 interface GoogleGridMapProps {
   substations: Substation[];
   lostLakes: LostWaterBody[];
+  floodHotspots?: FloodHotspot[];
   shelters: ReliefShelter[];
   selectedSubstation?: Substation | null;
   onSelectSubstation: (sub: Substation | null) => void;
@@ -171,6 +172,24 @@ const getShelterMarkerIcon = (
   };
 };
 
+// Generate high-resolution SVG data URI with warning icon for GCC Chronic Flood Hotspots
+const getHotspotMarkerIcon = (size: number = 18) => {
+  const r = size / 2;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">
+    <circle cx="${r}" cy="${r}" r="${r - 1}" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M12 9v4m0 4h.01" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" transform="translate(${r - 6}, ${r - 6}) scale(0.5)"/>
+  </svg>`;
+
+  const gMaps = getGoogleMaps();
+
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: gMaps ? new gMaps.Size(size, size) : undefined,
+    anchor: gMaps ? new gMaps.Point(r, r) : undefined,
+  };
+};
+
+
 
 // Vector Overlays Component (Circles for 15 Lost Water Bodies)
 // Rivers are rendered natively by Google Maps — no duplicate overlay needed.
@@ -225,6 +244,7 @@ const MapOverlays: React.FC<{
 export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
   substations,
   lostLakes,
+  floodHotspots = [],
   shelters,
   onSelectSubstation,
   weatherSteps,
@@ -243,8 +263,8 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
   // Layer Toggles
   const [showSubstations, setShowSubstations] = useState(true);
   const [showLostLakes, setShowLostLakes] = useState(true);
+  const [showHotspots, setShowHotspots] = useState(true);
   const [showShelters, setShowShelters] = useState(true);
-
 
   // Play/Pause State for Simulation
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -265,6 +285,7 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
   const [activeSub, setActiveSub] = useState<Substation | null>(null);
   const [activeShelter, setActiveShelter] = useState<ReliefShelter | null>(null);
   const [activeLake, setActiveLake] = useState<LostWaterBody | null>(null);
+  const [activeHotspot, setActiveHotspot] = useState<FloodHotspot | null>(null);
 
   return (
     <div className="w-full bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
@@ -312,6 +333,18 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
             </button>
 
             <button
+              onClick={() => setShowHotspots(!showHotspots)}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-medium cursor-pointer transition-colors ${
+                showHotspots
+                  ? 'bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs'
+                  : 'bg-slate-100 text-slate-400 border border-transparent'
+              }`}
+            >
+              <AlertTriangle className="w-3 h-3 text-amber-600" />
+              <span>Flood Hotspots ({floodHotspots.length || 53})</span>
+            </button>
+
+            <button
               onClick={() => setShowShelters(!showShelters)}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-medium cursor-pointer transition-colors ${
                 showShelters
@@ -323,7 +356,7 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
               <span>Shelters ({shelters.length || 162})</span>
             </button>
 
-            </div>
+          </div>
         </div>
 
         {/* Right: Dynamic Bar based on Mode (Live Weather Telemetry vs Cyclone Simulation Scrubber) */}
@@ -482,6 +515,7 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                 setActiveLake(lake);
                 setActiveSub(null);
                 setActiveShelter(null);
+                setActiveHotspot(null);
               }}
               viewMode={viewMode}
             />
@@ -539,6 +573,7 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                       setActiveSub(sub);
                       setActiveShelter(null);
                       setActiveLake(null);
+                      setActiveHotspot(null);
                       onSelectSubstation(sub);
                     }}
                     title={
@@ -574,6 +609,7 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                       setActiveShelter(sh);
                       setActiveSub(null);
                       setActiveLake(null);
+                      setActiveHotspot(null);
                     }}
                     title={
                       isLive
@@ -582,6 +618,30 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                         ? `${sh.name || sh.address} (Compromised Relief Shelter - Inundated)`
                         : `${sh.name || sh.address} (Safe Haven Relief Shelter)`
                     }
+                  />
+                );
+              })}
+
+            {/* 3. Markers for 53 GCC Chronic Flood Hotspots */}
+            {showHotspots &&
+              floodHotspots.map((hs, idx) => {
+                const [lng, lat] = hs.geometry.coordinates;
+                return (
+                  <Marker
+                    key={`hs-${hs.properties.id || idx}`}
+                    position={{ lat, lng }}
+                    icon={getHotspotMarkerIcon(18)}
+                    onClick={() => {
+                      setActiveHotspot(hs);
+                      setActiveSub(null);
+                      setActiveShelter(null);
+                      setActiveLake(null);
+                    }}
+                    title={`GCC Flood Hotspot: ${hs.properties.name}${
+                      hs.properties.coinciding_lost_lake
+                        ? ` (inside ancestral ${hs.properties.coinciding_lost_lake})`
+                        : ''
+                    }`}
                   />
                 );
               })}
@@ -703,7 +763,7 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                 }}
                 onCloseClick={() => setActiveLake(null)}
               >
-                <div className="p-1 max-w-[250px] text-slate-800">
+                <div className="p-1 max-w-[270px] text-slate-800">
                   <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-indigo-100 text-indigo-800">
                     {activeLake.properties.status.replace('_', ' ')}
                   </span>
@@ -714,6 +774,53 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                   <p className="text-[10.5px] text-slate-600 mt-1">
                     Replaced by: {activeLake.properties.replaced_by}
                   </p>
+
+                  {activeLake.properties.coinciding_hotspots && activeLake.properties.coinciding_hotspots.length > 0 && (
+                    <div className="mt-2 p-1.5 rounded bg-amber-50 border border-amber-200 text-[10.5px] text-amber-950 leading-tight">
+                      <strong>🚨 {activeLake.properties.coinciding_hotspots.length} GCC Chronic Flood Hotspots inside basin:</strong>
+                      <p className="text-[10px] text-amber-900 mt-1 line-clamp-3">
+                        {activeLake.properties.coinciding_hotspots.slice(0, 4).join(', ')}
+                        {activeLake.properties.coinciding_hotspots.length > 4 && ` +${activeLake.properties.coinciding_hotspots.length - 4} more`}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </InfoWindow>
+            )}
+
+            {/* GCC Flood Hotspot InfoWindow */}
+            {activeHotspot && (
+              <InfoWindow
+                position={{
+                  lat: activeHotspot.geometry.coordinates[1],
+                  lng: activeHotspot.geometry.coordinates[0],
+                }}
+                onCloseClick={() => setActiveHotspot(null)}
+              >
+                <div className="p-1 max-w-[280px] text-slate-800">
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-900">
+                      GCC Chronic Flood Hotspot
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">#{activeHotspot.properties.slno}</span>
+                  </div>
+                  <h4 className="font-bold text-xs text-slate-900 leading-tight">
+                    {activeHotspot.properties.name}
+                  </h4>
+                  <p className="text-[10.5px] text-slate-500 mt-0.5">
+                    Source: {activeHotspot.properties.source}
+                  </p>
+
+                  {activeHotspot.properties.coinciding_lost_lake ? (
+                    <div className="mt-2 p-1.5 rounded bg-indigo-50 border border-indigo-200 text-[10.5px] text-indigo-950 leading-tight">
+                      <strong>💧 Hydrological Root Cause:</strong><br />
+                      Sits {activeHotspot.properties.dist_to_lost_lake_m !== undefined && activeHotspot.properties.dist_to_lost_lake_m <= 800 ? 'directly inside' : `${activeHotspot.properties.dist_to_lost_lake_m}m from`} the historical <strong>{activeHotspot.properties.coinciding_lost_lake}</strong> basin. Rainwater naturally ponds in this encroached depression.
+                    </div>
+                  ) : (
+                    <div className="mt-2 p-1.5 rounded bg-slate-50 border border-slate-200 text-[10.5px] text-slate-700 leading-tight">
+                      <strong>⚠️ Inundation Node:</strong> Low-gradient micro-catchment subject to surface runoff stagnation during peak monsoon.
+                    </div>
+                  )}
                 </div>
               </InfoWindow>
             )}
@@ -747,10 +854,10 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                   <span>Accessible Relief Shelter (162/162 Open)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-sky-100 border border-sky-300 flex items-center justify-center shadow-2xs shrink-0">
-                    <Waves className="w-2.5 h-2.5 text-sky-600" />
+                  <div className="w-4 h-4 rounded-full bg-amber-500 border border-white flex items-center justify-center shadow-2xs shrink-0">
+                    <AlertTriangle className="w-2.5 h-2.5 text-white stroke-[2.5]" />
                   </div>
-                  <span>River Drainage Basin (Normal Baseline Flow)</span>
+                  <span>GCC Chronic Flood Hotspot (53 Ground-Truth Points)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 rounded-full bg-indigo-100 border border-indigo-300 flex items-center justify-center shadow-2xs shrink-0">
@@ -792,10 +899,10 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                   <span>Compromised Relief Shelter (Inundated)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-rose-100 border border-rose-300 flex items-center justify-center shadow-2xs shrink-0">
-                    <Waves className="w-2.5 h-2.5 text-rose-600" />
+                  <div className="w-4 h-4 rounded-full bg-amber-500 border border-white flex items-center justify-center shadow-2xs shrink-0">
+                    <AlertTriangle className="w-2.5 h-2.5 text-white stroke-[2.5]" />
                   </div>
-                  <span>Sluice Surge Flood Corridor (Adyar)</span>
+                  <span>GCC Chronic Flood Hotspot (Inundation Point)</span>
                 </div>
               </>
             )}

@@ -4,13 +4,27 @@ import { MetricCards } from './components/MetricCards';
 import { GoogleGridMap } from './components/GoogleGridMap';
 import { ActionPanel } from './components/ActionPanel';
 import { Footer } from './components/Footer';
-import type { Substation, LostWaterBody, ReliefShelter, ReservoirData, WeatherStep } from './types';
+import type { Substation, LostWaterBody, FloodHotspot, ReliefShelter, ReservoirData, WeatherStep } from './types';
 import {
   fetchLiveChennaiWeather,
   fetchLiveReservoirStorage,
   type LiveWeatherReport,
 } from './services/liveDataService';
 import { Loader2 } from 'lucide-react';
+
+function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
 
 export function App() {
   const [lang, setLang] = useState<'en' | 'ta'>('en');
@@ -22,6 +36,7 @@ export function App() {
 
   const [substations, setSubstations] = useState<Substation[]>([]);
   const [lostLakes, setLostLakes] = useState<LostWaterBody[]>([]);
+  const [floodHotspots, setFloodHotspots] = useState<FloodHotspot[]>([]);
   const [shelters, setShelters] = useState<ReliefShelter[]>([]);
   const [weatherSteps, setWeatherSteps] = useState<WeatherStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(1); // Default to T-36h
@@ -53,6 +68,7 @@ export function App() {
         const [
           subsRes,
           lakesRes,
+          hotspotsRes,
           sheltersRes,
           simRes,
           weatherRes,
@@ -61,6 +77,7 @@ export function App() {
         ] = await Promise.all([
           fetch('/data/gee/gee_chennai_substations_risk.json').then((r) => r.json()),
           fetch('/data/neervazhvu/chennai_water_bodies_lost.json').then((r) => r.json()),
+          fetch('/data/gcc/gcc_flood_hotspots.json').then((r) => r.json()),
           fetch('/data/gcc/chennai_shelter_grid_drain_fusion.json').then((r) => r.json()),
           fetch('/data/simulation/chennai_reservoirs_status.json').then((r) => r.json()),
           fetch('/data/simulation/weathernext3_chennai_cyclone_48h.json').then((r) => r.json()),
@@ -76,8 +93,55 @@ export function App() {
           return lat >= 12.75 && lat <= 13.38 && lng >= 79.95 && lng <= 80.38;
         });
 
+        // Correlate GCC Flood Hotspots with Lost Lakes
+        const rawHotspots: FloodHotspot[] = hotspotsRes.features || [];
+        const rawLakes: LostWaterBody[] = lakesRes.features || [];
+        const lakeHotspotMap = new Map<string, string[]>();
+
+        const enrichedHotspots = rawHotspots.map((hs) => {
+          const [hLon, hLat] = hs.geometry.coordinates;
+          let closestLake: LostWaterBody | null = null;
+          let minDistM = Infinity;
+
+          rawLakes.forEach((lake) => {
+            const [wLon, wLat] = lake.geometry.coordinates;
+            const distM = getDistanceKm(hLat, hLon, wLat, wLon) * 1000;
+            const thresholdM = Math.max(lake.properties.approx_radius_m || 800, 1500);
+            if (distM <= thresholdM && distM < minDistM) {
+              minDistM = distM;
+              closestLake = lake;
+            }
+          });
+
+          if (closestLake) {
+            const lakeName = (closestLake as LostWaterBody).properties.name;
+            const existing = lakeHotspotMap.get(lakeName) || [];
+            existing.push(hs.properties.name);
+            lakeHotspotMap.set(lakeName, existing);
+
+            return {
+              ...hs,
+              properties: {
+                ...hs.properties,
+                coinciding_lost_lake: lakeName,
+                dist_to_lost_lake_m: Math.round(minDistM),
+              },
+            };
+          }
+          return hs;
+        });
+
+        const enrichedLakes = rawLakes.map((lake) => ({
+          ...lake,
+          properties: {
+            ...lake.properties,
+            coinciding_hotspots: lakeHotspotMap.get(lake.properties.name) || [],
+          },
+        }));
+
         setSubstations(chennaiOnlySubs);
-        setLostLakes(lakesRes.features || []);
+        setLostLakes(enrichedLakes);
+        setFloodHotspots(enrichedHotspots);
         setShelters(Array.isArray(sheltersRes) ? sheltersRes : sheltersRes.shelters || []);
         setSimulatedReservoirData(simRes);
         setLiveWeather(initialLiveWeather);
@@ -164,6 +228,7 @@ export function App() {
           <GoogleGridMap
             substations={substations}
             lostLakes={lostLakes}
+            floodHotspots={floodHotspots}
             shelters={shelters}
             selectedSubstation={selectedSubstation}
             onSelectSubstation={setSelectedSubstation}
