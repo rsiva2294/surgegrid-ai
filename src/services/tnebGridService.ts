@@ -3,26 +3,26 @@ import type { ChennaiGridData, TnebSubstation, TnebSection, FeederDetail } from 
 const LIFELINE_PATTERNS = {
   hospital: {
     regex: /\b(HOSPITAL|MEDIC|MEDICAL|CLINIC|CANCER|APOLLO|KMC|STANLEY|STANLY|SRM|MIOT|HEALTH|RSRM|PHC|DISPENSARY)\b/i,
-    labelDedicated: '🏥 Hospital (Dedicated HT)',
-    labelShared: '🏥 Hospital Feeder (Area Line)',
+    labelDedicated: 'Hospital (Dedicated HT)',
+    labelShared: 'Hospital Feeder (Area Line)',
     priority: 'P1_CRITICAL' as const
   },
   water: {
     regex: /\b(CMWSSB|WATER|DRAINAGE|SEWAGE|PUMP|PUMPING|METROWATER|WATERWORKS|WATER WORKS|STP|WTP)\b/i,
-    labelDedicated: '🚰 Water / Sewage Pumping (Dedicated)',
-    labelShared: '🚰 Water Pumping Station (Area Line)',
+    labelDedicated: 'Water / Sewage Pumping (Dedicated)',
+    labelShared: 'Water Pumping Station (Area Line)',
     priority: 'P1_CRITICAL' as const
   },
   transit: {
     regex: /\b(CMRL|METRO|RAILWAY|SOUTHERN RAILWAY|PORT TRUST|PORT|MTC|AIRPORT)\b/i,
-    labelDedicated: '🚇 Metro / Rail / Port (Dedicated HT)',
-    labelShared: '🚇 Transit Corridor Feeder',
+    labelDedicated: 'Metro / Rail / Port (Dedicated HT)',
+    labelShared: 'Transit Corridor Feeder',
     priority: 'P2_ESSENTIAL' as const
   },
   governance: {
     regex: /\b(SECRETARIAT|HIGH COURT|CROWN COURT|COURT|POLICE|COLLECTOR|COMMISSIONER|PRISON|JAIL|FIRE STATION|DEFENCE|AIR FORCE|NAVY)\b/i,
-    labelDedicated: '🏛️ Govt / Emergency HQ (Dedicated)',
-    labelShared: '🏛️ Emergency & Civil Services Line',
+    labelDedicated: 'Govt / Emergency HQ (Dedicated)',
+    labelShared: 'Emergency & Civil Services Line',
     priority: 'P2_ESSENTIAL' as const
   }
 };
@@ -49,7 +49,7 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
       ...feeder,
       isDedicated: true,
       lifelineCategory: 'industrial_ht',
-      lifelineLabel: '🏭 Dedicated HT Commercial/Industrial',
+      lifelineLabel: 'Dedicated HT Commercial/Industrial',
       priorityLevel: 'P3_COMMERCIAL'
     };
   }

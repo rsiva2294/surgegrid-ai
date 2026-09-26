@@ -108,6 +108,11 @@ function getDtrMarkerIcon(isLight: boolean, category?: string): google.maps.Symb
   };
 }
 
+function cleanLifelineLabel(label?: string, fallback: string = ''): string {
+  if (!label) return fallback;
+  return label.replace(/^[\p{Emoji}\p{Extended_Pictographic}\uFE0F\s]+/u, '').trim();
+}
+
 function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
   if (!feeder.lifelineCategory) return null;
 
@@ -115,7 +120,7 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
     case 'hospital':
       return {
         icon: '🏥',
-        label: feeder.lifelineLabel || 'Hospital Lifeline',
+        label: cleanLifelineLabel(feeder.lifelineLabel, 'Hospital Lifeline'),
         prioText: 'P1 NON-CUT',
         badgeBg: isLight ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-rose-500/20 text-rose-300 border-rose-500/40',
         prioBg: isLight ? 'bg-rose-600 text-white font-bold' : 'bg-rose-500 text-slate-950 font-black'
@@ -123,15 +128,15 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
     case 'water':
       return {
         icon: '🚰',
-        label: feeder.lifelineLabel || 'Water / Sewage',
+        label: cleanLifelineLabel(feeder.lifelineLabel, 'Water / Sewage'),
         prioText: 'P1 NON-CUT',
         badgeBg: isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
         prioBg: isLight ? 'bg-sky-600 text-white font-bold' : 'bg-cyan-400 text-slate-950 font-black'
       };
     case 'transit':
       return {
-        icon: '🚆',
-        label: feeder.lifelineLabel || 'Metro / Rail',
+        icon: '🚇',
+        label: cleanLifelineLabel(feeder.lifelineLabel, 'Metro / Rail'),
         prioText: 'P2 ESSENTIAL',
         badgeBg: isLight ? 'bg-purple-100 text-purple-800 border-purple-300' : 'bg-purple-500/20 text-purple-300 border-purple-500/40',
         prioBg: isLight ? 'bg-purple-600 text-white font-bold' : 'bg-purple-400 text-slate-950 font-black'
@@ -139,7 +144,7 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
     case 'governance':
       return {
         icon: '🏛️',
-        label: feeder.lifelineLabel || 'Gov / Defense',
+        label: cleanLifelineLabel(feeder.lifelineLabel, 'Gov / Defense'),
         prioText: 'P2 ESSENTIAL',
         badgeBg: isLight ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
         prioBg: isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-400 text-slate-950 font-black'
@@ -147,7 +152,7 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
     case 'industrial_ht':
       return {
         icon: '🏭',
-        label: feeder.lifelineLabel || 'Commercial / HT',
+        label: cleanLifelineLabel(feeder.lifelineLabel, 'Commercial / HT'),
         prioText: 'P3 COMMERCIAL',
         badgeBg: isLight ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-slate-800/80 text-slate-300 border-slate-700',
         prioBg: isLight ? 'bg-slate-600 text-white font-bold' : 'bg-slate-600 text-white font-bold'
@@ -1675,57 +1680,34 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         />
                       )}
 
-                      {/* Active Feeder Banner */}
-                      {selectedFeeder && (() => {
-                        const badge = getFeederLifelineBadge(selectedFeeder, isLight);
-                        const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
-                        return (
-                          <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 transition-all ${
-                            selectedFeeder.priorityLevel === 'P1_NON_CUT' || selectedFeeder.priorityLevel === 'P1_CRITICAL'
-                              ? (isLight ? 'bg-rose-50 border-rose-300 text-rose-950 ring-1 ring-rose-400/30' : 'bg-rose-950/60 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30')
-                              : (isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200')
-                          }`}>
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2 truncate">
-                                <span
-                                  className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0"
-                                  style={{ backgroundColor: themeColors.core }}
-                                />
-                                <div className="truncate">
-                                  <span className="font-bold text-xs truncate block">{selectedFeeder.name}</span>
-                                  <span className={`text-[10px] block truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                                    Corridor • {selectedFeeder.transformers || 8} DTRs on map
-                                  </span>
-                                </div>
-                              </div>
-                              <button
-                                onClick={() => setSelectedFeeder(null)}
-                                className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
-                                  isLight
-                                    ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
-                                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
-                                }`}
-                              >
-                                Clear
-                              </button>
-                            </div>
-                            {badge && (
-                              <div className="flex items-center gap-1.5 pt-1 border-t border-current/10 flex-wrap">
-                                <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
-                                  <span>{badge.icon}</span>
-                                  <span>{badge.label}</span>
-                                </span>
-                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${badge.prioBg}`}>
-                                  {badge.prioText}
-                                </span>
-                                <span className={`text-[9px] font-mono ml-auto ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                  {selectedFeeder.isDedicated ? 'Dedicated Service (HT)' : 'Shared Distribution'}
-                                </span>
-                              </div>
-                            )}
+                      {/* Active Feeder Status Bar */}
+                      {selectedFeeder && (
+                        <div className={`px-2.5 py-1.5 rounded-lg border text-xs flex items-center justify-between gap-2 shrink-0 ${
+                          isLight
+                            ? 'bg-sky-50 border-sky-200 text-sky-950'
+                            : 'bg-cyan-950/40 border-cyan-800/60 text-cyan-200'
+                        }`}>
+                          <div className="flex items-center gap-1.5 truncate">
+                            <span
+                              className="w-2 h-2 rounded-full animate-ping shrink-0"
+                              style={{ backgroundColor: getFeederThemeColors(selectedFeeder.lifelineCategory, isLight).core }}
+                            />
+                            <span className="text-[11px] truncate">
+                              Plotted on map: <strong className="font-semibold">{selectedFeeder.name}</strong> ({selectedFeeder.transformers || 8} DTRs)
+                            </span>
                           </div>
-                        );
-                      })()}
+                          <button
+                            onClick={() => setSelectedFeeder(null)}
+                            className={`text-[10px] font-semibold px-2 py-0.5 rounded transition-colors shrink-0 ${
+                              isLight
+                                ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
+                                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                            }`}
+                          >
+                            Clear Map
+                          </button>
+                        </div>
+                      )}
 
                       {/* Feeders Scroll List (Full Remaining Height) */}
                       <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
@@ -1969,57 +1951,34 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                           />
                         )}
 
-                        {/* Active Feeder Banner */}
-                        {selectedFeeder && (() => {
-                          const badge = getFeederLifelineBadge(selectedFeeder, isLight);
-                          const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
-                          return (
-                            <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 transition-all ${
-                              selectedFeeder.priorityLevel === 'P1_NON_CUT' || selectedFeeder.priorityLevel === 'P1_CRITICAL'
-                                ? (isLight ? 'bg-rose-50 border-rose-300 text-rose-950 ring-1 ring-rose-400/30' : 'bg-rose-950/60 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30')
-                                : (isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200')
-                            }`}>
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2 truncate">
-                                  <span
-                                    className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0"
-                                    style={{ backgroundColor: themeColors.core }}
-                                  />
-                                  <div className="truncate">
-                                    <span className="font-bold text-xs truncate block">{selectedFeeder.name}</span>
-                                    <span className={`text-[10px] block truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                                      Corridor • {selectedFeeder.transformers || 8} DTRs on map
-                                    </span>
-                                  </div>
-                                </div>
-                                <button
-                                  onClick={() => setSelectedFeeder(null)}
-                                  className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
-                                    isLight
-                                      ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
-                                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
-                                  }`}
-                                >
-                                  Clear
-                                </button>
-                              </div>
-                              {badge && (
-                                <div className="flex items-center gap-1.5 pt-1 border-t border-current/10 flex-wrap">
-                                  <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
-                                    <span>{badge.icon}</span>
-                                    <span>{badge.label}</span>
-                                  </span>
-                                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${badge.prioBg}`}>
-                                    {badge.prioText}
-                                  </span>
-                                  <span className={`text-[9px] font-mono ml-auto ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    {selectedFeeder.isDedicated ? 'Dedicated Service (HT)' : 'Shared Distribution'}
-                                  </span>
-                                </div>
-                              )}
+                        {/* Active Feeder Status Bar */}
+                        {selectedFeeder && (
+                          <div className={`px-2.5 py-1.5 rounded-lg border text-xs flex items-center justify-between gap-2 shrink-0 ${
+                            isLight
+                              ? 'bg-sky-50 border-sky-200 text-sky-950'
+                              : 'bg-cyan-950/40 border-cyan-800/60 text-cyan-200'
+                          }`}>
+                            <div className="flex items-center gap-1.5 truncate">
+                              <span
+                                className="w-2 h-2 rounded-full animate-ping shrink-0"
+                                style={{ backgroundColor: getFeederThemeColors(selectedFeeder.lifelineCategory, isLight).core }}
+                              />
+                              <span className="text-[11px] truncate">
+                                Plotted on map: <strong className="font-semibold">{selectedFeeder.name}</strong> ({selectedFeeder.transformers || 8} DTRs)
+                              </span>
                             </div>
-                          );
-                        })()}
+                            <button
+                              onClick={() => setSelectedFeeder(null)}
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded transition-colors shrink-0 ${
+                                isLight
+                                  ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
+                                  : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                              }`}
+                            >
+                              Clear Map
+                            </button>
+                          </div>
+                        )}
 
                         {/* Feeders Scroll List (Full Available Vertical Space!) */}
                         <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
