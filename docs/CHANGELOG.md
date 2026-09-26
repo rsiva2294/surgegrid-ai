@@ -19,6 +19,9 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **Full-Height Inspector Cockpit with Tabs & Side-by-Side Split View**: Re-engineered the Substation Inspector dialog to span the full window height (`top-4 bottom-4`), eliminating cramped scrolling. Added clean tabbed navigation (`🔌 Feeders`, `⚡ Grid Links`, `ℹ️ Info`) where each section receives 100% of the vertical space, plus an instant `[⤢ Split View]` toggle button that expands the dialog to `860px` dual-columns displaying Grid Connections and Outgoing Feeders side-by-side simultaneously.
 
 ### Performance & Polish
+- **Feeder Inspector De-duplication**:
+  - Replaced the bulky duplicate active feeder clone card above the list with a sleek, 1-line active corridor indicator strip (`Plotted on map: [Feeder Name] (N DTRs) [Clear Map]`), eliminating visual redundancy when filtering by lifelines.
+  - Resolved double-emoji rendering glitch (e.g. `🚆 🚇`) by separating emoji icons from label strings in `LIFELINE_PATTERNS` and introducing a defensive `cleanLifelineLabel()` sanitization regex in badge components.
 - **60fps Pan & Zoom Fluidity**: Removed heavy GPU `backdrop-blur` filters and artificial bounding drag friction, cutting frame render latency.
 - **Detached Marker Optimization**: Inactive section office markers are detached from Google Maps until toggled on or inspected, halving active DOM marker overhead.
 - **Consistent Layer Controls**: Aligned AE Section Offices layer button with voltage tiers, removing redundant eye icon for a uniform, clean interface.
