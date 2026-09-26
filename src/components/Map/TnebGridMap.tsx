@@ -993,31 +993,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           });
           feederLinesRef.current.push(takeoffLine);
         }
-      } else {
-        // Deterministic local radial spur strictly within local neighborhood (<= 1.2 km)
-        let hash = 0;
-        for (let i = 0; i < selectedFeeder.name.length; i++) {
-          hash = (hash << 5) - hash + selectedFeeder.name.charCodeAt(i);
-        }
-        const angleRad = ((Math.abs(hash) % 360) * Math.PI) / 180;
-        const effectiveKm = Math.min(Math.max(selectedFeeder.lengthKm || 1.2, 0.8), 1.6);
-        const dLat = (effectiveKm * Math.cos(angleRad)) / 111;
-        const dLng = (effectiveKm * Math.sin(angleRad)) / 108;
-        const path = [
-          { lat: selectedSubstation.lat, lng: selectedSubstation.lng },
-          { lat: selectedSubstation.lat + dLat, lng: selectedSubstation.lng + dLng }
-        ];
-        path.forEach(pt => bounds.extend(pt));
-
-        const coreLine = new google.maps.Polyline({
-          path,
-          strokeColor: themeColors.core,
-          strokeOpacity: 0.95,
-          strokeWeight: 3.5,
-          zIndex: 50,
-          map
-        });
-        feederLinesRef.current.push(coreLine);
       }
 
       // 2. Fetch real surveyed Distribution Transformers (DTs) on-demand
