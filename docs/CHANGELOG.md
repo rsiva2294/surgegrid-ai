@@ -4,6 +4,24 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.1.0-cockpit] - 2026-09-26
+
+### Added
+- **TNEB Super Index V2 Topology**: Embedded 286 Chennai substations, 352 AE Section Offices, and 1,493 precomputed bidirectional electrical interconnections into `public/data/chennai_tneb_grid.json`.
+- **Pure Zero-POI Vector Canvas**: Custom light and dark vector map styles removing all commercial, transit, and landmark POIs for a distraction-free electrical grid canvas.
+- **Circuit Isolation & Power Flow**: Added on-demand "Show Connections" switch isolating the active electrical circuit (Substation $\leftrightarrow$ Substation trunks and step-downs) with directional flow arrows.
+- **On-Demand Section Jurisdictional Boundaries**: Embedded official GeoJSON boundaries across 342 AE Section Offices, rendering warm amber territorial polygons with auto-framing on selection.
+- **Selection Beacon Halo**: Integrated dedicated high-contrast radar beacon ring (`selectionHaloRef`) providing instant targeting clarity in both light and dark modes.
+- **Unified Left-Hand Control Stack**: Relocated collapsible **TNEB Grid Layers** control directly beneath the Search Box on the top-left, freeing the entire right side for the Substation & Section Inspector Drawer without UI overlap.
+- **Visual Field Guide & Documentation**: Added `docs/03-chennai-grid-topology-and-field-guide.md` accompanied by 6 high-resolution engineering photographs in `docs/images/` covering all tiers from 400kV Bulk EHV stations to the consumer meter box.
+
+### Performance & Polish
+- **60fps Pan & Zoom Fluidity**: Removed heavy GPU `backdrop-blur` filters and artificial bounding drag friction, cutting frame render latency.
+- **Detached Marker Optimization**: Inactive section office markers are detached from Google Maps until toggled on or inspected, halving active DOM marker overhead.
+- **Consistent Layer Controls**: Aligned AE Section Offices layer button with voltage tiers, removing redundant eye icon for a uniform, clean interface.
+
+---
+
 ## [1.0.0-init] - 2026-09-26
 
 ### Added

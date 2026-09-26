@@ -1,32 +1,39 @@
-# React + TypeScript + Vite
+# SurgeGrid AI (Chennai Grid Cockpit)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+**SurgeGrid AI** is an advanced electrical grid topology, infrastructure resilience, and anticipatory disaster intelligence cockpit for the Chennai metropolitan power network (TNEB / TANGEDCO / TANTRANSCO).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ⚡ Core Features
 
-## React Compiler
+- **TNEB Super Index V2 Topology**: Real-time interactive map of all 286 Chennai substations across 4 voltage tiers (Bulk EHV 230/400kV, Sub-Transmission 110kV, Distribution 33/11kV) and 352 Assistant Engineer (AE) Section Offices.
+- **Topological Interconnections**: 1,493 precomputed bidirectional electrical interconnections, allowing instant circuit tracing from bulk injection stations down to neighborhood yards.
+- **On-Demand Circuit Isolation ("Show Connections")**: Isolates the active electrical circuit, visualizing incoming and outgoing power flow with directional arrows and auto-framing.
+- **Jurisdictional Boundaries**: On-demand rendering of official TNEB AE Section Office territory GeoJSON polygons with automatic camera bounds framing.
+- **Zero-POI Vector Canvas**: Distraction-free custom Google Maps styling in both Light and Dark modes with all commercial POIs removed.
+- **Hardware-Accelerated 60fps Experience**: Tuned for maximum pan and zoom performance with high-contrast targeting halos.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## 📚 Project Documentation
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+- [01 - Architecture & System Design](./docs/01-architecture-and-system-design.md)
+- [02 - Data Dictionary & Sources](./docs/02-data-dictionary-and-sources.md)
+- [03 - Chennai TNEB Power Grid Topology & Visual Field Guide](./docs/03-chennai-grid-topology-and-field-guide.md)
+- [Changelog](./docs/CHANGELOG.md)
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+---
+
+## 🛠️ Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Production build
+npm run build
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.

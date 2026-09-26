@@ -1,0 +1,1477 @@
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
+import type { TnebSubstation, TnebSection } from '../../types/tneb';
+import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+
+interface TnebGridMapProps {
+  theme: 'light' | 'dark';
+  substations: TnebSubstation[];
+  sections: TnebSection[];
+  selectedSubstation: TnebSubstation | null;
+  selectedSection: TnebSection | null;
+  onSelectSubstation: (ss: TnebSubstation | null) => void;
+  onSelectSection: (sec: TnebSection | null) => void;
+}
+
+export interface ConnectedGridNode {
+  id: string;
+  name: string;
+  type: 'substation' | 'section';
+  substation?: TnebSubstation;
+  section?: TnebSection;
+  relation: 'outgoing_feeder' | 'incoming_feeder' | 'colocated_stepdown' | 'campus_section';
+  label: string;
+  voltage?: string;
+  distanceKm: number;
+  lat: number;
+  lng: number;
+  color: string;
+}
+
+function getNodeColor(tier: string, type: 'substation' | 'section', isLight: boolean): string {
+  if (type === 'section') {
+    return isLight ? '#059669' : '#10B981';
+  }
+  if (tier === 'bulk') {
+    return isLight ? '#be185d' : '#ec4899';
+  }
+  if (tier === 'subtransmission') {
+    return isLight ? '#d97706' : '#f59e0b';
+  }
+  return isLight ? '#0284c7' : '#06b6d4';
+}
+
+function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean, isLight: boolean): google.maps.Symbol {
+  let color = isLight ? '#0284C7' : '#06B6D4';
+  let scale = 5;
+
+  if (ss.tier === 'bulk') {
+    color = isLight ? '#BE185D' : '#EC4899';
+    scale = isSelected ? 13 : 8;
+  } else if (ss.tier === 'subtransmission') {
+    color = isLight ? '#D97706' : '#F59E0B';
+    scale = isSelected ? 11 : 6.5;
+  } else {
+    scale = isSelected ? 9 : 4.5;
+  }
+
+  // Selected state:
+  // - Light mode: deep midnight-slate (#0F172A) 4px border for maximum contrast against light map
+  // - Dark mode: radiant pure white (#FFFFFF) 3.5px border
+  // Unselected state:
+  // - Light mode: clean white (#FFFFFF) 1.5px border
+  // - Dark mode: dark cyan-slate (#083344) 1.5px border
+  const strokeColor = isSelected
+    ? (isLight ? '#0F172A' : '#FFFFFF')
+    : (isLight ? '#FFFFFF' : '#083344');
+
+  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : 1.5;
+
+  return {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale,
+    fillColor: color,
+    fillOpacity: 1.0,
+    strokeColor,
+    strokeWeight
+  };
+}
+
+function getSectionMarkerIcon(isSelected: boolean, isLight: boolean): google.maps.Symbol {
+  return {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale: isSelected ? 8 : 3.5,
+    fillColor: isLight ? '#059669' : '#10B981',
+    fillOpacity: 0.95,
+    strokeColor: isSelected
+      ? (isLight ? '#0F172A' : '#FFFFFF')
+      : '#FFFFFF',
+    strokeWeight: isSelected ? (isLight ? 4 : 3.5) : 1.5
+  };
+}
+
+const NO_POI_DARK_STYLE: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#0d131f" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#0d131f" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#74849e" }] },
+  {
+    featureType: "administrative.locality",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#e2e8f0" }]
+  },
+  {
+    featureType: "poi",
+    elementType: "all",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "transit",
+    elementType: "all",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#192233" }]
+  },
+  {
+    featureType: "road",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#131b2a" }]
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#64748b" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#25334c" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#172033" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#94a3b8" }]
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#071324" }]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#38bdf8" }]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#071324" }]
+  }
+];
+
+const NO_POI_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
+  { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }, { weight: 3 }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#1e293b" }] },
+  {
+    featureType: "administrative.locality",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#0f172a" }, { weight: 600 }]
+  },
+  {
+    featureType: "poi",
+    elementType: "all",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "transit",
+    elementType: "all",
+    stylers: [{ visibility: "off" }]
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#ffffff" }]
+  },
+  {
+    featureType: "road",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#e2e8f0" }]
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#475569" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#f1f5f9" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#cbd5e1" }]
+  },
+  {
+    featureType: "road.highway",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#334155" }]
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#cce3f5" }]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#0284c7" }]
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#ffffff" }]
+  }
+];
+
+let isGoogleMapsLoaderConfigured = false;
+
+export const TnebGridMap: React.FC<TnebGridMapProps> = ({
+  theme,
+  substations,
+  sections,
+  selectedSubstation,
+  selectedSection,
+  onSelectSubstation,
+  onSelectSection
+}) => {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const markersRef = useRef<{ [key: string]: google.maps.Marker }>({});
+  const sectionMarkersRef = useRef<{ [key: string]: google.maps.Marker }>({});
+  const connectionLinesRef = useRef<google.maps.Polyline[]>([]);
+  const prevSelectedSubstationCodeRef = useRef<string | null>(null);
+  const prevSelectedSectionCodeRef = useRef<string | null>(null);
+  const selectionHaloRef = useRef<google.maps.Marker | null>(null);
+  const sectionBoundaryPolygonsRef = useRef<google.maps.Polygon[]>([]);
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Layer Toggles
+  const [showBulk, setShowBulk] = useState(true);
+  const [showSubTrans, setShowSubTrans] = useState(true);
+  const [showDistribution, setShowDistribution] = useState(true);
+  const [showSections, setShowSections] = useState(false);
+  const [isSatellite, setIsSatellite] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [feederFilter, setFeederFilter] = useState('');
+  const [showConnections, setShowConnections] = useState(false);
+  const [isLayersExpanded, setIsLayersExpanded] = useState(true);
+
+  // Reset showConnections when selected substation changes
+  useEffect(() => {
+    setShowConnections(false);
+  }, [selectedSubstation]);
+
+  // Fast O(1) Entity Maps
+  const substationsByCode = useMemo(() => {
+    const map = new Map<string, TnebSubstation>();
+    substations.forEach(s => map.set(s.code, s));
+    return map;
+  }, [substations]);
+
+  const sectionsByCode = useMemo(() => {
+    const map = new Map<string, TnebSection>();
+    sections.forEach(s => map.set(s.code, s));
+    return map;
+  }, [sections]);
+
+  // Instant O(1) Precomputed Grid Connections
+  const connectedNodes: ConnectedGridNode[] = useMemo(() => {
+    if (!selectedSubstation || !selectedSubstation.connections) return [];
+    const isLight = theme === 'light';
+    return selectedSubstation.connections.map(c => ({
+      id: c.id,
+      name: c.name,
+      type: c.type,
+      relation: c.relation,
+      label: c.label,
+      voltage: c.voltage,
+      distanceKm: c.distanceKm,
+      lat: c.lat,
+      lng: c.lng,
+      color: getNodeColor(c.tier || 'distribution', c.type, isLight),
+      substation: c.type === 'substation' ? substationsByCode.get(c.id) : undefined,
+      section: c.type === 'section' ? sectionsByCode.get(c.id.replace('sec_', '')) : undefined
+    }));
+  }, [selectedSubstation, theme, substationsByCode, sectionsByCode]);
+
+  // Strictly Electrical Grid Interconnections (Substation <-> Substation Trunks & Step-Downs)
+  const electricalNodes = useMemo(() => {
+    return connectedNodes.filter(n => n.type === 'substation');
+  }, [connectedNodes]);
+
+  // Jurisdictional Assistant Engineer (AE) Section Offices (Field Maintenance & Fuse Call)
+  const jurisdictionalSections = useMemo(() => {
+    return connectedNodes.filter(n => n.type === 'section');
+  }, [connectedNodes]);
+
+  // Set of node codes for isolated electrical network mode
+  const isolatedNodeIds = useMemo(() => {
+    if (!showConnections || !selectedSubstation) return null;
+    const set = new Set<string>();
+    set.add(selectedSubstation.code);
+    electricalNodes.forEach(node => {
+      if (node.substation) set.add(node.substation.code);
+    });
+    return set;
+  }, [showConnections, selectedSubstation, electricalNodes]);
+
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+
+  const activeMapStyle = useMemo(() => {
+    if (isSatellite) return [];
+    return theme === 'light' ? NO_POI_LIGHT_STYLE : NO_POI_DARK_STYLE;
+  }, [isSatellite, theme]);
+
+  // Initialize Google Maps
+  useEffect(() => {
+    if (!apiKey) {
+      setLoadError('Google Maps API Key is missing in .env (VITE_GOOGLE_MAPS_API_KEY)');
+      return;
+    }
+
+    if (!isGoogleMapsLoaderConfigured) {
+      setOptions({
+        key: apiKey,
+        v: 'weekly'
+      });
+      isGoogleMapsLoaderConfigured = true;
+    }
+
+    importLibrary('maps')
+      .then(() => {
+        if (!mapContainerRef.current) return;
+
+        const map = new google.maps.Map(mapContainerRef.current, {
+          center: { lat: 13.0500, lng: 80.2300 },
+          zoom: 11.5,
+          minZoom: 9.8,
+          maxZoom: 18,
+          gestureHandling: 'greedy',
+          mapTypeId: isSatellite ? 'hybrid' : 'roadmap',
+          styles: activeMapStyle,
+          disableDefaultUI: false,
+          zoomControl: true,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: false,
+          backgroundColor: theme === 'light' ? '#f8fafc' : '#0b0f19'
+        });
+
+        mapRef.current = map;
+        setMapLoaded(true);
+      })
+      .catch((err: unknown) => {
+        console.error('Failed to load Google Maps:', err);
+        const msg = err instanceof Error ? err.message : 'Error loading Google Maps API';
+        setLoadError(msg);
+      });
+
+    return () => {
+      Object.values(markersRef.current).forEach(m => m.setMap(null));
+      markersRef.current = {};
+      Object.values(sectionMarkersRef.current).forEach(m => m.setMap(null));
+      sectionMarkersRef.current = {};
+      connectionLinesRef.current.forEach(l => l.setMap(null));
+      connectionLinesRef.current = [];
+      selectionHaloRef.current?.setMap(null);
+      selectionHaloRef.current = null;
+      sectionBoundaryPolygonsRef.current.forEach(p => p.setMap(null));
+      sectionBoundaryPolygonsRef.current = [];
+    };
+  }, [apiKey]);
+
+  // Handle Map Type & Theme Style Updates
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded) return;
+    mapRef.current.setMapTypeId(isSatellite ? 'hybrid' : 'roadmap');
+    mapRef.current.setOptions({
+      styles: activeMapStyle,
+      backgroundColor: theme === 'light' ? '#f8fafc' : '#0b0f19'
+    });
+  }, [activeMapStyle, isSatellite, theme, mapLoaded]);
+
+  // 1. One-time Substation Marker Instantiation (never recreated on selection or layer toggles)
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded || substations.length === 0) return;
+    const map = mapRef.current;
+
+    Object.values(markersRef.current).forEach(m => m.setMap(null));
+    markersRef.current = {};
+
+    const isLight = theme === 'light';
+
+    substations.forEach(ss => {
+      const isSelected = selectedSubstation?.code === ss.code;
+      const marker = new google.maps.Marker({
+        position: { lat: ss.lat, lng: ss.lng },
+        map,
+        title: `${ss.name} (${ss.voltage} kV) • ${ss.totalConsumers ? ss.totalConsumers.toLocaleString() + ' consumers' : ss.tier === 'bulk' ? 'Bulk EHV Node' : 'Substation'}`,
+        zIndex: isSelected ? 100 : ss.tier === 'bulk' ? 30 : ss.tier === 'subtransmission' ? 20 : 10,
+        icon: getSubstationMarkerIcon(ss, isSelected, isLight),
+        optimized: true
+      });
+
+      marker.addListener('click', () => {
+        onSelectSubstation(ss);
+        onSelectSection(null);
+        setFeederFilter('');
+      });
+
+      markersRef.current[ss.code] = marker;
+    });
+
+    prevSelectedSubstationCodeRef.current = selectedSubstation?.code || null;
+  }, [mapLoaded, substations]);
+
+  // 2. One-time Section Marker Instantiation
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded || sections.length === 0) return;
+
+    Object.values(sectionMarkersRef.current).forEach(m => m.setMap(null));
+    sectionMarkersRef.current = {};
+
+    const isLight = theme === 'light';
+
+    sections.forEach(sec => {
+      const isSelected = selectedSection?.code === sec.code;
+      const marker = new google.maps.Marker({
+        position: { lat: sec.lat, lng: sec.lng },
+        map: null, // do NOT attach to map until layer is active or section selected
+        title: sec.name,
+        zIndex: isSelected ? 90 : 5,
+        icon: getSectionMarkerIcon(isSelected, isLight),
+        optimized: true
+      });
+
+      marker.addListener('click', () => {
+        onSelectSection(sec);
+        onSelectSubstation(null);
+      });
+
+      sectionMarkersRef.current[sec.code] = marker;
+    });
+
+    prevSelectedSectionCodeRef.current = selectedSection?.code || null;
+  }, [mapLoaded, sections]);
+
+  // 3. Substation Viewport & Layer Optimization (detach hidden markers from render tree)
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return;
+    const map = mapRef.current;
+
+    substations.forEach(ss => {
+      const marker = markersRef.current[ss.code];
+      if (!marker) return;
+
+      const isVisible = isolatedNodeIds
+        ? isolatedNodeIds.has(ss.code)
+        : ((ss.tier === 'bulk' && showBulk) ||
+           (ss.tier === 'subtransmission' && showSubTrans) ||
+           (ss.tier === 'distribution' && showDistribution));
+
+      if (isVisible) {
+        if (marker.getMap() !== map) marker.setMap(map);
+      } else {
+        if (marker.getMap() !== null) marker.setMap(null);
+      }
+    });
+  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, mapLoaded, substations]);
+
+  // 4. Section Viewport & Layer Optimization (only active when layer toggled or selected)
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return;
+    const map = mapRef.current;
+
+    sections.forEach(sec => {
+      const marker = sectionMarkersRef.current[sec.code];
+      if (!marker) return;
+
+      const shouldShow = isolatedNodeIds
+        ? isolatedNodeIds.has(sec.code)
+        : (showSections || selectedSection?.code === sec.code);
+
+      if (shouldShow) {
+        if (marker.getMap() !== map) marker.setMap(map);
+      } else {
+        if (marker.getMap() !== null) marker.setMap(null);
+      }
+    });
+  }, [showSections, selectedSection, isolatedNodeIds, mapLoaded, sections]);
+
+  // 5. Instant 2-Marker Selection Highlighting for Substations (only touches previous & current marker in 0.05ms)
+  useEffect(() => {
+    if (!mapLoaded) return;
+    const isLight = theme === 'light';
+
+    // Un-highlight previous substation
+    if (prevSelectedSubstationCodeRef.current && prevSelectedSubstationCodeRef.current !== selectedSubstation?.code) {
+      const prevMarker = markersRef.current[prevSelectedSubstationCodeRef.current];
+      const prevSS = substationsByCode.get(prevSelectedSubstationCodeRef.current);
+      if (prevMarker && prevSS) {
+        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight));
+        prevMarker.setZIndex(prevSS.tier === 'bulk' ? 30 : prevSS.tier === 'subtransmission' ? 20 : 10);
+      }
+    }
+
+    // Highlight newly selected substation
+    if (selectedSubstation) {
+      const currMarker = markersRef.current[selectedSubstation.code];
+      if (currMarker) {
+        currMarker.setIcon(getSubstationMarkerIcon(selectedSubstation, true, isLight));
+        currMarker.setZIndex(100);
+      }
+    }
+
+    prevSelectedSubstationCodeRef.current = selectedSubstation?.code || null;
+  }, [selectedSubstation, theme, mapLoaded, substationsByCode]);
+
+  // 6. Instant 2-Marker Selection Highlighting for Sections
+  useEffect(() => {
+    if (!mapLoaded) return;
+    const isLight = theme === 'light';
+
+    if (prevSelectedSectionCodeRef.current && prevSelectedSectionCodeRef.current !== selectedSection?.code) {
+      const prevMarker = sectionMarkersRef.current[prevSelectedSectionCodeRef.current];
+      if (prevMarker) {
+        prevMarker.setIcon(getSectionMarkerIcon(false, isLight));
+        prevMarker.setZIndex(5);
+      }
+    }
+
+    if (selectedSection) {
+      const currMarker = sectionMarkersRef.current[selectedSection.code];
+      if (currMarker) {
+        currMarker.setIcon(getSectionMarkerIcon(true, isLight));
+        currMarker.setZIndex(90);
+      }
+    }
+
+    prevSelectedSectionCodeRef.current = selectedSection?.code || null;
+  }, [selectedSection, theme, mapLoaded]);
+
+  // 7. In-Place Theme Icon Update without marker recreation
+  useEffect(() => {
+    if (!mapLoaded) return;
+    const isLight = theme === 'light';
+    substations.forEach(ss => {
+      const marker = markersRef.current[ss.code];
+      if (marker) {
+        const isSelected = selectedSubstation?.code === ss.code;
+        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight));
+      }
+    });
+    sections.forEach(sec => {
+      const marker = sectionMarkersRef.current[sec.code];
+      if (marker) {
+        const isSelected = selectedSection?.code === sec.code;
+        marker.setIcon(getSectionMarkerIcon(isSelected, isLight));
+      }
+    });
+  }, [theme, mapLoaded]);
+
+  // 8. Dedicated Selection Beacon Halo Ring (Visual Highlighting in Light & Dark modes)
+  useEffect(() => {
+    if (!mapLoaded || !mapRef.current) return;
+    if (!selectionHaloRef.current) {
+      selectionHaloRef.current = new google.maps.Marker({
+        map: mapRef.current,
+        visible: false,
+        zIndex: 60,
+        clickable: false
+      });
+    }
+
+    const isLight = theme === 'light';
+    const halo = selectionHaloRef.current;
+
+    if (selectedSubstation) {
+      const color = getNodeColor(selectedSubstation.tier, 'substation', isLight);
+      halo.setPosition({ lat: selectedSubstation.lat, lng: selectedSubstation.lng });
+      halo.setIcon({
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: selectedSubstation.tier === 'bulk' ? 26 : selectedSubstation.tier === 'subtransmission' ? 22 : 18,
+        fillColor: color,
+        fillOpacity: isLight ? 0.22 : 0.28,
+        strokeColor: isLight ? '#0F172A' : color,
+        strokeOpacity: isLight ? 0.6 : 0.85,
+        strokeWeight: isLight ? 2 : 1.5
+      });
+      halo.setVisible(true);
+    } else if (selectedSection) {
+      const color = isLight ? '#059669' : '#10B981';
+      halo.setPosition({ lat: selectedSection.lat, lng: selectedSection.lng });
+      halo.setIcon({
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 18,
+        fillColor: color,
+        fillOpacity: isLight ? 0.22 : 0.28,
+        strokeColor: isLight ? '#0F172A' : color,
+        strokeOpacity: isLight ? 0.6 : 0.85,
+        strokeWeight: isLight ? 2 : 1.5
+      });
+      halo.setVisible(true);
+    } else {
+      halo.setVisible(false);
+    }
+  }, [selectedSubstation, selectedSection, theme, mapLoaded]);
+
+  // Pan when selection changes (when not in isolated network fitBounds mode)
+  useEffect(() => {
+    if (!mapRef.current) return;
+    if (showConnections) return;
+    if (selectedSubstation) {
+      mapRef.current.panTo({ lat: selectedSubstation.lat, lng: selectedSubstation.lng });
+      mapRef.current.setZoom(14.2);
+    } else if (selectedSection && !selectedSection.boundary) {
+      mapRef.current.panTo({ lat: selectedSection.lat, lng: selectedSection.lng });
+      mapRef.current.setZoom(14.5);
+    }
+  }, [selectedSubstation, selectedSection, showConnections]);
+
+  // 9. On-Demand Jurisdictional Boundary Polygon for Selected Section Office
+  useEffect(() => {
+    // Clear previous polygons
+    sectionBoundaryPolygonsRef.current.forEach(p => p.setMap(null));
+    sectionBoundaryPolygonsRef.current = [];
+
+    if (!mapRef.current || !mapLoaded || !selectedSection || !selectedSection.boundary) {
+      return;
+    }
+
+    const map = mapRef.current;
+    const isLight = theme === 'light';
+    const boundary = selectedSection.boundary;
+    const bounds = new google.maps.LatLngBounds();
+
+    const createPolygonForRings = (rings: number[][][]) => {
+      const paths = rings.map(ring =>
+        ring.map(pt => {
+          const latLng = { lat: pt[1], lng: pt[0] };
+          bounds.extend(latLng);
+          return latLng;
+        })
+      );
+
+      const polygon = new google.maps.Polygon({
+        paths,
+        strokeColor: isLight ? '#D97706' : '#F59E0B',
+        strokeOpacity: isLight ? 0.9 : 0.95,
+        strokeWeight: 2.5,
+        fillColor: isLight ? '#F59E0B' : '#D97706',
+        fillOpacity: isLight ? 0.16 : 0.22,
+        zIndex: 15,
+        clickable: false,
+        map
+      });
+
+      sectionBoundaryPolygonsRef.current.push(polygon);
+    };
+
+    if (boundary.type === 'Polygon') {
+      createPolygonForRings(boundary.coordinates as number[][][]);
+    } else if (boundary.type === 'MultiPolygon') {
+      (boundary.coordinates as number[][][][]).forEach(poly => {
+        createPolygonForRings(poly);
+      });
+    }
+
+    // Auto-frame bounds around the jurisdictional territory
+    if (!bounds.isEmpty()) {
+      map.fitBounds(bounds, { top: 80, right: 460, bottom: 80, left: 80 });
+    }
+
+    return () => {
+      sectionBoundaryPolygonsRef.current.forEach(p => p.setMap(null));
+      sectionBoundaryPolygonsRef.current = [];
+    };
+  }, [selectedSection, mapLoaded, theme]);
+
+  // Render on-demand dotted connection lines for selected substation (strictly electrical substation links)
+  useEffect(() => {
+    // Clear previous polylines
+    connectionLinesRef.current.forEach(line => line.setMap(null));
+    connectionLinesRef.current = [];
+
+    if (!mapRef.current || !mapLoaded || !selectedSubstation || !showConnections || electricalNodes.length === 0) {
+      return;
+    }
+
+    const map = mapRef.current;
+
+    electricalNodes.forEach(node => {
+      const isIncoming = node.relation === 'incoming_feeder';
+      const path = isIncoming
+        ? [
+            { lat: node.lat, lng: node.lng },
+            { lat: selectedSubstation.lat, lng: selectedSubstation.lng }
+          ]
+        : [
+            { lat: selectedSubstation.lat, lng: selectedSubstation.lng },
+            { lat: node.lat, lng: node.lng }
+          ];
+
+      const polyline = new google.maps.Polyline({
+        path,
+        strokeOpacity: 0,
+        zIndex: 40,
+        icons: [
+          {
+            icon: {
+              path: 'M 0,-1 0,1',
+              strokeOpacity: 0.95,
+              scale: 2.5,
+              strokeColor: node.color
+            },
+            offset: '0',
+            repeat: '13px'
+          },
+          {
+            icon: {
+              path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+              strokeColor: node.color,
+              fillColor: node.color,
+              fillOpacity: 0.95,
+              scale: 2.2
+            },
+            offset: isIncoming ? '45%' : '60%'
+          }
+        ],
+        map
+      });
+
+      connectionLinesRef.current.push(polyline);
+    });
+
+    // Auto-frame bounds around the isolated electrical network
+    if (electricalNodes.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      bounds.extend({ lat: selectedSubstation.lat, lng: selectedSubstation.lng });
+      electricalNodes.forEach(node => bounds.extend({ lat: node.lat, lng: node.lng }));
+      map.fitBounds(bounds, { top: 80, right: 460, bottom: 80, left: 80 });
+    }
+
+    return () => {
+      connectionLinesRef.current.forEach(line => line.setMap(null));
+      connectionLinesRef.current = [];
+    };
+  }, [selectedSubstation, electricalNodes, mapLoaded, showConnections]);
+
+  // Filtered search list
+  const searchResults = useMemo<{ substations: TnebSubstation[]; sections: TnebSection[] }>(() => {
+    if (!searchQuery.trim()) return { substations: [], sections: [] };
+    const q = searchQuery.toLowerCase();
+    const matchedSS = substations
+      .filter(s => s.name.toLowerCase().includes(q) || s.code.includes(q) || s.circle.toLowerCase().includes(q))
+      .slice(0, 5);
+    const matchedSec = sections
+      .filter(s => s.name.toLowerCase().includes(q) || s.division.toLowerCase().includes(q))
+      .slice(0, 5);
+    return { substations: matchedSS, sections: matchedSec };
+  }, [searchQuery, substations, sections]);
+
+  // Filtered feeders for selected substation
+  const filteredFeeders = useMemo(() => {
+    if (!selectedSubstation || !selectedSubstation.feeders) return [];
+    if (!feederFilter.trim()) return selectedSubstation.feeders;
+    const q = feederFilter.toLowerCase();
+    return selectedSubstation.feeders.filter(f =>
+      f.name.toLowerCase().includes(q) || f.code.includes(q) || f.voltage.toLowerCase().includes(q)
+    );
+  }, [selectedSubstation, feederFilter]);
+
+  const isLight = theme === 'light';
+
+  return (
+    <div className={`relative w-full h-full min-h-[600px] flex overflow-hidden font-sans ${isLight ? 'bg-slate-100' : 'bg-slate-950'}`}>
+      {/* Map Container */}
+      <div ref={mapContainerRef} className="w-full h-full flex-1" />
+
+      {loadError && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-6">
+          <div className="bg-red-950/90 border border-red-500/40 text-red-200 p-6 rounded-2xl max-w-md shadow-2xl text-center">
+            <Shield className="w-12 h-12 text-red-400 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-white mb-2">Google Maps Connection Error</h3>
+            <p className="text-sm text-red-300 mb-4">{loadError}</p>
+            <p className="text-xs text-slate-400">
+              Ensure <code className="bg-slate-900 px-2 py-0.5 rounded text-cyan-300">VITE_GOOGLE_MAPS_API_KEY</code> is configured in your project root <code className="bg-slate-900 px-2 py-0.5 rounded text-cyan-300">.env</code>.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Top Left Floating Search & Quick Filters */}
+      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+        <div className={`pointer-events-auto rounded-xl p-2.5 shadow-xl transition-colors ${
+          isLight ? 'bg-white border border-slate-200' : 'bg-slate-900 border border-slate-800'
+        }`}>
+          <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-colors ${
+            isLight ? 'bg-slate-100 border-slate-200 text-slate-800' : 'bg-slate-950/80 border-slate-800 text-white'
+          }`}>
+            <Search className={`w-4 h-4 ${isLight ? 'text-slate-500' : 'text-slate-400'}`} />
+            <input
+              type="text"
+              placeholder="Search Substation or AE Section..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={`w-full bg-transparent text-sm outline-none ${
+                isLight ? 'text-slate-900 placeholder-slate-400' : 'text-white placeholder-slate-500'
+              }`}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className={isLight ? 'text-slate-400 hover:text-slate-600' : 'text-slate-400 hover:text-white'}>
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Quick Search Dropdown */}
+          {searchQuery && (searchResults.substations.length > 0 || searchResults.sections.length > 0) && (
+            <div className={`mt-2 pt-2 border-t max-h-60 overflow-y-auto space-y-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+              {searchResults.substations.map(ss => (
+                <button
+                  key={ss.code}
+                  onClick={() => {
+                    onSelectSubstation(ss);
+                    onSelectSection(null);
+                    setSearchQuery('');
+                  }}
+                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                    isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-200'
+                  }`}
+                >
+                  <div className="truncate pr-2">
+                    <span className="font-semibold block truncate">{ss.name}</span>
+                    <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                      {ss.totalConsumers ? `${ss.totalConsumers.toLocaleString()} consumers` : ss.circle}
+                    </span>
+                  </div>
+                  <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold shrink-0 ${
+                    ss.tier === 'bulk' ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300') :
+                    ss.tier === 'subtransmission' ? (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300') :
+                    (isLight ? 'bg-sky-100 text-sky-700' : 'bg-cyan-500/20 text-cyan-300')
+                  }`}>
+                    {ss.voltage} kV
+                  </span>
+                </button>
+              ))}
+              {searchResults.sections.map(sec => (
+                <button
+                  key={sec.code}
+                  onClick={() => {
+                    onSelectSection(sec);
+                    onSelectSubstation(null);
+                    setSearchQuery('');
+                  }}
+                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                    isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-200'
+                  }`}
+                >
+                  <span className={`font-semibold truncate ${isLight ? 'text-emerald-700' : 'text-emerald-200'}`}>{sec.name}</span>
+                  <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] ${
+                    isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/20 text-emerald-300'
+                  }`}>
+                    AE
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Floating Layer Controls (Positioned on Left below Search) */}
+        <div className={`pointer-events-auto rounded-xl p-3 shadow-xl text-xs space-y-2.5 transition-colors ${
+          isLight ? 'bg-white border border-slate-200 text-slate-800' : 'bg-slate-900 border border-slate-800 text-slate-200'
+        }`}>
+          <div className={`flex items-center justify-between ${isLayersExpanded ? 'border-b pb-2' : ''} ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+            <button
+              onClick={() => setIsLayersExpanded(!isLayersExpanded)}
+              className="flex items-center gap-1.5 text-left font-bold uppercase tracking-wider text-[11px] hover:opacity-80 transition-opacity"
+            >
+              <Layers className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+              <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>TNEB Grid Layers</span>
+              {isLayersExpanded ? (
+                <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+              )}
+            </button>
+            <button
+              onClick={() => setIsSatellite(!isSatellite)}
+              className={`px-2 py-0.5 rounded font-medium text-[10px] transition-colors ${
+                isSatellite
+                  ? (isLight ? 'bg-sky-600 text-white font-bold' : 'bg-cyan-500 text-slate-950 font-bold')
+                  : (isLight ? 'bg-slate-100 text-slate-600 hover:text-slate-900' : 'bg-slate-800 text-slate-400 hover:text-white')
+              }`}
+            >
+              {isSatellite ? 'Satellite' : 'Vector Map'}
+            </button>
+          </div>
+
+          {isLayersExpanded && (
+            <>
+              {/* Voltage Tiers */}
+              <div className="space-y-1.5">
+                <button
+                  onClick={() => setShowBulk(!showBulk)}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
+                    showBulk
+                      ? (isLight ? 'bg-pink-50 border-pink-200 text-pink-900 shadow-sm' : 'bg-pink-950/40 border-pink-500/40 text-pink-200 shadow-sm')
+                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-pink-600 ring-2 ring-pink-300' : 'bg-pink-500 ring-2 ring-pink-400/40'}`}></span>
+                    <span className="font-medium">Bulk EHV (230-400kV)</span>
+                  </div>
+                  <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                    isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300'
+                  }`}>
+                    {substations.filter(s => s.tier === 'bulk').length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setShowSubTrans(!showSubTrans)}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
+                    showSubTrans
+                      ? (isLight ? 'bg-amber-50 border-amber-200 text-amber-900 shadow-sm' : 'bg-amber-950/40 border-amber-500/40 text-amber-200 shadow-sm')
+                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-amber-600 ring-2 ring-amber-300' : 'bg-amber-500 ring-2 ring-amber-400/40'}`}></span>
+                    <span className="font-medium">Sub-Trans (110kV)</span>
+                  </div>
+                  <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                    isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300'
+                  }`}>
+                    {substations.filter(s => s.tier === 'subtransmission').length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setShowDistribution(!showDistribution)}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
+                    showDistribution
+                      ? (isLight ? 'bg-sky-50 border-sky-200 text-sky-900 shadow-sm' : 'bg-cyan-950/40 border-cyan-500/40 text-cyan-200 shadow-sm')
+                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-sky-600 ring-2 ring-sky-300' : 'bg-cyan-400 ring-2 ring-cyan-400/40'}`}></span>
+                    <span className="font-medium">Distribution (33/11kV)</span>
+                  </div>
+                  <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                    isLight ? 'bg-sky-100 text-sky-700' : 'bg-cyan-500/20 text-cyan-300'
+                  }`}>
+                    {substations.filter(s => s.tier === 'distribution').length}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => setShowSections(!showSections)}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
+                    showSections
+                      ? (isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm' : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200 shadow-sm')
+                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-emerald-600 ring-2 ring-emerald-300' : 'bg-emerald-500 ring-2 ring-emerald-400/40'}`}></span>
+                    <span className="font-medium">AE Section Offices</span>
+                  </div>
+                  <span className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                    isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/20 text-emerald-300'
+                  }`}>
+                    {sections.length}
+                  </span>
+                </button>
+              </div>
+
+              <div className={`pt-2 border-t text-[10px] flex items-center justify-between ${isLight ? 'border-slate-200 text-slate-500' : 'border-slate-800 text-slate-400'}`}>
+                <span>Scope: <strong className={isLight ? 'text-slate-800' : 'text-slate-200'}>Chennai Only</strong></span>
+                <span className={`font-mono font-bold px-1.5 py-0.5 rounded ${
+                  isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/10 text-emerald-400'
+                }`}>
+                  NO POI
+                </span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Floating Substation / Section Inspector Drawer */}
+      {(selectedSubstation || selectedSection) && (
+        <div className="absolute bottom-6 left-6 right-6 md:left-auto md:right-6 md:w-[420px] z-30 pointer-events-none">
+          <div className={`pointer-events-auto rounded-2xl p-5 shadow-2xl space-y-4 max-h-[82vh] overflow-y-auto border transition-colors ${
+            isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-slate-900 border-slate-700/80 text-slate-200'
+          }`}>
+            {/* Header with Hierarchy Context */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider ${
+                    selectedSubstation?.tier === 'bulk' ? (isLight ? 'bg-pink-100 text-pink-700 border border-pink-300' : 'bg-pink-500/20 text-pink-300 border border-pink-500/40') :
+                    selectedSubstation?.tier === 'subtransmission' ? (isLight ? 'bg-amber-100 text-amber-700 border border-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40') :
+                    selectedSubstation?.tier === 'distribution' ? (isLight ? 'bg-sky-100 text-sky-700 border border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40') :
+                    (isLight ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40')
+                  }`}>
+                    {selectedSubstation ? (
+                      selectedSubstation.tier === 'bulk' ? `EHV BULK TRANSMISSION (${selectedSubstation.voltage} kV)` :
+                      selectedSubstation.tier === 'subtransmission' ? `SUB-TRANSMISSION HUB (${selectedSubstation.voltage} kV)` :
+                      `DISTRIBUTION YARD (${selectedSubstation.voltage} kV)`
+                    ) : 'TNEB AE SECTION OFFICE'}
+                  </span>
+                  <span className={`text-xs font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                    #{selectedSubstation?.code || selectedSection?.code}
+                  </span>
+                </div>
+                <h2 className={`text-base font-bold leading-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                  {selectedSubstation?.name || selectedSection?.name}
+                </h2>
+                {selectedSubstation && (
+                  <p className={`text-[11px] mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                    {selectedSubstation.tier === 'bulk'
+                      ? 'Bulk Grid Injection Node • Steps down EHV power to regional substations'
+                      : selectedSubstation.tier === 'subtransmission'
+                      ? 'Sub-Transmission Hub • Feeds local 33kV & 11kV distribution yards'
+                      : 'Primary 33/11kV Distribution Substation • Supplies street-level feeders'}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  onSelectSubstation(null);
+                  onSelectSection(null);
+                }}
+                className={`p-1 rounded-lg transition-colors shrink-0 ${
+                  isLight ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Substation Specific Telemetry & Details */}
+            {selectedSubstation && (
+              <div className="space-y-3.5">
+                {/* 3 Prominent Stat Cards: Consumers, Transformers (DTR), Feeders */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className={`p-2.5 rounded-xl border text-center ${
+                    isLight ? 'bg-sky-50 border-sky-100' : 'bg-slate-950/70 border-slate-800'
+                  }`}>
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Users className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-sky-700' : 'text-slate-400'}`}>
+                        Consumers
+                      </span>
+                    </div>
+                    <span className={`font-mono font-extrabold text-sm block ${
+                      selectedSubstation.totalConsumers > 0
+                        ? (isLight ? 'text-sky-950' : 'text-cyan-300')
+                        : (isLight ? 'text-slate-400 text-xs' : 'text-slate-500 text-xs')
+                    }`}>
+                      {selectedSubstation.totalConsumers > 0
+                        ? selectedSubstation.totalConsumers.toLocaleString()
+                        : selectedSubstation.tier === 'bulk' ? 'Bulk Feed' : '0'}
+                    </span>
+                  </div>
+
+                  <div className={`p-2.5 rounded-xl border text-center ${
+                    isLight ? 'bg-amber-50 border-amber-100' : 'bg-slate-950/70 border-slate-800'
+                  }`}>
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Activity className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-amber-700' : 'text-slate-400'}`}>
+                        DTRs (DTs)
+                      </span>
+                    </div>
+                    <span className={`font-mono font-extrabold text-sm block ${isLight ? 'text-amber-950' : 'text-amber-300'}`}>
+                      {selectedSubstation.totalTransformers.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className={`p-2.5 rounded-xl border text-center ${
+                    isLight ? 'bg-pink-50 border-pink-100' : 'bg-slate-950/70 border-slate-800'
+                  }`}>
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Zap className={`w-3.5 h-3.5 ${isLight ? 'text-pink-600' : 'text-pink-400'}`} />
+                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-pink-700' : 'text-slate-400'}`}>
+                        Feeders
+                      </span>
+                    </div>
+                    <span className={`font-mono font-extrabold text-sm block ${isLight ? 'text-pink-950' : 'text-pink-300'}`}>
+                      {selectedSubstation.feeders.length}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Substation Circle & Coordinates */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className={`p-2 rounded-xl border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                  }`}>
+                    <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                      isLight ? 'text-slate-500' : 'text-slate-400'
+                    }`}>Circle</span>
+                    <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {selectedSubstation.circle || 'Chennai EDC'}
+                    </span>
+                  </div>
+                  <div className={`p-2 rounded-xl border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                  }`}>
+                    <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                      isLight ? 'text-slate-500' : 'text-slate-400'
+                    }`}>Region Code</span>
+                    <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {selectedSubstation.regionCode || '01/09'}
+                    </span>
+                  </div>
+                  <div className={`p-2 rounded-xl border col-span-2 flex items-center justify-between ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                  }`}>
+                    <div>
+                      <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                        isLight ? 'text-slate-500' : 'text-slate-400'
+                      }`}>Coordinates</span>
+                      <span className={`font-mono font-medium text-xs ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                        {selectedSubstation.lat.toFixed(5)}° N, {selectedSubstation.lng.toFixed(5)}° E
+                      </span>
+                    </div>
+                    <MapPin className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+                  </div>
+                </div>
+
+                {/* Jurisdictional Assistant Engineer (AE) Section Office (Operational Dispatch) */}
+                {jurisdictionalSections.length > 0 && (
+                  <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-3 ${
+                    isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
+                  }`}>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`p-1.5 rounded-lg shrink-0 ${
+                        isLight ? 'bg-emerald-600 text-white' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      }`}>
+                        <Shield className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-xs truncate">
+                            {jurisdictionalSections[0].name}
+                          </span>
+                          <span className={`text-[9px] font-mono px-1 rounded ${
+                            isLight ? 'bg-emerald-200/70 text-emerald-900' : 'bg-emerald-900/50 text-emerald-300'
+                          }`}>
+                            AE Depot
+                          </span>
+                        </div>
+                        <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
+                          Field Maintenance & Fuse Call • {jurisdictionalSections[0].distanceKm} km
+                        </span>
+                      </div>
+                    </div>
+
+                    {jurisdictionalSections[0].section && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onSelectSection(jurisdictionalSections[0].section!);
+                          onSelectSubstation(null);
+                        }}
+                        className={`px-2 py-1 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                          isLight
+                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                            : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
+                        }`}
+                        title="Locate Section Office on Map"
+                      >
+                        Locate
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* 2-Step Flow: Show Connections Switch & Circuit Isolation */}
+                <div className={`p-3 rounded-xl border transition-all ${
+                  showConnections
+                    ? (isLight ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20' : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20')
+                    : (isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80')
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`p-1.5 rounded-lg ${
+                        showConnections
+                          ? (isLight ? 'bg-sky-600 text-white shadow-sm' : 'bg-cyan-500 text-slate-950 shadow-sm')
+                          : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                      }`}>
+                        <GitFork className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                            Show Connections
+                          </span>
+                          <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                            electricalNodes.length > 0
+                              ? (isLight ? 'bg-sky-100 text-sky-800' : 'bg-cyan-500/20 text-cyan-300')
+                              : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                          }`}>
+                            {electricalNodes.length} {electricalNodes.length === 1 ? 'electrical link' : 'electrical links'}
+                          </span>
+                        </div>
+                        <p className={`text-[10px] leading-tight mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                          {showConnections
+                            ? 'Circuit isolated • Unrelated markers hidden'
+                            : 'Isolate circuit & hide unrelated markers'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Interactive Switch */}
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={showConnections}
+                      onClick={() => setShowConnections(!showConnections)}
+                      disabled={electricalNodes.length === 0}
+                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        electricalNodes.length === 0
+                          ? 'opacity-40 cursor-not-allowed bg-slate-300'
+                          : showConnections
+                          ? (isLight ? 'bg-sky-600' : 'bg-cyan-500')
+                          : (isLight ? 'bg-slate-300' : 'bg-slate-700')
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                          showConnections ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Connected Links Drawer Expansion when Switch is Active */}
+                  {showConnections && electricalNodes.length > 0 && (
+                    <div className={`mt-3 pt-2.5 border-t space-y-1.5 max-h-48 overflow-y-auto pr-0.5 ${
+                      isLight ? 'border-sky-200' : 'border-cyan-900/50'
+                    }`}>
+                      {electricalNodes.map(node => (
+                        <button
+                          key={node.id}
+                          onClick={() => {
+                            if (node.substation) {
+                              onSelectSubstation(node.substation);
+                              onSelectSection(null);
+                            }
+                          }}
+                          className={`w-full text-left p-2 rounded-lg border text-xs flex items-center justify-between gap-2 transition-all ${
+                            isLight
+                              ? 'bg-white hover:bg-slate-100 border-slate-200 hover:border-sky-300 text-slate-800 shadow-sm'
+                              : 'bg-slate-900/90 hover:bg-slate-900 border-slate-800 hover:border-cyan-500/40 text-slate-200'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span
+                              className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white/20"
+                              style={{ backgroundColor: node.color }}
+                            />
+                            <div className="truncate">
+                              <span className="font-semibold block truncate leading-tight">{node.name}</span>
+                              <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                {node.label}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0 font-mono text-[10px]">
+                            <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>
+                              {node.distanceKm} km
+                            </span>
+                            <ArrowRight className={`w-3.5 h-3.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Feeder Hierarchy Section */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className={`text-xs font-bold flex items-center gap-1.5 ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                      <Cable className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+                      {selectedSubstation.tier === 'bulk' ? 'Outgoing Bulk Trunks & Lines' : 'Outgoing Distribution Feeders'}
+                    </span>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                      isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-300 bg-amber-500/20'
+                    }`}>
+                      {filteredFeeders.length} of {selectedSubstation.feeders.length}
+                    </span>
+                  </div>
+
+                  {/* Feeder Search Filter if more than 5 feeders */}
+                  {selectedSubstation.feeders.length > 5 && (
+                    <input
+                      type="text"
+                      placeholder="Filter feeder by name..."
+                      value={feederFilter}
+                      onChange={(e) => setFeederFilter(e.target.value)}
+                      className={`w-full px-2.5 py-1 text-xs rounded-lg border outline-none ${
+                        isLight
+                          ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
+                          : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
+                      }`}
+                    />
+                  )}
+
+                  {/* Feeders Scroll List */}
+                  {filteredFeeders.length > 0 ? (
+                    <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
+                      {filteredFeeders.map((f, idx) => (
+                        <div
+                          key={idx}
+                          className={`p-2 rounded-xl text-xs border transition-colors ${
+                            isLight
+                              ? 'bg-slate-50 hover:bg-slate-100 border-slate-200'
+                              : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <span className={`font-semibold text-xs truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                              {f.name}
+                            </span>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
+                                f.voltage.includes('33')
+                                  ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
+                                  : (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300')
+                              }`}>
+                                {f.voltage}
+                              </span>
+                              <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
+                                isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                              }`}>
+                                {f.config}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className={`flex items-center justify-between text-[11px] font-mono ${
+                            isLight ? 'text-slate-600' : 'text-slate-400'
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              {f.consumers > 0 ? (
+                                <span className={`font-semibold ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                                  👥 {f.consumers.toLocaleString()} consumers
+                                </span>
+                              ) : (
+                                <span className="text-[10px] opacity-75">{f.type}</span>
+                              )}
+                              {f.transformers > 0 && (
+                                <span>• ⚡ {f.transformers} DTRs</span>
+                              )}
+                            </div>
+                            {f.lengthKm > 0 && (
+                              <span className="text-[10px] opacity-70">{f.lengthKm} km</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={`p-3 text-center rounded-xl border text-xs ${
+                      isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
+                    }`}>
+                      {feederFilter ? 'No feeders match your search filter.' : 'Primary extra-high-voltage bulk grid node.'}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Section Specific Details */}
+            {selectedSection && (
+              <div className="space-y-3 text-xs">
+                {selectedSection.boundary && (
+                  <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
+                    isLight ? 'bg-amber-50/80 border-amber-200 text-amber-950' : 'bg-amber-950/25 border-amber-800/60 text-amber-200'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <div>
+                        <span className="font-bold text-xs block leading-tight">
+                          Jurisdictional Boundary
+                        </span>
+                        <span className={`text-[10px] block ${isLight ? 'text-amber-800/80' : 'text-amber-400/80'}`}>
+                          Official O&M Field & Fuse-Call Beat
+                        </span>
+                      </div>
+                    </div>
+                    <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                      isLight ? 'bg-amber-200/70 text-amber-950' : 'bg-amber-500/20 text-amber-300'
+                    }`}>
+                      Territory Active
+                    </span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className={`p-2.5 rounded-xl border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                  }`}>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                      isLight ? 'text-slate-500' : 'text-slate-400'
+                    }`}>Division</span>
+                    <span className={`font-semibold ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {selectedSection.division || 'Chennai Central'}
+                    </span>
+                  </div>
+                  <div className={`p-2.5 rounded-xl border ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                  }`}>
+                    <span className={`text-[10px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                      isLight ? 'text-slate-500' : 'text-slate-400'
+                    }`}>Subdivision</span>
+                    <span className={`font-semibold ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                      {selectedSection.subdivision || 'O&M'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className={`space-y-2 p-3 rounded-xl border ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                }`}>
+                  {selectedSection.mobile && (
+                    <div className={`flex items-center gap-2.5 ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>
+                      <Phone className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+                      <a href={`tel:${selectedSection.mobile}`} className={`font-mono font-medium ${isLight ? 'hover:text-emerald-600' : 'hover:text-emerald-300'}`}>
+                        {selectedSection.mobile}
+                      </a>
+                    </div>
+                  )}
+                  {selectedSection.email && (
+                    <div className={`flex items-center gap-2.5 ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>
+                      <Mail className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+                      <span className="font-mono truncate">{selectedSection.email}</span>
+                    </div>
+                  )}
+                  {selectedSection.address && (
+                    <div className={`flex items-start gap-2.5 pt-1 border-t ${
+                      isLight ? 'border-slate-200 text-slate-600' : 'border-slate-800 text-slate-400'
+                    }`}>
+                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                      <span className="text-[11px] leading-relaxed">{selectedSection.address}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
