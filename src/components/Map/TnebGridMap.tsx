@@ -1449,30 +1449,30 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               <div className="flex flex-col flex-1 min-h-0 pt-2">
                 {/* Compact Horizontal Quick-Stats Ribbon */}
                 <div className="grid grid-cols-3 gap-2 pb-2 shrink-0 border-b border-current/10 text-center text-xs">
-                  <div className={`p-1.5 rounded-lg border ${isLight ? 'bg-sky-50/70 border-sky-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
-                    <span className={`text-[10px] flex items-center justify-center gap-1 font-semibold ${isLight ? 'text-sky-700' : 'text-slate-400'}`}>
-                      <Users className="w-3 h-3" />
+                  <div className={`p-2 rounded-xl border ${isLight ? 'bg-sky-50/70 border-sky-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
+                    <span className={`text-[11px] flex items-center justify-center gap-1.5 font-semibold ${isLight ? 'text-sky-700' : 'text-slate-400'}`}>
+                      <Users className="w-3.5 h-3.5" />
                       Consumers
                     </span>
-                    <span className={`font-mono font-bold text-xs ${isLight ? 'text-sky-950' : 'text-cyan-300'}`}>
+                    <span className={`font-mono font-bold text-sm block mt-0.5 ${isLight ? 'text-sky-950' : 'text-cyan-300'}`}>
                       {selectedSubstation.totalConsumers > 0 ? selectedSubstation.totalConsumers.toLocaleString() : selectedSubstation.tier === 'bulk' ? 'Bulk Feed' : '0'}
                     </span>
                   </div>
-                  <div className={`p-1.5 rounded-lg border ${isLight ? 'bg-amber-50/70 border-amber-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
-                    <span className={`text-[10px] flex items-center justify-center gap-1 font-semibold ${isLight ? 'text-amber-700' : 'text-slate-400'}`}>
-                      <Activity className="w-3 h-3" />
+                  <div className={`p-2 rounded-xl border ${isLight ? 'bg-amber-50/70 border-amber-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
+                    <span className={`text-[11px] flex items-center justify-center gap-1.5 font-semibold ${isLight ? 'text-amber-700' : 'text-slate-400'}`}>
+                      <Activity className="w-3.5 h-3.5" />
                       DTRs (DTs)
                     </span>
-                    <span className={`font-mono font-bold text-xs ${isLight ? 'text-amber-950' : 'text-amber-300'}`}>
+                    <span className={`font-mono font-bold text-sm block mt-0.5 ${isLight ? 'text-amber-950' : 'text-amber-300'}`}>
                       {selectedSubstation.totalTransformers.toLocaleString()}
                     </span>
                   </div>
-                  <div className={`p-1.5 rounded-lg border ${isLight ? 'bg-pink-50/70 border-pink-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
-                    <span className={`text-[10px] flex items-center justify-center gap-1 font-semibold ${isLight ? 'text-pink-700' : 'text-slate-400'}`}>
-                      <Zap className="w-3 h-3" />
+                  <div className={`p-2 rounded-xl border ${isLight ? 'bg-pink-50/70 border-pink-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
+                    <span className={`text-[11px] flex items-center justify-center gap-1.5 font-semibold ${isLight ? 'text-pink-700' : 'text-slate-400'}`}>
+                      <Zap className="w-3.5 h-3.5" />
                       Feeders
                     </span>
-                    <span className={`font-mono font-bold text-xs ${isLight ? 'text-pink-950' : 'text-pink-300'}`}>
+                    <span className={`font-mono font-bold text-sm block mt-0.5 ${isLight ? 'text-pink-950' : 'text-pink-300'}`}>
                       {selectedSubstation.feeders.length}
                     </span>
                   </div>
@@ -1484,28 +1484,43 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   <div className="flex-1 grid grid-cols-2 gap-4 min-h-0 pt-2.5">
                     {/* Left Panel: Connections & Substation Field Metadata */}
                     <div className="flex flex-col h-full min-h-0 pr-3 border-r border-current/10 space-y-3 overflow-hidden">
-                      {/* Substation Circle & Coordinates */}
-                      <div className="grid grid-cols-2 gap-2 text-xs shrink-0">
-                        <div className={`p-2 rounded-xl border ${
-                          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                        }`}>
-                          <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                            isLight ? 'text-slate-500' : 'text-slate-400'
-                          }`}>Circle</span>
-                          <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                            {selectedSubstation.circle || 'Chennai EDC'}
-                          </span>
+                      {/* Substation Circle, Region & Google Maps External Link */}
+                      <div className={`px-3 py-2 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
+                        isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                      }`}>
+                        <div className="flex items-center gap-3 divide-x divide-slate-200 dark:divide-slate-800 min-w-0">
+                          <div className="min-w-0">
+                            <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Circle
+                            </span>
+                            <span className={`font-semibold text-xs truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                              {selectedSubstation.circle || 'Chennai EDC'}
+                            </span>
+                          </div>
+                          <div className="pl-3 shrink-0">
+                            <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Region
+                            </span>
+                            <span className={`font-semibold text-xs block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                              {selectedSubstation.regionCode || '01/09'}
+                            </span>
+                          </div>
                         </div>
-                        <div className={`p-2 rounded-xl border ${
-                          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                        }`}>
-                          <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                            isLight ? 'text-slate-500' : 'text-slate-400'
-                          }`}>Region Code</span>
-                          <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                            {selectedSubstation.regionCode || '01/09'}
-                          </span>
-                        </div>
+
+                        <a
+                          href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all shrink-0 group ${
+                            isLight
+                              ? 'bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-900 border-slate-200 hover:border-sky-300 shadow-xs'
+                              : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-slate-800 hover:border-cyan-500/50 shadow-xs'
+                          }`}
+                          title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
+                        >
+                          <MapPin className="w-3.5 h-3.5 text-sky-500 group-hover:scale-110 transition-transform shrink-0" />
+                          <span>Google Maps ↗</span>
+                        </a>
                       </div>
 
                       {/* Switchyard Hardware & Incoming Feeder Specs */}
@@ -2377,28 +2392,44 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                     {/* Tab 3: Substation Info & Field AE Depot */}
                     {inspectorTab === 'info' && (
-                      <div className="flex flex-col flex-1 min-h-0 space-y-2 overflow-y-auto pr-1">
-                        {/* Compact Administrative & GPS Strip */}
-                        <div className={`px-3 py-2 rounded-xl border flex items-center justify-between text-xs shrink-0 ${
-                          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800'
+                      <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
+                        {/* Compact Administrative & GPS Ribbon */}
+                        <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
+                          isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800'
                         }`}>
-                          <div className="flex items-center gap-3 divide-x divide-slate-200 dark:divide-slate-800 text-[11px] min-w-0">
-                            <div>
-                              <span className={`text-[9px] uppercase tracking-wider font-semibold block ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Circle</span>
-                              <span className={`font-semibold truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>{selectedSubstation.circle || 'Chennai EDC'}</span>
+                          <div className="flex items-center gap-4 divide-x divide-slate-200 dark:divide-slate-800 min-w-0">
+                            <div className="min-w-0">
+                              <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                                Circle
+                              </span>
+                              <span className={`text-xs font-bold truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                                {selectedSubstation.circle || 'Chennai EDC'}
+                              </span>
                             </div>
-                            <div className="pl-3">
-                              <span className={`text-[9px] uppercase tracking-wider font-semibold block ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Region</span>
-                              <span className={`font-semibold block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>{selectedSubstation.regionCode || '01/09'}</span>
-                            </div>
-                            <div className="pl-3 min-w-0">
-                              <span className={`text-[9px] uppercase tracking-wider font-semibold block ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>GPS</span>
-                              <span className={`font-mono text-[10px] font-medium block truncate ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
-                                {selectedSubstation.lat.toFixed(4)}°N, {selectedSubstation.lng.toFixed(4)}°E
+                            <div className="pl-4 shrink-0">
+                              <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                                Region
+                              </span>
+                              <span className={`text-xs font-bold block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                                {selectedSubstation.regionCode || '01/09'}
                               </span>
                             </div>
                           </div>
-                          <MapPin className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+
+                          <a
+                            href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 group ${
+                              isLight
+                                ? 'bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-900 border-slate-200 hover:border-sky-300 shadow-xs'
+                                : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-slate-800 hover:border-cyan-500/50 shadow-xs'
+                            }`}
+                            title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
+                          >
+                            <MapPin className="w-3.5 h-3.5 text-sky-500 group-hover:scale-110 transition-transform shrink-0" />
+                            <span>Google Maps ↗</span>
+                          </a>
                         </div>
 
                         {/* Switchyard Hardware & Incoming Feeder Specs */}
@@ -2409,16 +2440,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                           });
 
                           return (
-                            <div className={`p-2.5 rounded-xl border space-y-1.5 shrink-0 ${
+                            <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
                               isLight ? 'bg-amber-50/50 border-amber-200/80 text-amber-950' : 'bg-amber-950/20 border-amber-800/40 text-amber-200'
                             }`}>
                               <div className="flex items-center justify-between text-xs">
-                                <span className="font-bold text-[11px] flex items-center gap-1.5">
+                                <span className="font-bold text-xs flex items-center gap-1.5">
                                   <Zap className="w-3.5 h-3.5 text-amber-500" />
                                   <span>Switchyard & Hardware</span>
                                 </span>
                                 {Boolean(selectedSubstation.totalCapacityMva) && (
-                                  <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                                  <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded ${
                                     isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
                                   }`}>
                                     {selectedSubstation.totalCapacityMva} MVA Capacity
@@ -2426,28 +2457,32 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 )}
                               </div>
 
-                              <div className="flex items-center gap-2 text-[11px]">
-                                <div className={`flex-1 px-2 py-1 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
-                                  <span className={`text-[9px] uppercase font-semibold mr-1.5 ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Transformers:</span>
-                                  <span className="font-bold font-mono">{selectedSubstation.powerTransformersCount || 1} units</span>
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className={`px-2.5 py-1.5 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
+                                  <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Transformers</span>
+                                  <span className="font-bold font-mono text-xs block mt-0.5">{selectedSubstation.powerTransformersCount || 1} units</span>
                                 </div>
-                                <div className={`flex-1 px-2 py-1 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
-                                  <span className={`text-[9px] uppercase font-semibold mr-1.5 ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Incomers:</span>
-                                  <span className="font-bold font-mono">{selectedSubstation.incomingFeedersCount || validIncomers.length || 1} lines</span>
+                                <div className={`px-2.5 py-1.5 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
+                                  <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Incoming Lines</span>
+                                  <span className="font-bold font-mono text-xs block mt-0.5">{selectedSubstation.incomingFeedersCount || validIncomers.length || 1} lines</span>
                                 </div>
                               </div>
 
                               {validIncomers.length > 0 && (
-                                <div className="flex items-center gap-1.5 pt-0.5 flex-wrap">
-                                  <span className={`text-[9px] uppercase font-bold tracking-wider shrink-0 ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>Incomers:</span>
-                                  {validIncomers.map((name, idx) => (
-                                    <span key={idx} className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium inline-flex items-center gap-1 ${
-                                      isLight ? 'bg-white border border-amber-200 text-slate-800' : 'bg-slate-900/80 border border-amber-900/40 text-amber-200'
-                                    }`}>
-                                      <span className="text-amber-500 font-bold">←</span>
-                                      <span>{name}</span>
-                                    </span>
-                                  ))}
+                                <div className="space-y-1.5 pt-0.5">
+                                  <span className={`text-[10px] uppercase font-bold tracking-wider block ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
+                                    Incomers ({validIncomers.length}):
+                                  </span>
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    {validIncomers.map((name, idx) => (
+                                      <span key={idx} className={`px-2.5 py-1 rounded text-xs font-mono font-medium inline-flex items-center gap-1.5 ${
+                                        isLight ? 'bg-white border border-amber-200 text-slate-800 shadow-xs' : 'bg-slate-900/80 border border-amber-900/40 text-amber-200'
+                                      }`}>
+                                        <span className="text-amber-500 font-bold">←</span>
+                                        <span>{name}</span>
+                                      </span>
+                                    ))}
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -2456,7 +2491,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                         {/* Substation Terrain & Flood Risk Profile */}
                         {selectedSubstation.elevationM !== undefined && (
-                          <div className={`p-2.5 rounded-xl border space-y-1.5 shrink-0 ${
+                          <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
                             selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                               ? (isLight ? 'bg-rose-50/70 border-rose-200 text-rose-950' : 'bg-rose-950/25 border-rose-800/60 text-rose-200')
                               : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
@@ -2464,11 +2499,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               : (isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800/80 text-slate-200')
                           }`}>
                             <div className="flex items-center justify-between text-xs">
-                              <span className="font-bold text-[11px] flex items-center gap-1.5">
+                              <span className="font-bold text-xs flex items-center gap-1.5">
                                 <span>🌊</span>
                                 <span>Climate & Flood Risk</span>
                               </span>
-                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
                                 selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                                   ? (isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-black')
                                   : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
@@ -2483,26 +2518,26 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[10px]">
-                              <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className="text-[8px] opacity-75 block">Elevation</span>
-                                <strong className="text-[11px] font-bold">{selectedSubstation.elevationM} m</strong>
+                            <div className="grid grid-cols-3 gap-2 text-center font-mono">
+                              <div className={`py-2 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Elevation</span>
+                                <strong className="text-xs font-bold block mt-0.5">{selectedSubstation.elevationM} m</strong>
                               </div>
-                              <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className="text-[8px] opacity-75 block">Coast Dist</span>
-                                <strong className="text-[11px] font-bold">{selectedSubstation.distanceToCoastKm || 0} km</strong>
+                              <div className={`py-2 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Coast Dist</span>
+                                <strong className="text-xs font-bold block mt-0.5">{selectedSubstation.distanceToCoastKm || 0} km</strong>
                               </div>
-                              <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className="text-[8px] opacity-75 block">Risk Score</span>
-                                <strong className="text-[11px] font-bold">{selectedSubstation.compositeRiskScore || 0}/100</strong>
+                              <div className={`py-2 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Risk Score</span>
+                                <strong className="text-xs font-bold block mt-0.5">{selectedSubstation.compositeRiskScore || 0}/100</strong>
                               </div>
                             </div>
 
                             {selectedSubstation.anticipatorySop && (
-                              <div className={`px-2 py-1 rounded-lg text-[10px] leading-snug ${
+                              <div className={`px-2.5 py-1.5 rounded-lg text-xs leading-relaxed ${
                                 isLight ? 'bg-white/90 text-slate-700 border border-black/5' : 'bg-slate-900/80 text-slate-300 border border-white/10'
                               }`}>
-                                <strong className="font-semibold mr-1">Field SOP:</strong>
+                                <strong className="font-semibold mr-1.5">Field SOP:</strong>
                                 <span>{selectedSubstation.anticipatorySop}</span>
                               </div>
                             )}
@@ -2511,23 +2546,23 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                         {/* Jurisdictional Assistant Engineer (AE) Section Office */}
                         {jurisdictionalSections.length > 0 && (
-                          <div className={`px-3 py-2 rounded-xl border flex items-center justify-between gap-2 shrink-0 ${
+                          <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-2.5 shrink-0 ${
                             isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
                           }`}>
-                            <div className="flex items-center gap-2 min-w-0">
-                              <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="font-bold text-[11px] truncate">
+                                  <span className="font-bold text-xs truncate">
                                     {jurisdictionalSections[0].name}
                                   </span>
-                                  <span className={`text-[8px] font-mono px-1 rounded ${
+                                  <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
                                     isLight ? 'bg-emerald-200/70 text-emerald-900' : 'bg-emerald-900/50 text-emerald-300'
                                   }`}>
                                     AE Depot
                                   </span>
                                 </div>
-                                <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
+                                <span className={`text-xs block truncate mt-0.5 ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
                                   {jurisdictionalSections[0].section?.mobile ? `📞 ${jurisdictionalSections[0].section.mobile} • ` : ''}{jurisdictionalSections[0].distanceKm} km
                                 </span>
                               </div>
@@ -2540,7 +2575,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                   onSelectSection(jurisdictionalSections[0].section!);
                                   onSelectSubstation(null);
                                 }}
-                                className={`px-2 py-1 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition-all ${
                                   isLight
                                     ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
                                     : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
@@ -2548,20 +2583,20 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 title="Locate Section Office on Map"
                               >
                                 Locate
-                                <ArrowRight className="w-3 h-3" />
+                                <ArrowRight className="w-3.5 h-3.5" />
                               </button>
                             )}
                           </div>
                         )}
 
                         {/* Operational Dispatch Guide */}
-                        <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+                        <div className={`p-3 rounded-xl border space-y-1.5 ${
                           isLight ? 'bg-slate-50 border-slate-200 text-slate-600' : 'bg-slate-950/40 border-slate-800 text-slate-400'
                         }`}>
-                          <span className={`font-semibold block text-[11px] ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                          <span className={`font-semibold block text-xs ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
                             ⚡ Grid Dispatch Note:
                           </span>
-                          <p className="text-[11px] leading-relaxed">
+                          <p className="text-xs leading-relaxed">
                             {selectedSubstation.tier === 'bulk'
                               ? 'Extra High Voltage (EHV) substation feeding sub-transmission loops. Monitored 24x7 by State Load Despatch Centre (SLDC).'
                               : selectedSubstation.tier === 'subtransmission'
