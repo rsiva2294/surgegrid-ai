@@ -109,7 +109,11 @@ const MapStyleController: React.FC = () => {
 
 // Helper to safely access window.google.maps without crashing before SDK finishes loading
 const getGoogleMaps = () => {
-  if (typeof window !== 'undefined' && (window as any).google?.maps) {
+  if (
+    typeof window !== 'undefined' &&
+    typeof (window as any).google?.maps?.Size === 'function' &&
+    typeof (window as any).google?.maps?.Point === 'function'
+  ) {
     return (window as any).google.maps;
   }
   return null;
@@ -136,11 +140,13 @@ const getSubstationMarkerIcon = (
   </svg>`;
 
   const gMaps = getGoogleMaps();
+  const scaledSize = typeof gMaps?.Size === 'function' ? new gMaps.Size(size, size) : undefined;
+  const anchor = typeof gMaps?.Point === 'function' ? new gMaps.Point(r, r) : undefined;
 
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: gMaps ? new gMaps.Size(size, size) : undefined,
-    anchor: gMaps ? new gMaps.Point(r, r) : undefined,
+    scaledSize,
+    anchor,
   };
 };
 
@@ -164,11 +170,13 @@ const getShelterMarkerIcon = (
   </svg>`;
 
   const gMaps = getGoogleMaps();
+  const scaledSize = typeof gMaps?.Size === 'function' ? new gMaps.Size(size, size) : undefined;
+  const anchor = typeof gMaps?.Point === 'function' ? new gMaps.Point(r, r) : undefined;
 
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: gMaps ? new gMaps.Size(size, size) : undefined,
-    anchor: gMaps ? new gMaps.Point(r, r) : undefined,
+    scaledSize,
+    anchor,
   };
 };
 
@@ -181,11 +189,13 @@ const getHotspotMarkerIcon = (size: number = 18) => {
   </svg>`;
 
   const gMaps = getGoogleMaps();
+  const scaledSize = typeof gMaps?.Size === 'function' ? new gMaps.Size(size, size) : undefined;
+  const anchor = typeof gMaps?.Point === 'function' ? new gMaps.Point(r, r) : undefined;
 
   return {
     url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: gMaps ? new gMaps.Size(size, size) : undefined,
-    anchor: gMaps ? new gMaps.Point(r, r) : undefined,
+    scaledSize,
+    anchor,
   };
 };
 
@@ -203,7 +213,7 @@ const MapOverlays: React.FC<{
   const isLive = viewMode === 'LIVE';
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || typeof (window as any).google?.maps?.Circle !== 'function') return;
 
     const circles: google.maps.Circle[] = [];
 
