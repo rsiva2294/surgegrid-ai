@@ -4,6 +4,23 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.2.0-v5-ground-truth] - 2026-09-27
+
+### Added
+- **Ground-Truth Grid V5 Architecture**: Comprehensive data pipeline update resolving all duplicate entities and deploying a 100% verified master registry of 271 unique Chennai substations.
+- **Option A Electrical Grid Links**: Implemented incoming-to-outgoing feeder line validation matching downstream incoming lines (`in_fdr_n_1/2/3`) against upstream feeding substations, eliminating all fictional cross-city ties.
+- **Surveyed Feeder Vector Loader & 42k+ DTRs**: Asynchronous on-demand loader (`feederGeometryService.ts`) for real surveyed 11 kV MultiLineString street routes (`/data/feeders/{circle}.json`) and 42,000+ Distribution Transformers (`/data/dtr/{circle}.json`) with live kVA, asset IDs, and metered consumer telemetry.
+- **External Google Maps Hyperlink**: Replaced raw decimal GPS coordinates with an interactive `Google Maps ↗` button opening directly in a new tab (`https://www.google.com/maps?q=${lat},${lng}`) with full coordinate hover tooltips.
+- **Technical Reference Documentation**: Created `docs/v5-ground-truth-rebuild.md` detailing the V5 pipeline, data provenance, and ground-truth verification matrix.
+
+### Fixed & Enhanced
+- **Zero-Approximation Policy**: Completely eliminated the fallback radial spur line (`hash % 360` approximation). If a feeder lacks digitized street vectors, only real surveyed DTR points and switchyard coordinates are plotted—zero fictional lines are rendered.
+- **Razor-Sharp Conductor Rendering**: Removed multi-layered translucent blurred glow polylines that made feeder lines appear hazy, restoring crisp, utility-grade solid conductor cables with directional power flow arrows.
+- **Typography & Alignment Scaling**: Upgraded font sizes across the Substation Info tab, Switchyard cards, Climate & Flood Risk metrics, AE Depot section, and header Quick-Stats ribbon from microscopic `text-[8px]` to legible `text-[10px]`–`text-xs` / `text-sm font-bold`.
+- **Administrative Ribbon Formatting**: Balanced `Circle` and `Region` spacing with `whitespace-nowrap`, eliminating premature truncation and awkward wide spacing against the vertical divider.
+
+---
+
 ## [1.1.0-cockpit] - 2026-09-26
 
 ### Added
