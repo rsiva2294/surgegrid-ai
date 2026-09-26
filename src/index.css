@@ -37,3 +37,33 @@ body {
 .leaflet-container {
   font-family: inherit;
 }
+
+/* Atmospheric Cyclone Simulation Keyframes */
+@keyframes rainFall {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 80px 240px;
+  }
+}
+
+@keyframes cycloneSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
