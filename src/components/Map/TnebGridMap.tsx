@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
-import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star } from 'lucide-react';
+import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star, Columns2, Minimize2, Info } from 'lucide-react';
 
 interface TnebGridMapProps {
   theme: 'light' | 'dark';
@@ -457,12 +457,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [showConnections, setShowConnections] = useState(false);
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
+  const [isInspectorExpanded, setIsInspectorExpanded] = useState(false);
+  const [inspectorTab, setInspectorTab] = useState<'feeders' | 'connections' | 'info'>('feeders');
 
-  // Reset showConnections, selectedFeeder, and feederCategoryFilter when selected substation changes
+  // Reset showConnections, selectedFeeder, feederCategoryFilter, and inspectorTab when selected substation changes
   useEffect(() => {
     setShowConnections(false);
     setSelectedFeeder(null);
     setFeederCategoryFilter('all');
+    setInspectorTab('feeders');
   }, [selectedSubstation]);
 
   // Fast O(1) Entity Maps
@@ -1344,17 +1347,21 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         </div>
       </div>
 
-      {/* Bottom Floating Substation / Section Inspector Drawer */}
+      {/* Full-Height Substation / Section Inspector Drawer */}
       {(selectedSubstation || selectedSection) && (
-        <div className="absolute bottom-6 left-6 right-6 md:left-auto md:right-6 md:w-[420px] z-30 pointer-events-none">
-          <div className={`pointer-events-auto rounded-2xl p-5 shadow-2xl space-y-4 max-h-[82vh] overflow-y-auto border transition-colors ${
+        <div className={`absolute top-4 bottom-4 right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 ${
+          isInspectorExpanded && selectedSubstation
+            ? 'w-[calc(100vw-2rem)] md:w-[860px]'
+            : 'w-[calc(100vw-2rem)] md:w-[460px]'
+        }`}>
+          <div className={`pointer-events-auto rounded-2xl p-4 shadow-2xl flex flex-col h-full w-full border transition-colors ${
             isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-slate-900 border-slate-700/80 text-slate-200'
           }`}>
-            {/* Header with Hierarchy Context */}
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-bold uppercase tracking-wider ${
+            {/* Pinned Header */}
+            <div className="flex items-start justify-between gap-3 pb-3 border-b shrink-0 border-current/10">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
+                  <span className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold uppercase tracking-wider ${
                     selectedSubstation?.tier === 'bulk' ? (isLight ? 'bg-pink-100 text-pink-700 border border-pink-300' : 'bg-pink-500/20 text-pink-300 border border-pink-500/40') :
                     selectedSubstation?.tier === 'subtransmission' ? (isLight ? 'bg-amber-100 text-amber-700 border border-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40') :
                     selectedSubstation?.tier === 'distribution' ? (isLight ? 'bg-sky-100 text-sky-700 border border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40') :
@@ -1370,11 +1377,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     #{selectedSubstation?.code || selectedSection?.code}
                   </span>
                 </div>
-                <h2 className={`text-base font-bold leading-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                <h2 className={`text-base font-bold leading-tight truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
                   {selectedSubstation?.name || selectedSection?.name}
                 </h2>
                 {selectedSubstation && (
-                  <p className={`text-[11px] mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                  <p className={`text-[11px] mt-0.5 truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                     {selectedSubstation.tier === 'bulk'
                       ? 'Bulk Grid Injection Node • Steps down EHV power to regional substations'
                       : selectedSubstation.tier === 'subtransmission'
@@ -1383,524 +1390,1008 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   </p>
                 )}
               </div>
-              <button
-                onClick={() => {
-                  onSelectSubstation(null);
-                  onSelectSection(null);
-                }}
-                className={`p-1 rounded-lg transition-colors shrink-0 ${
-                  isLight ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700'
-                }`}
-              >
-                <X className="w-4 h-4" />
-              </button>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                {selectedSubstation && (
+                  <button
+                    onClick={() => setIsInspectorExpanded(!isInspectorExpanded)}
+                    className={`p-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+                      isInspectorExpanded
+                        ? (isLight ? 'bg-sky-100 text-sky-800' : 'bg-cyan-500/20 text-cyan-300')
+                        : (isLight ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700')
+                    }`}
+                    title={isInspectorExpanded ? "Switch to Single Column Tabbed View" : "Split View: Show Connections & Feeders Side-by-Side"}
+                  >
+                    {isInspectorExpanded ? <Minimize2 className="w-4 h-4" /> : <Columns2 className="w-4 h-4" />}
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    onSelectSubstation(null);
+                    onSelectSection(null);
+                  }}
+                  className={`p-1.5 rounded-lg transition-colors ${
+                    isLight ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200' : 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700'
+                  }`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Substation Specific Telemetry & Details */}
+            {/* Substation Specific Telemetry & Views */}
             {selectedSubstation && (
-              <div className="space-y-3.5">
-                {/* 3 Prominent Stat Cards: Consumers, Transformers (DTR), Feeders */}
-                <div className="grid grid-cols-3 gap-2">
-                  <div className={`p-2.5 rounded-xl border text-center ${
-                    isLight ? 'bg-sky-50 border-sky-100' : 'bg-slate-950/70 border-slate-800'
-                  }`}>
-                    <div className="flex items-center justify-center gap-1 mb-0.5">
-                      <Users className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-sky-700' : 'text-slate-400'}`}>
-                        Consumers
-                      </span>
-                    </div>
-                    <span className={`font-mono font-extrabold text-sm block ${
-                      selectedSubstation.totalConsumers > 0
-                        ? (isLight ? 'text-sky-950' : 'text-cyan-300')
-                        : (isLight ? 'text-slate-400 text-xs' : 'text-slate-500 text-xs')
-                    }`}>
-                      {selectedSubstation.totalConsumers > 0
-                        ? selectedSubstation.totalConsumers.toLocaleString()
-                        : selectedSubstation.tier === 'bulk' ? 'Bulk Feed' : '0'}
+              <div className="flex flex-col flex-1 min-h-0 pt-2">
+                {/* Compact Horizontal Quick-Stats Ribbon */}
+                <div className="grid grid-cols-3 gap-2 pb-2 shrink-0 border-b border-current/10 text-center text-xs">
+                  <div className={`p-1.5 rounded-lg border ${isLight ? 'bg-sky-50/70 border-sky-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
+                    <span className={`text-[10px] flex items-center justify-center gap-1 font-semibold ${isLight ? 'text-sky-700' : 'text-slate-400'}`}>
+                      <Users className="w-3 h-3" />
+                      Consumers
+                    </span>
+                    <span className={`font-mono font-bold text-xs ${isLight ? 'text-sky-950' : 'text-cyan-300'}`}>
+                      {selectedSubstation.totalConsumers > 0 ? selectedSubstation.totalConsumers.toLocaleString() : selectedSubstation.tier === 'bulk' ? 'Bulk Feed' : '0'}
                     </span>
                   </div>
-
-                  <div className={`p-2.5 rounded-xl border text-center ${
-                    isLight ? 'bg-amber-50 border-amber-100' : 'bg-slate-950/70 border-slate-800'
-                  }`}>
-                    <div className="flex items-center justify-center gap-1 mb-0.5">
-                      <Activity className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-amber-700' : 'text-slate-400'}`}>
-                        DTRs (DTs)
-                      </span>
-                    </div>
-                    <span className={`font-mono font-extrabold text-sm block ${isLight ? 'text-amber-950' : 'text-amber-300'}`}>
+                  <div className={`p-1.5 rounded-lg border ${isLight ? 'bg-amber-50/70 border-amber-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
+                    <span className={`text-[10px] flex items-center justify-center gap-1 font-semibold ${isLight ? 'text-amber-700' : 'text-slate-400'}`}>
+                      <Activity className="w-3 h-3" />
+                      DTRs (DTs)
+                    </span>
+                    <span className={`font-mono font-bold text-xs ${isLight ? 'text-amber-950' : 'text-amber-300'}`}>
                       {selectedSubstation.totalTransformers.toLocaleString()}
                     </span>
                   </div>
-
-                  <div className={`p-2.5 rounded-xl border text-center ${
-                    isLight ? 'bg-pink-50 border-pink-100' : 'bg-slate-950/70 border-slate-800'
-                  }`}>
-                    <div className="flex items-center justify-center gap-1 mb-0.5">
-                      <Zap className={`w-3.5 h-3.5 ${isLight ? 'text-pink-600' : 'text-pink-400'}`} />
-                      <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-pink-700' : 'text-slate-400'}`}>
-                        Feeders
-                      </span>
-                    </div>
-                    <span className={`font-mono font-extrabold text-sm block ${isLight ? 'text-pink-950' : 'text-pink-300'}`}>
+                  <div className={`p-1.5 rounded-lg border ${isLight ? 'bg-pink-50/70 border-pink-100' : 'bg-slate-950/50 border-slate-800/80'}`}>
+                    <span className={`text-[10px] flex items-center justify-center gap-1 font-semibold ${isLight ? 'text-pink-700' : 'text-slate-400'}`}>
+                      <Zap className="w-3 h-3" />
+                      Feeders
+                    </span>
+                    <span className={`font-mono font-bold text-xs ${isLight ? 'text-pink-950' : 'text-pink-300'}`}>
                       {selectedSubstation.feeders.length}
                     </span>
                   </div>
                 </div>
 
-                {/* Substation Circle & Coordinates */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className={`p-2 rounded-xl border ${
-                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                  }`}>
-                    <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                      isLight ? 'text-slate-500' : 'text-slate-400'
-                    }`}>Circle</span>
-                    <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                      {selectedSubstation.circle || 'Chennai EDC'}
-                    </span>
-                  </div>
-                  <div className={`p-2 rounded-xl border ${
-                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                  }`}>
-                    <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                      isLight ? 'text-slate-500' : 'text-slate-400'
-                    }`}>Region Code</span>
-                    <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                      {selectedSubstation.regionCode || '01/09'}
-                    </span>
-                  </div>
-                  <div className={`p-2 rounded-xl border col-span-2 flex items-center justify-between ${
-                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                  }`}>
-                    <div>
-                      <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                        isLight ? 'text-slate-500' : 'text-slate-400'
-                      }`}>Coordinates</span>
-                      <span className={`font-mono font-medium text-xs ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
-                        {selectedSubstation.lat.toFixed(5)}° N, {selectedSubstation.lng.toFixed(5)}° E
-                      </span>
-                    </div>
-                    <MapPin className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
-                  </div>
-                </div>
-
-                {/* Jurisdictional Assistant Engineer (AE) Section Office (Operational Dispatch) */}
-                {jurisdictionalSections.length > 0 && (
-                  <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-3 ${
-                    isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
-                  }`}>
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`p-1.5 rounded-lg shrink-0 ${
-                        isLight ? 'bg-emerald-600 text-white' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                      }`}>
-                        <Shield className="w-3.5 h-3.5" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-xs truncate">
-                            {jurisdictionalSections[0].name}
-                          </span>
-                          <span className={`text-[9px] font-mono px-1 rounded ${
-                            isLight ? 'bg-emerald-200/70 text-emerald-900' : 'bg-emerald-900/50 text-emerald-300'
-                          }`}>
-                            AE Depot
+                {/* Substation Content: Dual Column Split View OR Single Column Tabbed View */}
+                {isInspectorExpanded ? (
+                  /* SPLIT COCKPIT VIEW (Side-by-Side: Connections & Specs on Left, Feeders on Right) */
+                  <div className="flex-1 grid grid-cols-2 gap-4 min-h-0 pt-2.5">
+                    {/* Left Panel: Connections & Substation Field Metadata */}
+                    <div className="flex flex-col h-full min-h-0 pr-3 border-r border-current/10 space-y-3 overflow-hidden">
+                      {/* Substation Circle & Coordinates */}
+                      <div className="grid grid-cols-2 gap-2 text-xs shrink-0">
+                        <div className={`p-2 rounded-xl border ${
+                          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                        }`}>
+                          <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                            isLight ? 'text-slate-500' : 'text-slate-400'
+                          }`}>Circle</span>
+                          <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                            {selectedSubstation.circle || 'Chennai EDC'}
                           </span>
                         </div>
-                        <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
-                          Field Maintenance & Fuse Call • {jurisdictionalSections[0].distanceKm} km
-                        </span>
-                      </div>
-                    </div>
-
-                    {jurisdictionalSections[0].section && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onSelectSection(jurisdictionalSections[0].section!);
-                          onSelectSubstation(null);
-                        }}
-                        className={`px-2 py-1 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
-                          isLight
-                            ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
-                            : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
-                        }`}
-                        title="Locate Section Office on Map"
-                      >
-                        Locate
-                        <ArrowRight className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* 2-Step Flow: Show Connections Switch & Circuit Isolation */}
-                <div className={`p-3 rounded-xl border transition-all ${
-                  showConnections
-                    ? (isLight ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20' : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20')
-                    : (isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80')
-                }`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className={`p-1.5 rounded-lg ${
-                        showConnections
-                          ? (isLight ? 'bg-sky-600 text-white shadow-sm' : 'bg-cyan-500 text-slate-950 shadow-sm')
-                          : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
-                      }`}>
-                        <GitFork className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                            Show Connections
-                          </span>
-                          <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
-                            electricalNodes.length > 0
-                              ? (isLight ? 'bg-sky-100 text-sky-800' : 'bg-cyan-500/20 text-cyan-300')
-                              : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
-                          }`}>
-                            {electricalNodes.length} {electricalNodes.length === 1 ? 'electrical link' : 'electrical links'}
+                        <div className={`p-2 rounded-xl border ${
+                          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                        }`}>
+                          <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                            isLight ? 'text-slate-500' : 'text-slate-400'
+                          }`}>Region Code</span>
+                          <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                            {selectedSubstation.regionCode || '01/09'}
                           </span>
                         </div>
-                        <p className={`text-[10px] leading-tight mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                          {showConnections
-                            ? 'Circuit isolated • Unrelated markers hidden'
-                            : 'Isolate circuit & hide unrelated markers'}
-                        </p>
                       </div>
-                    </div>
 
-                    {/* Interactive Switch */}
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={showConnections}
-                      onClick={() => setShowConnections(!showConnections)}
-                      disabled={electricalNodes.length === 0}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                        electricalNodes.length === 0
-                          ? 'opacity-40 cursor-not-allowed bg-slate-300'
-                          : showConnections
-                          ? (isLight ? 'bg-sky-600' : 'bg-cyan-500')
-                          : (isLight ? 'bg-slate-300' : 'bg-slate-700')
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                          showConnections ? 'translate-x-5' : 'translate-x-0'
-                        }`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Connected Links Drawer Expansion when Switch is Active */}
-                  {showConnections && electricalNodes.length > 0 && (
-                    <div className={`mt-3 pt-2.5 border-t space-y-1.5 max-h-48 overflow-y-auto pr-0.5 ${
-                      isLight ? 'border-sky-200' : 'border-cyan-900/50'
-                    }`}>
-                      {electricalNodes.map(node => (
-                        <button
-                          key={node.id}
-                          onClick={() => {
-                            if (node.substation) {
-                              onSelectSubstation(node.substation);
-                              onSelectSection(null);
-                            }
-                          }}
-                          className={`w-full text-left p-2 rounded-lg border text-xs flex items-center justify-between gap-2 transition-all ${
-                            isLight
-                              ? 'bg-white hover:bg-slate-100 border-slate-200 hover:border-sky-300 text-slate-800 shadow-sm'
-                              : 'bg-slate-900/90 hover:bg-slate-900 border-slate-800 hover:border-cyan-500/40 text-slate-200'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <span
-                              className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white/20"
-                              style={{ backgroundColor: node.color }}
-                            />
-                            <div className="truncate">
-                              <span className="font-semibold block truncate leading-tight">{node.name}</span>
-                              <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                {node.label}
+                      {/* Jurisdictional AE Section Office */}
+                      {jurisdictionalSections.length > 0 && (
+                        <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 shrink-0 ${
+                          isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
+                        }`}>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className={`p-1.5 rounded-lg shrink-0 ${
+                              isLight ? 'bg-emerald-600 text-white' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                            }`}>
+                              <Shield className="w-3.5 h-3.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="font-bold text-xs truncate block">
+                                {jurisdictionalSections[0].name}
+                              </span>
+                              <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
+                                AE Depot • {jurisdictionalSections[0].distanceKm} km
                               </span>
                             </div>
                           </div>
+                          {jurisdictionalSections[0].section && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                onSelectSection(jurisdictionalSections[0].section!);
+                                onSelectSubstation(null);
+                              }}
+                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                                isLight
+                                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                                  : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
+                              }`}
+                            >
+                              Locate
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      )}
 
-                          <div className="flex items-center gap-1 shrink-0 font-mono text-[10px]">
-                            <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>
-                              {node.distanceKm} km
-                            </span>
-                            <ArrowRight className={`w-3.5 h-3.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
+                      {/* Connections Header & Switch */}
+                      <div className={`p-3 rounded-xl border shrink-0 transition-all ${
+                        showConnections
+                          ? (isLight ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20' : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20')
+                          : (isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80')
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-lg ${
+                              showConnections
+                                ? (isLight ? 'bg-sky-600 text-white shadow-sm' : 'bg-cyan-500 text-slate-950 shadow-sm')
+                                : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                            }`}>
+                              <GitFork className="w-3.5 h-3.5" />
+                            </div>
+                            <div>
+                              <span className={`text-xs font-bold block ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                                Isolate Electrical Circuit
+                              </span>
+                              <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                {electricalNodes.length} interconnected grid stations
+                              </span>
+                            </div>
                           </div>
-                        </button>
-                      ))}
+                          <button
+                            type="button"
+                            role="switch"
+                            aria-checked={showConnections}
+                            onClick={() => setShowConnections(!showConnections)}
+                            disabled={electricalNodes.length === 0}
+                            className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                              electricalNodes.length === 0
+                                ? 'opacity-40 cursor-not-allowed bg-slate-300'
+                                : showConnections
+                                ? (isLight ? 'bg-sky-600' : 'bg-cyan-500')
+                                : (isLight ? 'bg-slate-300' : 'bg-slate-700')
+                            }`}
+                          >
+                            <span
+                              className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                                showConnections ? 'translate-x-5' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Connected Substations Scroll List */}
+                      <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
+                        {electricalNodes.map(node => (
+                          <button
+                            key={node.id}
+                            onClick={() => {
+                              if (node.substation) {
+                                onSelectSubstation(node.substation);
+                                onSelectSection(null);
+                              }
+                            }}
+                            className={`w-full text-left p-2 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all ${
+                              isLight
+                                ? 'bg-white hover:bg-slate-100/90 border-slate-200 hover:border-sky-300 text-slate-800 shadow-sm'
+                                : 'bg-slate-950/60 hover:bg-slate-900 border-slate-800/80 hover:border-cyan-500/40 text-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <span
+                                className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-white/20"
+                                style={{ backgroundColor: node.color }}
+                              />
+                              <div className="truncate">
+                                <span className="font-semibold block truncate leading-tight">{node.name}</span>
+                                <span className={`text-[10px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                  {node.label} • {node.voltage || '33kV'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 font-mono text-[10px] shrink-0">
+                              <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>{node.distanceKm} km</span>
+                              <ArrowRight className={`w-3.5 h-3.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                {/* Feeder Hierarchy Section */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs font-bold flex items-center gap-1.5 ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
-                      <Cable className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
-                      {selectedSubstation.tier === 'bulk' ? 'Outgoing Bulk Trunks & Lines' : 'Outgoing Distribution Feeders'}
-                    </span>
-                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                      isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-300 bg-amber-500/20'
-                    }`}>
-                      {filteredFeeders.length} of {selectedSubstation.feeders.length}
-                    </span>
+                    {/* Right Panel: Outgoing Feeders & Distribution Network */}
+                    <div className="flex flex-col h-full min-h-0 pl-1 space-y-2 overflow-hidden">
+                      <div className="flex items-center justify-between shrink-0">
+                        <span className={`text-xs font-bold flex items-center gap-1.5 ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                          <Cable className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+                          {selectedSubstation.tier === 'bulk' ? 'Outgoing Bulk Trunks & Lines' : 'Outgoing Distribution Feeders'}
+                        </span>
+                        <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                          isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-300 bg-amber-500/20'
+                        }`}>
+                          {filteredFeeders.length} of {selectedSubstation.feeders.length}
+                        </span>
+                      </div>
+
+                      {/* Quick Category Filter Tabs */}
+                      {lifelineFeedersCount > 0 && (
+                        <div className={`flex items-center gap-1 p-1 rounded-xl border text-[11px] shrink-0 ${
+                          isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950/70 border-slate-800'
+                        }`}>
+                          <button
+                            type="button"
+                            onClick={() => setFeederCategoryFilter('all')}
+                            className={`flex-1 py-1 px-2 rounded-lg font-semibold transition-all text-center ${
+                              feederCategoryFilter === 'all'
+                                ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
+                                : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
+                            }`}
+                          >
+                            All ({selectedSubstation.feeders.length})
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFeederCategoryFilter('lifelines')}
+                            className={`flex-1 py-1 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                              feederCategoryFilter === 'lifelines'
+                                ? (isLight ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-500 text-slate-950 shadow-sm')
+                                : (isLight ? 'text-rose-700 hover:bg-rose-50' : 'text-rose-400 hover:bg-rose-950/40')
+                            }`}
+                          >
+                            <Star className="w-3 h-3 fill-current" />
+                            <span>Critical Lifelines</span>
+                            <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold ${
+                              feederCategoryFilter === 'lifelines'
+                                ? (isLight ? 'bg-rose-700 text-white' : 'bg-slate-950 text-rose-300')
+                                : (isLight ? 'bg-rose-200 text-rose-900' : 'bg-rose-500/30 text-rose-300')
+                            }`}>
+                              {lifelineFeedersCount}
+                            </span>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Feeder Search Filter */}
+                      {selectedSubstation.feeders.length > 4 && (
+                        <input
+                          type="text"
+                          placeholder={feederCategoryFilter === 'lifelines' ? "Filter lifeline feeders..." : "Filter feeder by name..."}
+                          value={feederFilter}
+                          onChange={(e) => setFeederFilter(e.target.value)}
+                          className={`w-full px-2.5 py-1 text-xs rounded-lg border outline-none shrink-0 ${
+                            isLight
+                              ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
+                              : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
+                          }`}
+                        />
+                      )}
+
+                      {/* Active Feeder Banner */}
+                      {selectedFeeder && (() => {
+                        const badge = getFeederLifelineBadge(selectedFeeder, isLight);
+                        const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
+                        return (
+                          <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 transition-all ${
+                            selectedFeeder.priorityLevel === 'P1_NON_CUT' || selectedFeeder.priorityLevel === 'P1_CRITICAL'
+                              ? (isLight ? 'bg-rose-50 border-rose-300 text-rose-950 ring-1 ring-rose-400/30' : 'bg-rose-950/60 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30')
+                              : (isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200')
+                          }`}>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 truncate">
+                                <span
+                                  className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0"
+                                  style={{ backgroundColor: themeColors.core }}
+                                />
+                                <div className="truncate">
+                                  <span className="font-bold text-xs truncate block">{selectedFeeder.name}</span>
+                                  <span className={`text-[10px] block truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                                    Corridor • {selectedFeeder.transformers || 8} DTRs on map
+                                  </span>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => setSelectedFeeder(null)}
+                                className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
+                                  isLight
+                                    ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
+                                    : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                                }`}
+                              >
+                                Clear
+                              </button>
+                            </div>
+                            {badge && (
+                              <div className="flex items-center gap-1.5 pt-1 border-t border-current/10 flex-wrap">
+                                <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
+                                  <span>{badge.icon}</span>
+                                  <span>{badge.label}</span>
+                                </span>
+                                <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${badge.prioBg}`}>
+                                  {badge.prioText}
+                                </span>
+                                <span className={`text-[9px] font-mono ml-auto ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                  {selectedFeeder.isDedicated ? 'Dedicated Service (HT)' : 'Shared Distribution'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
+                      {/* Feeders Scroll List (Full Remaining Height) */}
+                      <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
+                        {filteredFeeders.length > 0 ? (
+                          filteredFeeders.map((f, idx) => {
+                            const isFeederActive = selectedFeeder?.code === f.code;
+                            const badge = getFeederLifelineBadge(f, isLight);
+                            const isNonCut = f.priorityLevel === 'P1_NON_CUT' || f.priorityLevel === 'P1_CRITICAL';
+
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
+                                className={`w-full text-left p-2.5 rounded-xl text-xs border transition-all ${
+                                  isFeederActive
+                                    ? (isNonCut
+                                        ? (isLight
+                                            ? 'bg-rose-50 border-rose-400 ring-2 ring-rose-300 shadow-sm'
+                                            : 'bg-rose-950/70 border-rose-400 ring-2 ring-rose-500/40 shadow-sm')
+                                        : (isLight
+                                            ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300 shadow-sm'
+                                            : 'bg-cyan-950/70 border-cyan-400 ring-2 ring-cyan-500/40 shadow-sm'))
+                                    : (isLight
+                                        ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300'
+                                        : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80 hover:border-slate-700')
+                                }`}
+                              >
+                                <div className="flex items-center justify-between gap-2 mb-1">
+                                  <div className="flex items-center gap-1.5 truncate">
+                                    <span className={`font-semibold text-xs truncate ${
+                                      isFeederActive
+                                        ? (isNonCut
+                                            ? (isLight ? 'text-rose-950 font-bold' : 'text-rose-200 font-bold')
+                                            : (isLight ? 'text-sky-950 font-bold' : 'text-cyan-200 font-bold'))
+                                        : (isLight ? 'text-slate-900' : 'text-slate-100')
+                                    }`}>
+                                      {f.name}
+                                    </span>
+                                    {isFeederActive && (
+                                      <span className={`text-[9px] font-bold font-mono px-1 py-0.2 rounded shrink-0 ${
+                                        isNonCut ? 'bg-rose-500 text-slate-950' : 'bg-cyan-500 text-slate-950'
+                                      }`}>
+                                        ON MAP
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-1 shrink-0">
+                                    <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
+                                      f.voltage.includes('33')
+                                        ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
+                                        : (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300')
+                                    }`}>
+                                      {f.voltage}
+                                    </span>
+                                    <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
+                                      isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                    }`}>
+                                      {f.config}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {badge && (
+                                  <div className="flex items-center gap-1.5 my-1 flex-wrap">
+                                    <span className={`px-1.5 py-0.2 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
+                                      <span>{badge.icon}</span>
+                                      <span>{badge.label}</span>
+                                    </span>
+                                    <span className={`px-1 py-0.2 rounded text-[9px] font-mono font-bold ${badge.prioBg}`}>
+                                      {badge.prioText}
+                                    </span>
+                                    {f.isDedicated && (
+                                      <span className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        • Dedicated HT
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                                <div className={`flex items-center justify-between text-[11px] font-mono ${
+                                  isLight ? 'text-slate-600' : 'text-slate-400'
+                                }`}>
+                                  <div className="flex items-center gap-2">
+                                    {f.consumers > 0 ? (
+                                      <span className={`font-semibold ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                                        👥 {f.consumers.toLocaleString()}
+                                      </span>
+                                    ) : (
+                                      <span className="text-[10px] opacity-75">{f.type}</span>
+                                    )}
+                                    {f.transformers > 0 && (
+                                      <span className={isFeederActive ? (isLight ? 'text-amber-700 font-bold' : 'text-amber-400 font-bold') : ''}>
+                                        • ⚡ {f.transformers} DTRs
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    {f.lengthKm > 0 && (
+                                      <span className="text-[10px] opacity-70">{f.lengthKm} km</span>
+                                    )}
+                                    <span className={`text-[10px] underline ${
+                                      isFeederActive
+                                        ? (isNonCut
+                                            ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold')
+                                            : (isLight ? 'text-sky-700 font-bold' : 'text-cyan-400 font-bold'))
+                                        : (isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200')
+                                    }`}>
+                                      {isFeederActive ? 'Dismiss' : 'View on Map'}
+                                    </span>
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })
+                        ) : (
+                          <div className={`p-3 text-center rounded-xl border text-xs ${
+                            isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
+                          }`}>
+                            {feederFilter
+                              ? 'No feeders match your search filter.'
+                              : feederCategoryFilter === 'lifelines'
+                              ? 'No critical lifeline feeders identified on this substation.'
+                              : 'Primary extra-high-voltage bulk grid node.'}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Quick Category Filter Tabs (when substation has critical lifelines) */}
-                  {lifelineFeedersCount > 0 && (
-                    <div className={`flex items-center gap-1 p-1 rounded-xl border text-[11px] ${
-                      isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950/70 border-slate-800'
+                ) : (
+                  /* SINGLE-COLUMN TABBED VIEW (Full Height Dedicated to Selected Tab) */
+                  <div className="flex flex-col flex-1 min-h-0 pt-2 space-y-2">
+                    {/* Navigation Tabs */}
+                    <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 text-xs ${
+                      isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
                     }`}>
                       <button
                         type="button"
-                        onClick={() => setFeederCategoryFilter('all')}
-                        className={`flex-1 py-1 px-2 rounded-lg font-semibold transition-all text-center ${
-                          feederCategoryFilter === 'all'
+                        onClick={() => setInspectorTab('feeders')}
+                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                          inspectorTab === 'feeders'
                             ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
                             : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
                       >
-                        All ({selectedSubstation.feeders.length})
+                        <Cable className="w-3.5 h-3.5" />
+                        <span>Feeders ({selectedSubstation.feeders.length})</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => setFeederCategoryFilter('lifelines')}
-                        className={`flex-1 py-1 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
-                          feederCategoryFilter === 'lifelines'
-                            ? (isLight ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-500 text-slate-950 shadow-sm')
-                            : (isLight ? 'text-rose-700 hover:bg-rose-50' : 'text-rose-400 hover:bg-rose-950/40')
+                        onClick={() => setInspectorTab('connections')}
+                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                          inspectorTab === 'connections'
+                            ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
+                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
                       >
-                        <Star className="w-3 h-3 fill-current" />
-                        <span>Critical Lifelines</span>
-                        <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold ${
-                          feederCategoryFilter === 'lifelines'
-                            ? (isLight ? 'bg-rose-700 text-white' : 'bg-slate-950 text-rose-300')
-                            : (isLight ? 'bg-rose-200 text-rose-900' : 'bg-rose-500/30 text-rose-300')
-                        }`}>
-                          {lifelineFeedersCount}
-                        </span>
+                        <GitFork className="w-3.5 h-3.5" />
+                        <span>Grid Links ({electricalNodes.length})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInspectorTab('info')}
+                        className={`py-1.5 px-2.5 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 ${
+                          inspectorTab === 'info'
+                            ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
+                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
+                        }`}
+                        title="Substation Info & Field AE Depot"
+                      >
+                        <Info className="w-3.5 h-3.5" />
+                        <span>Info</span>
                       </button>
                     </div>
-                  )}
 
-                  {/* Feeder Search Filter if more than 5 feeders */}
-                  {selectedSubstation.feeders.length > 5 && (
-                    <input
-                      type="text"
-                      placeholder={feederCategoryFilter === 'lifelines' ? "Filter lifeline feeders..." : "Filter feeder by name..."}
-                      value={feederFilter}
-                      onChange={(e) => setFeederFilter(e.target.value)}
-                      className={`w-full px-2.5 py-1 text-xs rounded-lg border outline-none ${
-                        isLight
-                          ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
-                          : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
-                      }`}
-                    />
-                  )}
-
-                  {/* Active Feeder Banner */}
-                  {selectedFeeder && (() => {
-                    const badge = getFeederLifelineBadge(selectedFeeder, isLight);
-                    const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
-                    return (
-                      <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 transition-all ${
-                        selectedFeeder.priorityLevel === 'P1_NON_CUT'
-                          ? (isLight ? 'bg-rose-50 border-rose-300 text-rose-950 ring-1 ring-rose-400/30' : 'bg-rose-950/60 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30')
-                          : (isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200')
-                      }`}>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 truncate">
-                            <span
-                              className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0"
-                              style={{ backgroundColor: themeColors.core }}
-                            />
-                            <div className="truncate">
-                              <span className="font-bold text-xs truncate block">{selectedFeeder.name}</span>
-                              <span className={`text-[10px] block truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-                                Corridor • {selectedFeeder.transformers || 8} DTRs on map
-                              </span>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => setSelectedFeeder(null)}
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
-                              isLight
-                                ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
-                                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
-                            }`}
-                          >
-                            Clear
-                          </button>
+                    {/* Tab 1: Feeders Content (Takes Full Height) */}
+                    {inspectorTab === 'feeders' && (
+                      <div className="flex flex-col flex-1 min-h-0 space-y-2">
+                        <div className="flex items-center justify-between shrink-0">
+                          <span className={`text-xs font-bold flex items-center gap-1.5 ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                            <Cable className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+                            {selectedSubstation.tier === 'bulk' ? 'Outgoing Bulk Trunks & Lines' : 'Outgoing Distribution Feeders'}
+                          </span>
+                          <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                            isLight ? 'text-amber-800 bg-amber-100' : 'text-amber-300 bg-amber-500/20'
+                          }`}>
+                            {filteredFeeders.length} of {selectedSubstation.feeders.length}
+                          </span>
                         </div>
 
-                        {/* Lifeline Priority Alert / Badge */}
-                        {badge && (
-                          <div className="flex items-center gap-1.5 pt-1 border-t border-current/10 flex-wrap">
-                            <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
-                              <span>{badge.icon}</span>
-                              <span>{badge.label}</span>
-                            </span>
-                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${badge.prioBg}`}>
-                              {badge.prioText}
-                            </span>
-                            <span className={`text-[9px] font-mono ml-auto ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                              {selectedFeeder.isDedicated ? 'Dedicated Service (HT)' : 'Shared Distribution'}
-                            </span>
+                        {/* Quick Category Filter Tabs */}
+                        {lifelineFeedersCount > 0 && (
+                          <div className={`flex items-center gap-1 p-1 rounded-xl border text-[11px] shrink-0 ${
+                            isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950/70 border-slate-800'
+                          }`}>
+                            <button
+                              type="button"
+                              onClick={() => setFeederCategoryFilter('all')}
+                              className={`flex-1 py-1 px-2 rounded-lg font-semibold transition-all text-center ${
+                                feederCategoryFilter === 'all'
+                                  ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
+                                  : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
+                              }`}
+                            >
+                              All ({selectedSubstation.feeders.length})
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setFeederCategoryFilter('lifelines')}
+                              className={`flex-1 py-1 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                                feederCategoryFilter === 'lifelines'
+                                  ? (isLight ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-500 text-slate-950 shadow-sm')
+                                  : (isLight ? 'text-rose-700 hover:bg-rose-50' : 'text-rose-400 hover:bg-rose-950/40')
+                              }`}
+                            >
+                              <Star className="w-3 h-3 fill-current" />
+                              <span>Critical Lifelines</span>
+                              <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold ${
+                                feederCategoryFilter === 'lifelines'
+                                  ? (isLight ? 'bg-rose-700 text-white' : 'bg-slate-950 text-rose-300')
+                                  : (isLight ? 'bg-rose-200 text-rose-900' : 'bg-rose-500/30 text-rose-300')
+                              }`}>
+                                {lifelineFeedersCount}
+                              </span>
+                            </button>
                           </div>
                         )}
-                      </div>
-                    );
-                  })()}
 
-                  {/* Feeders Scroll List */}
-                  {filteredFeeders.length > 0 ? (
-                    <div className="max-h-52 overflow-y-auto space-y-1.5 pr-1">
-                      {filteredFeeders.map((f, idx) => {
-                        const isFeederActive = selectedFeeder?.code === f.code;
-                        const badge = getFeederLifelineBadge(f, isLight);
-                        const isNonCut = f.priorityLevel === 'P1_NON_CUT';
-
-                        return (
-                          <button
-                            key={idx}
-                            type="button"
-                            onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
-                            className={`w-full text-left p-2 rounded-xl text-xs border transition-all ${
-                              isFeederActive
-                                ? (isNonCut
-                                    ? (isLight
-                                        ? 'bg-rose-50 border-rose-400 ring-2 ring-rose-300 shadow-sm'
-                                        : 'bg-rose-950/70 border-rose-400 ring-2 ring-rose-500/40 shadow-sm')
-                                    : (isLight
-                                        ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300 shadow-sm'
-                                        : 'bg-cyan-950/70 border-cyan-400 ring-2 ring-cyan-500/40 shadow-sm'))
-                                : (isLight
-                                    ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300'
-                                    : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80 hover:border-slate-700')
+                        {/* Feeder Search Filter */}
+                        {selectedSubstation.feeders.length > 4 && (
+                          <input
+                            type="text"
+                            placeholder={feederCategoryFilter === 'lifelines' ? "Filter lifeline feeders..." : "Filter feeder by name..."}
+                            value={feederFilter}
+                            onChange={(e) => setFeederFilter(e.target.value)}
+                            className={`w-full px-2.5 py-1 text-xs rounded-lg border outline-none shrink-0 ${
+                              isLight
+                                ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
+                                : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
                             }`}
-                          >
-                            <div className="flex items-center justify-between gap-2 mb-1">
-                              <div className="flex items-center gap-1.5 truncate">
-                                <span className={`font-semibold text-xs truncate ${
-                                  isFeederActive
-                                    ? (isNonCut
-                                        ? (isLight ? 'text-rose-950 font-bold' : 'text-rose-200 font-bold')
-                                        : (isLight ? 'text-sky-950 font-bold' : 'text-cyan-200 font-bold'))
-                                    : (isLight ? 'text-slate-900' : 'text-slate-100')
-                                }`}>
-                                  {f.name}
-                                </span>
-                                {isFeederActive && (
-                                  <span className={`text-[9px] font-bold font-mono px-1 py-0.2 rounded shrink-0 ${
-                                    isNonCut ? 'bg-rose-500 text-slate-950' : 'bg-cyan-500 text-slate-950'
-                                  }`}>
-                                    ON MAP
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-1 shrink-0">
-                                <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
-                                  f.voltage.includes('33')
-                                    ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
-                                    : (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300')
-                                }`}>
-                                  {f.voltage}
-                                </span>
-                                <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
-                                  isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
-                                }`}>
-                                  {f.config}
-                                </span>
-                              </div>
-                            </div>
+                          />
+                        )}
 
-                            {/* Lifeline Tag Banner if categorized */}
-                            {badge && (
-                              <div className="flex items-center gap-1.5 my-1 flex-wrap">
-                                <span className={`px-1.5 py-0.2 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
-                                  <span>{badge.icon}</span>
-                                  <span>{badge.label}</span>
-                                </span>
-                                <span className={`px-1 py-0.2 rounded text-[9px] font-mono font-bold ${badge.prioBg}`}>
-                                  {badge.prioText}
-                                </span>
-                                {f.isDedicated && (
-                                  <span className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    • Dedicated HT
-                                  </span>
-                                )}
-                              </div>
-                            )}
-
-                            <div className={`flex items-center justify-between text-[11px] font-mono ${
-                              isLight ? 'text-slate-600' : 'text-slate-400'
+                        {/* Active Feeder Banner */}
+                        {selectedFeeder && (() => {
+                          const badge = getFeederLifelineBadge(selectedFeeder, isLight);
+                          const themeColors = getFeederThemeColors(selectedFeeder.lifelineCategory, isLight);
+                          return (
+                            <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 transition-all ${
+                              selectedFeeder.priorityLevel === 'P1_NON_CUT' || selectedFeeder.priorityLevel === 'P1_CRITICAL'
+                                ? (isLight ? 'bg-rose-50 border-rose-300 text-rose-950 ring-1 ring-rose-400/30' : 'bg-rose-950/60 border-rose-500/50 text-rose-200 ring-1 ring-rose-500/30')
+                                : (isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200')
                             }`}>
-                              <div className="flex items-center gap-2">
-                                {f.consumers > 0 ? (
-                                  <span className={`font-semibold ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
-                                    👥 {f.consumers.toLocaleString()}
-                                  </span>
-                                ) : (
-                                  <span className="text-[10px] opacity-75">{f.type}</span>
-                                )}
-                                {f.transformers > 0 && (
-                                  <span className={isFeederActive ? (isLight ? 'text-amber-700 font-bold' : 'text-amber-400 font-bold') : ''}>
-                                    • ⚡ {f.transformers} DTRs
-                                  </span>
-                                )}
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 truncate">
+                                  <span
+                                    className="w-2.5 h-2.5 rounded-full animate-pulse shrink-0"
+                                    style={{ backgroundColor: themeColors.core }}
+                                  />
+                                  <div className="truncate">
+                                    <span className="font-bold text-xs truncate block">{selectedFeeder.name}</span>
+                                    <span className={`text-[10px] block truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                                      Corridor • {selectedFeeder.transformers || 8} DTRs on map
+                                    </span>
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => setSelectedFeeder(null)}
+                                  className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
+                                    isLight
+                                      ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
+                                      : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                                  }`}
+                                >
+                                  Clear
+                                </button>
                               </div>
-                              <div className="flex items-center gap-1.5">
-                                {f.lengthKm > 0 && (
-                                  <span className="text-[10px] opacity-70">{f.lengthKm} km</span>
-                                )}
-                                <span className={`text-[10px] underline ${
-                                  isFeederActive
-                                    ? (isNonCut
-                                        ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold')
-                                        : (isLight ? 'text-sky-700 font-bold' : 'text-cyan-400 font-bold'))
-                                    : (isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200')
-                                }`}>
-                                  {isFeederActive ? 'Dismiss' : 'View on Map'}
+                              {badge && (
+                                <div className="flex items-center gap-1.5 pt-1 border-t border-current/10 flex-wrap">
+                                  <span className={`px-1.5 py-0.5 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
+                                    <span>{badge.icon}</span>
+                                    <span>{badge.label}</span>
+                                  </span>
+                                  <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${badge.prioBg}`}>
+                                    {badge.prioText}
+                                  </span>
+                                  <span className={`text-[9px] font-mono ml-auto ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                    {selectedFeeder.isDedicated ? 'Dedicated Service (HT)' : 'Shared Distribution'}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+
+                        {/* Feeders Scroll List (Full Available Vertical Space!) */}
+                        <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
+                          {filteredFeeders.length > 0 ? (
+                            filteredFeeders.map((f, idx) => {
+                              const isFeederActive = selectedFeeder?.code === f.code;
+                              const badge = getFeederLifelineBadge(f, isLight);
+                              const isNonCut = f.priorityLevel === 'P1_NON_CUT' || f.priorityLevel === 'P1_CRITICAL';
+
+                              return (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
+                                  className={`w-full text-left p-2.5 rounded-xl text-xs border transition-all ${
+                                    isFeederActive
+                                      ? (isNonCut
+                                          ? (isLight
+                                              ? 'bg-rose-50 border-rose-400 ring-2 ring-rose-300 shadow-sm'
+                                              : 'bg-rose-950/70 border-rose-400 ring-2 ring-rose-500/40 shadow-sm')
+                                          : (isLight
+                                              ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300 shadow-sm'
+                                              : 'bg-cyan-950/70 border-cyan-400 ring-2 ring-cyan-500/40 shadow-sm'))
+                                      : (isLight
+                                          ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300'
+                                          : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80 hover:border-slate-700')
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between gap-2 mb-1">
+                                    <div className="flex items-center gap-1.5 truncate">
+                                      <span className={`font-semibold text-xs truncate ${
+                                        isFeederActive
+                                          ? (isNonCut
+                                              ? (isLight ? 'text-rose-950 font-bold' : 'text-rose-200 font-bold')
+                                              : (isLight ? 'text-sky-950 font-bold' : 'text-cyan-200 font-bold'))
+                                          : (isLight ? 'text-slate-900' : 'text-slate-100')
+                                      }`}>
+                                        {f.name}
+                                      </span>
+                                      {isFeederActive && (
+                                        <span className={`text-[9px] font-bold font-mono px-1 py-0.2 rounded shrink-0 ${
+                                          isNonCut ? 'bg-rose-500 text-slate-950' : 'bg-cyan-500 text-slate-950'
+                                        }`}>
+                                          ON MAP
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
+                                        f.voltage.includes('33')
+                                          ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
+                                          : (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300')
+                                      }`}>
+                                        {f.voltage}
+                                      </span>
+                                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
+                                        isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                      }`}>
+                                        {f.config}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {badge && (
+                                    <div className="flex items-center gap-1.5 my-1 flex-wrap">
+                                      <span className={`px-1.5 py-0.2 rounded font-bold text-[9px] border flex items-center gap-1 ${badge.badgeBg}`}>
+                                        <span>{badge.icon}</span>
+                                        <span>{badge.label}</span>
+                                      </span>
+                                      <span className={`px-1 py-0.2 rounded text-[9px] font-mono font-bold ${badge.prioBg}`}>
+                                        {badge.prioText}
+                                      </span>
+                                      {f.isDedicated && (
+                                        <span className={`text-[9px] font-mono ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                          • Dedicated HT
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  <div className={`flex items-center justify-between text-[11px] font-mono ${
+                                    isLight ? 'text-slate-600' : 'text-slate-400'
+                                  }`}>
+                                    <div className="flex items-center gap-2">
+                                      {f.consumers > 0 ? (
+                                        <span className={`font-semibold ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                                          👥 {f.consumers.toLocaleString()}
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] opacity-75">{f.type}</span>
+                                      )}
+                                      {f.transformers > 0 && (
+                                        <span className={isFeederActive ? (isLight ? 'text-amber-700 font-bold' : 'text-amber-400 font-bold') : ''}>
+                                          • ⚡ {f.transformers} DTRs
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      {f.lengthKm > 0 && (
+                                        <span className="text-[10px] opacity-70">{f.lengthKm} km</span>
+                                      )}
+                                      <span className={`text-[10px] underline ${
+                                        isFeederActive
+                                          ? (isNonCut
+                                              ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold')
+                                              : (isLight ? 'text-sky-700 font-bold' : 'text-cyan-400 font-bold'))
+                                          : (isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200')
+                                      }`}>
+                                        {isFeederActive ? 'Dismiss' : 'View on Map'}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </button>
+                              );
+                            })
+                          ) : (
+                            <div className={`p-3 text-center rounded-xl border text-xs ${
+                              isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
+                            }`}>
+                              {feederFilter
+                                ? 'No feeders match your search filter.'
+                                : feederCategoryFilter === 'lifelines'
+                                ? 'No critical lifeline feeders identified on this substation.'
+                                : 'Primary extra-high-voltage bulk grid node.'}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tab 2: Connections Content (Takes Full Height) */}
+                    {inspectorTab === 'connections' && (
+                      <div className="flex flex-col flex-1 min-h-0 space-y-3">
+                        {/* 2-Step Flow: Show Connections Switch & Circuit Isolation */}
+                        <div className={`p-3 rounded-xl border shrink-0 transition-all ${
+                          showConnections
+                            ? (isLight ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20' : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20')
+                            : (isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80')
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                              <div className={`p-1.5 rounded-lg ${
+                                showConnections
+                                  ? (isLight ? 'bg-sky-600 text-white shadow-sm' : 'bg-cyan-500 text-slate-950 shadow-sm')
+                                  : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                              }`}>
+                                <GitFork className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                                    Isolate Electrical Circuit
+                                  </span>
+                                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                                    electricalNodes.length > 0
+                                      ? (isLight ? 'bg-sky-100 text-sky-800' : 'bg-cyan-500/20 text-cyan-300')
+                                      : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                                  }`}>
+                                    {electricalNodes.length} {electricalNodes.length === 1 ? 'electrical link' : 'electrical links'}
+                                  </span>
+                                </div>
+                                <p className={`text-[10px] leading-tight mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                  {showConnections
+                                    ? 'Circuit isolated • Unrelated markers hidden • Power flow animated'
+                                    : 'Isolate circuit & hide unrelated markers on map'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              role="switch"
+                              aria-checked={showConnections}
+                              onClick={() => setShowConnections(!showConnections)}
+                              disabled={electricalNodes.length === 0}
+                              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                electricalNodes.length === 0
+                                  ? 'opacity-40 cursor-not-allowed bg-slate-300'
+                                  : showConnections
+                                  ? (isLight ? 'bg-sky-600' : 'bg-cyan-500')
+                                  : (isLight ? 'bg-slate-300' : 'bg-slate-700')
+                              }`}
+                            >
+                              <span
+                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                                  showConnections ? 'translate-x-5' : 'translate-x-0'
+                                }`}
+                              />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Connected Nodes Directory */}
+                        <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
+                          <div className="flex items-center justify-between px-1 mb-1">
+                            <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                              Linked Substations & Trunks ({electricalNodes.length})
+                            </span>
+                            <span className={`text-[10px] font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Click node to navigate
+                            </span>
+                          </div>
+
+                          {electricalNodes.length > 0 ? (
+                            electricalNodes.map(node => (
+                              <button
+                                key={node.id}
+                                onClick={() => {
+                                  if (node.substation) {
+                                    onSelectSubstation(node.substation);
+                                    onSelectSection(null);
+                                  }
+                                }}
+                                className={`w-full text-left p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all ${
+                                  isLight
+                                    ? 'bg-slate-50 hover:bg-slate-100/90 border-slate-200 hover:border-sky-300 text-slate-800 shadow-sm'
+                                    : 'bg-slate-950/60 hover:bg-slate-900 border-slate-800/80 hover:border-cyan-500/40 text-slate-200'
+                                }`}
+                              >
+                                <div className="flex items-center gap-2.5 truncate">
+                                  <span
+                                    className="w-3 h-3 rounded-full shrink-0 ring-2 ring-white/20"
+                                    style={{ backgroundColor: node.color }}
+                                  />
+                                  <div className="truncate">
+                                    <span className="font-semibold block truncate leading-tight">{node.name}</span>
+                                    <span className={`text-[10px] flex items-center gap-1.5 mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                      <span>{node.label}</span>
+                                      {node.voltage && <span className="font-mono font-bold">• {node.voltage}</span>}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 shrink-0 font-mono text-[10px]">
+                                  <span className={`px-1.5 py-0.5 rounded font-bold ${isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'}`}>
+                                    {node.distanceKm} km
+                                  </span>
+                                  <ArrowRight className={`w-3.5 h-3.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
+                                </div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className={`p-4 text-center rounded-xl border text-xs ${
+                              isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
+                            }`}>
+                              No direct electrical interconnections recorded for this node.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tab 3: Substation Info & Field AE Depot */}
+                    {inspectorTab === 'info' && (
+                      <div className="flex flex-col flex-1 min-h-0 space-y-3 overflow-y-auto pr-1">
+                        {/* Circle & Region Details */}
+                        <div className="grid grid-cols-2 gap-2 text-xs shrink-0">
+                          <div className={`p-2.5 rounded-xl border ${
+                            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                          }`}>
+                            <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                              isLight ? 'text-slate-500' : 'text-slate-400'
+                            }`}>Circle</span>
+                            <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                              {selectedSubstation.circle || 'Chennai EDC'}
+                            </span>
+                          </div>
+                          <div className={`p-2.5 rounded-xl border ${
+                            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                          }`}>
+                            <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                              isLight ? 'text-slate-500' : 'text-slate-400'
+                            }`}>Region Code</span>
+                            <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                              {selectedSubstation.regionCode || '01/09'}
+                            </span>
+                          </div>
+                          <div className={`p-2.5 rounded-xl border col-span-2 flex items-center justify-between ${
+                            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                          }`}>
+                            <div>
+                              <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
+                                isLight ? 'text-slate-500' : 'text-slate-400'
+                              }`}>GPS Coordinates</span>
+                              <span className={`font-mono font-medium text-xs ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                                {selectedSubstation.lat.toFixed(5)}° N, {selectedSubstation.lng.toFixed(5)}° E
+                              </span>
+                            </div>
+                            <MapPin className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+                          </div>
+                        </div>
+
+                        {/* Jurisdictional Assistant Engineer (AE) Section Office */}
+                        {jurisdictionalSections.length > 0 && (
+                          <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 shrink-0 ${
+                            isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
+                          }`}>
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <div className={`p-2 rounded-lg shrink-0 ${
+                                isLight ? 'bg-emerald-600 text-white' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              }`}>
+                                <Shield className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-bold text-xs truncate">
+                                    {jurisdictionalSections[0].name}
+                                  </span>
+                                  <span className={`text-[9px] font-mono px-1 rounded ${
+                                    isLight ? 'bg-emerald-200/70 text-emerald-900' : 'bg-emerald-900/50 text-emerald-300'
+                                  }`}>
+                                    AE Depot
+                                  </span>
+                                </div>
+                                <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
+                                  Field Maintenance & Fuse Call • {jurisdictionalSections[0].distanceKm} km
                                 </span>
                               </div>
                             </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className={`p-3 text-center rounded-xl border text-xs ${
-                      isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
-                    }`}>
-                      {feederFilter
-                        ? 'No feeders match your search filter.'
-                        : feederCategoryFilter === 'lifelines'
-                        ? 'No critical lifeline feeders identified on this substation.'
-                        : 'Primary extra-high-voltage bulk grid node.'}
-                    </div>
-                  )}
-                </div>
+
+                            {jurisdictionalSections[0].section && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onSelectSection(jurisdictionalSections[0].section!);
+                                  onSelectSubstation(null);
+                                }}
+                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                                  isLight
+                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                                    : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
+                                }`}
+                                title="Locate Section Office on Map"
+                              >
+                                Locate
+                                <ArrowRight className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Operational Dispatch Guide */}
+                        <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+                          isLight ? 'bg-slate-50 border-slate-200 text-slate-600' : 'bg-slate-950/40 border-slate-800 text-slate-400'
+                        }`}>
+                          <span className={`font-semibold block text-[11px] ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                            ⚡ Grid Dispatch Note:
+                          </span>
+                          <p className="text-[11px] leading-relaxed">
+                            {selectedSubstation.tier === 'bulk'
+                              ? 'Extra High Voltage (EHV) substation feeding sub-transmission loops. Monitored 24x7 by State Load Despatch Centre (SLDC).'
+                              : selectedSubstation.tier === 'subtransmission'
+                              ? 'Sub-transmission hub stepping down 110kV/33kV power for secondary distribution yards across Chennai city divisions.'
+                              : 'Distribution substation stepping down to 11kV. Operates local feeder circuit breakers under jurisdictional Assistant Engineer (AE) control.'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Section Specific Details */}
+            {/* Section Specific Details (Full Height View for AE Section Offices) */}
             {selectedSection && (
-              <div className="space-y-3 text-xs">
+              <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pt-3 text-xs">
                 {selectedSection.boundary && (
-                  <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 ${
+                  <div className={`p-3 rounded-xl border flex items-center justify-between gap-2 ${
                     isLight ? 'bg-amber-50/80 border-amber-200 text-amber-950' : 'bg-amber-950/25 border-amber-800/60 text-amber-200'
                   }`}>
                     <div className="flex items-center gap-2">
-                      <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <Shield className="w-4 h-4 text-amber-600 shrink-0" />
                       <div>
                         <span className="font-bold text-xs block leading-tight">
                           Jurisdictional Boundary
@@ -1910,7 +2401,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         </span>
                       </div>
                     </div>
-                    <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                    <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded ${
                       isLight ? 'bg-amber-200/70 text-amber-950' : 'bg-amber-500/20 text-amber-300'
                     }`}>
                       Territory Active
@@ -1941,7 +2432,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   </div>
                 </div>
 
-                <div className={`space-y-2 p-3 rounded-xl border ${
+                <div className={`space-y-2.5 p-3 rounded-xl border ${
                   isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
                 }`}>
                   {selectedSection.mobile && (
