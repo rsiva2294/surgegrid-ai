@@ -463,14 +463,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
   const [isInspectorExpanded, setIsInspectorExpanded] = useState(false);
-  const [inspectorTab, setInspectorTab] = useState<'feeders' | 'connections' | 'info'>('feeders');
+  const [inspectorTab, setInspectorTab] = useState<'info' | 'feeders' | 'connections'>('info');
 
   // Reset showConnections, selectedFeeder, feederCategoryFilter, and inspectorTab when selected substation changes
   useEffect(() => {
     setShowConnections(false);
     setSelectedFeeder(null);
     setFeederCategoryFilter('all');
-    setInspectorTab('feeders');
+    setInspectorTab('info');
   }, [selectedSubstation]);
 
   // Fast O(1) Entity Maps
@@ -1923,10 +1923,23 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                 ) : (
                   /* SINGLE-COLUMN TABBED VIEW (Full Height Dedicated to Selected Tab) */
                   <div className="flex flex-col flex-1 min-h-0 pt-2 space-y-2">
-                    {/* Navigation Tabs */}
+                    {/* Navigation Tabs (Equal 3-Way Spacing, Info First) */}
                     <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 text-xs ${
                       isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
                     }`}>
+                      <button
+                        type="button"
+                        onClick={() => setInspectorTab('info')}
+                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                          inspectorTab === 'info'
+                            ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
+                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
+                        }`}
+                        title="Substation Info, Field AE Depot & Terrain Risk"
+                      >
+                        <Info className="w-3.5 h-3.5" />
+                        <span>Info</span>
+                      </button>
                       <button
                         type="button"
                         onClick={() => setInspectorTab('feeders')}
@@ -1950,19 +1963,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                       >
                         <GitFork className="w-3.5 h-3.5" />
                         <span>Grid Links ({electricalNodes.length})</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setInspectorTab('info')}
-                        className={`py-1.5 px-2.5 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 ${
-                          inspectorTab === 'info'
-                            ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
-                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
-                        }`}
-                        title="Substation Info & Field AE Depot"
-                      >
-                        <Info className="w-3.5 h-3.5" />
-                        <span>Info</span>
                       </button>
                     </div>
 
