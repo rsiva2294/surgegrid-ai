@@ -2377,109 +2377,98 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                     {/* Tab 3: Substation Info & Field AE Depot */}
                     {inspectorTab === 'info' && (
-                      <div className="flex flex-col flex-1 min-h-0 space-y-3 overflow-y-auto pr-1">
-                        {/* Circle & Region Details */}
-                        <div className="grid grid-cols-2 gap-2 text-xs shrink-0">
-                          <div className={`p-2.5 rounded-xl border ${
-                            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                          }`}>
-                            <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                              isLight ? 'text-slate-500' : 'text-slate-400'
-                            }`}>Circle</span>
-                            <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                              {selectedSubstation.circle || 'Chennai EDC'}
-                            </span>
-                          </div>
-                          <div className={`p-2.5 rounded-xl border ${
-                            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                          }`}>
-                            <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                              isLight ? 'text-slate-500' : 'text-slate-400'
-                            }`}>Region Code</span>
-                            <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                              {selectedSubstation.regionCode || '01/09'}
-                            </span>
-                          </div>
-                          <div className={`p-2.5 rounded-xl border col-span-2 flex items-center justify-between ${
-                            isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
-                          }`}>
+                      <div className="flex flex-col flex-1 min-h-0 space-y-2 overflow-y-auto pr-1">
+                        {/* Compact Administrative & GPS Strip */}
+                        <div className={`px-3 py-2 rounded-xl border flex items-center justify-between text-xs shrink-0 ${
+                          isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800'
+                        }`}>
+                          <div className="flex items-center gap-3 divide-x divide-slate-200 dark:divide-slate-800 text-[11px] min-w-0">
                             <div>
-                              <span className={`text-[9px] uppercase tracking-wider font-semibold block mb-0.5 ${
-                                isLight ? 'text-slate-500' : 'text-slate-400'
-                              }`}>GPS Coordinates</span>
-                              <span className={`font-mono font-medium text-xs ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
-                                {selectedSubstation.lat.toFixed(5)}° N, {selectedSubstation.lng.toFixed(5)}° E
+                              <span className={`text-[9px] uppercase tracking-wider font-semibold block ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Circle</span>
+                              <span className={`font-semibold truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>{selectedSubstation.circle || 'Chennai EDC'}</span>
+                            </div>
+                            <div className="pl-3">
+                              <span className={`text-[9px] uppercase tracking-wider font-semibold block ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>Region</span>
+                              <span className={`font-semibold block ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>{selectedSubstation.regionCode || '01/09'}</span>
+                            </div>
+                            <div className="pl-3 min-w-0">
+                              <span className={`text-[9px] uppercase tracking-wider font-semibold block ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>GPS</span>
+                              <span className={`font-mono text-[10px] font-medium block truncate ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                                {selectedSubstation.lat.toFixed(4)}°N, {selectedSubstation.lng.toFixed(4)}°E
                               </span>
                             </div>
-                            <MapPin className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
                           </div>
+                          <MapPin className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
                         </div>
 
                         {/* Switchyard Hardware & Incoming Feeder Specs */}
-                        {(Boolean(selectedSubstation.totalCapacityMva) || Boolean(selectedSubstation.powerTransformersCount) || Boolean(selectedSubstation.incomingFeederNames?.length)) && (
-                          <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
-                            isLight ? 'bg-amber-50/50 border-amber-200/80 text-amber-950' : 'bg-amber-950/20 border-amber-800/40 text-amber-200'
-                          }`}>
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-xs flex items-center gap-1.5">
-                                <Zap className="w-3.5 h-3.5 text-amber-500" />
-                                <span>Switchyard & Power Transformers</span>
-                              </span>
-                              {Boolean(selectedSubstation.totalCapacityMva) && (
-                                <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
-                                  isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                }`}>
-                                  {selectedSubstation.totalCapacityMva} MVA Capacity
-                                </span>
-                              )}
-                            </div>
+                        {Boolean(selectedSubstation.totalCapacityMva || selectedSubstation.powerTransformersCount || selectedSubstation.incomingFeederNames?.length) && (() => {
+                          const validIncomers = (selectedSubstation.incomingFeederNames || []).filter(n => {
+                            const clean = String(n).trim().toUpperCase();
+                            return clean && !['NA', 'N/A', 'NIL', 'NONE', '-', 'NULL'].includes(clean);
+                          });
 
-                            <div className="grid grid-cols-2 gap-2 pt-1 text-center font-mono text-[11px]">
-                              <div className={`p-2 rounded-lg border ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
-                                <span className={`text-[10px] block font-sans ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>Power Transformers</span>
-                                <span className="font-bold text-xs">{selectedSubstation.powerTransformersCount || 1} units</span>
-                              </div>
-                              <div className={`p-2 rounded-lg border ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
-                                <span className={`text-[10px] block font-sans ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>Incoming HV Feeds</span>
-                                <span className="font-bold text-xs">{selectedSubstation.incomingFeedersCount || selectedSubstation.incomingFeederNames?.length || 1} lines</span>
-                              </div>
-                            </div>
-
-                            {selectedSubstation.incomingFeederNames && selectedSubstation.incomingFeederNames.length > 0 && (
-                              <div className="pt-1.5 border-t border-amber-200/60 dark:border-amber-900/40">
-                                <span className={`text-[10px] uppercase font-bold tracking-wider block mb-1 ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
-                                  Official Incomer Line Breakers:
+                          return (
+                            <div className={`p-2.5 rounded-xl border space-y-1.5 shrink-0 ${
+                              isLight ? 'bg-amber-50/50 border-amber-200/80 text-amber-950' : 'bg-amber-950/20 border-amber-800/40 text-amber-200'
+                            }`}>
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-bold text-[11px] flex items-center gap-1.5">
+                                  <Zap className="w-3.5 h-3.5 text-amber-500" />
+                                  <span>Switchyard & Hardware</span>
                                 </span>
-                                <div className="space-y-1">
-                                  {selectedSubstation.incomingFeederNames.map((name, idx) => (
-                                    <div key={idx} className={`px-2 py-1 rounded text-[11px] font-mono flex items-center gap-1.5 ${
-                                      isLight ? 'bg-white/80 border border-amber-100 text-slate-800' : 'bg-slate-900/60 border border-amber-900/30 text-amber-200'
-                                    }`}>
-                                      <span className="text-amber-500 font-bold">←</span>
-                                      <span className="truncate font-semibold">{name}</span>
-                                    </div>
-                                  ))}
+                                {Boolean(selectedSubstation.totalCapacityMva) && (
+                                  <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                                    isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                  }`}>
+                                    {selectedSubstation.totalCapacityMva} MVA Capacity
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-2 text-[11px]">
+                                <div className={`flex-1 px-2 py-1 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
+                                  <span className={`text-[9px] uppercase font-semibold mr-1.5 ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Transformers:</span>
+                                  <span className="font-bold font-mono">{selectedSubstation.powerTransformersCount || 1} units</span>
+                                </div>
+                                <div className={`flex-1 px-2 py-1 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
+                                  <span className={`text-[9px] uppercase font-semibold mr-1.5 ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Incomers:</span>
+                                  <span className="font-bold font-mono">{selectedSubstation.incomingFeedersCount || validIncomers.length || 1} lines</span>
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        )}
+
+                              {validIncomers.length > 0 && (
+                                <div className="flex items-center gap-1.5 pt-0.5 flex-wrap">
+                                  <span className={`text-[9px] uppercase font-bold tracking-wider shrink-0 ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>Incomers:</span>
+                                  {validIncomers.map((name, idx) => (
+                                    <span key={idx} className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium inline-flex items-center gap-1 ${
+                                      isLight ? 'bg-white border border-amber-200 text-slate-800' : 'bg-slate-900/80 border border-amber-900/40 text-amber-200'
+                                    }`}>
+                                      <span className="text-amber-500 font-bold">←</span>
+                                      <span>{name}</span>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                         {/* Substation Terrain & Flood Risk Profile */}
                         {selectedSubstation.elevationM !== undefined && (
-                          <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
+                          <div className={`p-2.5 rounded-xl border space-y-1.5 shrink-0 ${
                             selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                               ? (isLight ? 'bg-rose-50/70 border-rose-200 text-rose-950' : 'bg-rose-950/25 border-rose-800/60 text-rose-200')
                               : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
                               ? (isLight ? 'bg-amber-50/70 border-amber-200 text-amber-950' : 'bg-amber-950/25 border-amber-800/60 text-amber-200')
                               : (isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800/80 text-slate-200')
                           }`}>
-                            <div className="flex items-center justify-between">
-                              <span className="font-bold text-xs flex items-center gap-1.5">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-[11px] flex items-center gap-1.5">
                                 <span>🌊</span>
-                                <span>Terrain & Climate Flood Risk</span>
+                                <span>Climate & Flood Risk</span>
                               </span>
-                              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
                                 selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                                   ? (isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-black')
                                   : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
@@ -2494,27 +2483,27 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-2 pt-1 text-center font-mono text-[11px]">
-                              <div className={`p-2 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className="text-[9px] opacity-75 block mb-0.5">Elevation (MSL)</span>
-                                <strong className="text-xs font-bold">{selectedSubstation.elevationM} m</strong>
+                            <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[10px]">
+                              <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className="text-[8px] opacity-75 block">Elevation</span>
+                                <strong className="text-[11px] font-bold">{selectedSubstation.elevationM} m</strong>
                               </div>
-                              <div className={`p-2 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className="text-[9px] opacity-75 block mb-0.5">Distance to Sea</span>
-                                <strong className="text-xs font-bold">{selectedSubstation.distanceToCoastKm || 0} km</strong>
+                              <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className="text-[8px] opacity-75 block">Coast Dist</span>
+                                <strong className="text-[11px] font-bold">{selectedSubstation.distanceToCoastKm || 0} km</strong>
                               </div>
-                              <div className={`p-2 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className="text-[9px] opacity-75 block mb-0.5">Composite Risk</span>
-                                <strong className="text-xs font-bold">{selectedSubstation.compositeRiskScore || 0}/100</strong>
+                              <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className="text-[8px] opacity-75 block">Risk Score</span>
+                                <strong className="text-[11px] font-bold">{selectedSubstation.compositeRiskScore || 0}/100</strong>
                               </div>
                             </div>
 
                             {selectedSubstation.anticipatorySop && (
-                              <div className={`p-2 rounded-lg text-[10px] leading-relaxed mt-1 ${
+                              <div className={`px-2 py-1 rounded-lg text-[10px] leading-snug ${
                                 isLight ? 'bg-white/90 text-slate-700 border border-black/5' : 'bg-slate-900/80 text-slate-300 border border-white/10'
                               }`}>
-                                <strong className="font-semibold block mb-0.5">⚡ Anticipatory Field SOP:</strong>
-                                {selectedSubstation.anticipatorySop}
+                                <strong className="font-semibold mr-1">Field SOP:</strong>
+                                <span>{selectedSubstation.anticipatorySop}</span>
                               </div>
                             )}
                           </div>
@@ -2522,28 +2511,24 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                         {/* Jurisdictional Assistant Engineer (AE) Section Office */}
                         {jurisdictionalSections.length > 0 && (
-                          <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 shrink-0 ${
+                          <div className={`px-3 py-2 rounded-xl border flex items-center justify-between gap-2 shrink-0 ${
                             isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
                           }`}>
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div className={`p-2 rounded-lg shrink-0 ${
-                                isLight ? 'bg-emerald-600 text-white' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                              }`}>
-                                <Shield className="w-4 h-4" />
-                              </div>
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5">
-                                  <span className="font-bold text-xs truncate">
+                                  <span className="font-bold text-[11px] truncate">
                                     {jurisdictionalSections[0].name}
                                   </span>
-                                  <span className={`text-[9px] font-mono px-1 rounded ${
+                                  <span className={`text-[8px] font-mono px-1 rounded ${
                                     isLight ? 'bg-emerald-200/70 text-emerald-900' : 'bg-emerald-900/50 text-emerald-300'
                                   }`}>
                                     AE Depot
                                   </span>
                                 </div>
                                 <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
-                                  Field Maintenance & Fuse Call • {jurisdictionalSections[0].distanceKm} km
+                                  {jurisdictionalSections[0].section?.mobile ? `📞 ${jurisdictionalSections[0].section.mobile} • ` : ''}{jurisdictionalSections[0].distanceKm} km
                                 </span>
                               </div>
                             </div>
@@ -2555,7 +2540,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                   onSelectSection(jurisdictionalSections[0].section!);
                                   onSelectSubstation(null);
                                 }}
-                                className={`px-2.5 py-1.5 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                                className={`px-2 py-1 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
                                   isLight
                                     ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
                                     : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
