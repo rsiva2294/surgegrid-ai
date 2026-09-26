@@ -295,30 +295,6 @@
           "lng": 80.3158
         },
         {
-          "id": "9312",
-          "name": "33/11 KV SHANTHI COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.4,
-          "lat": 13.08116,
-          "lng": 80.21707
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.5,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
           "id": "2101",
           "name": "33/11 KV TOLLGATE SS",
           "type": "substation",
@@ -1462,18 +1438,6 @@
           "lng": 80.19044
         },
         {
-          "id": "2132",
-          "name": "33/11 KV NAPPALAYAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.4,
-          "lat": 13.21434,
-          "lng": 80.27237
-        },
-        {
           "id": "9306",
           "name": "33/11 KV ARUMBAKKAM SS",
           "type": "substation",
@@ -1484,18 +1448,6 @@
           "distanceKm": 4.6,
           "lat": 13.06609,
           "lng": 80.21484
-        },
-        {
-          "id": "9215",
-          "name": "33/11 KV GUINDY SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.1,
-          "lat": 13.01458,
-          "lng": 80.20941
         },
         {
           "id": "2104",
@@ -1728,18 +1680,6 @@
           "distanceKm": 1.9,
           "lat": 12.89676,
           "lng": 80.20852
-        },
-        {
-          "id": "2202",
-          "name": "110/33/11 KV HIGH COURT SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33/11 kV",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 24.5,
-          "lat": 13.08573,
-          "lng": 80.28602
         },
         {
           "id": "9433",
@@ -2019,18 +1959,6 @@
           "distanceKm": 1,
           "lat": 13.04491,
           "lng": 80.26642
-        },
-        {
-          "id": "9336",
-          "name": "33/11 KV MUGAPPAIR EAST",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.7,
-          "lat": 13.08769,
-          "lng": 80.18413
         },
         {
           "id": "sec_128",
@@ -3188,42 +3116,6 @@
           "lng": 80.26611
         },
         {
-          "id": "2156",
-          "name": "33/11 KV NEW KOLATHUR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.7,
-          "lat": 13.11834,
-          "lng": 80.21985
-        },
-        {
-          "id": "9229",
-          "name": "33/11 KV MADIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.6,
-          "lat": 12.96288,
-          "lng": 80.19872
-        },
-        {
-          "id": "2158",
-          "name": "33/11 KV MADHAVARAMLEATHEREST",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.4,
-          "lat": 13.13521,
-          "lng": 80.24122
-        },
-        {
           "id": "2201",
           "name": "110/33/11 KV CHINDHATRIPET SS",
           "type": "substation",
@@ -3234,18 +3126,6 @@
           "distanceKm": 2.5,
           "lat": 13.07669,
           "lng": 80.27257
-        },
-        {
-          "id": "9418",
-          "name": "33/11 KV THORAIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.7,
-          "lat": 12.92532,
-          "lng": 80.2378
         },
         {
           "id": "2134",
@@ -3949,18 +3829,6 @@
           "distanceKm": 1.1,
           "lat": 13.07669,
           "lng": 80.27257
-        },
-        {
-          "id": "9314",
-          "name": "33/11 KV JJ NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.2,
-          "lat": 13.07986,
-          "lng": 80.1824
         },
         {
           "id": "sec_192",
@@ -5592,18 +5460,6 @@
           "lng": 80.1947
         },
         {
-          "id": "9336",
-          "name": "33/11 KV MUGAPPAIR EAST",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.6,
-          "lat": 13.08769,
-          "lng": 80.18413
-        },
-        {
           "id": "2225",
           "name": "33/11 KV WEST MAMBALAM SS",
           "type": "substation",
@@ -5925,18 +5781,6 @@
           "distanceKm": 2.8,
           "lat": 13.07362,
           "lng": 80.2522
-        },
-        {
-          "id": "9416",
-          "name": "33/11 KV THARAMANI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.1,
-          "lat": 12.97568,
-          "lng": 80.2437
         },
         {
           "id": "2239",
@@ -6473,18 +6317,6 @@
           "distanceKm": 1.5,
           "lat": 13.08137,
           "lng": 80.26213
-        },
-        {
-          "id": "2154",
-          "name": "33/11 KV MANALI NEW SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.9,
-          "lat": 13.17285,
-          "lng": 80.27156
         },
         {
           "id": "9205",
@@ -8825,42 +8657,6 @@
       "totalFeedersCount": 10,
       "connections": [
         {
-          "id": "2221",
-          "name": "33/11 KV LUZ SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.7,
-          "lat": 13.0359,
-          "lng": 80.26732
-        },
-        {
-          "id": "2209",
-          "name": "33/11 KV FLOWER BAZAAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.6,
-          "lat": 13.0879,
-          "lng": 80.28183
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.9,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
           "id": "9313",
           "name": "110/33/11 KV THIRUMANGALAM SS",
           "type": "substation",
@@ -9274,18 +9070,6 @@
           "lng": 80.17996
         },
         {
-          "id": "9335",
-          "name": "33/11 KV REDHILLS SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.1,
-          "lat": 13.20181,
-          "lng": 80.1946
-        },
-        {
           "id": "9313",
           "name": "110/33/11 KV THIRUMANGALAM SS",
           "type": "substation",
@@ -9296,18 +9080,6 @@
           "distanceKm": 2.8,
           "lat": 13.08692,
           "lng": 80.19771
-        },
-        {
-          "id": "2113",
-          "name": "33/11KV PONNERI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 24.1,
-          "lat": 13.32796,
-          "lng": 80.19783
         },
         {
           "id": "9314",
@@ -9682,18 +9454,6 @@
           "lng": 80.22541
         },
         {
-          "id": "9427",
-          "name": "33/11 KV KOVILAMBAKKAM",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.1,
-          "lat": 12.9417,
-          "lng": 80.18712
-        },
-        {
           "id": "9234",
           "name": "110/33-11 KV CHINMAYA NAGAR SS",
           "type": "substation",
@@ -9875,18 +9635,6 @@
           "lng": 80.21707
         },
         {
-          "id": "9414",
-          "name": "110/33-11 KV TIDEL PARK SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 13.2,
-          "lat": 12.98514,
-          "lng": 80.25076
-        },
-        {
           "id": "9338",
           "name": "33/11 KV 6TH AVENUE SS",
           "type": "substation",
@@ -10008,18 +9756,6 @@
       "totalTransformers": 94,
       "totalFeedersCount": 7,
       "connections": [
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.6,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
         {
           "id": "9208",
           "name": "110/33-11 KV PORUR SS",
@@ -11406,18 +11142,6 @@
           "distanceKm": 10.1,
           "lat": 13.11129,
           "lng": 80.19044
-        },
-        {
-          "id": "2164",
-          "name": "33/11 KV NERMAINAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9,
-          "lat": 13.1252,
-          "lng": 80.22179
         },
         {
           "id": "9317",
@@ -13542,42 +13266,6 @@
           "lng": 80.23711
         },
         {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.2,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
-          "id": "9322",
-          "name": "110/11 KV SIDCO THIRUMULLAIVOYAL SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/11 kV",
-          "voltage": "110/11",
-          "tier": "subtransmission",
-          "distanceKm": 12.9,
-          "lat": 13.17712,
-          "lng": 80.13655
-        },
-        {
-          "id": "9352",
-          "name": "PONNIAMMAN NAGAR",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12,
-          "lat": 13.07893,
-          "lng": 80.14343
-        },
-        {
           "id": "2118",
           "name": "110/11 KV MATHUR SS",
           "type": "substation",
@@ -13763,30 +13451,6 @@
           "distanceKm": 5.1,
           "lat": 13.09244,
           "lng": 80.21028
-        },
-        {
-          "id": "9221",
-          "name": "110/11 KV RAMAPURAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/11 kV",
-          "voltage": "110/11",
-          "tier": "subtransmission",
-          "distanceKm": 12.6,
-          "lat": 13.02587,
-          "lng": 80.18768
-        },
-        {
-          "id": "9302",
-          "name": "110/33-11 KV AVADI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 13.2,
-          "lat": 13.12673,
-          "lng": 80.11937
         },
         {
           "id": "2117",
@@ -14021,18 +13685,6 @@
           "distanceKm": 3.3,
           "lat": 13.11129,
           "lng": 80.19044
-        },
-        {
-          "id": "2229",
-          "name": "33/11 KV SARDARJUNG GARDEN SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.7,
-          "lat": 13.05461,
-          "lng": 80.26719
         },
         {
           "id": "9312",
@@ -15247,18 +14899,6 @@
           "lng": 80.25614
         },
         {
-          "id": "2108",
-          "name": "33/11 KV T.H ROAD SUB-STATION",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.8,
-          "lat": 13.12176,
-          "lng": 80.28713
-        },
-        {
           "id": "9319",
           "name": "33/11 KV KAMARAJ NAGAR SS",
           "type": "substation",
@@ -15293,30 +14933,6 @@
           "distanceKm": 0.2,
           "lat": 13.09983,
           "lng": 80.18205
-        },
-        {
-          "id": "9231",
-          "name": "33/11 KV RAJBHAVAN SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.4,
-          "lat": 13.00672,
-          "lng": 80.22104
-        },
-        {
-          "id": "2227",
-          "name": "33/11 KV SAIDAPET SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.1,
-          "lat": 13.02391,
-          "lng": 80.23041
         },
         {
           "id": "9302",
@@ -15573,18 +15189,6 @@
       "totalFeedersCount": 17,
       "connections": [
         {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.7,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
           "id": "2237",
           "name": "33/11 KV RR COLONY SS",
           "type": "substation",
@@ -15790,18 +15394,6 @@
           "lng": 80.23711
         },
         {
-          "id": "9338",
-          "name": "33/11 KV 6TH AVENUE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.9,
-          "lat": 13.09244,
-          "lng": 80.21028
-        },
-        {
           "id": "10203",
           "name": "230/110 KV AMBATTUR IIIRD MAIN ROAD",
           "type": "substation",
@@ -15812,18 +15404,6 @@
           "distanceKm": 13.2,
           "lat": 13.09454,
           "lng": 80.16243
-        },
-        {
-          "id": "9408",
-          "name": "33/11KV PAMMAL SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.3,
-          "lat": 12.97507,
-          "lng": 80.13185
         },
         {
           "id": "9234",
@@ -16024,30 +15604,6 @@
       "totalTransformers": 390,
       "totalFeedersCount": 12,
       "connections": [
-        {
-          "id": "9442",
-          "name": "110 KV ANNA CENTENARY LIBRARY",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 12.6,
-          "lat": 13.01839,
-          "lng": 80.23902
-        },
-        {
-          "id": "9429",
-          "name": "33/11 KV GANDHI NAGAR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.3,
-          "lat": 13.01123,
-          "lng": 80.24878
-        },
         {
           "id": "9401",
           "name": "110/33-11 MEPZ SS",
@@ -16473,54 +16029,6 @@
           "lng": 80.17711
         },
         {
-          "id": "2229",
-          "name": "33/11 KV SARDARJUNG GARDEN SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.6,
-          "lat": 13.05461,
-          "lng": 80.26719
-        },
-        {
-          "id": "9258",
-          "name": "33/11 KV AYYAPPANTHANGAL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.3,
-          "lat": 13.04048,
-          "lng": 80.13162
-        },
-        {
-          "id": "9338",
-          "name": "33/11 KV 6TH AVENUE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.5,
-          "lat": 13.09244,
-          "lng": 80.21028
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.5,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
           "id": "9440",
           "name": "PALLIKARANAI SS",
           "type": "substation",
@@ -16766,18 +16274,6 @@
       "totalTransformers": 193,
       "totalFeedersCount": 13,
       "connections": [
-        {
-          "id": "2235",
-          "name": "33/11 KV NEHRU INDOOR STADIUM SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.1,
-          "lat": 13.09053,
-          "lng": 80.27127
-        },
         {
           "id": "2237",
           "name": "33/11 KV RR COLONY SS",
@@ -18213,18 +17709,6 @@
       "totalFeedersCount": 20,
       "connections": [
         {
-          "id": "9320",
-          "name": "33/11 KV TI CYCLE",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.8,
-          "lat": 13.11425,
-          "lng": 80.14546
-        },
-        {
           "id": "2237",
           "name": "33/11 KV RR COLONY SS",
           "type": "substation",
@@ -18235,18 +17719,6 @@
           "distanceKm": 2.9,
           "lat": 13.02915,
           "lng": 80.21427
-        },
-        {
-          "id": "2130",
-          "name": "33/11 KV INDIA PISTON SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.6,
-          "lat": 13.12662,
-          "lng": 80.24127
         },
         {
           "id": "9208",
@@ -19214,18 +18686,6 @@
       "totalFeedersCount": 4,
       "connections": [
         {
-          "id": "2159",
-          "name": "110/33/11KV KILUPAK WATER WORKS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 22.1,
-          "lat": 13.08832,
-          "lng": 80.23397
-        },
-        {
           "id": "2113",
           "name": "33/11KV PONNERI SS",
           "type": "substation",
@@ -19379,18 +18839,6 @@
           "distanceKm": 9.1,
           "lat": 13.32597,
           "lng": 80.14546
-        },
-        {
-          "id": "2121",
-          "name": "110/33-11KV PANJETTY SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.2,
-          "lat": 13.29803,
-          "lng": 80.15003
         }
       ],
       "distanceToCoastKm": 17.6,
@@ -19542,18 +18990,6 @@
           "distanceKm": 1.2,
           "lat": 13.12499,
           "lng": 80.24383
-        },
-        {
-          "id": "2229",
-          "name": "33/11 KV SARDARJUNG GARDEN SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.4,
-          "lat": 13.05461,
-          "lng": 80.26719
         },
         {
           "id": "2104",
@@ -19712,18 +19148,6 @@
       "totalFeedersCount": 7,
       "connections": [
         {
-          "id": "7205",
-          "name": "PERIYAPALAIYAM 110 KV",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 27.6,
-          "lat": 13.28954,
-          "lng": 80.04693
-        },
-        {
           "id": "2119",
           "name": "230/110/33/11 KV MANALI SS",
           "type": "substation",
@@ -19734,18 +19158,6 @@
           "distanceKm": 0.3,
           "lat": 13.17536,
           "lng": 80.27176
-        },
-        {
-          "id": "2241",
-          "name": "33/11 KV KILPAUK POLICE QUARTERS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.9,
-          "lat": 13.07777,
-          "lng": 80.24884
         },
         {
           "id": "10204",
@@ -20354,18 +19766,6 @@
           "distanceKm": 1.5,
           "lat": 13.15566,
           "lng": 80.30262
-        },
-        {
-          "id": "9358",
-          "name": "110/33KV THIRUMANGALAM SOUTH SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33 kV Trunk",
-          "voltage": "110/33",
-          "tier": "subtransmission",
-          "distanceKm": 13,
-          "lat": 13.08001,
-          "lng": 80.1947
         },
         {
           "id": "2151",
@@ -21844,18 +21244,6 @@
           "lng": 80.24383
         },
         {
-          "id": "9335",
-          "name": "33/11 KV REDHILLS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9,
-          "lat": 13.20181,
-          "lng": 80.1946
-        },
-        {
           "id": "9325",
           "name": "230/110 KV KOYAMBEDU CMRL",
           "type": "substation",
@@ -22019,18 +21407,6 @@
       "totalTransformers": 332,
       "totalFeedersCount": 11,
       "connections": [
-        {
-          "id": "2138",
-          "name": "33/11 KV SIDCO SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.4,
-          "lat": 13.10486,
-          "lng": 80.20059
-        },
         {
           "id": "sec_007",
           "name": "AE/O&M/NAPPALAYAM",
@@ -22587,18 +21963,6 @@
       "totalTransformers": 353,
       "totalFeedersCount": 15,
       "connections": [
-        {
-          "id": "9229",
-          "name": "33/11 KV MADIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.3,
-          "lat": 12.96288,
-          "lng": 80.19872
-        },
         {
           "id": "9242",
           "name": "110/33-11 KV SRMC SS",
@@ -24354,18 +23718,6 @@
       "totalFeedersCount": 12,
       "connections": [
         {
-          "id": "9320",
-          "name": "33/11 KV TI CYCLE",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 15.5,
-          "lat": 13.11425,
-          "lng": 80.14546
-        },
-        {
           "id": "2204",
           "name": "110/33/11 KV R.A.PURAM",
           "type": "substation",
@@ -24617,18 +23969,6 @@
       "totalTransformers": 149,
       "totalFeedersCount": 14,
       "connections": [
-        {
-          "id": "2112",
-          "name": "33/11KV GUMMIDIPOONDI SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.1,
-          "lat": 13.40545,
-          "lng": 80.12738
-        },
         {
           "id": "2162",
           "name": "33/11KV CHINNAMBEDU SS",
@@ -25633,18 +24973,6 @@
           "lng": 80.04918
         },
         {
-          "id": "9104",
-          "name": "110KV SRIPERUMPUDUR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.1,
-          "lat": 12.98287,
-          "lng": 79.97679
-        },
-        {
           "id": "9117",
           "name": "110/11KV SS THIRUNINRAVUR SS",
           "type": "substation",
@@ -26147,54 +25475,6 @@
       "totalTransformers": 557,
       "totalFeedersCount": 17,
       "connections": [
-        {
-          "id": "2154",
-          "name": "33/11 KV MANALI NEW SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 27.6,
-          "lat": 13.17285,
-          "lng": 80.27156
-        },
-        {
-          "id": "7208",
-          "name": "BANDIKAVANOOR 33 KV",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.2,
-          "lat": 13.26287,
-          "lng": 80.12781
-        },
-        {
-          "id": "7222",
-          "name": "PALAVAKKAM 33 KV",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.5,
-          "lat": 13.32098,
-          "lng": 79.95571
-        },
-        {
-          "id": "9352",
-          "name": "PONNIAMMAN NAGAR",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 25.6,
-          "lat": 13.07893,
-          "lng": 80.14343
-        },
         {
           "id": "sec_375",
           "name": "SOUTH PERIYAPALAYAM",
@@ -27032,18 +26312,6 @@
           "lng": 80.27065
         },
         {
-          "id": "9414",
-          "name": "110/33-11 KV TIDEL PARK SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 13.1,
-          "lat": 12.98514,
-          "lng": 80.25076
-        },
-        {
           "id": "2107",
           "name": "33/11 KV STANLY SS",
           "type": "substation",
@@ -27054,18 +26322,6 @@
           "distanceKm": 0.7,
           "lat": 13.10539,
           "lng": 80.283
-        },
-        {
-          "id": "9310",
-          "name": "33/11 KV MADURAVOYAL SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.2,
-          "lat": 13.06474,
-          "lng": 80.175
         },
         {
           "id": "sec_108",
@@ -27990,18 +27246,6 @@
           "lng": 80.28917
         },
         {
-          "id": "9357",
-          "name": "33/11 KV PRUTHIPATTU SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 17.1,
-          "lat": 13.08952,
-          "lng": 80.10925
-        },
-        {
           "id": "2207",
           "name": "33/11 KV OCF SS",
           "type": "substation",
@@ -28172,18 +27416,6 @@
       "totalTransformers": 105,
       "totalFeedersCount": 11,
       "connections": [
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.7,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
         {
           "id": "2101",
           "name": "33/11 KV TOLLGATE SS",
@@ -28383,18 +27615,6 @@
       "totalTransformers": 80,
       "totalFeedersCount": 11,
       "connections": [
-        {
-          "id": "2128",
-          "name": "33/11 KV MEDHUR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.4,
-          "lat": 13.39549,
-          "lng": 80.23635
-        },
         {
           "id": "2113",
           "name": "33/11KV PONNERI SS",
@@ -28834,18 +28054,6 @@
           "lng": 80.17711
         },
         {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.8,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
           "id": "9427",
           "name": "33/11 KV KOVILAMBAKKAM",
           "type": "substation",
@@ -29142,18 +28350,6 @@
           "distanceKm": 8.3,
           "lat": 13.01123,
           "lng": 80.24878
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.2,
-          "lat": 13.0385,
-          "lng": 80.27065
         },
         {
           "id": "9312",
@@ -30259,18 +29455,6 @@
       "totalFeedersCount": 12,
       "connections": [
         {
-          "id": "9409",
-          "name": "110/33-11 KV MADAMBAKKAM SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 13.5,
-          "lat": 12.90255,
-          "lng": 80.16344
-        },
-        {
           "id": "sec_582",
           "name": "KARASANGAL",
           "type": "section",
@@ -30418,18 +29602,6 @@
           "distanceKm": 4.8,
           "lat": 13.03084,
           "lng": 80.15366
-        },
-        {
-          "id": "9427",
-          "name": "33/11 KV KOVILAMBAKKAM",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11,
-          "lat": 12.9417,
-          "lng": 80.18712
         },
         {
           "id": "9242",
@@ -31128,18 +30300,6 @@
       "totalTransformers": 481,
       "totalFeedersCount": 12,
       "connections": [
-        {
-          "id": "2153",
-          "name": "33/11KV GANDHI NAGAR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.9,
-          "lat": 13.12593,
-          "lng": 80.24327
-        },
         {
           "id": "9315",
           "name": "110/11KV AMBATTUR SIDCO SS",
@@ -32518,30 +31678,6 @@
           "lng": 80.32101
         },
         {
-          "id": "2121",
-          "name": "110/33-11KV PANJETTY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 14,
-          "lat": 13.29803,
-          "lng": 80.15003
-        },
-        {
-          "id": "2113",
-          "name": "33/11KV PONNERI SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.1,
-          "lat": 13.32796,
-          "lng": 80.19783
-        },
-        {
           "id": "9317",
           "name": "110/33-11 KV SOTHUPERUMBEDU SS",
           "type": "substation",
@@ -33536,20 +32672,7 @@
       "totalConsumers": 17156,
       "totalTransformers": 166,
       "totalFeedersCount": 8,
-      "connections": [
-        {
-          "id": "2159",
-          "name": "110/33/11KV KILUPAK WATER WORKS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 18.9,
-          "lat": 13.08832,
-          "lng": 80.23397
-        }
-      ],
+      "connections": [],
       "elevationM": 29,
       "riskCategory": "MODERATE_RISK",
       "compositeRiskScore": 40.6,
@@ -33749,18 +32872,6 @@
           "distanceKm": 1.6,
           "lat": 13.0697,
           "lng": 80.15922
-        },
-        {
-          "id": "9246",
-          "name": "33/11 KV THILLAI GANGA NAGAR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10,
-          "lat": 12.99187,
-          "lng": 80.19473
         },
         {
           "id": "9314",
@@ -34042,18 +33153,6 @@
           "distanceKm": 5.4,
           "lat": 13.04831,
           "lng": 80.25438
-        },
-        {
-          "id": "9412",
-          "name": "110/33-11KV TNSCB SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 24.5,
-          "lat": 12.87982,
-          "lng": 80.20557
         },
         {
           "id": "2102",
@@ -35908,18 +35007,6 @@
       "totalFeedersCount": 9,
       "connections": [
         {
-          "id": "9179",
-          "name": "NAVALUR",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.2,
-          "lat": 12.85621,
-          "lng": 79.97261
-        },
-        {
           "id": "sec_536",
           "name": "AE/O&M/PILLAIPAKKAM",
           "type": "section",
@@ -36816,18 +35903,6 @@
           "lng": 80.14435
         },
         {
-          "id": "2205",
-          "name": "110/33/11 VALLUVAR KOTTAM SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 18.3,
-          "lat": 13.0524,
-          "lng": 80.24261
-        },
-        {
           "id": "9401",
           "name": "110/33-11 MEPZ SS",
           "type": "substation",
@@ -36838,18 +35913,6 @@
           "distanceKm": 1,
           "lat": 12.9467,
           "lng": 80.1182
-        },
-        {
-          "id": "9214",
-          "name": "33/11 KV MOUNT SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.2,
-          "lat": 13.00012,
-          "lng": 80.19038
         },
         {
           "id": "sec_255",
@@ -36909,18 +35972,6 @@
       "totalFeedersCount": 2,
       "connections": [
         {
-          "id": "9429",
-          "name": "33/11 KV GANDHI NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.2,
-          "lat": 13.01123,
-          "lng": 80.24878
-        },
-        {
           "id": "9356",
           "name": "110 KV ATHIPET SUBSTATION",
           "type": "substation",
@@ -36945,18 +35996,6 @@
           "lng": 80.19771
         },
         {
-          "id": "9409",
-          "name": "110/33-11 KV MADAMBAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 21.3,
-          "lat": 12.90255,
-          "lng": 80.16344
-        },
-        {
           "id": "9312",
           "name": "33/11 KV SHANTHI COLONY SS",
           "type": "substation",
@@ -36967,18 +36006,6 @@
           "distanceKm": 6.1,
           "lat": 13.08116,
           "lng": 80.21707
-        },
-        {
-          "id": "9420",
-          "name": "33/11 KV BESANT NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 15.5,
-          "lat": 12.99695,
-          "lng": 80.26453
         },
         {
           "id": "9303",
@@ -37384,18 +36411,6 @@
           "distanceKm": 1.5,
           "lat": 13.08769,
           "lng": 80.18413
-        },
-        {
-          "id": "9414",
-          "name": "110/33-11 KV TIDEL PARK SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.7,
-          "lat": 12.98514,
-          "lng": 80.25076
         },
         {
           "id": "10203",
@@ -37897,18 +36912,6 @@
           "lng": 80.11512
         },
         {
-          "id": "2153",
-          "name": "33/11KV GANDHI NAGAR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12,
-          "lat": 13.12593,
-          "lng": 80.24327
-        },
-        {
           "id": "9253",
           "name": "33/11 KV PT RAJAN SALAI SS",
           "type": "substation",
@@ -37919,18 +36922,6 @@
           "distanceKm": 7.9,
           "lat": 13.04187,
           "lng": 80.20549
-        },
-        {
-          "id": "7205",
-          "name": "PERIYAPALAIYAM 110 KV",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 25.6,
-          "lat": 13.28954,
-          "lng": 80.04693
         },
         {
           "id": "9312",
@@ -38719,42 +37710,6 @@
           "lng": 80.23902
         },
         {
-          "id": "9402",
-          "name": "33/11KV RADHA NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.2,
-          "lat": 12.95445,
-          "lng": 80.14435
-        },
-        {
-          "id": "9431",
-          "name": "33/11 KV EZHIL NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.4,
-          "lat": 12.93071,
-          "lng": 80.24289
-        },
-        {
-          "id": "9418",
-          "name": "33/11 KV THORAIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.8,
-          "lat": 12.92532,
-          "lng": 80.2378
-        },
-        {
           "id": "9211",
           "name": "33/11 KV ALANDUR SS",
           "type": "substation",
@@ -38789,18 +37744,6 @@
           "distanceKm": 2,
           "lat": 13.04501,
           "lng": 80.206
-        },
-        {
-          "id": "9410",
-          "name": "33/11KV CHITLAPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13,
-          "lat": 12.9394,
-          "lng": 80.13775
         },
         {
           "id": "9415",
@@ -39010,18 +37953,6 @@
           "distanceKm": 11.1,
           "lat": 13.26036,
           "lng": 80.27324
-        },
-        {
-          "id": "9304",
-          "name": "110/33-11 KV PADI SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 24.1,
-          "lat": 13.11129,
-          "lng": 80.19044
         },
         {
           "id": "2161",
@@ -39991,30 +38922,6 @@
       "totalFeedersCount": 14,
       "connections": [
         {
-          "id": "2111",
-          "name": "110/33-11 KV MELUR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 14,
-          "lat": 13.26036,
-          "lng": 80.27324
-        },
-        {
-          "id": "2112",
-          "name": "33/11KV GUMMIDIPOONDI SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.2,
-          "lat": 13.40545,
-          "lng": 80.12738
-        },
-        {
           "id": "2113",
           "name": "33/11KV PONNERI SS",
           "type": "substation",
@@ -40512,18 +39419,6 @@
           "lng": 80.09737
         },
         {
-          "id": "9442",
-          "name": "110 KV ANNA CENTENARY LIBRARY",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 21.4,
-          "lat": 13.01839,
-          "lng": 80.23902
-        },
-        {
           "id": "sec_284",
           "name": "AE/O&M/MUDICHUR",
           "type": "section",
@@ -40929,18 +39824,6 @@
       "totalFeedersCount": 11,
       "connections": [
         {
-          "id": "9311",
-          "name": "33/11 KV SAF GAMES VILLAGE SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.1,
-          "lat": 13.06736,
-          "lng": 80.20706
-        },
-        {
           "id": "9440",
           "name": "PALLIKARANAI SS",
           "type": "substation",
@@ -40951,18 +39834,6 @@
           "distanceKm": 2.6,
           "lat": 12.9508,
           "lng": 80.20922
-        },
-        {
-          "id": "9238",
-          "name": "33/11 KV KOVOOR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11,
-          "lat": 13.01039,
-          "lng": 80.11423
         },
         {
           "id": "9407",
@@ -41171,18 +40042,6 @@
       "totalTransformers": 423,
       "totalFeedersCount": 13,
       "connections": [
-        {
-          "id": "9442",
-          "name": "110 KV ANNA CENTENARY LIBRARY",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 15.2,
-          "lat": 13.01839,
-          "lng": 80.23902
-        },
         {
           "id": "sec_032",
           "name": "AE/AYAPAKKAM",
@@ -42108,18 +40967,6 @@
           "distanceKm": 3.1,
           "lat": 12.93825,
           "lng": 80.12141
-        },
-        {
-          "id": "2237",
-          "name": "33/11 KV RR COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.2,
-          "lat": 13.02915,
-          "lng": 80.21427
         },
         {
           "id": "9407",
@@ -43649,18 +42496,6 @@
           "lng": 80.24047
         },
         {
-          "id": "9344",
-          "name": "33/11KV KORATTUR TNHB SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.4,
-          "lat": 13.10078,
-          "lng": 80.17996
-        },
-        {
           "id": "2167",
           "name": "GIS CHENNAI NORTH POOLING STATION",
           "type": "substation",
@@ -43937,18 +42772,6 @@
           "lng": 80.21427
         },
         {
-          "id": "9344",
-          "name": "33/11KV KORATTUR TNHB SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.1,
-          "lat": 13.10078,
-          "lng": 80.17996
-        },
-        {
           "id": "9256",
           "name": "GUINDY 230KV SS",
           "type": "substation",
@@ -44108,18 +42931,6 @@
       "totalFeedersCount": 7,
       "connections": [
         {
-          "id": "9344",
-          "name": "33/11KV KORATTUR TNHB SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.8,
-          "lat": 13.10078,
-          "lng": 80.17996
-        },
-        {
           "id": "2106",
           "name": "33/11 KV ICF SS",
           "type": "substation",
@@ -44142,18 +42953,6 @@
           "distanceKm": 6.9,
           "lat": 13.08832,
           "lng": 80.23397
-        },
-        {
-          "id": "9339",
-          "name": "33/11 KV LOYOLA COLLEGE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.9,
-          "lat": 13.05864,
-          "lng": 80.23711
         },
         {
           "id": "2151",
@@ -45038,18 +43837,6 @@
       "totalFeedersCount": 23,
       "connections": [
         {
-          "id": "9141",
-          "name": "PADAPPAI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/11 kV",
-          "voltage": "110/11",
-          "tier": "subtransmission",
-          "distanceKm": 13.5,
-          "lat": 12.89525,
-          "lng": 80.039
-        },
-        {
           "id": "9439",
           "name": "33/11 KV SITHALAPAKKAM SS",
           "type": "substation",
@@ -45060,18 +43847,6 @@
           "distanceKm": 1.7,
           "lat": 12.89396,
           "lng": 80.17671
-        },
-        {
-          "id": "9442",
-          "name": "110 KV ANNA CENTENARY LIBRARY",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 15.3,
-          "lat": 13.01839,
-          "lng": 80.23902
         },
         {
           "id": "10203",
@@ -45096,18 +43871,6 @@
           "distanceKm": 2.9,
           "lat": 12.92446,
           "lng": 80.14936
-        },
-        {
-          "id": "2134",
-          "name": "33/11 KV PAPER MILLS ROAD SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 24.6,
-          "lat": 13.11138,
-          "lng": 80.23869
         },
         {
           "id": "sec_313",
@@ -45366,30 +44129,6 @@
           "lng": 80.20758
         },
         {
-          "id": "2237",
-          "name": "33/11 KV RR COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.4,
-          "lat": 13.02915,
-          "lng": 80.21427
-        },
-        {
-          "id": "2167",
-          "name": "GIS CHENNAI NORTH POOLING STATION",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 765/400 kV Trunk",
-          "voltage": "765/400",
-          "tier": "bulk",
-          "distanceKm": 31.1,
-          "lat": 13.20658,
-          "lng": 80.2912
-        },
-        {
           "id": "9417",
           "name": "110/33/11 KV PERUNGUDI SS",
           "type": "substation",
@@ -45566,42 +44305,6 @@
       "totalTransformers": 205,
       "totalFeedersCount": 12,
       "connections": [
-        {
-          "id": "2229",
-          "name": "33/11 KV SARDARJUNG GARDEN SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.7,
-          "lat": 13.05461,
-          "lng": 80.26719
-        },
-        {
-          "id": "2237",
-          "name": "33/11 KV RR COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.8,
-          "lat": 13.02915,
-          "lng": 80.21427
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.1,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
         {
           "id": "9417",
           "name": "110/33/11 KV PERUNGUDI SS",
@@ -46271,18 +44974,6 @@
           "lng": 80.18375
         },
         {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.4,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
           "id": "2237",
           "name": "33/11 KV RR COLONY SS",
           "type": "substation",
@@ -46461,18 +45152,6 @@
       "totalTransformers": 264,
       "totalFeedersCount": 13,
       "connections": [
-        {
-          "id": "2129",
-          "name": "33/11 KV KALADIPET SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.4,
-          "lat": 13.15566,
-          "lng": 80.30262
-        },
         {
           "id": "2218",
           "name": "33/11 KV KILPAUK SS",
@@ -47349,18 +46028,6 @@
           "lng": 80.17125
         },
         {
-          "id": "2208",
-          "name": "33/11 KV GOVT ESTATE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.2,
-          "lat": 13.06766,
-          "lng": 80.27612
-        },
-        {
           "id": "sec_431",
           "name": "AE/J.J.NAGAR/CENTRAL",
           "type": "section",
@@ -48188,18 +46855,6 @@
           "lng": 80.24383
         },
         {
-          "id": "9409",
-          "name": "110/33-11 KV MADAMBAKKAM SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 24.6,
-          "lat": 12.90255,
-          "lng": 80.16344
-        },
-        {
           "id": "2229",
           "name": "33/11 KV SARDARJUNG GARDEN SS",
           "type": "substation",
@@ -48363,18 +47018,6 @@
           "lng": 80.1182
         },
         {
-          "id": "2237",
-          "name": "33/11 KV RR COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13,
-          "lat": 13.02915,
-          "lng": 80.21427
-        },
-        {
           "id": "9438",
           "name": "230/110-11 KV KADAPERI SS",
           "type": "substation",
@@ -48524,18 +47167,6 @@
           "distanceKm": 0.2,
           "lat": 13.0994,
           "lng": 80.26719
-        },
-        {
-          "id": "9407",
-          "name": "110/33-11 KV PALLAVARAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 18.9,
-          "lat": 12.9716,
-          "lng": 80.15493
         },
         {
           "id": "2214",
@@ -48960,18 +47591,6 @@
           "distanceKm": 2.5,
           "lat": 12.97507,
           "lng": 80.13185
-        },
-        {
-          "id": "9338",
-          "name": "33/11 KV 6TH AVENUE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.7,
-          "lat": 13.09244,
-          "lng": 80.21028
         },
         {
           "id": "2247",
@@ -49511,18 +48130,6 @@
           "lng": 80.19872
         },
         {
-          "id": "2237",
-          "name": "33/11 KV RR COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.4,
-          "lat": 13.02915,
-          "lng": 80.21427
-        },
-        {
           "id": "9440",
           "name": "PALLIKARANAI SS",
           "type": "substation",
@@ -49839,18 +48446,6 @@
           "lng": 80.2378
         },
         {
-          "id": "2229",
-          "name": "33/11 KV SARDARJUNG GARDEN SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.3,
-          "lat": 13.05461,
-          "lng": 80.26719
-        },
-        {
           "id": "9431",
           "name": "33/11 KV EZHIL NAGAR SS",
           "type": "substation",
@@ -50139,18 +48734,6 @@
           "distanceKm": 0.4,
           "lat": 13.01179,
           "lng": 80.21137
-        },
-        {
-          "id": "2138",
-          "name": "33/11 KV SIDCO SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.1,
-          "lat": 13.10486,
-          "lng": 80.20059
         },
         {
           "id": "2159",
@@ -50785,54 +49368,6 @@
       "totalFeedersCount": 29,
       "connections": [
         {
-          "id": "9311",
-          "name": "33/11 KV SAF GAMES VILLAGE SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.3,
-          "lat": 13.06736,
-          "lng": 80.20706
-        },
-        {
-          "id": "9350",
-          "name": "VAIGAICOLONY SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.2,
-          "lat": 13.09287,
-          "lng": 80.19912
-        },
-        {
-          "id": "2203",
-          "name": "110/33/11 KV SEVEN WELLS SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33/11 kV",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 13.1,
-          "lat": 13.09935,
-          "lng": 80.28179
-        },
-        {
-          "id": "9313",
-          "name": "110/33/11 KV THIRUMANGALAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.7,
-          "lat": 13.08692,
-          "lng": 80.19771
-        },
-        {
           "id": "9237",
           "name": "33/11 KV RAMASAMY SALAI SS",
           "type": "substation",
@@ -50905,18 +49440,6 @@
           "lng": 80.25497
         },
         {
-          "id": "9338",
-          "name": "33/11 KV 6TH AVENUE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.7,
-          "lat": 13.09244,
-          "lng": 80.21028
-        },
-        {
           "id": "9421",
           "name": "33/11 KV KOTTIVAKKAM  SS",
           "type": "substation",
@@ -50951,30 +49474,6 @@
           "distanceKm": 8.5,
           "lat": 13.05993,
           "lng": 80.26545
-        },
-        {
-          "id": "9302",
-          "name": "110/33-11 KV AVADI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 21.2,
-          "lat": 13.12673,
-          "lng": 80.11937
-        },
-        {
-          "id": "9310",
-          "name": "33/11 KV MADURAVOYAL SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.1,
-          "lat": 13.06474,
-          "lng": 80.175
         },
         {
           "id": "sec_300",
@@ -51849,30 +50348,6 @@
           "lng": 80.24509
         },
         {
-          "id": "2125",
-          "name": "33/11 KV NAALUR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 22.1,
-          "lat": 13.28681,
-          "lng": 80.23297
-        },
-        {
-          "id": "9243",
-          "name": "110/11 KV CHEMBARAMBAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/11 kV",
-          "voltage": "110/11",
-          "tier": "subtransmission",
-          "distanceKm": 18.9,
-          "lat": 13.04014,
-          "lng": 80.06695
-        },
-        {
           "id": "9205",
           "name": "110/33-11 KV KK NAGAR SS",
           "type": "substation",
@@ -51895,18 +50370,6 @@
           "distanceKm": 6.9,
           "lat": 13.12176,
           "lng": 80.28713
-        },
-        {
-          "id": "9215",
-          "name": "33/11 KV GUINDY SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.6,
-          "lat": 13.01458,
-          "lng": 80.20941
         },
         {
           "id": "9328",
@@ -51955,30 +50418,6 @@
           "distanceKm": 3.3,
           "lat": 13.05864,
           "lng": 80.23711
-        },
-        {
-          "id": "9316",
-          "name": "33/11 KV PONDESWARAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 21.6,
-          "lat": 13.18719,
-          "lng": 80.06254
-        },
-        {
-          "id": "9105",
-          "name": "IRUNGATUKOTTAI",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 26.3,
-          "lat": 12.98873,
-          "lng": 80.01332
         },
         {
           "id": "sec_064",
@@ -52281,18 +50720,6 @@
           "lng": 80.2378
         },
         {
-          "id": "9442",
-          "name": "110 KV ANNA CENTENARY LIBRARY",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 12.9,
-          "lat": 13.01839,
-          "lng": 80.23902
-        },
-        {
           "id": "9431",
           "name": "33/11 KV EZHIL NAGAR SS",
           "type": "substation",
@@ -52303,18 +50730,6 @@
           "distanceKm": 4.2,
           "lat": 12.93071,
           "lng": 80.24289
-        },
-        {
-          "id": "2167",
-          "name": "GIS CHENNAI NORTH POOLING STATION",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 765/400 kV Trunk",
-          "voltage": "765/400",
-          "tier": "bulk",
-          "distanceKm": 34.6,
-          "lat": 13.20658,
-          "lng": 80.2912
         }
       ],
       "elevationM": 18,
@@ -52794,18 +51209,6 @@
       "totalFeedersCount": 14,
       "connections": [
         {
-          "id": "9338",
-          "name": "33/11 KV 6TH AVENUE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.1,
-          "lat": 13.09244,
-          "lng": 80.21028
-        },
-        {
           "id": "2237",
           "name": "33/11 KV RR COLONY SS",
           "type": "substation",
@@ -53080,18 +51483,6 @@
           "distanceKm": 7,
           "lat": 13.10486,
           "lng": 80.20059
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.5,
-          "lat": 13.0385,
-          "lng": 80.27065
         },
         {
           "id": "sec_019",
@@ -53954,18 +52345,6 @@
           "lng": 80.22892
         },
         {
-          "id": "9269",
-          "name": "MANGADU ALTIS INDOOR",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12,
-          "lat": 13.02638,
-          "lng": 80.11517
-        },
-        {
           "id": "2167",
           "name": "GIS CHENNAI NORTH POOLING STATION",
           "type": "substation",
@@ -54329,18 +52708,6 @@
           "distanceKm": 2.4,
           "lat": 13.05323,
           "lng": 80.22045
-        },
-        {
-          "id": "9400",
-          "name": "110/33-11KV KADAPERI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33/11 kV",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 18.3,
-          "lat": 12.93825,
-          "lng": 80.12141
         },
         {
           "id": "2167",
@@ -54888,18 +53255,6 @@
           "lng": 80.26592
         },
         {
-          "id": "9338",
-          "name": "33/11 KV 6TH AVENUE SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.1,
-          "lat": 13.09244,
-          "lng": 80.21028
-        },
-        {
           "id": "2206",
           "name": "110/33/11 KV NANDANAM SS",
           "type": "substation",
@@ -55009,18 +53364,6 @@
           "lng": 80.22067
         },
         {
-          "id": "9408",
-          "name": "33/11KV PAMMAL SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.6,
-          "lat": 12.97507,
-          "lng": 80.13185
-        },
-        {
           "id": "9253",
           "name": "33/11 KV PT RAJAN SALAI SS",
           "type": "substation",
@@ -55045,30 +53388,6 @@
           "lng": 80.21427
         },
         {
-          "id": "9406",
-          "name": "33/11 KV MUDICHUR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 21.4,
-          "lat": 12.91661,
-          "lng": 80.07137
-        },
-        {
-          "id": "9318",
-          "name": "110/11 KV AYAPAKKAM SUBSTATION",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/11 kV",
-          "voltage": "110/11",
-          "tier": "subtransmission",
-          "distanceKm": 15.2,
-          "lat": 13.10409,
-          "lng": 80.12923
-        },
-        {
           "id": "9425",
           "name": "33/11KV IIT SS",
           "type": "substation",
@@ -55091,18 +53410,6 @@
           "distanceKm": 2.3,
           "lat": 13.00672,
           "lng": 80.22104
-        },
-        {
-          "id": "9409",
-          "name": "110/33-11 KV MADAMBAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 15.3,
-          "lat": 12.90255,
-          "lng": 80.16344
         },
         {
           "id": "9436",
@@ -55268,30 +53575,6 @@
           "lng": 80.24127
         },
         {
-          "id": "9429",
-          "name": "33/11 KV GANDHI NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.9,
-          "lat": 13.01123,
-          "lng": 80.24878
-        },
-        {
-          "id": "9229",
-          "name": "33/11 KV MADIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.5,
-          "lat": 12.96288,
-          "lng": 80.19872
-        },
-        {
           "id": "2223",
           "name": "33/11 KV EDC SS",
           "type": "substation",
@@ -55350,42 +53633,6 @@
           "distanceKm": 1.5,
           "lat": 13.08116,
           "lng": 80.21707
-        },
-        {
-          "id": "9407",
-          "name": "110/33-11 KV PALLAVARAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 14.7,
-          "lat": 12.9716,
-          "lng": 80.15493
-        },
-        {
-          "id": "9414",
-          "name": "110/33-11 KV TIDEL PARK SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.7,
-          "lat": 12.98514,
-          "lng": 80.25076
-        },
-        {
-          "id": "9420",
-          "name": "33/11 KV BESANT NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12.1,
-          "lat": 12.99695,
-          "lng": 80.26453
         },
         {
           "id": "2252",
@@ -55597,18 +53844,6 @@
           "lng": 80.21484
         },
         {
-          "id": "2108",
-          "name": "33/11 KV T.H ROAD SUB-STATION",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.9,
-          "lat": 13.12176,
-          "lng": 80.28713
-        },
-        {
           "id": "2159",
           "name": "110/33/11KV KILUPAK WATER WORKS SS",
           "type": "substation",
@@ -55728,20 +53963,7 @@
       "totalConsumers": 8528,
       "totalTransformers": 109,
       "totalFeedersCount": 6,
-      "connections": [
-        {
-          "id": "9302",
-          "name": "110/33-11 KV AVADI SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 14.1,
-          "lat": 13.12673,
-          "lng": 80.11937
-        }
-      ],
+      "connections": [],
       "distanceToCoastKm": 5.6,
       "elevationM": 12,
       "riskCategory": "SAFE",
@@ -56480,18 +54702,6 @@
           "lng": 80.10521
         },
         {
-          "id": "9342",
-          "name": "33/11 KV MC.NICHOLAS ROAD SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 14.1,
-          "lat": 13.07627,
-          "lng": 80.23846
-        },
-        {
           "id": "9319",
           "name": "33/11 KV KAMARAJ NAGAR SS",
           "type": "substation",
@@ -56502,18 +54712,6 @@
           "distanceKm": 2.4,
           "lat": 13.11112,
           "lng": 80.10469
-        },
-        {
-          "id": "9316",
-          "name": "33/11 KV PONDESWARAM SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.1,
-          "lat": 13.18719,
-          "lng": 80.06254
         },
         {
           "id": "9344",
@@ -56528,18 +54726,6 @@
           "lng": 80.17996
         },
         {
-          "id": "9312",
-          "name": "33/11 KV SHANTHI COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.7,
-          "lat": 13.08116,
-          "lng": 80.21707
-        },
-        {
           "id": "9323",
           "name": "110/11 KV PATTABIRAM SS",
           "type": "substation",
@@ -56552,18 +54738,6 @@
           "lng": 80.07664
         },
         {
-          "id": "2130",
-          "name": "33/11 KV INDIA PISTON SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.2,
-          "lat": 13.12662,
-          "lng": 80.24127
-        },
-        {
           "id": "9322",
           "name": "110/11 KV SIDCO THIRUMULLAIVOYAL SS",
           "type": "substation",
@@ -56574,18 +54748,6 @@
           "distanceKm": 5.9,
           "lat": 13.17712,
           "lng": 80.13655
-        },
-        {
-          "id": "9414",
-          "name": "110/33-11 KV TIDEL PARK SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 21.2,
-          "lat": 12.98514,
-          "lng": 80.25076
         },
         {
           "id": "9320",
@@ -57196,18 +55358,6 @@
           "lng": 80.1946
         },
         {
-          "id": "9312",
-          "name": "33/11 KV SHANTHI COLONY SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.6,
-          "lat": 13.08116,
-          "lng": 80.21707
-        },
-        {
           "id": "sec_051",
           "name": "AE/PUZHAL",
           "type": "section",
@@ -57424,18 +55574,6 @@
           "lng": 80.09902
         },
         {
-          "id": "9335",
-          "name": "33/11 KV REDHILLS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.2,
-          "lat": 13.20181,
-          "lng": 80.1946
-        },
-        {
           "id": "9316",
           "name": "33/11 KV PONDESWARAM SS",
           "type": "substation",
@@ -57585,54 +55723,6 @@
       "totalFeedersCount": 4,
       "connections": [
         {
-          "id": "2213",
-          "name": "33/11 KV B&C MILL SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.9,
-          "lat": 13.10346,
-          "lng": 80.26055
-        },
-        {
-          "id": "2212",
-          "name": "33/11 KV BELLS ROAD SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 16.2,
-          "lat": 13.0614,
-          "lng": 80.27798
-        },
-        {
-          "id": "9304",
-          "name": "110/33-11 KV PADI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 15.2,
-          "lat": 13.11129,
-          "lng": 80.19044
-        },
-        {
-          "id": "2102",
-          "name": "33/11 KV ANNA POONGA SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11,
-          "lat": 13.10807,
-          "lng": 80.28917
-        },
-        {
           "id": "2109",
           "name": "33/11 KV TONDIARPET SS",
           "type": "substation",
@@ -57655,78 +55745,6 @@
           "distanceKm": 6.9,
           "lat": 13.14435,
           "lng": 80.29481
-        },
-        {
-          "id": "2106",
-          "name": "33/11 KV ICF SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.9,
-          "lat": 13.10518,
-          "lng": 80.21649
-        },
-        {
-          "id": "9231",
-          "name": "33/11 KV RAJBHAVAN SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 23.5,
-          "lat": 13.00672,
-          "lng": 80.22104
-        },
-        {
-          "id": "9431",
-          "name": "33/11 KV EZHIL NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 31.1,
-          "lat": 12.93071,
-          "lng": 80.24289
-        },
-        {
-          "id": "9436",
-          "name": "230/110/33-11 KV KITS PARK SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 230/110/33-11 kV",
-          "voltage": "230/110/33-11",
-          "tier": "bulk",
-          "distanceKm": 34.6,
-          "lat": 12.90496,
-          "lng": 80.21414
-        },
-        {
-          "id": "2225",
-          "name": "33/11 KV WEST MAMBALAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 20.4,
-          "lat": 13.03422,
-          "lng": 80.22582
-        },
-        {
-          "id": "2205",
-          "name": "110/33/11 VALLUVAR KOTTAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 17.9,
-          "lat": 13.0524,
-          "lng": 80.24261
         }
       ],
       "distanceToCoastKm": 0.4,
@@ -58062,18 +56080,6 @@
           "distanceKm": 4.5,
           "lat": 13.20578,
           "lng": 80.09902
-        },
-        {
-          "id": "2159",
-          "name": "110/33/11KV KILUPAK WATER WORKS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 21.6,
-          "lat": 13.08832,
-          "lng": 80.23397
         }
       ],
       "distanceToCoastKm": 24.6,
@@ -58393,18 +56399,6 @@
           "distanceKm": 1.7,
           "lat": 13.09983,
           "lng": 80.18205
-        },
-        {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.4,
-          "lat": 13.0385,
-          "lng": 80.27065
         },
         {
           "id": "sec_430",
@@ -58856,18 +56850,6 @@
       "totalFeedersCount": 17,
       "connections": [
         {
-          "id": "9106",
-          "name": "110/33-11KV SS THIRUMAZHISAI SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.1,
-          "lat": 13.05137,
-          "lng": 80.06362
-        },
-        {
           "id": "9135",
           "name": "400KV SRIPERUMPUDUR",
           "type": "substation",
@@ -59309,20 +57291,7 @@
       "totalConsumers": 10990,
       "totalTransformers": 365,
       "totalFeedersCount": 31,
-      "connections": [
-        {
-          "id": "2159",
-          "name": "110/33/11KV KILUPAK WATER WORKS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 26.3,
-          "lat": 13.08832,
-          "lng": 80.23397
-        }
-      ],
+      "connections": [],
       "distanceToCoastKm": 29.9,
       "elevationM": 12,
       "riskCategory": "SAFE",
@@ -59799,18 +57768,6 @@
           "distanceKm": 2.2,
           "lat": 13.05137,
           "lng": 80.06362
-        },
-        {
-          "id": "9262",
-          "name": "33KV THIRUMUDIVAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.4,
-          "lat": 12.96686,
-          "lng": 80.09737
         }
       ],
       "distanceToCoastKm": 26,
@@ -60097,18 +58054,6 @@
           "distanceKm": 1.5,
           "lat": 13.03286,
           "lng": 80.10317
-        },
-        {
-          "id": "2225",
-          "name": "33/11 KV WEST MAMBALAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 12,
-          "lat": 13.03422,
-          "lng": 80.22582
         }
       ],
       "distanceToCoastKm": 18.9,
@@ -61195,18 +59140,6 @@
           "lng": 80.26055
         },
         {
-          "id": "2225",
-          "name": "33/11 KV WEST MAMBALAM SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.6,
-          "lat": 13.03422,
-          "lng": 80.22582
-        },
-        {
           "id": "2260",
           "name": "400/230KV PULIYANTHOPE GIS SUBSTATION",
           "type": "substation",
@@ -61277,30 +59210,6 @@
       "totalFeedersCount": 0,
       "connections": [
         {
-          "id": "2219",
-          "name": "33/11 KV FORESHORE ESTATE SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.9,
-          "lat": 13.02357,
-          "lng": 80.27701
-        },
-        {
-          "id": "2209",
-          "name": "33/11 KV FLOWER BAZAAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.5,
-          "lat": 13.0879,
-          "lng": 80.28183
-        },
-        {
           "id": "2235",
           "name": "33/11 KV NEHRU INDOOR STADIUM SS",
           "type": "substation",
@@ -61311,18 +59220,6 @@
           "distanceKm": 8.4,
           "lat": 13.09053,
           "lng": 80.27127
-        },
-        {
-          "id": "2101",
-          "name": "33/11 KV TOLLGATE SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13,
-          "lat": 13.14435,
-          "lng": 80.29481
         },
         {
           "id": "9313",
@@ -61643,42 +59540,6 @@
       "totalFeedersCount": 2,
       "connections": [
         {
-          "id": "2129",
-          "name": "33/11 KV KALADIPET SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.5,
-          "lat": 13.15566,
-          "lng": 80.30262
-        },
-        {
-          "id": "9336",
-          "name": "33/11 KV MUGAPPAIR EAST",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.9,
-          "lat": 13.08769,
-          "lng": 80.18413
-        },
-        {
-          "id": "9267",
-          "name": "ALWARTHIRUNAGAR SS II",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.6,
-          "lat": 13.04759,
-          "lng": 80.18274
-        },
-        {
           "id": "10201",
           "name": "MYLAPORE 230/33 KV GIS SS",
           "type": "substation",
@@ -61689,42 +59550,6 @@
           "distanceKm": 0.9,
           "lat": 13.04525,
           "lng": 80.26611
-        },
-        {
-          "id": "2153",
-          "name": "33/11KV GANDHI NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.2,
-          "lat": 13.12593,
-          "lng": 80.24327
-        },
-        {
-          "id": "9246",
-          "name": "33/11 KV THILLAI GANGA NAGAR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 9.7,
-          "lat": 12.99187,
-          "lng": 80.19473
-        },
-        {
-          "id": "9229",
-          "name": "33/11 KV MADIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.5,
-          "lat": 12.96288,
-          "lng": 80.19872
         },
         {
           "id": "2107",
@@ -61847,18 +59672,6 @@
           "lng": 80.21427
         },
         {
-          "id": "9418",
-          "name": "33/11 KV THORAIPAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 13.1,
-          "lat": 12.92532,
-          "lng": 80.2378
-        },
-        {
           "id": "9211",
           "name": "33/11 KV ALANDUR SS",
           "type": "substation",
@@ -61869,18 +59682,6 @@
           "distanceKm": 7.8,
           "lat": 13.00372,
           "lng": 80.20782
-        },
-        {
-          "id": "9212",
-          "name": "33/11 KV NANGANALLUR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 11.4,
-          "lat": 12.9793,
-          "lng": 80.18428
         },
         {
           "id": "9264",
@@ -61895,18 +59696,6 @@
           "lng": 80.206
         },
         {
-          "id": "2104",
-          "name": "33/11 KV KODUNGAIYUR SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 33/11 kV",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 10.5,
-          "lat": 13.13201,
-          "lng": 80.25847
-        },
-        {
           "id": "2225",
           "name": "33/11 KV WEST MAMBALAM SS",
           "type": "substation",
@@ -61917,18 +59706,6 @@
           "distanceKm": 4.9,
           "lat": 13.03422,
           "lng": 80.22582
-        },
-        {
-          "id": "9315",
-          "name": "110/11KV AMBATTUR SIDCO SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/11 kV",
-          "voltage": "110/11",
-          "tier": "subtransmission",
-          "distanceKm": 13.4,
-          "lat": 13.10543,
-          "lng": 80.16728
         },
         {
           "id": "2214",
@@ -62289,30 +60066,6 @@
           "distanceKm": 3.7,
           "lat": 13.06862,
           "lng": 80.20862
-        },
-        {
-          "id": "2203",
-          "name": "110/33/11 KV SEVEN WELLS SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33/11 kV Trunk",
-          "voltage": "110/33/11",
-          "tier": "subtransmission",
-          "distanceKm": 12.2,
-          "lat": 13.09935,
-          "lng": 80.28179
-        },
-        {
-          "id": "9414",
-          "name": "110/33-11 KV TIDEL PARK SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 110/33-11 kV Trunk",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 12.1,
-          "lat": 12.98514,
-          "lng": 80.25076
         },
         {
           "id": "2241",

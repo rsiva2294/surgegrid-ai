@@ -20,6 +20,17 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **Substation Elevation, Coastal Surge & Flood Risk Profiling (P0)**: Integrated Google Earth Engine satellite topography (`elevation_m`, `distance_to_coastline_km`, `composite_risk_score`) across all 286 Chennai substations. The inspector header displays live terrain elevation (e.g. `⛰️ 2.1m MSL • 🌊 Surge Risk`), while the Info tab and Split View reveal full hydrological risk profiles and field-actionable storm standard operating procedures (SOPs).
 - **Feeder Trip Vulnerability & Breakdown Recurrence Badging (P0)**: Fused 560 historical feeder outage records (`chennai_feeders_vulnerability.json`) directly into feeder cards. Feeders with trip records display dynamic fragility badges (e.g. `⚡ 4 Trips` in rose or `⚡ 2 Trips` in amber) with hoverable incident date logs, enabling disaster dispatchers to identify fragile lines before storm landfall.
 
+### Fixed
+- **Physical Voltage Distance Ceilings & Grid Topology Sanitization**:
+  - Investigated and resolved anomalous cross-city interconnections (such as a 21.2 km line between `110/33-11 KV AVADI SS` in West Chennai and `110/33-11 KV TIDEL PARK SS` in South Chennai).
+  - Identified root cause: automated data synthesis fuzzy-matched local distribution feeder names across disparate geographic districts (e.g., Avadi's 6.83 km `33KV TIDAL PARK` feeder serves the newly constructed **TIDEL Park Pattabiram** campus in West Chennai, but was mistakenly linked to the famous **TIDEL Park Taramani** substation 21.2 km away on the IT corridor).
+  - Enforced strict physical electrical engineering distance thresholds matching TNEB urban grid design standards:
+    - 33/11 kV distribution: $\le 8.5\text{ km}$
+    - 110 kV sub-transmission: $\le 12.0\text{ km}$
+    - 230/400 kV EHV bulk transmission: $\le 30.0\text{ km}$
+    - Co-located substation campus ties: $\le 3.0\text{ km}$
+  - Pruned 187 physically impossible cross-city false-positive ties, retaining 1,306 genuine local physical interconnections. Avadi SS now links strictly to its 6 valid local step-down neighbors (`Kamaraj Nagar 2.4 km`, `TI Cycle 3.1 km`, `Pattabiram 4.8 km`, `Thirumullaivoyal SIDCO 5.9 km`, `Korattur TNHB 7.2 km`, `Poonamallee Bypass 8.0 km`).
+
 ### Performance & Polish
 - **Equal-Width 3-Way Tabs & Info-First Default**:
   - Re-ordered the Substation Inspector navigation tabs to lead with **`ℹ️ Info`**, followed by **`🔌 Feeders (N)`** and **`⚡ Grid Links (N)`**, setting `info` as the primary landing view upon selecting any substation.
