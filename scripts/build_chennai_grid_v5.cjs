@@ -175,12 +175,23 @@ function classifyLifeline(feederName) {
   return { category: 'residential', label: '⚡ Distribution Feeder', priority: 'P3_COMMERCIAL' };
 }
 
+const seenFeedersPerSubstation = new Map();
+
 rawFeedersMeta.forEach(f => {
   const ssCode = String(f.ss_code || '');
-  if (!ssCode) return;
+  const fdrCode = String(f.fdr_code || '');
+  if (!ssCode || !fdrCode) return;
+
   if (!feedersBySubstation.has(ssCode)) {
     feedersBySubstation.set(ssCode, []);
+    seenFeedersPerSubstation.set(ssCode, new Set());
   }
+
+  const seenSet = seenFeedersPerSubstation.get(ssCode);
+  if (seenSet.has(fdrCode)) {
+    return; // Skip duplicate feeder row from overlapping GIS layer exports
+  }
+  seenSet.add(fdrCode);
 
   const lifeline = classifyLifeline(f.fdr_name || '');
   feedersBySubstation.get(ssCode).push({
@@ -331,15 +342,6 @@ canonicalCodes.forEach(code => {
 // Sort cleanSubstations deterministically by code
 cleanSubstations.sort((a, b) => a.code.localeCompare(b.code));
 
-// Merge any baseline sections that were not in secBoundariesData directly
-const existingSecCodes = new Set(cleanSections.map(s => String(s.breakdownCode || s.code)));
-baseline.sections.forEach(s => {
-  const code = String(s.breakdownCode || s.code);
-  if (!existingSecCodes.has(code)) {
-    cleanSections.push(s);
-    existingSecCodes.add(code);
-  }
-});
 cleanSections.sort((a, b) => a.name.localeCompare(b.name));
 
 // 7. Write Tier 1 Core Operations Framework
