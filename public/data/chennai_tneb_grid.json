@@ -157,6 +157,18 @@
           "distanceKm": 0,
           "lat": 13.42191,
           "lng": 80.11685
+        },
+        {
+          "id": "2137",
+          "name": "230KV GUMMIDIPOONDI SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 230/110 kV Gummidipoondi Bulk SS",
+          "voltage": "110 kV",
+          "tier": "bulk",
+          "distanceKm": 2.5,
+          "lat": 13.40296,
+          "lng": 80.10329
         }
       ],
       "elevationM": 18,
@@ -22116,6 +22128,18 @@
           "distanceKm": 0.1,
           "lat": 13.21058,
           "lng": 80.31596
+        },
+        {
+          "id": "2160",
+          "name": "33/11KV AIRLAND SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to AIRLAND",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 2.7,
+          "lat": 13.18696,
+          "lng": 80.30975
         }
       ],
       "elevationM": 7,
@@ -22465,6 +22489,18 @@
           "distanceKm": 0,
           "lat": 13.26566,
           "lng": 80.15984
+        },
+        {
+          "id": "9317",
+          "name": "110/33-11 KV SOTHUPERUMBEDU SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 110/33 kV Sothuperumbedu SS",
+          "voltage": "33 kV",
+          "tier": "subtransmission",
+          "distanceKm": 1.9,
+          "lat": 13.2537,
+          "lng": 80.17225
         }
       ],
       "distanceToCoastKm": 14.1,
@@ -22607,6 +22643,18 @@
           "distanceKm": 0,
           "lat": 13.18693,
           "lng": 80.30988
+        },
+        {
+          "id": "2120",
+          "name": "110/33-11KV ENNORE SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 110/33 kV Ennore SS",
+          "voltage": "33 kV",
+          "tier": "subtransmission",
+          "distanceKm": 2.7,
+          "lat": 13.21006,
+          "lng": 80.3158
         }
       ],
       "elevationM": 7,
@@ -22815,6 +22863,18 @@
           "distanceKm": 0.1,
           "lat": 13.45255,
           "lng": 80.20348
+        },
+        {
+          "id": "2128",
+          "name": "33/11 KV MEDHUR SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 33/11 kV Medhur SS",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 7.1,
+          "lat": 13.39549,
+          "lng": 80.23635
         }
       ],
       "distanceToCoastKm": 9.3,
@@ -22927,6 +22987,18 @@
           "distanceKm": 0,
           "lat": 13.44013,
           "lng": 80.03703
+        },
+        {
+          "id": "2163",
+          "name": "33/11 KV THANDALAM LINE TAP SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to THANDALAM LINE TAP",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 8.3,
+          "lat": 13.50828,
+          "lng": 80.06857
         }
       ],
       "distanceToCoastKm": 27.3,
@@ -23523,6 +23595,18 @@
           "distanceKm": 0,
           "lat": 13.21428,
           "lng": 80.2724
+        },
+        {
+          "id": "2119",
+          "name": "230/110/33/11 KV MANALI SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 230/110 kV Manali SS",
+          "voltage": "33 kV",
+          "tier": "bulk",
+          "distanceKm": 4.3,
+          "lat": 13.17536,
+          "lng": 80.27176
         }
       ],
       "distanceToCoastKm": 1.9,
@@ -27587,6 +27671,18 @@
           "distanceKm": 5.9,
           "lat": 13.06883,
           "lng": 80.11494
+        },
+        {
+          "id": "9243",
+          "name": "110/11 KV CHEMBARAMBAKKAM SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 110 kV Feed to CHEMBARAMBAKKAM",
+          "voltage": "110 kV",
+          "tier": "subtransmission",
+          "distanceKm": 1.3,
+          "lat": 13.04014,
+          "lng": 80.06695
         }
       ],
       "elevationM": 18,
@@ -27776,6 +27872,18 @@
           "distanceKm": 12.4,
           "lat": 13.20578,
           "lng": 80.09902
+        },
+        {
+          "id": "9185",
+          "name": "33KV GUDAPAKKAM",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to 33KV GUDAPAKKAM",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 4.8,
+          "lat": 13.08912,
+          "lng": 79.99513
         }
       ],
       "distanceToCoastKm": 28.3,
@@ -27877,7 +27985,20 @@
       "totalConsumers": 12788,
       "totalTransformers": 136,
       "totalFeedersCount": 6,
-      "connections": [],
+      "connections": [
+        {
+          "id": "9117",
+          "name": "110/11KV SS THIRUNINRAVUR SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 110/11 kV Thiruninravur SS",
+          "voltage": "33 kV",
+          "tier": "subtransmission",
+          "distanceKm": 4.8,
+          "lat": 13.11828,
+          "lng": 80.02791
+        }
+      ],
       "distanceToCoastKm": 31.9,
       "elevationM": 12,
       "riskCategory": "SAFE",
@@ -28237,7 +28358,32 @@
       "totalConsumers": 5853,
       "totalTransformers": 170,
       "totalFeedersCount": 10,
-      "connections": [],
+      "connections": [
+        {
+          "id": "9135",
+          "name": "400KV SRIPERUMPUDUR",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 400/230 kV Sriperumbudur SS",
+          "voltage": "110 kV",
+          "tier": "bulk",
+          "distanceKm": 8,
+          "lat": 12.9811,
+          "lng": 79.9744
+        },
+        {
+          "id": "9118",
+          "name": "KILANUR SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to KILANUR",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 15.9,
+          "lat": 13.19467,
+          "lng": 79.95764
+        }
+      ],
       "distanceToCoastKm": 35.7,
       "elevationM": 12,
       "riskCategory": "SAFE",
@@ -32280,6 +32426,18 @@
           "distanceKm": 14,
           "lat": 12.94629,
           "lng": 80.23282
+        },
+        {
+          "id": "9428",
+          "name": "33/11 KV HIRANANDANI SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to HIRANANDANI",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 2.7,
+          "lat": 12.83634,
+          "lng": 80.23098
         }
       ],
       "elevationM": 3,
@@ -33446,6 +33604,18 @@
           "distanceKm": 13.8,
           "lat": 13.17689,
           "lng": 80.27186
+        },
+        {
+          "id": "2115",
+          "name": "33/11KV IRULIPATTU SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to IRULIPATTU",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 1.9,
+          "lat": 13.2657,
+          "lng": 80.15993
         }
       ],
       "elevationM": 18,
@@ -36265,7 +36435,20 @@
       "totalConsumers": 17156,
       "totalTransformers": 166,
       "totalFeedersCount": 8,
-      "connections": [],
+      "connections": [
+        {
+          "id": "9106",
+          "name": "110/33-11KV SS THIRUMAZHISAI SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 110/33-11 kV Thirumazhisai SS",
+          "voltage": "110 kV",
+          "tier": "subtransmission",
+          "distanceKm": 1.3,
+          "lat": 13.05137,
+          "lng": 80.06362
+        }
+      ],
       "elevationM": 29,
       "riskCategory": "MODERATE_RISK",
       "compositeRiskScore": 40.6,
@@ -38576,6 +38759,18 @@
           "distanceKm": 4,
           "lat": 13.15566,
           "lng": 80.30262
+        },
+        {
+          "id": "2132",
+          "name": "33/11 KV NAPPALAYAM SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to NAPPALAYAM",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 4.3,
+          "lat": 13.21434,
+          "lng": 80.27237
         }
       ],
       "elevationM": 6,
@@ -48942,7 +49137,20 @@
       "totalConsumers": 12984,
       "totalTransformers": 158,
       "totalFeedersCount": 7,
-      "connections": [],
+      "connections": [
+        {
+          "id": "9419",
+          "name": "110/11 KV SIRUSERI SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 110/33 kV Siruseri SS",
+          "voltage": "33 kV",
+          "tier": "subtransmission",
+          "distanceKm": 2.7,
+          "lat": 12.82233,
+          "lng": 80.21075
+        }
+      ],
       "elevationM": 3,
       "riskCategory": "CRITICAL_SURGE_RISK",
       "compositeRiskScore": 45.6,
@@ -50922,6 +51130,18 @@
           "distanceKm": 0,
           "lat": 13.39537,
           "lng": 80.23621
+        },
+        {
+          "id": "2141",
+          "name": "33/11KV DEVAMBEDU SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to DEVAMBEDU",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 7.1,
+          "lat": 13.45141,
+          "lng": 80.2042
         }
       ],
       "distanceToCoastKm": 5.8,
@@ -50992,7 +51212,20 @@
       "totalConsumers": 5162,
       "totalTransformers": 88,
       "totalFeedersCount": 4,
-      "connections": [],
+      "connections": [
+        {
+          "id": "2126",
+          "name": "33/11KV MADHARPAKKAM SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 33/11 kV Madharpakkam SS",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 8.3,
+          "lat": 13.43997,
+          "lng": 80.03712
+        }
+      ],
       "distanceToCoastKm": 23.9,
       "elevationM": 12,
       "riskCategory": "SAFE",
@@ -55219,6 +55452,18 @@
           "distanceKm": 0,
           "lat": 13.40311,
           "lng": 80.10348
+        },
+        {
+          "id": "2140",
+          "name": "110/33-11KV SIPCOT IV SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 110 kV Feed to 110/33-11KV SIPCOT IV",
+          "voltage": "110 kV",
+          "tier": "subtransmission",
+          "distanceKm": 2.5,
+          "lat": 13.42168,
+          "lng": 80.11685
         }
       ],
       "distanceToCoastKm": 20.2,
@@ -56703,6 +56948,18 @@
           "distanceKm": 0,
           "lat": 13.3383,
           "lng": 80.28537
+        },
+        {
+          "id": "2168",
+          "name": "33/11 KV MINJUR LINE TAP SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 33/11 kV Minjur Line Tap SS",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 7.2,
+          "lat": 13.28183,
+          "lng": 80.25334
         }
       ],
       "elevationM": 13,
@@ -63398,6 +63655,18 @@
           "distanceKm": 0.8,
           "lat": 12.98631,
           "lng": 79.97896
+        },
+        {
+          "id": "7253",
+          "name": "110 KV PAPPARAMBAKKAM SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 110 kV Feed to 110 KV PAPPARAMBAKKAM",
+          "voltage": "110 kV",
+          "tier": "subtransmission",
+          "distanceKm": 8,
+          "lat": 13.05157,
+          "lng": 79.95987
         }
       ],
       "distanceToCoastKm": 34.1,
@@ -64138,6 +64407,18 @@
           "distanceKm": 0,
           "lat": 13.19447,
           "lng": 79.95752
+        },
+        {
+          "id": "7253",
+          "name": "110 KV PAPPARAMBAKKAM SS",
+          "type": "substation",
+          "relation": "incoming_feeder",
+          "label": "← Inflow from 110/33 kV Papparambakkam SS",
+          "voltage": "33 kV",
+          "tier": "subtransmission",
+          "distanceKm": 15.9,
+          "lat": 13.05157,
+          "lng": 79.95987
         }
       ],
       "distanceToCoastKm": 35.9,
@@ -64477,6 +64758,18 @@
           "distanceKm": 7.9,
           "lat": 13.32796,
           "lng": 80.19783
+        },
+        {
+          "id": "2127",
+          "name": "33/11 KV THIRUVELLAVOYAL SS",
+          "type": "substation",
+          "relation": "outgoing_feeder",
+          "label": "→ 33 kV Feed to THIRUVELLAVOYAL",
+          "voltage": "33 kV",
+          "tier": "distribution",
+          "distanceKm": 7.2,
+          "lat": 13.33824,
+          "lng": 80.28527
         }
       ],
       "elevationM": 13,
