@@ -21,6 +21,9 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **Feeder Trip Vulnerability & Breakdown Recurrence Badging (P0)**: Fused 560 historical feeder outage records (`chennai_feeders_vulnerability.json`) directly into feeder cards. Feeders with trip records display dynamic fragility badges (e.g. `⚡ 4 Trips` in rose or `⚡ 2 Trips` in amber) with hoverable incident date logs, enabling disaster dispatchers to identify fragile lines before storm landfall.
 
 ### Performance & Polish
+- **Equal-Width 3-Way Tabs & Info-First Default**:
+  - Re-ordered the Substation Inspector navigation tabs to lead with **`ℹ️ Info`**, followed by **`🔌 Feeders (N)`** and **`⚡ Grid Links (N)`**, setting `info` as the primary landing view upon selecting any substation.
+  - Granted equal `flex-1` width to all three tabs (33.3% each) for a perfectly balanced visual layout.
 - **Feeder Inspector De-duplication**:
   - Replaced the bulky duplicate active feeder clone card above the list with a sleek, 1-line active corridor indicator strip (`Plotted on map: [Feeder Name] (N DTRs) [Clear Map]`), eliminating visual redundancy when filtering by lifelines.
   - Resolved double-emoji rendering glitch (e.g. `🚆 🚇`) by separating emoji icons from label strings in `LIFELINE_PATTERNS` and introducing a defensive `cleanLifelineLabel()` sanitization regex in badge components.
