@@ -16701,18 +16701,6 @@
           "lng": 80.21427
         },
         {
-          "id": "9207",
-          "name": "110/33-11 KV KODAMBAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 7.4,
-          "lat": 13.05323,
-          "lng": 80.22045
-        },
-        {
           "id": "9331",
           "name": "110/11 KV NOLAMBUR SS",
           "type": "substation",
@@ -23191,18 +23179,6 @@
           "distanceKm": 2.2,
           "lat": 13.06769,
           "lng": 80.27634
-        },
-        {
-          "id": "9207",
-          "name": "110/33-11 KV KODAMBAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 8.2,
-          "lat": 13.05323,
-          "lng": 80.22045
         },
         {
           "id": "2202",
@@ -34911,30 +34887,6 @@
           "lng": 80.25026
         },
         {
-          "id": "2262",
-          "name": "33/11 KV MUNDAKANNI AMMAN KOIL SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 5.7,
-          "lat": 13.0385,
-          "lng": 80.27065
-        },
-        {
-          "id": "9246",
-          "name": "33/11 KV THILLAI GANGA NAGAR SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 7.4,
-          "lat": 12.99187,
-          "lng": 80.19473
-        },
-        {
           "id": "2225",
           "name": "33/11 KV WEST MAMBALAM SS",
           "type": "substation",
@@ -34945,18 +34897,6 @@
           "distanceKm": 2.2,
           "lat": 13.03422,
           "lng": 80.22582
-        },
-        {
-          "id": "2210",
-          "name": "33/11 KV PORT TRUST SS",
-          "type": "substation",
-          "relation": "outgoing_feeder",
-          "label": "→ 33/11 kV Trunk",
-          "voltage": "33/11",
-          "tier": "distribution",
-          "distanceKm": 8.2,
-          "lat": 13.08251,
-          "lng": 80.28948
         },
         {
           "id": "2238",
@@ -66823,18 +66763,6 @@
           "distanceKm": 9.2,
           "lat": 13.05719,
           "lng": 80.18837
-        },
-        {
-          "id": "9207",
-          "name": "110/33-11 KV KODAMBAKKAM SS",
-          "type": "substation",
-          "relation": "incoming_feeder",
-          "label": "← Inflow from 110/33-11 kV",
-          "voltage": "110/33-11",
-          "tier": "subtransmission",
-          "distanceKm": 5.7,
-          "lat": 13.05323,
-          "lng": 80.22045
         },
         {
           "id": "2239",
