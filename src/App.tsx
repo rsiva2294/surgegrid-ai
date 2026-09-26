@@ -59,11 +59,11 @@ export function App() {
           initialLiveWeather,
           initialLiveReservoirs,
         ] = await Promise.all([
-          fetch('/data/gee_chennai_substations_risk.json').then((r) => r.json()),
-          fetch('/data/chennai_water_bodies_lost.json').then((r) => r.json()),
-          fetch('/data/chennai_shelter_grid_drain_fusion.json').then((r) => r.json()),
-          fetch('/data/chennai_reservoirs_status.json').then((r) => r.json()),
-          fetch('/data/weathernext3_chennai_cyclone_48h.json').then((r) => r.json()),
+          fetch('/data/gee/gee_chennai_substations_risk.json').then((r) => r.json()),
+          fetch('/data/neervazhvu/chennai_water_bodies_lost.json').then((r) => r.json()),
+          fetch('/data/gcc/chennai_shelter_grid_drain_fusion.json').then((r) => r.json()),
+          fetch('/data/simulation/chennai_reservoirs_status.json').then((r) => r.json()),
+          fetch('/data/simulation/weathernext3_chennai_cyclone_48h.json').then((r) => r.json()),
           fetchLiveChennaiWeather(),
           fetchLiveReservoirStorage(),
         ]);

@@ -100,13 +100,13 @@ export async function fetchLiveChennaiWeather(lang: 'en' | 'ta' = 'en'): Promise
 
 export async function fetchLiveReservoirStorage(): Promise<ReservoirData> {
   try {
-    const res = await fetch('/data/chennai_live_reservoir_bulletin.json');
+    const res = await fetch('/data/neervazhvu/chennai_live_reservoir_bulletin.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     return data;
   } catch (err) {
     console.error('Failed to load live reservoir bulletin:', err);
-    const fallbackRes = await fetch('/data/chennai_reservoirs_status.json');
+    const fallbackRes = await fetch('/data/simulation/chennai_reservoirs_status.json');
     return await fallbackRes.json();
   }
 }

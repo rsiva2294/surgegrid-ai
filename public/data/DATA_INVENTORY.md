@@ -1,28 +1,73 @@
-# Chennai Grid Intelligence & Climate Risk Data Inventory (Track 5)
+# Chennai Grid Intelligence & Climate Risk Data Inventory
 
 This directory contains the consolidated, multi-hazard spatial and electrical grid datasets for **Track 5 (Extreme Weather & Climate Risk Modeling)** of the *Code for Communities 2* Hackathon.
 
+Total: **28 files across 5 categories** (~11.5 MB)
+
 ---
 
-## Complete Data Assets (11.48 MB Total)
+## Folder Structure
 
-| Filename | Size | Data Source | Primary Role in Track 5 Platform |
-| :--- | :--- | :--- | :--- |
-| **`gee_chennai_substations_risk.json`** | 190 KB | Google Earth Engine (SRTM DEM + Dynamic World 10m + Sentinel-2 MNDWI) | 242 Chennai Substations with exact elevations, slope, modern 2024–2026 water recurrence, and automated pre-landfall de-energization SOPs. |
-| **`gee_chennai_wards_vulnerability.json`** | 60 KB | Google Earth Engine (SRTM DEM Zonal Stats) | Topographic profiles, mean/min elevation, and flood risk categorization across all 200 GCC Wards. |
-| **`gee_cyclone_surge_grid_simulation.json`** | 15 KB | GEE Multi-tier Storm Surge Model | Simulated Category 2/3 cyclone storm surge (1.5m – 3.0m) inundation matrix. |
-| **`chennai_shelter_grid_drain_fusion.json`** | 256 KB | Spatial Multi-Layer Fusion Engine | 162 GCC Emergency Relief Shelters mapped with primary vs. backup safe tie-line substations, officer contacts, and evacuation access routes. |
-| **`chennai_drains.json`** | 3.26 MB | GCC Stormwater Management | 5,513 individual stormwater drain lines with gradients, uphill/backflow flags, dimensions, and outfalls. |
-| **`chennai_drains_ward_summary.json`** | 184 KB | Hydrological Fusion Model | Aggregated drainage metrics per ward (total network km, % uphill backflow choke risk, minimum road elevation). |
-| **`chennai_rivers.json`** | 646 KB | Chennai River Waterways | Vector lines for Adyar River, Cooum River, Kosasthalaiyar River, and Buckingham Canal. |
-| **`gcc_wards_polygons.json`** | 432 KB | GCC Geographic Information System | Exact GeoJSON polygon boundaries for all 200 Greater Chennai Corporation Wards. |
-| **`gcc_zones.json`** | 873 KB | GCC Geographic Information System | GeoJSON polygon boundaries for the 15 GCC Administrative Zones. |
-| **`gcc_relief_centers.json`** | 25 KB | GCC Disaster Management | Designated flood evacuation centers with zone, ward, address, and nodal officer phone numbers. |
-| **`chennai_shelters.json`** | 2.5 KB | Civic High-Ground Network | Designated elevated vehicle parking and pedestrian high-ground ramps (e.g., G.N. Chetty Flyover ramp at +9.4m MSL). |
-| **`gcc_flood_hotspots.json`** | 23 KB | GCC Historical Flooding Archives | Historical pluvial flood depth hotspots across Chennai for ground-truth model calibration. |
-| **`chennai_flood_depth_inches.json`**| 63 KB | Historical Inundation Benchmarks | Street-level flood depth benchmarks (in inches) from past major monsoon events. |
-| **`chennai_resolved_outages.json`** | 911 KB | TNEB Super Index V2 + Outage Engine | 1,252 historical Q3 2026 Chennai outage notices mapped to exact substations, 11kV feeders, and sections. |
-| **`chennai_substations_vulnerability.json`** | 239 KB | Outage Intelligence Engine | Historical breakdown vulnerability rankings across all Chennai substations. |
-| **`chennai_feeders_vulnerability.json`** | 112 KB | Outage Intelligence Engine | Vulnerability rankings for 11kV distribution feeders. |
-| **`chennai_sections_vulnerability.json`**| 67 KB | Outage Intelligence Engine | Vulnerability rankings for TANGEDCO AE Section Offices. |
-| **`circle_boundary.geojson`** | 4.39 MB | TNEB Official GIS Records | 45 Official TNEB Operational Circle boundary polygons. |
+```
+public/data/
+├── gee/                     ← Google Earth Engine derived datasets
+├── tneb/                    ← TNEB/TANGEDCO grid topology & outage intelligence
+├── gcc/                     ← Greater Chennai Corporation municipal data
+├── neervazhvu/              ← Neer Vaazhvu (MIT Urban Lab) water & hydrology data
+├── simulation/              ← WeatherNext 3 cyclone scenario & simulated reservoir states
+├── DATA_INVENTORY.md        ← This file
+└── README.md                ← Detailed data documentation
+```
+
+---
+
+## gee/ — Google Earth Engine (486 KB)
+
+| File | Size | Records | Description |
+|---|---|---|---|
+| `gee_chennai_substations_risk.json` | 335 KB | 242 substations | 10-band multi-hazard risk scoring (SRTM DEM, Dynamic World, Sentinel-2, JRC, GPM, ERA5) |
+| `gee_chennai_wards_vulnerability.json` | 136 KB | 200 wards | Zonal statistics: elevation, impervious surface, water probability per ward |
+| `gee_cyclone_surge_grid_simulation.json` | 15 KB | Simulation grid | Category 2/3 cyclone storm surge inundation matrix |
+
+## tneb/ — TNEB/TANGEDCO Grid Topology (5.76 MB)
+
+| File | Size | Records | Description |
+|---|---|---|---|
+| `chennai_resolved_outages.json` | 933 KB | 1,252 notices | Q3 2026 outage notices mapped to substations, feeders, sections |
+| `chennai_substations_vulnerability.json` | 245 KB | 242 nodes | Historical breakdown vulnerability rankings |
+| `chennai_feeders_vulnerability.json` | 115 KB | 11kV feeders | Feeder failure frequency and parent substation mapping |
+| `chennai_sections_vulnerability.json` | 68 KB | Section offices | TANGEDCO AE Section Office failure ranking |
+| `circle_boundary.geojson` | 4.50 MB | 45 circles | Official TNEB operational circle boundary polygons |
+
+## gcc/ — Greater Chennai Corporation (5.21 MB)
+
+| File | Size | Records | Description |
+|---|---|---|---|
+| `chennai_drains.json` | 3.34 MB | 5,513 drains | Stormwater drain lines with gradients, backflow flags, dimensions |
+| `gcc_zones.json` | 894 KB | 15 zones | GCC administrative zone boundary polygons |
+| `gcc_wards_polygons.json` | 443 KB | 200 wards | GCC ward boundary polygons |
+| `chennai_shelter_grid_drain_fusion.json` | 270 KB | 162 shelters | Shelter-grid-drain spatial fusion (primary + backup substations) |
+| `chennai_drains_ward_summary.json` | 189 KB | 200 wards | Aggregated drainage metrics per ward |
+| `chennai_flood_depth_inches.json` | 64 KB | Historical | Street-level flood depth benchmarks (inches) |
+| `gcc_relief_centers.json` | 25 KB | 162 shelters | Raw GCC shelter locations and officer contacts |
+| `gcc_flood_hotspots.json` | 24 KB | Historical | Ground-truth historical inundation hotspots |
+| `chennai_coastal_hotspots.json` | 4 KB | Coastal points | Coastal vulnerability mapping |
+| `chennai_shelters.json` | 3 KB | 7 sites | Elevated safe platforms (flyover ramps, high-ground) |
+
+## neervazhvu/ — Neer Vaazhvu / MIT Urban Lab (1.67 MB)
+
+| File | Size | Records | Description |
+|---|---|---|---|
+| `chennai_gwr_blocks.json` | 871 KB | Groundwater blocks | CGWB groundwater block geometries |
+| `chennai_rivers.json` | 661 KB | 473 LineStrings | River waterway vector geometries (Adyar, Cooum, Kosasthalaiyar) |
+| `chennai_sub_basins_risk.json` | 90 KB | Sub-basin zones | CEEW/TNGCC sub-basin flood risk index |
+| `chennai_water_bodies_lost.json` | 27 KB | 15 lost lakes | Ancestral buried water bodies (encroached lakebeds) |
+| `chennai_gwr_stats.json` | 18 KB | Block statistics | Groundwater recharge/depletion statistics |
+| `chennai_live_reservoir_bulletin.json` | 5 KB | 7 reservoirs | Live CMWSSB daily reservoir storage bulletin |
+
+## simulation/ — Cyclone Scenario Data (52 KB)
+
+| File | Size | Records | Description |
+|---|---|---|---|
+| `weathernext3_chennai_cyclone_48h.json` | 46 KB | 61 hourly steps | DeepMind WeatherNext 3 cyclone trajectory simulation |
+| `chennai_reservoirs_status.json` | 5 KB | 7 reservoirs | Simulated reservoir states under cyclone scenario |
