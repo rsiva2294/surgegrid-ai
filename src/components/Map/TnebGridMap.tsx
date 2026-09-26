@@ -1488,16 +1488,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                       <div className={`px-3 py-2 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
                         isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
                       }`}>
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3.5 divide-x divide-slate-200 dark:divide-slate-800 shrink-0">
+                          <div className="shrink-0">
                             <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                               Circle
                             </span>
-                            <span className={`font-semibold text-xs truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`} title={selectedSubstation.circle}>
+                            <span className={`font-semibold text-xs block mt-0.5 whitespace-nowrap ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                               {selectedSubstation.circle || 'Chennai EDC'}
                             </span>
                           </div>
-                          <div className="pl-3 shrink-0 border-l border-slate-200 dark:border-slate-800 text-center">
+                          <div className="pl-3.5 shrink-0">
                             <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                               Region
                             </span>
@@ -2397,16 +2397,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
                           isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800'
                         }`}>
-                          <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                            <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3.5 divide-x divide-slate-200 dark:divide-slate-800 shrink-0">
+                            <div className="shrink-0">
                               <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                                 Circle
                               </span>
-                              <span className={`text-xs font-bold truncate block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`} title={selectedSubstation.circle}>
+                              <span className={`text-xs font-bold block mt-0.5 whitespace-nowrap ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                                 {selectedSubstation.circle || 'Chennai EDC'}
                               </span>
                             </div>
-                            <div className="pl-3.5 shrink-0 border-l border-slate-200 dark:border-slate-800 text-center">
+                            <div className="pl-3.5 shrink-0">
                               <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                                 Region
                               </span>
