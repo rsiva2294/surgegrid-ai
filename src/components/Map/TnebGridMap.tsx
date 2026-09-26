@@ -536,6 +536,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     const isLight = theme === 'light';
 
     substations.forEach(ss => {
+      if (typeof ss.lat !== 'number' || typeof ss.lng !== 'number' || isNaN(ss.lat) || isNaN(ss.lng)) return;
       const isSelected = selectedSubstation?.code === ss.code;
       const marker = new google.maps.Marker({
         position: { lat: ss.lat, lng: ss.lng },
@@ -568,6 +569,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     const isLight = theme === 'light';
 
     sections.forEach(sec => {
+      if (typeof sec.lat !== 'number' || typeof sec.lng !== 'number' || isNaN(sec.lat) || isNaN(sec.lng)) return;
       const isSelected = selectedSection?.code === sec.code;
       const marker = new google.maps.Marker({
         position: { lat: sec.lat, lng: sec.lng },
@@ -719,7 +721,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     const isLight = theme === 'light';
     const halo = selectionHaloRef.current;
 
-    if (selectedSubstation) {
+    if (selectedSubstation && typeof selectedSubstation.lat === 'number' && typeof selectedSubstation.lng === 'number' && !isNaN(selectedSubstation.lat) && !isNaN(selectedSubstation.lng)) {
       const color = getNodeColor(selectedSubstation.tier, 'substation', isLight);
       halo.setPosition({ lat: selectedSubstation.lat, lng: selectedSubstation.lng });
       halo.setIcon({
@@ -732,7 +734,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         strokeWeight: isLight ? 2 : 1.5
       });
       halo.setVisible(true);
-    } else if (selectedSection) {
+    } else if (selectedSection && typeof selectedSection.lat === 'number' && typeof selectedSection.lng === 'number' && !isNaN(selectedSection.lat) && !isNaN(selectedSection.lng)) {
       const color = isLight ? '#059669' : '#10B981';
       halo.setPosition({ lat: selectedSection.lat, lng: selectedSection.lng });
       halo.setIcon({
@@ -754,10 +756,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   useEffect(() => {
     if (!mapRef.current) return;
     if (showConnections) return;
-    if (selectedSubstation) {
+    if (selectedSubstation && typeof selectedSubstation.lat === 'number' && typeof selectedSubstation.lng === 'number' && !isNaN(selectedSubstation.lat) && !isNaN(selectedSubstation.lng)) {
       mapRef.current.panTo({ lat: selectedSubstation.lat, lng: selectedSubstation.lng });
       mapRef.current.setZoom(14.2);
-    } else if (selectedSection && !selectedSection.boundary) {
+    } else if (selectedSection && !selectedSection.boundary && typeof selectedSection.lat === 'number' && typeof selectedSection.lng === 'number' && !isNaN(selectedSection.lat) && !isNaN(selectedSection.lng)) {
       mapRef.current.panTo({ lat: selectedSection.lat, lng: selectedSection.lng });
       mapRef.current.setZoom(14.5);
     }
@@ -1004,6 +1006,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
         if (dtrs && dtrs.length > 0) {
           dtrs.forEach(dtr => {
+            if (typeof dtr.lat !== 'number' || typeof dtr.lng !== 'number' || isNaN(dtr.lat) || isNaN(dtr.lng)) return;
             bounds.extend({ lat: dtr.lat, lng: dtr.lng });
             const marker = new google.maps.Marker({
               position: { lat: dtr.lat, lng: dtr.lng },

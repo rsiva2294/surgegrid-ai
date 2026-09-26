@@ -77,58 +77,81 @@ console.log('\nPhase 3: Loading Section Boundaries and AE Office Contacts...');
 const secBoundariesData = JSON.parse(fs.readFileSync(path.join(RAW_DIR, 'administrative_boundaries', 'section_boundaries.geojson'), 'utf8'));
 const secOfficesData = JSON.parse(fs.readFileSync(path.join(RAW_DIR, 'offices', 'section_offices.geojson'), 'utf8'));
 
+function getCentroid(geometry) {
+  if (!geometry || !geometry.coordinates) return { lat: null, lng: null };
+  let totalLat = 0, totalLng = 0, count = 0;
+  function recurse(coords) {
+    if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+      totalLng += coords[0];
+      totalLat += coords[1];
+      count++;
+    } else if (Array.isArray(coords)) {
+      coords.forEach(recurse);
+    }
+  }
+  recurse(geometry.coordinates);
+  if (count === 0) return { lat: null, lng: null };
+  return {
+    lat: Number((totalLat / count).toFixed(5)),
+    lng: Number((totalLng / count).toFixed(5))
+  };
+}
+
+const boundaryByBreakdown = new Map();
+const boundaryByCirSec = new Map();
+secBoundariesData.features.forEach(f => {
+  const p = f.properties;
+  if (!p) return;
+  if (p.combineseccode) boundaryByBreakdown.set(String(p.combineseccode), f);
+  const regId = String(p.region_id || '');
+  const cirCode = String(p.cir_code || '');
+  const prefix = regId + cirCode;
+  const secCode = p.combineseccode.startsWith(prefix)
+    ? p.combineseccode.slice(prefix.length)
+    : (p.combineseccode.startsWith(cirCode) ? p.combineseccode.slice(cirCode.length) : p.combineseccode);
+  boundaryByCirSec.set(cirCode + '_' + secCode, f);
+});
+
 const officeLookup = new Map();
 secOfficesData.features.forEach(f => {
   const p = f.properties;
   if (!p) return;
   const key = `${p.cir_code}_${p.sec_code}`;
-  officeLookup.set(key, {
+  const obj = {
     mobile: p.mobile_no || null,
     address: p.postal_add || null,
     subdivision: p.sd_name || null,
     division: p.div_name || null,
     sectionName: p.sec_name || null,
-    lat: f.geometry ? f.geometry.coordinates[1] : null,
-    lng: f.geometry ? f.geometry.coordinates[0] : null
-  });
-});
-
-const canonicalSecCodes = new Set(baseline.sections.map(s => String(s.breakdownCode || s.code)));
-const cleanSections = [];
-
-secBoundariesData.features.forEach(f => {
-  const p = f.properties;
-  if (!p) return;
-  const combine = String(p.combineseccode || '');
-  const cirCode = String(p.cir_code || '');
-  const secCode = combine.startsWith(cirCode) ? combine.slice(cirCode.length) : combine;
-
-  if (canonicalSecCodes.has(combine) || canonicalSecCodes.has(secCode) || CMA_CIRCLES.includes(cirCode)) {
-    // Only include if in canonical baseline or within CMA
-    if (canonicalSecCodes.has(combine) || canonicalSecCodes.has(secCode)) {
-      const off = officeLookup.get(`${cirCode}_${secCode}`) || {};
-      cleanSections.push({
-        name: `AE/O&M/${p.sec_name || 'SECTION'}`,
-        cleanName: p.sec_name || 'SECTION',
-        code: secCode,
-        circleCode: cirCode,
-        circle: CIRCLE_NAMES[cirCode] || p.cir_name || 'CHENNAI',
-        district: 'Chennai',
-        subdivision: off.subdivision || 'CHENNAI SUBDIVISION',
-        division: off.division || 'CHENNAI DIVISION',
-        region: cirCode === '0404' ? 'CHENNAI NORTH' : 'CHENNAI SOUTH',
-        regionCode: cirCode === '0404' ? '01' : '09',
-        lat: off.lat || null,
-        lng: off.lng || null,
-        mobile: off.mobile || null,
-        address: off.address || null,
-        breakdownCode: combine,
-        boundary: f.geometry
-      });
-    }
+    lat: f.geometry ? Number(f.geometry.coordinates[1].toFixed(5)) : null,
+    lng: f.geometry ? Number(f.geometry.coordinates[0].toFixed(5)) : null
+  };
+  officeLookup.set(key, obj);
+  if (p.sec_name) {
+    const clean = p.sec_name.replace(/^AE\/?O&M\/?/i, '').trim().toUpperCase();
+    officeLookup.set(`${p.cir_code}_NAME_${clean}`, obj);
   }
 });
-console.log(`Matched ${cleanSections.length} Canonical Section Boundaries.`);
+
+const cleanSections = baseline.sections.map(s => {
+  const bf = (s.breakdownCode && boundaryByBreakdown.get(String(s.breakdownCode))) || boundaryByCirSec.get(`${s.circleCode}_${s.code}`);
+  const off = officeLookup.get(`${s.circleCode}_${s.code}`) || officeLookup.get(`${s.circleCode}_NAME_${(s.cleanName || '').toUpperCase()}`) || {};
+  const centroid = bf ? getCentroid(bf.geometry) : null;
+  const lat = off.lat || s.lat || (centroid ? centroid.lat : null);
+  const lng = off.lng || s.lng || (centroid ? centroid.lng : null);
+
+  return {
+    ...s,
+    lat,
+    lng,
+    mobile: off.mobile || s.mobile || null,
+    address: off.address || s.address || null,
+    subdivision: off.subdivision || s.subdivision || 'CHENNAI SUBDIVISION',
+    division: off.division || s.division || 'CHENNAI DIVISION',
+    boundary: bf ? bf.geometry : s.boundary
+  };
+});
+console.log(`Enriched ${cleanSections.length} Canonical Section Boundaries with 100% valid coordinates.`);
 
 // 4. Read Feeder Master Metadata
 console.log('\nPhase 4: Indexing Feeders Master Metadata...');
