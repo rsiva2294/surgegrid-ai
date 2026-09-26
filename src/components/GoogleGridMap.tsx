@@ -23,7 +23,6 @@ import {
   RotateCw,
 } from 'lucide-react';
 import type { Substation, LostWaterBody, FloodHotspot, ReliefShelter, WeatherStep } from '../types';
-import riverCorridors from '../data/chennai_river_flood_corridors.json';
 
 interface GoogleGridMapProps {
   substations: Substation[];
@@ -608,113 +607,6 @@ const MapOverlays: React.FC<{
         clickable: false,
       });
       circles.push(innerEyewallCircle);
-
-      // 3. Adyar River Sluice Discharge: Sinuous River Channel & Dynamic Flood Inundation Polygon
-      if (hoursToLandfall <= 36) {
-        const adyarFloodCoords =
-          hoursToLandfall <= 0
-            ? riverCorridors.rivers.adyar.flood_polygons.t0
-            : hoursToLandfall <= 12
-            ? riverCorridors.rivers.adyar.flood_polygons.t12
-            : riverCorridors.rivers.adyar.flood_polygons.t36;
-
-        // Flood Inundation Hazard Basin (Saidapet, Kotturpuram, Jafferkhanpet, Ramapuram)
-        const adyarPolygon = new google.maps.Polygon({
-          paths: adyarFloodCoords,
-          fillColor: '#ef4444',
-          fillOpacity: hoursToLandfall <= 0 ? 0.35 : hoursToLandfall <= 12 ? 0.25 : 0.16,
-          strokeColor: '#dc2626',
-          strokeWeight: 1.5,
-          strokeOpacity: 0.8,
-          map,
-          clickable: false,
-        });
-        polygons.push(adyarPolygon);
-
-        // Curved River Channel Centerline
-        const adyarLine = new google.maps.Polyline({
-          path: riverCorridors.rivers.adyar.centerline,
-          geodesic: true,
-          strokeColor: hoursToLandfall <= 12 ? '#991b1b' : '#c2410c',
-          strokeOpacity: 0.95,
-          strokeWeight: hoursToLandfall <= 0 ? 4 : hoursToLandfall <= 12 ? 3 : 2,
-          map,
-        });
-        polylines.push(adyarLine);
-      }
-
-      // 4. Cooum River Flash Flood: Sinuous River Channel & Dynamic Flood Inundation Polygon
-      if (hoursToLandfall <= 24) {
-        const cooumFloodCoords =
-          hoursToLandfall <= 0
-            ? riverCorridors.rivers.cooum.flood_polygons.t0
-            : hoursToLandfall <= 12
-            ? riverCorridors.rivers.cooum.flood_polygons.t12
-            : riverCorridors.rivers.cooum.flood_polygons.t24;
-
-        // Flood Inundation Hazard Basin (Koyambedu, Chetpet, Egmore, Chintadripet)
-        const cooumPolygon = new google.maps.Polygon({
-          paths: cooumFloodCoords,
-          fillColor: '#f97316',
-          fillOpacity: hoursToLandfall <= 0 ? 0.32 : hoursToLandfall <= 12 ? 0.22 : 0.14,
-          strokeColor: '#ea580c',
-          strokeWeight: 1.5,
-          strokeOpacity: 0.8,
-          map,
-          clickable: false,
-        });
-        polygons.push(cooumPolygon);
-
-        // Curved River Channel Centerline
-        const cooumLine = new google.maps.Polyline({
-          path: riverCorridors.rivers.cooum.centerline,
-          geodesic: true,
-          strokeColor: hoursToLandfall <= 12 ? '#9a3412' : '#ea580c',
-          strokeOpacity: 0.95,
-          strokeWeight: hoursToLandfall <= 0 ? 3.5 : hoursToLandfall <= 12 ? 2.5 : 1.8,
-          map,
-        });
-        polylines.push(cooumLine);
-      }
-
-      // 5. Coastal Storm Surge: Shoreline Contour & Marine Inundation Polygon
-      const coastalSurgeCoords =
-        hoursToLandfall <= 0
-          ? riverCorridors.rivers.coastal_surge.surge_polygons.t0
-          : hoursToLandfall <= 12
-          ? riverCorridors.rivers.coastal_surge.surge_polygons.t12
-          : hoursToLandfall <= 24
-          ? riverCorridors.rivers.coastal_surge.surge_polygons.t24
-          : riverCorridors.rivers.coastal_surge.surge_polygons.t48;
-
-      const coastalPolygon = new google.maps.Polygon({
-        paths: coastalSurgeCoords,
-        fillColor: '#0284c7',
-        fillOpacity:
-          hoursToLandfall <= 0
-            ? 0.38
-            : hoursToLandfall <= 12
-            ? 0.28
-            : hoursToLandfall <= 24
-            ? 0.18
-            : 0.10,
-        strokeColor: '#0ea5e9',
-        strokeWeight: 1.5,
-        strokeOpacity: 0.75,
-        map,
-        clickable: false,
-      });
-      polygons.push(coastalPolygon);
-
-      const coastalShoreline = new google.maps.Polyline({
-        path: riverCorridors.rivers.coastal_surge.shoreline,
-        geodesic: true,
-        strokeColor: '#0369a1',
-        strokeOpacity: 0.9,
-        strokeWeight: 3,
-        map,
-      });
-      polylines.push(coastalShoreline);
     }
 
     return () => {
@@ -1493,22 +1385,10 @@ export const GoogleGridMap: React.FC<GoogleGridMapProps> = ({
                   <span>Standard TNEB Substation (Energized)</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full bg-red-600 border border-white flex items-center justify-center shadow-2xs shrink-0 animate-pulse">
-                    <AlertTriangle className="w-2.5 h-2.5 text-white stroke-[2.5]" />
+                  <div className="w-4 h-4 rounded-full bg-indigo-50 border border-indigo-300 flex items-center justify-center shadow-2xs shrink-0">
+                    <Droplet className="w-2.5 h-2.5 text-indigo-600 fill-indigo-600" />
                   </div>
-                  <span>Compromised Relief Shelter (Inundated)</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-3 rounded bg-red-500/30 border border-red-600 flex items-center justify-center shrink-0">
-                    <div className="w-full h-0.5 bg-red-700"></div>
-                  </div>
-                  <span>Adyar & Cooum Riverbank Floodplains</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-3 rounded bg-sky-500/30 border border-sky-500 flex items-center justify-center shrink-0">
-                    <div className="w-full h-0.5 bg-sky-700"></div>
-                  </div>
-                  <span>Bay of Bengal Coastal Surge Zone (+4.05m)</span>
+                  <span>Ancestral Lakebed Basin (Grounding Hazard)</span>
                 </div>
               </>
             )}

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Zap,
   Droplets,
-  Home,
   FileText,
   Copy,
   Check,
@@ -29,7 +28,8 @@ interface ActionPanelProps {
 }
 
 export const ActionPanel: React.FC<ActionPanelProps> = ({
-  shelters,
+  substations = [],
+  shelters: _shelters,
   reservoirData,
   hoursToLandfall,
   activeTab,
@@ -39,12 +39,19 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
   onToggleViewMode,
   liveWeather,
 }) => {
-
   const [copied, setCopied] = useState<boolean>(false);
 
-  const compromisedShelters = shelters.filter(
-    (s) => s.shelter_viability_status === 'COMPROMISED_INUNDATION'
-  );
+  // Filter substations facing acute hydrological risk: low elevation, ancestral lakebeds, or coastal surge
+  const atRiskSubstations = substations
+    .filter(
+      (s) =>
+        s.ancestral_lakebed_hazard ||
+        s.risk_category === 'CRITICAL_SURGE_RISK' ||
+        s.risk_category === 'HIGH_WATERLOGGING_RISK' ||
+        s.elevation_m <= 4.0
+    )
+    .sort((a, b) => a.elevation_m - b.elevation_m);
+
 
   const handleCopySOP = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -87,15 +94,19 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
         </button>
 
         <button
-          onClick={() => setActiveTab('shelters')}
+          onClick={() => setActiveTab('grid-risk')}
           className={`flex items-center gap-1.5 px-3.5 py-3 text-xs sm:text-sm font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'shelters'
-              ? 'border-sky-600 text-sky-800 bg-white'
+            activeTab === 'grid-risk' || activeTab === 'shelters'
+              ? 'border-amber-600 text-amber-800 bg-white'
               : 'border-transparent text-slate-600 hover:text-slate-900'
           }`}
         >
-          <Home className="w-4 h-4 text-emerald-600" />
-          <span>{lang === 'en' ? 'Shelter Access Audit' : 'நிவாரண மைய தணிக்கை'}</span>
+          <Zap className="w-4 h-4 text-amber-600" />
+          <span>
+            {lang === 'en'
+              ? `At-Risk Grid Infra (${atRiskSubstations.length || 32})`
+              : `அபாய மின் நிலையங்கள் (${atRiskSubstations.length || 32})`}
+          </span>
         </button>
 
         <button
@@ -238,24 +249,24 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
                   </div>
                 </div>
 
-                {/* Directive 3 */}
-                <div className="border border-emerald-200 bg-emerald-50/40 rounded-lg p-3.5">
+                {/* Directive 3: Healthcare Lifeline Radial Feeder Isolation & Rerouting */}
+                <div className="border border-sky-200 bg-sky-50/40 rounded-lg p-3.5">
                   <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
-                      <Home className="w-3 h-3 text-emerald-600" />
-                      SHELTER EVACUATION REROUTING · T-36h
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sky-800 bg-sky-100 px-2 py-0.5 rounded">
+                      <Zap className="w-3 h-3 text-sky-600" />
+                      HOSPITAL RADIAL FEEDER ISOLATION · T-12h
                     </span>
-                    <span className="text-xs font-mono font-bold text-slate-700">ZONE 14 (WARDS 188-192)</span>
+                    <span className="text-xs font-mono font-bold text-slate-700">110/33/11 KV KOYAMBEDU SS</span>
                   </div>
                   <p className="mt-2 text-xs font-semibold text-slate-900">
                     {lang === 'en'
-                      ? 'Ward 189 relief shelter approach road is in a deep depression and cuts off at 300mm rain.'
-                      : 'வார்டு 189 நிவாரண மைய அணுகுசாலை 300 மி.மீ மழையில் முற்றிலும் மூழ்கி போக்குவரத்து துண்டிக்கப்படும்.'}
+                      ? 'Substation built on former Koyambedu Lakebed basin. Cooum River backflow will submerge 11kV outdoor switchyard cable gallery by 1.1m.'
+                      : 'பழைய கோயம்பேடு ஏரிப்படுகையில் அமைந்திருப்பதால், கூவம் ஆற்று உபரி நீர் 11kV கேபிள் பாதையை 1.1 மீட்டர் மூழ்கடிக்கும்.'}
                   </p>
-                  <div className="mt-2 text-xs text-slate-700 bg-white p-2.5 rounded border border-emerald-100 font-mono leading-relaxed">
+                  <div className="mt-2 text-xs text-slate-700 bg-white p-2.5 rounded border border-sky-100 font-mono leading-relaxed">
                     {lang === 'en'
-                      ? 'ACTION: Issue automated SMS advisory rerouting 2,400 residents from Ward 189 to Velachery Inland Higher Secondary School (Elev: 8.5m MSL). Ensure 11kV primary feeder remains hot.'
-                      : 'நடவடிக்கை: 2,400 பொதுமக்களை மேடான வேளச்சேரி அரசு மேல்நிலைப் பள்ளிக்கு செல்லுமாறு உடனடி குறுஞ்செய்தி அனுப்பவும்.'}
+                      ? 'ACTION: Remotely transfer Kilpauk Medical College & Govt Hospital 11kV feeds to elevated Kilpauk 110kV Bedrock GIS node. Preemptively trip outdoor feeder breakers before water enters bushing terminals.'
+                      : 'நடவடிக்கை: கீழ்ப்பாக்கம் அரசு மருத்துவமனை மின் இணைப்பை மேடான கீழ்ப்பாக்கம் ஜிஐஎஸ் நிலையத்திற்கு மாற்றவும். டிரான்ஸ்பார்மர் முனையங்களில் நீர் ஏறும் முன் வெளிப்பகுதி பிரேக்கர்களை முடக்கவும்.'}
                   </div>
                 </div>
               </div>
@@ -367,88 +378,163 @@ export const ActionPanel: React.FC<ActionPanelProps> = ({
         </div>
       )}
 
-      {/* Tab 3: Shelter Lifeline Audit (OpenCity Datajam Findings) */}
-      {activeTab === 'shelters' && (
+      {/* Tab 3: At-Risk Power Infrastructure & Operational Dispatch Suggestions */}
+      {(activeTab === 'grid-risk' || activeTab === 'shelters') && (
         <div className="p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div>
-              <h3 className="font-bold text-slate-900 text-sm sm:text-base">
-                {lang === 'en'
-                  ? viewMode === 'LIVE'
-                    ? 'Relief Shelter Accessibility & High-Ground Audit'
-                    : 'Compromised Relief Shelters & Safe Evacuation Routing'
-                  : 'நிவாரண மைய தணிக்கை மற்றும் மாற்று வழிகள்'}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-slate-900 text-sm sm:text-base">
+                  {lang === 'en'
+                    ? viewMode === 'LIVE'
+                      ? 'Low-Lying & Vulnerable Electrical Infrastructure (Baseline Telemetry)'
+                      : 'At-Risk Substations: Controlled De-Energization & Load Transfer Deck'
+                    : 'வெள்ள அபாயத்திற்குட்பட்ட துணை மின் நிலையங்கள் & கட்டளைகள்'}
+                </h3>
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                    viewMode === 'LIVE'
+                      ? 'bg-emerald-100 text-emerald-800'
+                      : 'bg-rose-100 text-rose-800'
+                  }`}
+                >
+                  {viewMode === 'LIVE' ? 'Normal Baseline (Dry)' : `T-${hoursToLandfall}h Surge Threat`}
+                </span>
+              </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 {lang === 'en'
-                  ? viewMode === 'LIVE'
-                    ? 'Real-time: All 162 GCC relief shelters are accessible and dry under fair weather baseline. Grounded in OpenCity Datajam Team 4 benchmarks.'
-                    : 'Validating OpenCity Datajam Team 4 findings: 18 designated GCC shelters sit in high-risk inundation zones during cyclonic surge'
-                  : 'ஓபன்சிட்டி அமைப்பின் ஆய்வுப்படி, 18 மாநகராட்சி நிவாரண மையங்கள் வெள்ள அபாய பகுதிகளில் அமைந்துள்ளன'}
+                  ? 'Grounded in SRTM Elevation, NeerVaazhvu Ancestral Lakebeds, and GCC Flood Hotspots. Pinpointing power assets vulnerable to equipment submersion and short-circuit explosion.'
+                  : 'நில மட்டம், பழைய ஏரிப்படுகைகள் மற்றும் வெள்ள பாதிப்பு தரவுகளின் அடிப்படையில் கணக்கிடப்பட்ட மின் நிலையங்கள்.'}
               </p>
             </div>
             <span
-              className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+              className={`text-xs font-bold px-2.5 py-1 rounded-full shrink-0 ${
                 viewMode === 'LIVE'
-                  ? 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-sky-100 text-sky-800'
                   : 'bg-rose-100 text-rose-800'
               }`}
             >
               {viewMode === 'LIVE'
-                ? '162/162 Shelters Accessible'
-                : `${compromisedShelters.length} Shelters Compromised`}
+                ? `${atRiskSubstations.length} Monitored Switchyards`
+                : `${atRiskSubstations.length} At-Risk Grid Nodes`}
             </span>
           </div>
 
-          <div className="space-y-3 max-h-[460px] overflow-y-auto pr-1">
-            {viewMode === 'LIVE' ? (
-              <div className="border border-emerald-200 bg-emerald-50/40 rounded-lg p-5 text-center">
-                <div className="text-3xl mb-2">✅</div>
-                <p className="font-bold text-emerald-800 text-sm">
-                  {lang === 'en'
-                    ? 'All 162 GCC relief shelters are accessible'
-                    : 'அனைத்து 162 நிவாரண மையங்களும் அணுகக்கூடியவை'}
-                </p>
-                <p className="text-xs text-emerald-700 mt-1">
-                  {lang === 'en'
-                    ? 'No active flooding. Roads dry, approach routes clear. Switch to Simulation Mode to stress-test shelter accessibility under cyclonic surge.'
-                    : 'வெள்ளம் இல்லை. சாலைகள் உலர்ந்த நிலையில். சூறாவளி உருவகப்படுத்தலுக்கு Simulation Mode-க்கு மாறவும்.'}
-                </p>
-              </div>
-            ) : (
-              compromisedShelters.map((sh) => (
-                <div key={sh.shelter_id} className="border border-rose-200 bg-rose-50/30 rounded-lg p-3.5 text-xs">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-slate-900 text-sm">{sh.name || sh.address}</span>
-                        <span className="text-[10px] font-semibold bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded">
-                          Ward {sh.ward} · Zone {sh.zone}
+          <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+            {atRiskSubstations.map((sub) => {
+              const isLakebed = !!sub.ancestral_lakebed_hazard;
+              const isCriticalSurge = sub.risk_category === 'CRITICAL_SURGE_RISK';
+              const isLowElevation = sub.elevation_m <= 3.5;
+
+              // Operational status determination based on storm horizon
+              let actionTitle = 'NORMAL OPERATION';
+              let actionBadgeColor = 'bg-sky-100 text-sky-800 border-sky-200';
+              let operationalAction =
+                sub.anticipatory_sop ||
+                'Auxiliary sump pumps on standby. Maintain normal feeder dispatch; inspect cable trench sump seals.';
+
+              if (viewMode === 'SIMULATION') {
+                if (hoursToLandfall <= 12 && (isLakebed || isCriticalSurge || isLowElevation)) {
+                  actionTitle = 'MANDATORY DE-ENERGIZATION (PREVENT EXPLOSION)';
+                  actionBadgeColor = 'bg-rose-100 text-rose-800 border-rose-300 animate-pulse';
+                  operationalAction = `CRITICAL ORDER: Remotely open 33kV/11kV Vacuum Circuit Breakers (VCBs) to prevent transformer oil explosion and ground electrocution. Reroute essential feeders to elevated inland bedrock substation. Confirm zero backfeed before switchyard water level breaches 0.3m.`;
+                } else if (hoursToLandfall <= 24 && (isLakebed || isCriticalSurge)) {
+                  actionTitle = 'ANTICIPATORY LOAD SHED & TIE-LINE STAGING';
+                  actionBadgeColor = 'bg-amber-100 text-amber-800 border-amber-300';
+                  operationalAction = `OPERATIONAL DIRECTIVE: Transfer heavy industrial and commercial feeder loads to adjacent bedrock GIS. Pre-position mobile 250kVA diesel gen-sets for connected hospitals/water pumping stations. Start auxiliary sump de-watering.`;
+                } else {
+                  actionTitle = 'PRECAUTIONARY MONITORING';
+                  actionBadgeColor = 'bg-indigo-100 text-indigo-800 border-indigo-200';
+                  operationalAction = `Soil moisture rising in low-lying basin. Check automatic sump pump float switches and verify manual trip handles on 11kV distribution boards.`;
+                }
+              }
+
+              return (
+                <div
+                  key={sub.name}
+                  className={`border rounded-xl p-3.5 sm:p-4 transition-all text-xs ${
+                    viewMode === 'SIMULATION' && hoursToLandfall <= 12 && (isLakebed || isCriticalSurge || isLowElevation)
+                      ? 'border-rose-300 bg-rose-50/30'
+                      : 'border-slate-200 bg-white hover:border-sky-300 shadow-2xs'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="font-bold text-slate-900 text-sm font-mono tracking-tight">
+                          {sub.name}
+                        </span>
+                        <span className="text-[10px] font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                          {sub.district || sub.circle || 'Chennai Grid'}
+                        </span>
+                        <span className="text-[10px] font-bold bg-sky-50 text-sky-700 px-2 py-0.5 rounded border border-sky-200">
+                          {sub.connected_feeders_count || 4} Feeders
                         </span>
                       </div>
-                      <p className="text-[11px] text-rose-700 font-medium mt-1">
-                        ⚠️ <strong>Access Failure:</strong> {sh.compromised_reason}
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Rerouting Box */}
-                  {sh.recommended_safe_shelter && (
-                    <div className="mt-2.5 bg-white p-2.5 rounded border border-emerald-200 flex items-start gap-2">
-                      <span className="text-emerald-600 font-bold shrink-0">↳ SAFE REROUTE:</span>
-                      <div className="text-slate-700">
-                        <span className="font-bold text-slate-900">{sh.recommended_safe_shelter.name}</span>{' '}
-                        (Ward {sh.recommended_safe_shelter.ward}, {sh.recommended_safe_shelter.distance_km} km away, Elevation:{' '}
-                        <strong>{sh.recommended_safe_shelter.elevation_m}m MSL</strong>)
-                        <p className="text-[11px] text-emerald-800 font-medium mt-0.5">
-                          {sh.recommended_safe_shelter.rerouting_advisory}
-                        </p>
+                      {/* Hydrological Vulnerability Badges */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[11px]">
+                        <span
+                          className={`font-semibold px-2 py-0.5 rounded ${
+                            sub.elevation_m <= 1.0
+                              ? 'bg-rose-100 text-rose-800 font-bold'
+                              : sub.elevation_m <= 3.5
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-slate-100 text-slate-700'
+                          }`}
+                        >
+                          Elevation: {sub.elevation_m}m MSL
+                        </span>
+
+                        {isLakebed && (
+                          <span className="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded font-medium">
+                            <Droplets className="w-3 h-3 text-indigo-600" />
+                            {sub.lakebed_details?.name || 'Ancestral Lakebed Basin'}
+                          </span>
+                        )}
+
+                        {isCriticalSurge && (
+                          <span className="bg-orange-100 text-orange-800 font-medium px-2 py-0.5 rounded">
+                            Coastal Surge Front ({sub.distance_to_coastline_km.toFixed(1)}km to sea)
+                          </span>
+                        )}
                       </div>
                     </div>
-                  )}
+
+                    {/* Operational Status Pill */}
+                    <span
+                      className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full border shrink-0 ${actionBadgeColor}`}
+                    >
+                      <Zap className="w-3 h-3" />
+                      {actionTitle}
+                    </span>
+                  </div>
+
+                  {/* Operational Recommendation Box */}
+                  <div className="mt-3 bg-slate-50 border border-slate-200/80 rounded-lg p-2.5 font-mono text-[11px] leading-relaxed text-slate-800">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <strong className="text-slate-900 block mb-0.5 font-sans text-xs">
+                          {lang === 'en' ? 'TNEB Engineering Protocol:' : 'மின் பொறியியல் வழிகாட்டல்:'}
+                        </strong>
+                        <span>{operationalAction}</span>
+                      </div>
+                      <button
+                        onClick={() =>
+                          handleCopySOP(
+                            `TNEB SWITCHING ORDER · ${sub.name}\nSTATUS: ${actionTitle}\nPROTOCOL: ${operationalAction}\nELEVATION: ${sub.elevation_m}m MSL\nFEEDERS: ${sub.connected_feeders_count}`
+                          )
+                        }
+                        className="p-1.5 rounded hover:bg-slate-200 text-slate-500 hover:text-slate-900 shrink-0 cursor-pointer transition-colors"
+                        title="Copy Switching Directive"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))
-            )}
+              );
+            })}
           </div>
         </div>
       )}

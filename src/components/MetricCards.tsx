@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, ShieldCheck, Home, FileText, AlertCircle, ArrowUpRight, CheckCircle2, Radio } from 'lucide-react';
+import { Zap, ShieldCheck, AlertCircle, CheckCircle2, Radio, FileText, ArrowUpRight } from 'lucide-react';
 import type { Substation, ReliefShelter, ReservoirData } from '../types';
 import type { LiveWeatherReport } from '../services/liveDataService';
 
@@ -15,7 +15,6 @@ interface MetricCardsProps {
 
 export const MetricCards: React.FC<MetricCardsProps> = ({
   substations,
-  shelters,
   reservoirData,
   onCardClick,
   lang,
@@ -25,12 +24,6 @@ export const MetricCards: React.FC<MetricCardsProps> = ({
   const isLive = viewMode === 'LIVE';
   const lakebedSubs = substations.filter((s) => s.ancestral_lakebed_hazard).length;
   const criticalSurge = substations.filter((s) => s.risk_category === 'CRITICAL_SURGE_RISK').length;
-  const safeShelters = isLive
-    ? shelters.length || 162
-    : shelters.filter((s) => s.shelter_viability_status === 'SAFE_HAVEN').length;
-  const compromisedShelters = isLive
-    ? 0
-    : shelters.filter((s) => s.shelter_viability_status === 'COMPROMISED_INUNDATION').length;
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -113,39 +106,39 @@ export const MetricCards: React.FC<MetricCardsProps> = ({
         </div>
       </div>
 
-      {/* 3. Relief Shelter Lifelines Card */}
+      {/* 3. At-Risk Power Infrastructure Card */}
       <div
-        onClick={() => onCardClick?.('shelters')}
-        className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-5 hover:border-sky-300 hover:shadow-xs transition-all cursor-pointer group"
+        onClick={() => onCardClick?.('grid-risk')}
+        className="bg-white border border-slate-200 rounded-xl p-3.5 sm:p-5 hover:border-amber-300 hover:shadow-xs transition-all cursor-pointer group"
       >
         <div className="flex items-center justify-between">
           <span className="text-[11px] sm:text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            {lang === 'en' ? 'Relief Shelters' : 'நிவாரண மையங்கள்'}
+            {lang === 'en' ? 'At-Risk Grid Nodes' : 'அபாய மின் நிலையங்கள்'}
           </span>
-          <div className="w-7 h-7 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-            <Home className="w-4 h-4" />
+          <div className="w-7 h-7 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-100 transition-colors">
+            <Zap className="w-4 h-4" />
           </div>
         </div>
         <div className="mt-2 flex items-baseline gap-1">
-          <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 tabular-nums font-mono">
-            {safeShelters}
+          <span className="text-2xl sm:text-3xl font-extrabold text-amber-600 tabular-nums font-mono">
+            {lakebedSubs + criticalSurge}
           </span>
-          <span className="text-xs text-slate-500 font-medium">/ {shelters.length || 162} Safe</span>
+          <span className="text-xs text-slate-500 font-medium">/ {substations.length || 242} Low-Lying</span>
         </div>
         <div className="mt-2 flex flex-col gap-1 text-[11px]">
           {isLive ? (
             <>
               <span className="text-emerald-700 font-semibold">
-                0 Inundated (All 162 Accessible)
+                Normal Baseline (Dry Switchyards)
               </span>
-              <span className="text-slate-500">11kV Feeder Paths Verified</span>
+              <span className="text-slate-500">Foundation Drainage Monitored</span>
             </>
           ) : (
             <>
               <span className="text-rose-600 font-semibold">
-                {compromisedShelters} Inundated / Rerouted
+                {lakebedSubs} Lakebed + {criticalSurge} Surge Hazards
               </span>
-              <span className="text-slate-500">11kV Tie-lines Mapped</span>
+              <span className="text-amber-700 font-medium">Controlled Load Shedding Orders</span>
             </>
           )}
         </div>
