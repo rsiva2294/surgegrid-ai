@@ -2,6 +2,7 @@ export type VoltageTier = 'bulk' | 'subtransmission' | 'distribution';
 
 export type LifelineCategory = 'hospital' | 'water' | 'transit' | 'governance' | 'industrial_ht';
 export type PriorityLevel = 'P1_CRITICAL' | 'P1_NON_CUT' | 'P2_ESSENTIAL' | 'P3_COMMERCIAL';
+export type FloodRiskCategory = 'CRITICAL_SURGE_RISK' | 'HIGH_WATERLOGGING_RISK' | 'MODERATE_RISK' | 'SAFE';
 
 export interface FeederDetail {
   name: string;
@@ -16,6 +17,10 @@ export interface FeederDetail {
   lifelineCategory?: LifelineCategory;
   lifelineLabel?: string;
   priorityLevel?: PriorityLevel;
+  outageCount?: number;
+  outageDates?: string[];
+  uniqueOutageDays?: number;
+  tripRisk?: 'CRITICAL' | 'ELEVATED' | 'MODERATE';
 }
 
 export interface PrecomputedConnection {
@@ -49,6 +54,12 @@ export interface TnebSubstation {
   totalFeedersCount: number;
   feeders: FeederDetail[];
   connections?: PrecomputedConnection[];
+  elevationM?: number;
+  riskCategory?: FloodRiskCategory;
+  compositeRiskScore?: number;
+  distanceToCoastKm?: number;
+  anticipatorySop?: string;
+  historicalOutagesCount?: number;
 }
 
 export interface TnebSection {

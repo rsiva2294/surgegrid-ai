@@ -1381,6 +1381,22 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   <span className={`text-xs font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
                     #{selectedSubstation?.code || selectedSection?.code}
                   </span>
+                  {selectedSubstation?.elevationM !== undefined && (
+                    <span
+                      className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold flex items-center gap-1 ${
+                        selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                          ? (isLight ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40')
+                          : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                          ? (isLight ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40')
+                          : (isLight ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-800 text-slate-300 border border-slate-700')
+                      }`}
+                      title={`Ground Elevation: ${selectedSubstation.elevationM}m MSL • Distance to Coast: ${selectedSubstation.distanceToCoastKm || 0}km`}
+                    >
+                      <span>⛰️ {selectedSubstation.elevationM}m MSL</span>
+                      {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK' && <span className="font-sans font-bold">• 🌊 Surge Risk</span>}
+                      {selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK' && <span className="font-sans font-bold">• ⚠️ Flood Risk</span>}
+                    </span>
+                  )}
                 </div>
                 <h2 className={`text-base font-bold leading-tight truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
                   {selectedSubstation?.name || selectedSection?.name}
@@ -1487,6 +1503,59 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                           </span>
                         </div>
                       </div>
+
+                      {/* Substation Terrain & Flood Risk Profile */}
+                      {selectedSubstation.elevationM !== undefined && (
+                        <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 ${
+                          selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                            ? (isLight ? 'bg-rose-50/70 border-rose-200 text-rose-950' : 'bg-rose-950/25 border-rose-800/60 text-rose-200')
+                            : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                            ? (isLight ? 'bg-amber-50/70 border-amber-200 text-amber-950' : 'bg-amber-950/25 border-amber-800/60 text-amber-200')
+                            : (isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800/80 text-slate-200')
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-[11px] flex items-center gap-1.5">
+                              <span>🌊</span>
+                              <span>Terrain & Flood Risk</span>
+                            </span>
+                            <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                              selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                                ? (isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-black')
+                                : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                                ? (isLight ? 'bg-amber-600 text-white' : 'bg-amber-400 text-slate-950 font-black')
+                                : (isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300')
+                            }`}>
+                              {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                                ? 'CRITICAL SURGE'
+                                : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                                ? 'HIGH WATERLOG'
+                                : 'SAFE ELEVATION'}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[10px]">
+                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
+                              <span className="text-[8px] opacity-75 block">Elevation</span>
+                              <strong className="text-[11px]">{selectedSubstation.elevationM}m</strong>
+                            </div>
+                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
+                              <span className="text-[8px] opacity-75 block">To Coast</span>
+                              <strong className="text-[11px]">{selectedSubstation.distanceToCoastKm || 0}km</strong>
+                            </div>
+                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
+                              <span className="text-[8px] opacity-75 block">Risk Score</span>
+                              <strong className="text-[11px]">{selectedSubstation.compositeRiskScore || 0}/100</strong>
+                            </div>
+                          </div>
+                          {selectedSubstation.anticipatorySop && (
+                            <div className={`p-1.5 rounded text-[9.5px] leading-tight ${
+                              isLight ? 'bg-white/90 text-slate-700' : 'bg-slate-900/80 text-slate-300'
+                            }`}>
+                              <span className="font-bold">⚡ SOP: </span>
+                              {selectedSubstation.anticipatorySop}
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Jurisdictional AE Section Office */}
                       {jurisdictionalSections.length > 0 && (
@@ -1756,6 +1825,20 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                     )}
                                   </div>
                                   <div className="flex items-center gap-1 shrink-0">
+                                    {f.outageCount && f.outageCount > 0 ? (
+                                      <span
+                                        className={`px-1.5 py-0.2 rounded font-mono text-[9px] font-bold flex items-center gap-0.5 ${
+                                          f.outageCount >= 4
+                                            ? (isLight ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40')
+                                            : f.outageCount >= 2
+                                            ? (isLight ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40')
+                                            : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
+                                        }`}
+                                        title={f.outageDates ? `Recorded trips: ${f.outageDates.join(', ')}` : undefined}
+                                      >
+                                        <span>⚡ {f.outageCount} {f.outageCount === 1 ? 'Trip' : 'Trips'}</span>
+                                      </span>
+                                    ) : null}
                                     <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
                                       f.voltage.includes('33')
                                         ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
@@ -2027,6 +2110,20 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                       )}
                                     </div>
                                     <div className="flex items-center gap-1 shrink-0">
+                                      {f.outageCount && f.outageCount > 0 ? (
+                                        <span
+                                          className={`px-1.5 py-0.2 rounded font-mono text-[9px] font-bold flex items-center gap-0.5 ${
+                                            f.outageCount >= 4
+                                              ? (isLight ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40')
+                                              : f.outageCount >= 2
+                                              ? (isLight ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40')
+                                              : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
+                                          }`}
+                                          title={f.outageDates ? `Recorded trips: ${f.outageDates.join(', ')}` : undefined}
+                                        >
+                                          <span>⚡ {f.outageCount} {f.outageCount === 1 ? 'Trip' : 'Trips'}</span>
+                                        </span>
+                                      ) : null}
                                       <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
                                         f.voltage.includes('33')
                                           ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
@@ -2270,6 +2367,61 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                             <MapPin className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
                           </div>
                         </div>
+
+                        {/* Substation Terrain & Flood Risk Profile */}
+                        {selectedSubstation.elevationM !== undefined && (
+                          <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
+                            selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                              ? (isLight ? 'bg-rose-50/70 border-rose-200 text-rose-950' : 'bg-rose-950/25 border-rose-800/60 text-rose-200')
+                              : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                              ? (isLight ? 'bg-amber-50/70 border-amber-200 text-amber-950' : 'bg-amber-950/25 border-amber-800/60 text-amber-200')
+                              : (isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800/80 text-slate-200')
+                          }`}>
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-xs flex items-center gap-1.5">
+                                <span>🌊</span>
+                                <span>Terrain & Climate Flood Risk</span>
+                              </span>
+                              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                                selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                                  ? (isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-black')
+                                  : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                                  ? (isLight ? 'bg-amber-600 text-white' : 'bg-amber-400 text-slate-950 font-black')
+                                  : (isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300')
+                              }`}>
+                                {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                                  ? 'CRITICAL SURGE'
+                                  : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                                  ? 'WATERLOGGING RISK'
+                                  : 'SAFE ELEVATION'}
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-3 gap-2 pt-1 text-center font-mono text-[11px]">
+                              <div className={`p-2 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className="text-[9px] opacity-75 block mb-0.5">Elevation (MSL)</span>
+                                <strong className="text-xs font-bold">{selectedSubstation.elevationM} m</strong>
+                              </div>
+                              <div className={`p-2 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className="text-[9px] opacity-75 block mb-0.5">Distance to Sea</span>
+                                <strong className="text-xs font-bold">{selectedSubstation.distanceToCoastKm || 0} km</strong>
+                              </div>
+                              <div className={`p-2 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className="text-[9px] opacity-75 block mb-0.5">Composite Risk</span>
+                                <strong className="text-xs font-bold">{selectedSubstation.compositeRiskScore || 0}/100</strong>
+                              </div>
+                            </div>
+
+                            {selectedSubstation.anticipatorySop && (
+                              <div className={`p-2 rounded-lg text-[10px] leading-relaxed mt-1 ${
+                                isLight ? 'bg-white/90 text-slate-700 border border-black/5' : 'bg-slate-900/80 text-slate-300 border border-white/10'
+                              }`}>
+                                <strong className="font-semibold block mb-0.5">⚡ Anticipatory Field SOP:</strong>
+                                {selectedSubstation.anticipatorySop}
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         {/* Jurisdictional Assistant Engineer (AE) Section Office */}
                         {jurisdictionalSections.length > 0 && (
