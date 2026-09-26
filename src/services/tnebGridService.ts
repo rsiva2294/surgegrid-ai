@@ -1,4 +1,32 @@
-import type { ChennaiGridData, TnebSubstation, TnebSection, FeederDetail } from '../types/tneb';
+import type { ChennaiGridData, TnebSubstation, TnebSection, FeederDetail, PrecomputedConnection } from '../types/tneb';
+
+/**
+ * Strict Physical Distance Ceilings for Urban Grid Interconnections (TNEB Engineering Standard)
+ * - 33kV & 11kV distribution step-downs / feeders: <= 8.5 km
+ * - 110kV sub-transmission trunks: <= 12.0 km
+ * - 230kV / 400kV bulk transmission corridors: <= 30.0 km
+ * - Co-located campus sections / switchyard ties: <= 3.0 km
+ */
+export function isValidPhysicalGridConnection(connection: PrecomputedConnection): boolean {
+  if (connection.type === 'section') return true;
+  const dist = connection.distanceKm || 0;
+  const v = (connection.voltage || '').toLowerCase();
+  const label = (connection.label || '').toLowerCase();
+
+  // 33kV & 11kV distribution lines cannot operate across > 8.5 km in urban networks
+  if (v.includes('33') || v.includes('11') || label.includes('33') || label.includes('11')) {
+    return dist <= 8.5;
+  }
+  // 110kV sub-transmission trunks
+  if (v.includes('110') || label.includes('110')) {
+    return dist <= 12.0;
+  }
+  // 230kV / 400kV bulk transmission corridors
+  if (v.includes('230') || v.includes('400') || label.includes('230') || label.includes('400')) {
+    return dist <= 30.0;
+  }
+  return dist <= 10.0;
+}
 
 const LIFELINE_PATTERNS = {
   hospital: {
@@ -74,6 +102,9 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
     data.substations.forEach(s => {
       if (s.feeders) {
         s.feeders = s.feeders.map(classifyFeeder);
+      }
+      if (s.connections) {
+        s.connections = s.connections.filter(isValidPhysicalGridConnection);
       }
     });
     cachedGrid = data;
