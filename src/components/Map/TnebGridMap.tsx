@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
-import type { TnebSubstation, TnebSection } from '../../types/tneb';
+import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface TnebGridMapProps {
@@ -39,6 +39,96 @@ function getNodeColor(tier: string, type: 'substation' | 'section', isLight: boo
     return isLight ? '#d97706' : '#f59e0b';
   }
   return isLight ? '#0284c7' : '#06b6d4';
+}
+
+function getDtrMarkerIcon(isLight: boolean): google.maps.Symbol {
+  return {
+    path: 'M -3,-3 L 3,-3 L 3,3 L -3,3 Z',
+    fillColor: isLight ? '#D97706' : '#F59E0B',
+    fillOpacity: 1,
+    strokeColor: isLight ? '#0F172A' : '#FFFFFF',
+    strokeWeight: 1.5,
+    scale: 1.8
+  };
+}
+
+function computeFeederCorridor(
+  substation: TnebSubstation,
+  feeder: FeederDetail,
+  substations: TnebSubstation[],
+  sections: TnebSection[]
+): { path: { lat: number; lng: number }[]; dtrs: { id: string; name: string; lat: number; lng: number; consumers: number }[] } {
+  const originLat = substation.lat;
+  const originLng = substation.lng;
+  const feederUpper = feeder.name.toUpperCase();
+
+  let targetLat: number | null = null;
+  let targetLng: number | null = null;
+
+  // 1. Look for known name match in sections or substations
+  const matchedSubstation = substations.find(s => s.code !== substation.code && feederUpper.includes(s.cleanName.toUpperCase()));
+  if (matchedSubstation) {
+    targetLat = matchedSubstation.lat;
+    targetLng = matchedSubstation.lng;
+  } else {
+    const matchedSection = sections.find(s => feederUpper.includes(s.cleanName.toUpperCase()));
+    if (matchedSection) {
+      targetLat = matchedSection.lat;
+      targetLng = matchedSection.lng;
+    }
+  }
+
+  // 2. If no direct match, generate deterministic angle radiating from substation
+  if (targetLat === null || targetLng === null) {
+    let hash = 0;
+    for (let i = 0; i < feeder.name.length; i++) {
+      hash = (hash << 5) - hash + feeder.name.charCodeAt(i);
+      hash |= 0;
+    }
+    const angleRad = ((Math.abs(hash) % 360) * Math.PI) / 180;
+    const effectiveKm = Math.min(Math.max(feeder.lengthKm || 2.5, 1.5), 4.2);
+    const dLat = (effectiveKm * Math.cos(angleRad)) / 111;
+    const dLng = (effectiveKm * Math.sin(angleRad)) / 108;
+    targetLat = originLat + dLat;
+    targetLng = originLng + dLng;
+  }
+
+  // Generate organic 4-segment street corridor
+  const waypoints: { lat: number; lng: number }[] = [{ lat: originLat, lng: originLng }];
+  const steps = 4;
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const perpOffset = Math.sin(t * Math.PI) * 0.0012 * ((feeder.name.length % 2 === 0) ? 1 : -1);
+    const lat = originLat + (targetLat - originLat) * t + perpOffset * 0.5;
+    const lng = originLng + (targetLng - originLng) * t + perpOffset;
+    waypoints.push({ lat, lng });
+  }
+
+  // Place DTRs along the path
+  const dtrCount = Math.min(Math.max(feeder.transformers || 8, 3), 35);
+  const avgConsumers = Math.round((feeder.consumers || (dtrCount * 120)) / dtrCount);
+  const dtrs: { id: string; name: string; lat: number; lng: number; consumers: number }[] = [];
+
+  for (let i = 1; i <= dtrCount; i++) {
+    const fraction = 0.15 + (i / (dtrCount + 1)) * 0.8;
+    const segmentIndex = Math.min(Math.floor(fraction * (waypoints.length - 1)), waypoints.length - 2);
+    const segT = (fraction * (waypoints.length - 1)) - segmentIndex;
+    const p1 = waypoints[segmentIndex];
+    const p2 = waypoints[segmentIndex + 1];
+
+    const jitterLat = Math.sin(i * 3.7) * 0.00015;
+    const jitterLng = Math.cos(i * 3.7) * 0.00015;
+
+    dtrs.push({
+      id: `${feeder.code}_dtr_${i}`,
+      name: `DTR #${i < 10 ? '0' + i : i}`,
+      lat: p1.lat + (p2.lat - p1.lat) * segT + jitterLat,
+      lng: p1.lng + (p2.lng - p1.lng) * segT + jitterLng,
+      consumers: Math.round(avgConsumers * (0.8 + (Math.abs(Math.sin(i * 1.5)) * 0.4)))
+    });
+  }
+
+  return { path: waypoints, dtrs };
 }
 
 function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean, isLight: boolean): google.maps.Symbol {
@@ -242,6 +332,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const prevSelectedSectionCodeRef = useRef<string | null>(null);
   const selectionHaloRef = useRef<google.maps.Marker | null>(null);
   const sectionBoundaryPolygonsRef = useRef<google.maps.Polygon[]>([]);
+  const feederLineRef = useRef<google.maps.Polyline | null>(null);
+  const feederGlowLineRef = useRef<google.maps.Polyline | null>(null);
+  const dtrMarkersRef = useRef<google.maps.Marker[]>([]);
+  const dtrInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -255,11 +349,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [feederFilter, setFeederFilter] = useState('');
   const [showConnections, setShowConnections] = useState(false);
+  const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
 
-  // Reset showConnections when selected substation changes
+  // Reset showConnections and selectedFeeder when selected substation changes
   useEffect(() => {
     setShowConnections(false);
+    setSelectedFeeder(null);
   }, [selectedSubstation]);
 
   // Fast O(1) Entity Maps
@@ -756,6 +852,117 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       connectionLinesRef.current = [];
     };
   }, [selectedSubstation, electricalNodes, mapLoaded, showConnections]);
+
+  // Render on-demand Feeder Corridor and DTR markers when a feeder is selected
+  useEffect(() => {
+    // Clear previous feeder line and DTR markers
+    if (feederLineRef.current) {
+      feederLineRef.current.setMap(null);
+      feederLineRef.current = null;
+    }
+    if (feederGlowLineRef.current) {
+      feederGlowLineRef.current.setMap(null);
+      feederGlowLineRef.current = null;
+    }
+    dtrMarkersRef.current.forEach(m => m.setMap(null));
+    dtrMarkersRef.current = [];
+    if (dtrInfoWindowRef.current) {
+      dtrInfoWindowRef.current.close();
+    }
+
+    if (!mapRef.current || !mapLoaded || !selectedSubstation || !selectedFeeder) {
+      return;
+    }
+
+    const map = mapRef.current;
+    const isLight = theme === 'light';
+    const corridor = computeFeederCorridor(selectedSubstation, selectedFeeder, substations, sections);
+
+    // 1. Glow outer polyline
+    feederGlowLineRef.current = new google.maps.Polyline({
+      path: corridor.path,
+      strokeColor: isLight ? '#0284C7' : '#06B6D4',
+      strokeOpacity: isLight ? 0.35 : 0.45,
+      strokeWeight: 8,
+      zIndex: 48,
+      map
+    });
+
+    // 2. Core sharp feeder line with directional flow arrows
+    feederLineRef.current = new google.maps.Polyline({
+      path: corridor.path,
+      strokeColor: isLight ? '#0369A1' : '#22D3EE',
+      strokeOpacity: 0.95,
+      strokeWeight: 3.5,
+      zIndex: 50,
+      icons: [
+        {
+          icon: {
+            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            scale: 2.2,
+            strokeColor: isLight ? '#0369A1' : '#22D3EE',
+            fillColor: isLight ? '#0369A1' : '#22D3EE',
+            fillOpacity: 1
+          },
+          offset: '50%',
+          repeat: '90px'
+        }
+      ],
+      map
+    });
+
+    // 3. Render DTR markers along the corridor
+    if (!dtrInfoWindowRef.current) {
+      dtrInfoWindowRef.current = new google.maps.InfoWindow();
+    }
+
+    corridor.dtrs.forEach(dtr => {
+      const marker = new google.maps.Marker({
+        position: { lat: dtr.lat, lng: dtr.lng },
+        icon: getDtrMarkerIcon(isLight),
+        zIndex: 55,
+        title: `${dtr.name} (${selectedFeeder.name} Feeder)`,
+        map
+      });
+
+      marker.addListener('click', () => {
+        dtrInfoWindowRef.current?.setContent(`
+          <div style="font-family: system-ui, -apple-system, sans-serif; padding: 6px; color: #0f172a; max-width: 220px; line-height: 1.3;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+              <span style="font-weight: 800; font-size: 13px; color: #b45309;">⚡ ${dtr.name}</span>
+              <span style="font-size: 10px; font-family: monospace; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-weight: 700;">DTR / DTS</span>
+            </div>
+            <div style="font-size: 11px; color: #475569; margin-bottom: 4px;">
+              <strong>Step-Down:</strong> 11,000V → 240V / 415V
+            </div>
+            <div style="font-size: 11px; font-weight: 600; color: #0369a1; margin-bottom: 2px;">
+              👥 Feeds ~${dtr.consumers.toLocaleString()} Consumers
+            </div>
+            <div style="font-size: 10px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px;">
+              Feeder: <strong>${selectedFeeder.name}</strong> (${selectedFeeder.voltage})
+            </div>
+          </div>
+        `);
+        dtrInfoWindowRef.current?.open(map, marker);
+      });
+
+      dtrMarkersRef.current.push(marker);
+    });
+
+    // 4. Auto-fit camera bounds around the active feeder corridor
+    const bounds = new google.maps.LatLngBounds();
+    corridor.path.forEach(pt => bounds.extend(pt));
+    corridor.dtrs.forEach(d => bounds.extend({ lat: d.lat, lng: d.lng }));
+    map.fitBounds(bounds, { top: 90, right: 460, bottom: 90, left: 90 });
+
+    return () => {
+      if (feederLineRef.current) feederLineRef.current.setMap(null);
+      if (feederGlowLineRef.current) feederGlowLineRef.current.setMap(null);
+      dtrMarkersRef.current.forEach(m => m.setMap(null));
+      dtrMarkersRef.current = [];
+      if (dtrInfoWindowRef.current) dtrInfoWindowRef.current.close();
+    };
+  }, [selectedFeeder, selectedSubstation, mapLoaded, theme, substations, sections]);
 
   // Filtered search list
   const searchResults = useMemo<{ substations: TnebSubstation[]; sections: TnebSection[] }>(() => {
@@ -1327,59 +1534,114 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     />
                   )}
 
+                  {/* Active Feeder Banner */}
+                  {selectedFeeder && (
+                    <div className={`p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all ${
+                      isLight ? 'bg-sky-50 border-sky-300 text-sky-950' : 'bg-cyan-950/60 border-cyan-500/50 text-cyan-200'
+                    }`}>
+                      <div className="flex items-center gap-2 truncate">
+                        <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+                        <span className="truncate text-[11px]">
+                          Corridor: <strong>{selectedFeeder.name}</strong> • {selectedFeeder.transformers || 8} DTRs on map
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setSelectedFeeder(null)}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors shrink-0 ${
+                          isLight
+                            ? 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 shadow-sm'
+                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                        }`}
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  )}
+
                   {/* Feeders Scroll List */}
                   {filteredFeeders.length > 0 ? (
                     <div className="max-h-48 overflow-y-auto space-y-1.5 pr-1">
-                      {filteredFeeders.map((f, idx) => (
-                        <div
-                          key={idx}
-                          className={`p-2 rounded-xl text-xs border transition-colors ${
-                            isLight
-                              ? 'bg-slate-50 hover:bg-slate-100 border-slate-200'
-                              : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className={`font-semibold text-xs truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                              {f.name}
-                            </span>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
-                                f.voltage.includes('33')
-                                  ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
-                                  : (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300')
-                              }`}>
-                                {f.voltage}
-                              </span>
-                              <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
-                                isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
-                              }`}>
-                                {f.config}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className={`flex items-center justify-between text-[11px] font-mono ${
-                            isLight ? 'text-slate-600' : 'text-slate-400'
-                          }`}>
-                            <div className="flex items-center gap-2">
-                              {f.consumers > 0 ? (
-                                <span className={`font-semibold ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
-                                  👥 {f.consumers.toLocaleString()} consumers
+                      {filteredFeeders.map((f, idx) => {
+                        const isFeederActive = selectedFeeder?.code === f.code;
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
+                            className={`w-full text-left p-2 rounded-xl text-xs border transition-all ${
+                              isFeederActive
+                                ? (isLight
+                                    ? 'bg-sky-50 border-sky-400 ring-2 ring-sky-300 shadow-sm'
+                                    : 'bg-cyan-950/70 border-cyan-400 ring-2 ring-cyan-500/40 shadow-sm')
+                                : (isLight
+                                    ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-slate-300'
+                                    : 'bg-slate-950/50 hover:bg-slate-950 border-slate-800/80 hover:border-slate-700')
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <div className="flex items-center gap-1.5 truncate">
+                                <span className={`font-semibold text-xs truncate ${
+                                  isFeederActive
+                                    ? (isLight ? 'text-sky-950 font-bold' : 'text-cyan-200 font-bold')
+                                    : (isLight ? 'text-slate-900' : 'text-slate-100')
+                                }`}>
+                                  {f.name}
                                 </span>
-                              ) : (
-                                <span className="text-[10px] opacity-75">{f.type}</span>
-                              )}
-                              {f.transformers > 0 && (
-                                <span>• ⚡ {f.transformers} DTRs</span>
-                              )}
+                                {isFeederActive && (
+                                  <span className="text-[9px] font-bold font-mono px-1 py-0.2 rounded bg-cyan-500 text-slate-950 shrink-0">
+                                    ON MAP
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${
+                                  f.voltage.includes('33')
+                                    ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300')
+                                    : (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300')
+                                }`}>
+                                  {f.voltage}
+                                </span>
+                                <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono ${
+                                  isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                }`}>
+                                  {f.config}
+                                </span>
+                              </div>
                             </div>
-                            {f.lengthKm > 0 && (
-                              <span className="text-[10px] opacity-70">{f.lengthKm} km</span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+
+                            <div className={`flex items-center justify-between text-[11px] font-mono ${
+                              isLight ? 'text-slate-600' : 'text-slate-400'
+                            }`}>
+                              <div className="flex items-center gap-2">
+                                {f.consumers > 0 ? (
+                                  <span className={`font-semibold ${isLight ? 'text-sky-700' : 'text-cyan-300'}`}>
+                                    👥 {f.consumers.toLocaleString()}
+                                  </span>
+                                ) : (
+                                  <span className="text-[10px] opacity-75">{f.type}</span>
+                                )}
+                                {f.transformers > 0 && (
+                                  <span className={isFeederActive ? (isLight ? 'text-amber-700 font-bold' : 'text-amber-400 font-bold') : ''}>
+                                    • ⚡ {f.transformers} DTRs
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                {f.lengthKm > 0 && (
+                                  <span className="text-[10px] opacity-70">{f.lengthKm} km</span>
+                                )}
+                                <span className={`text-[10px] underline ${
+                                  isFeederActive
+                                    ? (isLight ? 'text-sky-700 font-bold' : 'text-cyan-400 font-bold')
+                                    : (isLight ? 'text-slate-500 hover:text-slate-800' : 'text-slate-400 hover:text-slate-200')
+                                }`}>
+                                  {isFeederActive ? 'Dismiss' : 'View on Map'}
+                                </span>
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className={`p-3 text-center rounded-xl border text-xs ${

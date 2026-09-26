@@ -14,6 +14,7 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **Selection Beacon Halo**: Integrated dedicated high-contrast radar beacon ring (`selectionHaloRef`) providing instant targeting clarity in both light and dark modes.
 - **Unified Left-Hand Control Stack**: Relocated collapsible **TNEB Grid Layers** control directly beneath the Search Box on the top-left, freeing the entire right side for the Substation & Section Inspector Drawer without UI overlap.
 - **Visual Field Guide & Documentation**: Added `docs/03-chennai-grid-topology-and-field-guide.md` accompanied by 6 high-resolution engineering photographs in `docs/images/` covering all tiers from 400kV Bulk EHV stations to the consumer meter box.
+- **On-Demand Feeder Corridors & DTR Transformers**: Interactive feeder selection in the Substation Inspector Drawer. Clicking any feeder plots its glowing 11 kV line with directional flow arrows, distributes individual pole-mounted DTR transformer pins along the road, and reveals interactive DTR step-down specs on click.
 
 ### Performance & Polish
 - **60fps Pan & Zoom Fluidity**: Removed heavy GPU `backdrop-blur` filters and artificial bounding drag friction, cutting frame render latency.
