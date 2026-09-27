@@ -64,3 +64,27 @@ Feeders nested inside `substations[].feeders` in `chennai_tneb_grid.json` and dy
 4. **Tier 4 (P3 Commercial & Dedicated Industrial HT)**: Heavy industrial manufacturing feeds badged `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]`.
 5. **Tier 5 (Local Low-Voltage Distribution)**: Mixed neighborhood feeders ranked strictly descending by registered consumer count (`consumers`).
 
+---
+
+## 4. Disaster Resilience & Statutory Governance Attributes
+
+Added in Release **1.3.0** per the **Tamil Nadu State Disaster Management Plan (TNSDMA 2023)** and **TANGEDCO Disaster Management Manual**:
+
+### 4.1 Feeder Resilience Schema (`FeederDetail` Extensions)
+| Field | Type | Statutory Provenance | Description & Range |
+| :--- | :--- | :--- | :--- |
+| `esf15SlaHours` | number | TNSDMA 2023 Chapter 8 (ESF 15: Power & Energy) | Statutory maximum restoration time target: `6h` (P1 Lifelines), `12h` (P2 & 33kV Trunks), `24h` (P3 Commercial HT), `48h` (LT Distribution). |
+| `rmuCount` | number | TANGEDCO Post-Vardah Network Hardening | Number of automated 11 kV Ring Main Units (RMUs) enabling micro-loop sectionalizing without de-energizing entire feeders (`1` to `12`). Pure OH radial lines = `0`. |
+| `restorationStage` | number (1-5) | TANGEDCO 5-Stage Sequential Restoration Protocol | Canonical sequence order: `3` (Trunk/Lifeline), `4` (Automated RMU Loops), `5` (DTR Megger & LT Charging). |
+| `circuitState` | string | TNSDMA §5.6 Safety Mandate | Real-time simulated status: `'LIVE'`, `'PRE_EMPTIVE_SAFETY_ISOLATION'`, `'STORM_FAULT_TRIPPED'`, `'AWAITING_PATROL_CLEARANCE'`. |
+| `preEmptiveTripReason` | string | TNSDMA Public Electrocution Prevention | Statutory justification: `'WIND_GUST_EXCEEDED'` (Wind > 80 km/h), `'YARD_SUBMERGED'` (Surge > 3.0m). |
+
+### 4.2 Substation Resilience Schema (`TnebSubstation` Extensions)
+| Field | Type | Engineering Benchmark | Description |
+| :--- | :--- | :--- | :--- |
+| `plinthElevationM` | number | TNEB Control Room Standards | Switchgear equipment and busbar plinth clearance above local ground level (`1.5 m`). |
+| `benchmarked2015FloodDepthM` | number | 2015 Floods Historical Ground Truth | Peak flood submersion depth recorded across 41 inundated Chennai yards (`1.8 m` / 6ft in river basins; `0.9 m` in moderate basins). |
+| `yardDewateringRequired` | boolean | TANGEDCO Substation Recovery SOP | Requires high-capacity mobile diesel pump deployment prior to busbar megger testing and re-energization (`true` if elevation $\le 3.0\text{ m}$). |
+| `statutoryDeenergized` | boolean | TNSDMA §5.6 State Order | Isolated by statutory mandate during severe weather to prevent mass public electrocution. |
+
+

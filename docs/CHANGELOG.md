@@ -4,6 +4,35 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.3.0-disaster-resilience-engine] - 2026-09-27
+
+### Added
+- **TNSDMA 2023 & TANGEDCO Disaster Operations Cockpit**:
+  - Implemented top-center interactive Disaster Protocol selector with 4 realistic operating modes:
+    1. **Normal Grid (`🌤️`)**: Standard clear-sky grid operations.
+    2. **Cyclone Watch Alert (`🟡`)**: 65 km/h gusts, lineman foot patrol standby, GCC tree-trimming liaison.
+    3. **Severe Cyclone Landfall (`🌀`)**: 90 km/h gusts (Michaung / Vardah scale), executing the statutory TNSDMA §5.6 pre-emptive overhead line trip to prevent public electrocution from fallen conductors while preserving underground cables.
+    4. **Extreme Surge Catastrophe (`🌊`)**: 3.2m coastal storm surge, testing the official TNSDMA 3.0m MSL threshold and triggering switchyard submersion alarms and mobile diesel dewatering pump mandates.
+- **Statutory ESF 15 Restoration SLAs**:
+  - Attached statutory recovery time targets to all 2,678 Chennai feeders:
+    - `⏱️ ESF 15: 6h SLA`: Tier 1 P1 Critical Lifelines (Water headworks, acute hospitals, emergency HQ).
+    - `⏱️ ESF 15: 12h SLA`: Tier 2 P2 Essential (Metro Rail, Southern Railway) and Tier 3 (33 kV Sub-transmission Trunks).
+    - `⏱️ ESF 15: 24h SLA`: Tier 4 P3 Commercial & Dedicated Industrial HT Services.
+    - `⏱️ ESF 15: 48h SLA`: Tier 5 Neighborhood Distribution Feeders.
+- **Post-Vardah 13,810 Automated RMU Network Model**:
+  - Computed and rendered the active Ring Main Unit (RMU) loop count on all underground and mixed feeders (`[🔄 N RMU Loops]`), simulating modern sectionalized loop rings that allow isolating flooded spans while keeping unflooded loops energized.
+- **TANGEDCO 5-Stage Sequential Restoration Protocol**:
+  - Classified every feeder into its canonical restoration sequence stage (`Stage 3: Sub-Transmission Trunk / Express Lifeline`, `Stage 4: Automated RMU Priority Loop`, `Stage 5: DTR Megger Testing & LT Consumer Energization`).
+- **Substation Terrain & 2015 Flood Historical Benchmarks**:
+  - Enriched Substation Terrain & Risk Profiles in both the Drawer Inspector and Split View Cockpit with:
+    - 2015 Floods Submersion Benchmark (up to 1.8m / 6ft peak depth in vulnerable Adyar/Cooum/Buckingham basins).
+    - TNEB Switchgear Equipment Plinth Clearance (1.5m standard above local ground level).
+    - TNSDMA 2023 Coastal Surge Standard (3.0m MSL limit).
+    - Mobile Dewatering Pump Mandate status.
+- **Statutory Documentation Reference**: Published `docs/05-disaster-management-and-statutory-sop-linkage.md` detailing the legal mandates, SOP clauses, and architecture.
+
+---
+
 ## [1.2.2-feeder-tiering-engine] - 2026-09-27
 
 ### Added

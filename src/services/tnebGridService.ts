@@ -60,21 +60,27 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
   const is33kVTrunk = feeder.voltage?.includes('33') && !feeder.type?.toLowerCase().includes('dedicated');
   const isDedicated = feeder.type.toLowerCase().includes('dedicated') || (!is33kVTrunk && feeder.transformers === 0 && feeder.consumers > 0 && feeder.consumers <= 5);
 
+  let classified: FeederDetail = {
+    ...feeder,
+    isDedicated: Boolean(isDedicated)
+  };
+
   for (const [cat, conf] of Object.entries(LIFELINE_PATTERNS)) {
     if (conf.regex.test(name)) {
-      return {
+      classified = {
         ...feeder,
         isDedicated,
         lifelineCategory: cat as any,
         lifelineLabel: isDedicated ? conf.labelDedicated : conf.labelShared,
         priorityLevel: conf.priority
       };
+      break;
     }
   }
 
   // Check if dedicated industrial/commercial HT
-  if (isDedicated && (feeder.type.toLowerCase().includes('dedicated') || !is33kVTrunk)) {
-    return {
+  if (!classified.lifelineCategory && isDedicated && (feeder.type.toLowerCase().includes('dedicated') || !is33kVTrunk)) {
+    classified = {
       ...feeder,
       isDedicated: true,
       lifelineCategory: 'industrial_ht',
@@ -83,9 +89,46 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
     };
   }
 
+  // TNSDMA 2023 ESF 15 Statutory Restoration SLAs
+  let esf15SlaHours = 48; // Baseline Tier 5 LT Distribution SLA (TNSDMA standard)
+  let restorationStage: 1 | 2 | 3 | 4 | 5 = 5; // Default Stage 5 (LT consumer last-mile)
+
+  if (classified.priorityLevel === 'P1_CRITICAL' || classified.priorityLevel === 'P1_NON_CUT' || classified.lifelineCategory === 'hospital' || classified.lifelineCategory === 'water') {
+    esf15SlaHours = 6; // Statutory SLA: <= 6h for acute hospitals & primary water pumping
+    restorationStage = 3; // Stage 3: Immediate Express Lifelines
+  } else if (classified.priorityLevel === 'P2_ESSENTIAL' || classified.lifelineCategory === 'transit' || classified.lifelineCategory === 'governance') {
+    esf15SlaHours = 12; // Statutory SLA: <= 12h for Metro Rail, Suburban transit, Govt HQ
+    restorationStage = 4; // Stage 4: Automated RMU Priority Loops
+  } else if (is33kVTrunk) {
+    esf15SlaHours = 12; // Sub-transmission trunks feeding downstream 33/11 kV substations
+    restorationStage = 3; // Stage 3: Sub-transmission grid trunks
+  } else if (classified.priorityLevel === 'P3_COMMERCIAL' || classified.lifelineCategory === 'industrial_ht') {
+    esf15SlaHours = 24; // Dedicated commercial / industrial HT services
+    restorationStage = 4; // Stage 4: Automated RMU commercial loops
+  }
+
+  // Automated 11 kV Ring Main Unit (RMU) Estimation (Post-Vardah 13,810 RMU deployment)
+  let rmuCount = 0;
+  const cfg = (feeder.config || '').toUpperCase();
+  if (cfg.includes('UG')) {
+    // Pure Underground: sectionalized loop ring with RMUs every 3-4 DTRs or ~1.5 km
+    const byDtr = Math.max(1, Math.round((feeder.transformers || 0) / 3.2));
+    const byKm = Math.max(1, Math.round((feeder.lengthKm || 0) / 1.5));
+    rmuCount = Math.max(2, Math.min(byDtr, byKm, 12));
+  } else if (cfg.includes('MIXED')) {
+    // Mixed: RMUs installed on underground cable segments; GOAB switches on overhead spans
+    rmuCount = Math.max(1, Math.round((feeder.transformers || 0) / 4.5));
+  } else {
+    // Overhead: No automated RMU loops, reliant on manual pole-mounted GOAB switches
+    rmuCount = 0;
+  }
+
   return {
-    ...feeder,
-    isDedicated: Boolean(isDedicated)
+    ...classified,
+    esf15SlaHours,
+    restorationStage,
+    rmuCount,
+    circuitState: 'LIVE'
   };
 }
 
@@ -101,6 +144,26 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
     }
     const data: ChennaiGridData = await res.json();
     data.substations.forEach(s => {
+      // Standard TNEB Switchgear equipment plinth clearance (1.5m above local GL)
+      s.plinthElevationM = 1.5;
+
+      // 2015 Flood Historical Benchmark (41 submerged substations up to 1.8m / 6ft)
+      if (s.elevationM !== undefined) {
+        if (s.elevationM <= 3.0) {
+          s.benchmarked2015FloodDepthM = 1.8; // Peak 6-ft waterlogging in 2015 (Adyar/Cooum/Buckingham basins)
+          s.yardDewateringRequired = true;
+        } else if (s.elevationM <= 6.0) {
+          s.benchmarked2015FloodDepthM = 0.9; // 3-ft waterlogging
+          s.yardDewateringRequired = false;
+        } else {
+          s.benchmarked2015FloodDepthM = 0.2;
+          s.yardDewateringRequired = false;
+        }
+      } else {
+        s.benchmarked2015FloodDepthM = 0.5;
+        s.yardDewateringRequired = false;
+      }
+
       if (s.feeders) {
         s.feeders = s.feeders.map(classifyFeeder);
       }
