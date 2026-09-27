@@ -1,11 +1,13 @@
-# SurgeGrid AI (Chennai Grid Cockpit)
+# SurgeGrid AI
+> **Chennai's Real-Time Grid & Flood Resiliency Console**
 
-**SurgeGrid AI** is an advanced electrical grid topology, infrastructure resilience, and anticipatory disaster intelligence cockpit for the Chennai metropolitan power network (TNEB / TANGEDCO / TANTRANSCO).
+**SurgeGrid AI** is an advanced electrical grid topology, infrastructure resilience, and anticipatory disaster intelligence console for the Chennai metropolitan power network (TNEB / TANGEDCO / TANTRANSCO / GCC).
 
 ---
 
 ## ⚡ Core Features
 
+- **Live Meteorological Telemetry (DeepMind WeatherNext 3)**: Real-time atmospheric conditions powered by the Google Maps Platform Weather API. Features spatial cluster caching (~1.1 km) and dynamic switchyard coordinates targeting when inspecting any substation across Chennai.
 - **TNEB Super Index V2 Topology**: Real-time interactive map of all 286 Chennai substations across 4 voltage tiers (Bulk EHV 230/400kV, Sub-Transmission 110kV, Distribution 33/11kV) and 352 Assistant Engineer (AE) Section Offices.
 - **Topological Interconnections**: 1,493 precomputed bidirectional electrical interconnections, allowing instant circuit tracing from bulk injection stations down to neighborhood yards.
 - **On-Demand Circuit Isolation ("Show Connections")**: Isolates the active electrical circuit, visualizing incoming and outgoing power flow with directional arrows and auto-framing.
@@ -23,6 +25,10 @@
 - [01 - Architecture & System Design](./docs/01-architecture-and-system-design.md)
 - [02 - Data Dictionary & Sources](./docs/02-data-dictionary-and-sources.md)
 - [03 - Chennai TNEB Power Grid Topology & Visual Field Guide](./docs/03-chennai-grid-topology-and-field-guide.md)
+- [04 - Electrical Grid Linkages & Provenance](./docs/04-electrical-grid-linkages-provenance.md)
+- [05 - Disaster Management & Statutory SOP Linkage](./docs/05-disaster-management-and-statutory-sop-linkage.md)
+- [06 - GCC Municipal & Satellite Vulnerability Integration](./docs/06-gcc-municipal-and-satellite-vulnerability-integration.md)
+- [07 - Crisis Resilience & Google Maps Platform Optimization](./docs/07-crisis-resilience-and-maps-optimization.md)
 - [Changelog](./docs/CHANGELOG.md)
 
 ---

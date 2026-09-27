@@ -4,6 +4,28 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.7.0-live-weather-and-app-bar-modernization] - 2026-09-27
+
+### Added & Modernized (DeepMind WeatherNext 3 Live Weather & Executive App Bar)
+- **Google Maps Platform Weather API Integration (`liveWeatherService.ts`)**:
+  - Connected to `https://weather.googleapis.com/v1/currentConditions:lookup` powered by Google DeepMind **WeatherNext 3**.
+  - Fetches real-time atmospheric telemetry: ambient temperature, feels-like temperature, dew point, relative humidity (% RH), wind velocity, wind gusts, cardinal wind direction, barometric air pressure (hPa), cloud cover %, and current condition text.
+  - Implemented **spatial grid cluster caching** (`lat.toFixed(2), lng.toFixed(2)` ~1.1 km cells) with 10-minute TTL: neighboring switchyards share identical cached atmospheric telemetry, preventing redundant network requests.
+  - Built-in graceful offline and error fallback to maintain seamless operational readiness during storm telecom blackouts.
+- **Hyperlocal Substation-Specific Weather Polling**:
+  - Selecting any substation on the map or via search automatically targets its exact latitude & longitude coordinates for localized micro-climate awareness.
+  - Accounts for coastal marine switchyards (*Ennore 400kV*, *Royapuram*, *Thiruvanmiyur*) vs western inland hubs (*Sriperumbudur 400kV*, *Ambattur*) which experience 2–5°C heat index variations and localized sea-breeze gusts.
+  - Automatically reverts to city-wide **Chennai Central** baseline (`13.0827°N, 80.2707°E`) when no substation is selected.
+- **Disaster Protocol Cockpit Modernization ("LIVE")**:
+  - Renamed baseline monitoring button from `Normal` to **`Live`** with an animated pulsing beacon and real-time temperature badge.
+  - Retained statutory emergency scenario drills (`Alert`, `Severe >80k`, `Surge 3.2m`) with clean un-obstructed map viewport.
+- **Executive App Bar Redesign (`App.tsx`)**:
+  - Modernized title and branding: **`SURGEGRID AI • V5.0`** with subtitle *"Chennai's Real-Time Grid & Flood Resiliency Console"*.
+  - Eradicated non-actionable visual noise: eliminated static counts box (`Chennai Substations: 286 | AE Section Offices: 352`) and dummy status pill (`Map Status: Active`).
+  - Allocated prominent horizontal breathing room for the **Live Weather** instrument, showing the active switchyard name, ambient temp, wind velocity, humidity, sky conditions, and manual refresh trigger.
+
+---
+
 ## [1.6.0-authentic-outage-ingestion-and-calibrated-scoring] - 2026-09-27
 
 ### Added & Calibrated (100% Authentic TNEB Outage Integration & Power Engineering Health Scoring)

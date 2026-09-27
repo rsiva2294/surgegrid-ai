@@ -243,15 +243,44 @@ graph TD
 
 ---
 
-## 5. Verification & Performance Validation
+## 5. Live Atmospheric Telemetry: Google Maps Platform Weather API (DeepMind WeatherNext 3)
+
+### 5.1 The Need for Real-Time Meteorological Telemetry
+During tropical cyclones, grid vulnerability is governed by atmospheric conditions:
+- **Wind Velocity $\ge 80\text{ km/h}$**: Triggers statutory pre-emptive tripping of overhead radial lines (TNSDMA §5.6 Mandate) to prevent snapped live wire electrocutions and cascade transformer explosions.
+- **Barometric Pressure Drop**: Early indicator of cyclone eye landfall proximity.
+- **Micro-Climate Disparities Across Chennai Metro**: Coastal switchyards (*Ennore 400kV*, *Royapuram 110kV*, *Thiruvanmiyur*) face immediate marine wind gusts and salt-spray flashover risks, while western inland industrial nodes (*Sriperumbudur 400kV*, *Ambattur*) experience higher convective heat indexes and delayed squall lines.
+
+### 5.2 Implementation Architecture (`src/services/liveWeatherService.ts`)
+SurgeGrid AI integrates the official **Google Maps Platform Weather API** powered by DeepMind's **WeatherNext 3** numerical model:
+- **Endpoint**: `https://weather.googleapis.com/v1/currentConditions:lookup?key={API_KEY}&location.latitude={lat}&location.longitude={lng}&unitsSystem=METRIC`
+- **Atmospheric Data Ingested**:
+  - `temperatureC`, `feelsLikeC`, `dewPointC`
+  - `windSpeedKmh`, `windGustKmh`, `windDirectionCardinal`, `windDirectionDegrees`
+  - `relativeHumidity`, `airPressureHpa` (mean sea level millibars)
+  - `conditionText`, `conditionType`, `cloudCoverPercent`
+- **Spatial Grid Clustering Cache (~1.1 km)**:
+  - Coordinates are rounded to 2 decimal places (`lat.toFixed(2), lng.toFixed(2)`).
+  - Neighboring substations within ~1.1 km share the identical cached atmospheric snapshot.
+  - 10-minute cache TTL eliminates redundant API queries during routine operator inspections.
+- **Dynamic Substation Binding (`App.tsx`)**:
+  - Clicking any substation dynamically fetches weather for its specific switchyard latitude/longitude.
+  - Reverts to the city-wide `Chennai Central` baseline (`13.0827°N, 80.2707°E`) when deselected.
+  - Positioned prominently in the top App Bar alongside the executive console branding: *"Chennai's Real-Time Grid & Flood Resiliency Console"*.
+
+---
+
+## 6. Verification & Performance Validation
 
 1. **Build Validation**:
-   - `tsc -b && vite build` completed in **482ms** with zero TypeScript errors or warnings.
-   - Production bundle size: `352.99 kB` JS (`99.29 kB` gzip), `74.46 kB` CSS (`12.04 kB` gzip).
+   - `tsc -b && vite build` completed in **470ms** with zero TypeScript errors or warnings.
+   - Production bundle size: `379.62 kB` JS (`108.56 kB` gzip), `94.99 kB` CSS (`14.27 kB` gzip).
 2. **Offline Resilience**:
    - Application verified operational with network disconnected.
    - IndexedDB correctly returned grid topology cache and decimated circle geometries.
+   - Live Weather service provides resilient fallback telemetry if network connectivity drops.
 3. **Google Maps Platform Skill Compliance**:
    - Added official skill attribution (`internalUsageAttributionIds: ['gmp_git_agentskills_v1']`).
    - Strict camera bounds clamping eliminates out-of-district map loads.
    - Hardware-accelerated GeoJSON vector layer eliminates polyline DOM thrashing.
+
