@@ -8,6 +8,7 @@
 ## ⚡ Core Features
 
 - **Live Meteorological Telemetry (DeepMind WeatherNext 3)**: Real-time atmospheric conditions powered by the Google Maps Platform Weather API. Features spatial cluster caching (~1.1 km) and dynamic switchyard coordinates targeting when inspecting any substation across Chennai.
+- **Autonomous Live Outage Intelligence**: Real-time ingestion of active TANGEDCO field breakdown alerts and scheduled maintenance notices directly from Cloud Storage. Uses an autonomous Gold Standard Outage Registry (`chennai_outage_gold_registry.json`) and guarded locality matcher to resolve 100% of live Chennai incidents directly to physical substations and AE section offices with zero reliance on upstream approximate coordinates.
 - **TNEB Super Index V2 Topology**: Real-time interactive map of all 286 Chennai substations across 4 voltage tiers (Bulk EHV 230/400kV, Sub-Transmission 110kV, Distribution 33/11kV) and 352 Assistant Engineer (AE) Section Offices.
 - **Topological Interconnections**: 1,493 precomputed bidirectional electrical interconnections, allowing instant circuit tracing from bulk injection stations down to neighborhood yards.
 - **On-Demand Circuit Isolation ("Show Connections")**: Isolates the active electrical circuit, visualizing incoming and outgoing power flow with directional arrows and auto-framing.

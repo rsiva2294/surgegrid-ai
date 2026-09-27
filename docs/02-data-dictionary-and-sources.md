@@ -25,6 +25,9 @@ This document details the core spatial, meteorological, and electrical datasets 
 | `gcc_flood_hotspots.json` | 23 KB | Historical points | GCC Flood Archives | Ground-truth historical inundation hotspots |
 | `chennai_flood_depth_inches.json` | 63 KB | Historical benchmarks | Field Survey Benchmarks | Street-level flood depths in inches |
 | `chennai_resolved_outages.json` | 911 KB | 1,252 notices | TNEB Super Index V2 Engine | Resolved Q3 2026 Twitter outage notices with substation and feeder mapping |
+| `chennai_outage_gold_registry.json` | 8.8 KB | 43 mappings | SurgeGrid Ground-Truth Curation | Canonical gold standard registry mapping verified locality, section, and feeder names to exact TNEB switchyards |
+| `outages/twitter_notices_resolved.json` | ~15 KB | Dynamic | GCS / Firebase Storage | Real-time active breakdown notices from TANGEDCO field dispatches |
+| `outages/statewide.json` | ~30 KB | Dynamic | GCS / Firebase Storage | Real-time statewide scheduled maintenance shutdowns with district isolation |
 | `chennai_substations_vulnerability.json` | 239 KB | 242 nodes | Outage Intelligence Engine | Substation failure ranking and affected feeder counts |
 | `chennai_feeders_vulnerability.json` | 112 KB | 11kV lines | Outage Intelligence Engine | Feeder failure frequency and parent substation mapping |
 | `chennai_sections_vulnerability.json` | 67 KB | Section offices | Outage Intelligence Engine | TANGEDCO AE Section Office failure ranking |
