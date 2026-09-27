@@ -23,6 +23,16 @@ export interface FeederDetail {
   tripRisk?: 'CRITICAL' | 'ELEVATED' | 'MODERATE';
 }
 
+export type GridConfidenceTier = 'L1_VERIFIED' | 'L2_PROBABLE' | 'L3_UNVERIFIED';
+
+export type VerificationMethod =
+  | 'polygon_containment'
+  | 'dual_endpoint_circuit'
+  | 'collocated_switchyard'
+  | 'nominal_stepdown_proximity'
+  | 'surveyed_eht_line'
+  | 'jurisdictional_office';
+
 export interface PrecomputedConnection {
   id: string;
   name: string;
@@ -34,6 +44,11 @@ export interface PrecomputedConnection {
   distanceKm: number;
   lat: number;
   lng: number;
+  confidenceTier?: GridConfidenceTier;
+  scopingRole?: 'PHYSICAL_TOPOLOGY_ONLY' | 'ADVISORY_ONLY';
+  verificationMethod?: VerificationMethod;
+  feederCode?: string;
+  polygonVerified?: boolean;
 }
 
 export interface TnebSubstation {

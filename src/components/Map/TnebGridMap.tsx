@@ -27,6 +27,8 @@ export interface ConnectedGridNode {
   lat: number;
   lng: number;
   color: string;
+  confidenceTier?: 'L1_VERIFIED' | 'L2_PROBABLE' | 'L3_UNVERIFIED';
+  verificationMethod?: string;
 }
 
 function getNodeColor(tier: string, type: 'substation' | 'section', isLight: boolean): string {
@@ -423,6 +425,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       distanceKm: c.distanceKm,
       lat: c.lat,
       lng: c.lng,
+      confidenceTier: c.confidenceTier || 'L1_VERIFIED',
+      verificationMethod: c.verificationMethod,
       color: getNodeColor(c.tier || 'distribution', c.type, isLight),
       substation: c.type === 'substation' ? substationsByCode.get(c.id) : undefined,
       section: c.type === 'section' ? sectionsByCode.get(c.id.replace('sec_', '')) : undefined
@@ -847,28 +851,31 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             { lat: node.lat, lng: node.lng }
           ];
 
+      const isL2 = node.confidenceTier === 'L2_PROBABLE';
+      const lineColor = isL2 ? '#f59e0b' : node.color;
+
       const polyline = new google.maps.Polyline({
         path,
         strokeOpacity: 0,
-        zIndex: 40,
+        zIndex: isL2 ? 35 : 45,
         icons: [
           {
             icon: {
               path: 'M 0,-1 0,1',
-              strokeOpacity: 0.95,
-              scale: 2.5,
-              strokeColor: node.color
+              strokeOpacity: isL2 ? 0.75 : 0.95,
+              scale: isL2 ? 2.0 : 2.6,
+              strokeColor: lineColor
             },
             offset: '0',
-            repeat: '13px'
+            repeat: isL2 ? '18px' : '12px'
           },
           {
             icon: {
               path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-              strokeColor: node.color,
-              fillColor: node.color,
-              fillOpacity: 0.95,
-              scale: 2.2
+              strokeColor: lineColor,
+              fillColor: lineColor,
+              fillOpacity: isL2 ? 0.8 : 0.95,
+              scale: isL2 ? 1.8 : 2.2
             },
             offset: isIncoming ? '45%' : '60%'
           }
@@ -1691,6 +1698,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         </div>
                       </div>
 
+                      {/* Operational Disclaimer Banner */}
+                      <div className={`px-2.5 py-1.5 rounded-lg border text-[10px] flex items-center justify-between gap-1.5 shrink-0 ${
+                        isLight ? 'bg-slate-100/90 border-slate-200 text-slate-600' : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                      }`}>
+                        <span className="flex items-center gap-1 font-medium truncate">
+                          <Zap className="w-3 h-3 text-amber-400 shrink-0" />
+                          Mapped Physical Topology
+                        </span>
+                        <span className="font-mono text-[9px] opacity-75 shrink-0">SCADA State Pending</span>
+                      </div>
+
                       {/* Connected Substations Scroll List */}
                       <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
                         {electricalNodes.map(node => (
@@ -1720,7 +1738,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1 font-mono text-[10px] shrink-0">
+                            <div className="flex items-center gap-1.5 font-mono text-[10px] shrink-0">
+                              {node.confidenceTier === 'L1_VERIFIED' ? (
+                                <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                  L1 Verified
+                                </span>
+                              ) : (
+                                <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                                  L2 Inferred
+                                </span>
+                              )}
                               <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>{node.distanceKm} km</span>
                               <ArrowRight className={`w-3.5 h-3.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
                             </div>
@@ -2315,6 +2342,19 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                           </div>
                         </div>
 
+                        {/* Operational Disclaimer Banner */}
+                        <div className={`p-2.5 rounded-xl border text-[11px] flex items-center justify-between gap-2 shrink-0 ${
+                          isLight ? 'bg-amber-50/80 border-amber-200/90 text-amber-900' : 'bg-amber-500/10 border-amber-500/20 text-amber-300'
+                        }`}>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            <span className="font-semibold truncate">Mapped Physical Grid Topology</span>
+                          </div>
+                          <span className="font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 shrink-0">
+                            SCADA State Pending
+                          </span>
+                        </div>
+
                         {/* Connected Nodes Directory */}
                         <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
                           <div className="flex items-center justify-between px-1 mb-1">
@@ -2357,6 +2397,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 </div>
 
                                 <div className="flex items-center gap-1.5 shrink-0 font-mono text-[10px]">
+                                  {node.confidenceTier === 'L1_VERIFIED' ? (
+                                    <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                      L1 Verified
+                                    </span>
+                                  ) : (
+                                    <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                                      L2 Inferred
+                                    </span>
+                                  )}
                                   <span className={`px-1.5 py-0.5 rounded font-bold ${isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'}`}>
                                     {node.distanceKm} km
                                   </span>
