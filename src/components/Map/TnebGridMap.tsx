@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import { getFeederGeometry, getFeederTransformers } from '../../services/feederGeometryService';
-import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star, Columns2, Minimize2, Info } from 'lucide-react';
+import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star, Columns2, Minimize2, Info, Building2 } from 'lucide-react';
 
 interface TnebGridMapProps {
   theme: 'light' | 'dark';
@@ -1459,25 +1459,35 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   <div className="flex-1 grid grid-cols-2 gap-4 min-h-0 pt-2.5">
                     {/* Left Panel: Connections & Substation Field Metadata */}
                     <div className="flex flex-col h-full min-h-0 pr-3 border-r border-current/10 space-y-3 overflow-hidden">
-                      {/* Substation Circle, Region & Google Maps External Link */}
-                      <div className={`px-3 py-2 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
-                        isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                      {/* Modern Administrative & Switchyard GPS Identity Card */}
+                      <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 shrink-0 ${
+                        isLight
+                          ? 'bg-slate-50/80 border-slate-200/90 text-slate-900 shadow-xs'
+                          : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
                       }`}>
-                        <div className="flex items-center gap-3.5 divide-x divide-slate-200 dark:divide-slate-800 shrink-0">
-                          <div className="shrink-0">
-                            <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
-                              Circle
-                            </span>
-                            <span className={`font-semibold text-xs block mt-0.5 whitespace-nowrap ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                              {selectedSubstation.circle || 'Chennai EDC'}
-                            </span>
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                            isLight
+                              ? 'bg-sky-100 text-sky-700 border border-sky-200/60'
+                              : 'bg-sky-500/15 text-cyan-300 border border-sky-500/20'
+                          }`}>
+                            <Building2 className="w-4 h-4" />
                           </div>
-                          <div className="pl-3.5 shrink-0">
-                            <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
-                              Region
-                            </span>
-                            <span className={`font-semibold text-xs block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                              {selectedSubstation.regionCode || '01/09'}
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="font-bold text-xs truncate">
+                                {selectedSubstation.circle || 'Chennai EDC'}
+                              </span>
+                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                isLight
+                                  ? 'bg-slate-200/80 text-slate-700 border border-slate-300/60'
+                                  : 'bg-slate-800 text-slate-300 border border-slate-700'
+                              }`}>
+                                Region {selectedSubstation.regionCode || '01/09'}
+                              </span>
+                            </div>
+                            <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                              TNEB Distribution Circle • Switchyard GPS
                             </span>
                           </div>
                         </div>
@@ -1486,14 +1496,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                           href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all shrink-0 group ${
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
                             isLight
-                              ? 'bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-900 border-slate-200 hover:border-sky-300 shadow-xs'
-                              : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-slate-800 hover:border-cyan-500/50 shadow-xs'
+                              ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
+                              : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
                           }`}
                           title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
                         >
-                          <MapPin className="w-3.5 h-3.5 text-sky-500 group-hover:scale-110 transition-transform shrink-0" />
+                          <MapPin className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
                           <span>Google Maps ↗</span>
                         </a>
                       </div>
@@ -2368,25 +2378,35 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     {/* Tab 3: Substation Info & Field AE Depot */}
                     {inspectorTab === 'info' && (
                       <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
-                        {/* Compact Administrative & GPS Ribbon */}
-                        <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 text-xs shrink-0 ${
-                          isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800'
+                        {/* Modern Administrative & Switchyard GPS Identity Card */}
+                        <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 shrink-0 ${
+                          isLight
+                            ? 'bg-slate-50/80 border-slate-200/90 text-slate-900 shadow-xs'
+                            : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
                         }`}>
-                          <div className="flex items-center gap-3.5 divide-x divide-slate-200 dark:divide-slate-800 shrink-0">
-                            <div className="shrink-0">
-                              <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Circle
-                              </span>
-                              <span className={`text-xs font-bold block mt-0.5 whitespace-nowrap ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                                {selectedSubstation.circle || 'Chennai EDC'}
-                              </span>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                              isLight
+                                ? 'bg-sky-100 text-sky-700 border border-sky-200/60'
+                                : 'bg-sky-500/15 text-cyan-300 border border-sky-500/20'
+                            }`}>
+                              <Building2 className="w-4 h-4" />
                             </div>
-                            <div className="pl-3.5 shrink-0">
-                              <span className={`text-[10px] uppercase tracking-wider font-semibold block leading-tight ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Region
-                              </span>
-                              <span className={`text-xs font-bold block mt-0.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                                {selectedSubstation.regionCode || '01/09'}
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-bold text-xs truncate">
+                                  {selectedSubstation.circle || 'Chennai EDC'}
+                                </span>
+                                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                                  isLight
+                                    ? 'bg-slate-200/80 text-slate-700 border border-slate-300/60'
+                                    : 'bg-slate-800 text-slate-300 border border-slate-700'
+                                }`}>
+                                  Region {selectedSubstation.regionCode || '01/09'}
+                                </span>
+                              </div>
+                              <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                TNEB Distribution Circle • Switchyard GPS
                               </span>
                             </div>
                           </div>
@@ -2395,14 +2415,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                             href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-all shrink-0 group ${
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
                               isLight
-                                ? 'bg-white hover:bg-sky-50 text-sky-700 hover:text-sky-900 border-slate-200 hover:border-sky-300 shadow-xs'
-                                : 'bg-slate-900 hover:bg-slate-800 text-cyan-300 hover:text-cyan-200 border-slate-800 hover:border-cyan-500/50 shadow-xs'
+                                ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
+                                : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
                             }`}
                             title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
                           >
-                            <MapPin className="w-3.5 h-3.5 text-sky-500 group-hover:scale-110 transition-transform shrink-0" />
+                            <MapPin className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
                             <span>Google Maps ↗</span>
                           </a>
                         </div>

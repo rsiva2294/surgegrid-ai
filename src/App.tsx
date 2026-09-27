@@ -54,14 +54,14 @@ export default function App() {
               <h1 className={`text-sm font-extrabold tracking-wide uppercase ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 SurgeGrid AI
               </h1>
-              <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold border ${
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold border tracking-wide ${
                 isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
               }`}>
-                CHENNAI GRID FOUNDATION
+                GROUND-TRUTH GRID V5
               </span>
             </div>
-            <p className={`text-[11px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-              TNEB Super Index V2 Topology • Clean Vector Canvas (No POI)
+            <p className={`text-[11px] font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+              GROUND-TRUTH GRID V5 • 271 SUBSTATIONS • 42K+ DTRs
             </p>
           </div>
         </div>
