@@ -9,7 +9,7 @@ import { MapLayerControls } from './MapLayerControls';
 import { TriageSubstationRosterCard } from './TriageSubstationRosterCard';
 import { SubstationInspectorDrawer } from './SubstationInspectorDrawer';
 import { getLiveChennaiOutages, getOutagesForSubstation, type LiveOutage } from '../../services/liveOutageService';
-import { fetchLiveWeatherConditions, type LiveWeatherConditions } from '../../services/liveWeatherService';
+import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import { NO_POI_DARK_STYLE, NO_POI_LIGHT_STYLE, CHENNAI_METRO_BOUNDS } from './mapStyles';
 import {
   getNodeColor,
@@ -36,6 +36,7 @@ interface TnebGridMapProps {
   selectedSection: TnebSection | null;
   onSelectSubstation: (ss: TnebSubstation | null) => void;
   onSelectSection: (sec: TnebSection | null) => void;
+  liveWeather?: LiveWeatherConditions | null;
 }
 
 export interface ConnectedGridNode {
@@ -64,7 +65,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   selectedSubstation,
   selectedSection,
   onSelectSubstation,
-  onSelectSection
+  onSelectSection,
+  liveWeather
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -99,9 +101,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
-  const [liveWeather, setLiveWeather] = useState<LiveWeatherConditions | null>(null);
-  const [isLoadingWeather, setIsLoadingWeather] = useState(false);
-
   // Reset showLayersDuringTriage when triage filter changes
   useEffect(() => {
     setShowLayersDuringTriage(false);
@@ -117,26 +116,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     });
     return () => { isMounted = false; };
   }, []);
-
-  // Fetch live weather from Google Maps Platform Weather API (DeepMind WeatherNext 3)
-  const handleRefreshWeather = React.useCallback(async () => {
-    setIsLoadingWeather(true);
-    try {
-      const weather = await fetchLiveWeatherConditions();
-      setLiveWeather(weather);
-    } catch (err) {
-      console.warn('Weather fetch error:', err);
-    } finally {
-      setIsLoadingWeather(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    handleRefreshWeather();
-    // Poll every 10 minutes to stay fresh without quota burn
-    const interval = setInterval(handleRefreshWeather, 10 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [handleRefreshWeather]);
 
   const poorStabilityCount = useMemo(() => {
     return substations.filter(s => isSubstationAtRisk(s, liveOutages)).length;
@@ -994,8 +973,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         liveOutagesCount={liveOutages.length}
         isLight={isLight}
         liveWeather={liveWeather}
-        isLoadingWeather={isLoadingWeather}
-        onRefreshWeather={handleRefreshWeather}
       />
 
       {/* Top Left Floating Search & Quick Filters */}
@@ -1083,7 +1060,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         setSelectedFeeder={setSelectedFeeder}
         disasterScenario={disasterScenario}
         liveOutages={liveOutages}
-        liveWeather={liveWeather}
         isLight={isLight}
       />
     </div>

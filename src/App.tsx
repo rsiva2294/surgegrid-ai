@@ -1,13 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
 import { Zap, ShieldCheck, RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
+import { fetchLiveWeatherConditions, type LiveWeatherConditions } from './services/liveWeatherService';
 
 export default function App() {
   const [gridData, setGridData] = useState<ChennaiGridData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [liveWeather, setLiveWeather] = useState<LiveWeatherConditions | null>(null);
+  const [isLoadingWeather, setIsLoadingWeather] = useState(false);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('sg_theme') as 'light' | 'dark') || 'light';
@@ -28,6 +31,25 @@ export default function App() {
         setLoading(false);
       });
   }, []);
+
+  // Fetch live weather from Google Maps Platform Weather API (DeepMind WeatherNext 3)
+  const handleRefreshWeather = useCallback(async () => {
+    setIsLoadingWeather(true);
+    try {
+      const weather = await fetchLiveWeatherConditions();
+      setLiveWeather(weather);
+    } catch (err) {
+      console.warn('Weather fetch error in App:', err);
+    } finally {
+      setIsLoadingWeather(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    handleRefreshWeather();
+    const interval = setInterval(handleRefreshWeather, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [handleRefreshWeather]);
 
   const toggleTheme = () => {
     const next = theme === 'light' ? 'dark' : 'light';
@@ -67,9 +89,61 @@ export default function App() {
         </div>
 
         {/* Telemetry Stats Bar & Controls */}
-        <div className="flex items-center gap-4 text-xs">
+        <div className="flex items-center gap-3 text-xs">
+          {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
+          {liveWeather && (
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${
+              isLight
+                ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs ring-1 ring-emerald-500/10'
+                : 'bg-emerald-950/30 border-emerald-800/80 text-emerald-200 shadow-2xs ring-1 ring-emerald-500/10'
+            }`}>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="font-bold text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                  Live Weather
+                </span>
+              </div>
+
+              <span className={isLight ? 'text-emerald-300' : 'text-emerald-800'}>|</span>
+
+              <div className="flex items-center gap-2 font-mono text-xs">
+                <span className="font-bold" title={`Feels like ${liveWeather.feelsLikeC.toFixed(1)}°C`}>
+                  🌡️ {liveWeather.temperatureC.toFixed(1)}°C
+                </span>
+
+                <span className="hidden md:inline text-xs" title={`Wind: ${liveWeather.windDirectionCardinal}, Gusts: ${liveWeather.windGustKmh} km/h`}>
+                  💨 {liveWeather.windSpeedKmh} km/h {liveWeather.windDirectionCardinal}
+                </span>
+
+                <span className="hidden lg:inline text-xs" title="Relative Humidity">
+                  💧 {liveWeather.humidityPercent}% RH
+                </span>
+
+                <span className={`text-[11px] font-sans font-medium px-1.5 py-0.5 rounded ${
+                  isLight ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' : 'bg-emerald-900/40 text-emerald-300 border border-emerald-700/40'
+                }`}>
+                  {liveWeather.conditionText}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleRefreshWeather}
+                className={`p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0 ${
+                  isLoadingWeather ? 'animate-spin' : ''
+                }`}
+                title="Google Maps Platform Weather API (DeepMind WeatherNext 3) • Click to refresh"
+              >
+                <RefreshCw className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              </button>
+            </div>
+          )}
+
           {gridData && (
-            <div className={`hidden sm:flex items-center gap-4 px-3.5 py-1.5 rounded-xl border ${
+            <div className={`hidden lg:flex items-center gap-4 px-3.5 py-1.5 rounded-xl border ${
               isLight ? 'bg-slate-100 border-slate-200 text-slate-700' : 'bg-slate-950/70 border-slate-800/80 text-slate-300'
             }`}>
               <div className="flex items-center gap-1.5">
@@ -90,7 +164,7 @@ export default function App() {
             </div>
           )}
 
-          <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs ${
+          <div className={`hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs ${
             isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
           }`}>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
@@ -153,6 +227,7 @@ export default function App() {
             selectedSection={selectedSection}
             onSelectSubstation={setSelectedSubstation}
             onSelectSection={setSelectedSection}
+            liveWeather={liveWeather}
           />
         )}
       </main>
