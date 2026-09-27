@@ -4,6 +4,29 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.4.1-typography-and-feeder-deduplication] - 2026-09-27
+
+### Fixed & Refined
+- **Typography Standardization (Strict 3-Tier Hierarchy)**:
+  - Eradicated all arbitrary fractional micro-pixel typography classes (`text-[8px]`, `text-[8.5px]`, `text-[9px]`, `text-[9.5px]`, `text-[10px]`, `text-[10.5px]`, `text-[11px]`) across the entire repository.
+  - Standardized all UI surfaces to a cohesive 3-tier typographic system:
+    - **Tier 1 (Values & Titles)**: `text-base font-bold` / `text-base font-mono font-bold` (16px) for quick telemetry metrics and substation titles; `text-sm font-bold` for section headers.
+    - **Tier 2 (Body & Section Labels)**: `text-xs font-semibold` / `text-xs font-medium` (12px) for telemetry labels, section descriptors, and operational notes.
+    - **Tier 3 (Pills & Badges)**: `px-2 py-0.5 rounded-md text-xs font-mono font-semibold` across all technical badges (SLA chips, RMU counters, sequential restoration stages, and disaster callouts).
+- **Tab 1 & Tab 2 Content Routing Architecture**:
+  - Corrected structural nesting in the single-column inspector drawer: isolated Tab 2 (`Circuits & Grid`) after the outgoing feeder list.
+  - Properly routed all physical switchyard specifications, capacity metrics, flood risk benchmarks, and operational dispatch notes into Tab 1 (`Plant & Specs`), resolving the blank Tab 1 issue.
+- **GEE Satellite Card Layout Ergonomics**:
+  - Moved the flood category badge (`SEVERE INUNDATION ZONE`) to a dedicated second line under the title with a clean `mt-1` margin.
+  - Prevents awkward text-wrapping of `Google Earth Engine (GEE) Satellite Stack` and avoids horizontal badge compression.
+- **Feeder Card Redundancy Elimination (HT & Dedicated Deduplication)**:
+  - Resolved quad-redundancy of "HT" and "Dedicated" in commercial and industrial feeder cards:
+    - Replaced `Dedicated HT Commercial/Industrial` badge with **`Commercial & Industrial`**.
+    - Replaced metadata tag `• Dedicated HT` with **`• Dedicated Line`** (describing point-to-point physical topology rather than repeating voltage).
+    - Fixed bottom consumer slot: replaced raw database string `Dedicated (HT Service)` with **`👥 1 Bulk Consumer`** when consumer count is zero on dedicated lines, clearly explaining why retail consumer numbers are absent.
+
+---
+
 ## [1.4.0-gcc-municipal-and-satellite-integration] - 2026-09-27
 
 ### Added

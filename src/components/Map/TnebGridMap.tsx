@@ -168,7 +168,7 @@ function getFeederThemeColors(category?: string, isLight?: boolean) {
       return {
         glow: isLight ? '#475569' : '#64748B',
         core: isLight ? '#334155' : '#94A3B8',
-        name: 'Dedicated Commercial / Industrial HT',
+        name: 'Commercial & Industrial Bulk',
         icon: '🏭'
       };
     default:
@@ -203,7 +203,11 @@ function getDtrMarkerIcon(isLight: boolean, category?: string): google.maps.Symb
 
 function cleanLifelineLabel(label?: string, fallback: string = ''): string {
   if (!label) return fallback;
-  return label.replace(/^[\p{Emoji}\p{Extended_Pictographic}\uFE0F\s]+/u, '').trim();
+  return label
+    .replace(/^[\p{Emoji}\p{Extended_Pictographic}\uFE0F\s]+/u, '')
+    .replace(/\bDedicated HT Commercial\/Industrial\b/i, 'Commercial & Industrial')
+    .replace(/\s*\(Dedicated HT\)/i, '')
+    .trim();
 }
 
 function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
@@ -245,7 +249,7 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
     case 'industrial_ht':
       return {
         icon: '🏭',
-        label: cleanLifelineLabel(feeder.lifelineLabel, 'Commercial / HT'),
+        label: cleanLifelineLabel(feeder.lifelineLabel, 'Commercial & Industrial'),
         prioText: 'P3 COMMERCIAL',
         badgeBg: isLight ? 'bg-slate-100 text-slate-700 border-slate-300' : 'bg-slate-800/80 text-slate-300 border-slate-700',
         prioBg: isLight ? 'bg-slate-600 text-white font-bold' : 'bg-slate-600 text-white font-bold'
@@ -1432,7 +1436,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   </div>
                   <div style="font-size: 10px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 4px; margin-top: 4px;">
                     Feeder: <strong>${selectedFeeder.name}</strong> (${selectedFeeder.voltage})
-                    ${selectedFeeder.isDedicated ? '<br><span style="color: #64748b; font-style: italic;">• Dedicated Service Line (HT)</span>' : ''}
+                    ${selectedFeeder.isDedicated ? '<br><span style="color: #64748b; font-style: italic;">• Dedicated Service Line</span>' : ''}
                   </div>
                 </div>
               `);
@@ -2561,9 +2565,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                       {f.isDedicated && (
                                         <span
                                           className={`text-xs font-mono cursor-help ${isLight ? 'text-slate-500' : 'text-slate-400'}`}
-                                          title="High Tension (HT) Dedicated Service: Exclusive point-to-point line supplying only this facility."
+                                          title="Dedicated Service: Exclusive point-to-point line supplying a single bulk consumer or facility."
                                         >
-                                          • Dedicated HT
+                                          • Dedicated Line
                                         </span>
                                       )}
                                     </div>
@@ -2670,6 +2674,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                           title={`${f.consumers.toLocaleString()} metered consumers connected to this feeder`}
                                         >
                                           👥 {f.consumers.toLocaleString()}
+                                        </span>
+                                      ) : f.isDedicated || f.type?.toLowerCase().includes('dedicated') ? (
+                                        <span
+                                          className={`font-semibold cursor-help ${isLight ? 'text-slate-600' : 'text-slate-400'}`}
+                                          title="Dedicated point-to-point service supplying a single bulk consumer (factory, tech park, or campus)"
+                                        >
+                                          👥 1 Bulk Consumer
                                         </span>
                                       ) : (
                                         <span className="text-xs opacity-75">{f.type}</span>
@@ -3172,9 +3183,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                       {f.isDedicated && (
                                         <span
                                           className={`text-xs font-mono cursor-help ${isLight ? 'text-slate-500' : 'text-slate-400'}`}
-                                          title="High Tension (HT) Dedicated Service: Exclusive point-to-point line supplying only this facility."
+                                          title="Dedicated Service: Exclusive point-to-point line supplying a single bulk consumer or facility."
                                         >
-                                          • Dedicated HT
+                                          • Dedicated Line
                                         </span>
                                       )}
                                     </div>
@@ -3281,6 +3292,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                           title={`${f.consumers.toLocaleString()} metered consumers connected to this feeder`}
                                         >
                                           👥 {f.consumers.toLocaleString()}
+                                        </span>
+                                      ) : f.isDedicated || f.type?.toLowerCase().includes('dedicated') ? (
+                                        <span
+                                          className={`font-semibold cursor-help ${isLight ? 'text-slate-600' : 'text-slate-400'}`}
+                                          title="Dedicated point-to-point service supplying a single bulk consumer (factory, tech park, or campus)"
+                                        >
+                                          👥 1 Bulk Consumer
                                         </span>
                                       ) : (
                                         <span className="opacity-75">{f.type}</span>
