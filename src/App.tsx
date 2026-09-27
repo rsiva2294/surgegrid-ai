@@ -3,7 +3,12 @@ import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
 import { Zap, ShieldCheck, RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
-import { fetchLiveWeatherConditions, type LiveWeatherConditions } from './services/liveWeatherService';
+import {
+  fetchLiveWeatherConditions,
+  type LiveWeatherConditions,
+  DEFAULT_CHENNAI_LAT,
+  DEFAULT_CHENNAI_LNG
+} from './services/liveWeatherService';
 
 export default function App() {
   const [gridData, setGridData] = useState<ChennaiGridData | null>(null);
@@ -33,23 +38,28 @@ export default function App() {
   }, []);
 
   // Fetch live weather from Google Maps Platform Weather API (DeepMind WeatherNext 3)
-  const handleRefreshWeather = useCallback(async () => {
+  // Dynamically uses selected substation coordinates if a switchyard is selected, or Chennai Central
+  const handleRefreshWeather = useCallback(async (lat?: number, lng?: number) => {
     setIsLoadingWeather(true);
+    const useLat = lat ?? selectedSubstation?.lat ?? DEFAULT_CHENNAI_LAT;
+    const useLng = lng ?? selectedSubstation?.lng ?? DEFAULT_CHENNAI_LNG;
     try {
-      const weather = await fetchLiveWeatherConditions();
+      const weather = await fetchLiveWeatherConditions(useLat, useLng);
       setLiveWeather(weather);
     } catch (err) {
       console.warn('Weather fetch error in App:', err);
     } finally {
       setIsLoadingWeather(false);
     }
-  }, []);
+  }, [selectedSubstation?.lat, selectedSubstation?.lng]);
 
   useEffect(() => {
-    handleRefreshWeather();
-    const interval = setInterval(handleRefreshWeather, 10 * 60 * 1000);
+    handleRefreshWeather(selectedSubstation?.lat, selectedSubstation?.lng);
+    const interval = setInterval(() => {
+      handleRefreshWeather(selectedSubstation?.lat, selectedSubstation?.lng);
+    }, 10 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [handleRefreshWeather]);
+  }, [selectedSubstation?.lat, selectedSubstation?.lng, handleRefreshWeather]);
 
   const toggleTheme = () => {
     const next = theme === 'light' ? 'dark' : 'light';
@@ -97,13 +107,20 @@ export default function App() {
                 ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs ring-1 ring-emerald-500/10'
                 : 'bg-emerald-950/30 border-emerald-800/80 text-emerald-200 shadow-2xs ring-1 ring-emerald-500/10'
             }`}>
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className="relative flex h-2 w-2">
+              <div className="flex items-center gap-1.5 shrink-0 max-w-[150px] sm:max-w-[210px]">
+                <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="font-bold text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-                  Live Weather
+                <span
+                  className="font-bold text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400 truncate"
+                  title={
+                    selectedSubstation
+                      ? `Hyperlocal Switchyard Weather for ${selectedSubstation.name} (${selectedSubstation.lat.toFixed(4)}°N, ${selectedSubstation.lng.toFixed(4)}°E)`
+                      : 'City-wide Grid Weather (Chennai Central • 13.0827°N, 80.2707°E)'
+                  }
+                >
+                  {selectedSubstation ? selectedSubstation.name : 'Chennai Central'}
                 </span>
               </div>
 
@@ -131,7 +148,7 @@ export default function App() {
 
               <button
                 type="button"
-                onClick={handleRefreshWeather}
+                onClick={() => handleRefreshWeather()}
                 className={`p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0 ${
                   isLoadingWeather ? 'animate-spin' : ''
                 }`}
