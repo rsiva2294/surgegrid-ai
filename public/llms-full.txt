@@ -1,0 +1,39 @@
+# SurgeGrid AI — Comprehensive Technical Specification
+
+> Operational intelligence, real-time meteorological tracking via Google DeepMind WeatherNext 3, satellite flood inundation models, and automated line tripping defense protocols for Chennai's 75+ TNEB electrical substations.
+
+SurgeGrid AI is an open-source, civic crisis-resilience platform for monitoring and mitigating electrical infrastructure hazards during severe weather, cyclones, and urban flooding across Greater Chennai.
+
+## 1. System Overview
+SurgeGrid AI transforms complex power utility GIS data into an actionable, real-time operational dashboard for grid operators, disaster relief personnel, and municipal emergency response coordinators (GCC & TNSDMA).
+
+- **Canonical URL**: https://surgegrid.nammamap.in/
+- **Coverage**: Greater Chennai Corporation (GCC) & adjoining metropolitan districts (Tiruvallur, Kanchipuram, Chengalpattu).
+- **Grid Footprint**: 286 electrical substations, 2,893 11kV feeder lines, and 17,000+ distribution transformers (DTR).
+
+## 2. Electrical Grid Topology & Hierarchy
+Chennai's transmission and distribution network operates on a rigorous voltage-stepped hierarchy:
+1. **Bulk Supply / EHV Grid (400kV / 230kV)**: Transmission substations taking bulk generation from North Chennai Thermal Power Station (NCTPS), Vallur, and the Southern Regional Grid.
+2. **Sub-Transmission Grid (110kV / 33kV)**: Intermediate switching stations distributing bulk power to city zones.
+3. **Primary Distribution (33kV / 11kV)**: Neighborhood substations stepping down voltage for primary feeder networks.
+4. **Secondary Distribution (11kV / 415V DTR)**: Pole-mounted and plinth-mounted distribution transformers supplying 3-phase 415V / single-phase 230V to consumers.
+
+## 3. Meteorological & Multi-Hazard Intelligence
+- **Google DeepMind WeatherNext 3**: Hyperlocal weather forecasting (precipitation rate, wind gust speed, barometric pressure) computed per substation location.
+- **Satellite Flood Inundation (Google Earth Engine)**: Synthetic Aperture Radar (SAR) InSAR flood extent layers combined with digital elevation models (DEM) to estimate waterlogging depth.
+- **Micro-Drainage & Basin Modeling**: Ward-level macro-canals (Adyar, Cooum, Kosasthalaiyar, Buckingham Canal) and stormwater drain capacity tracking.
+
+## 4. Substation Health & Fragility Index
+Substations receive real-time composite health scores (0–100):
+- **Elevation Fragility**: Vulnerability based on height above mean sea level and historic 2015/2023 flood contours.
+- **Outage Aging**: Dynamic degradation based on active feeder tripping duration.
+- **Flood Proximity**: Real-time buffer analysis against reported waterlogged road sections.
+
+## 5. Machine-Readable Resources & APIs
+- **Topology Dataset**: https://surgegrid.nammamap.in/data/chennai_tneb_grid.json
+- **Agentic Resource Discovery (ARD)**: https://surgegrid.nammamap.in/.well-known/ard.json
+- **AI Catalog**: https://surgegrid.nammamap.in/ai-catalog.json
+- **Summary for LLMs**: https://surgegrid.nammamap.in/llms.txt
+
+## 6. Model Context Protocol (MCP) Integration
+SurgeGrid AI exposes grid operational endpoints via the Model Context Protocol (MCP) to allow autonomous AI agents to query substation telemetry, inspect feeder criticality, and execute statutory crisis dispatch protocols.

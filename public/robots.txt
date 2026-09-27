@@ -2,5 +2,11 @@
 User-agent: *
 Allow: /
 
+# Agentic Resource Discovery & LLM Documentation
+# https://llmstxt.org/ & https://agenticresourcediscovery.org/
+# LLMs-Txt: https://surgegrid.nammamap.in/llms.txt
+# AI-Catalog: https://surgegrid.nammamap.in/ai-catalog.json
+
 # Sitemaps
 Sitemap: https://surgegrid.nammamap.in/sitemap.xml
+

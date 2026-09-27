@@ -1,0 +1,24 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "SurgeGrid AI",
+    "identifier": "urn:air:surgegrid.nammamap.in:host:surgegrid",
+    "documentationUrl": "https://surgegrid.nammamap.in/llms.txt",
+    "logoUrl": "https://surgegrid.nammamap.in/new-logo.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:surgegrid.nammamap.in:mcp:universal-grid-protocol",
+      "displayName": "SurgeGrid Universal Grid Protocol (MCP Server)",
+      "type": "application/mcp-server-card+json",
+      "description": "Model Context Protocol adapter for electrical grid dispatch, substation status, feeder hierarchy, and crisis de-energization protocols.",
+      "url": "https://surgegrid.nammamap.in/data/chennai_tneb_grid.json",
+      "representativeQueries": [
+        "Query Chennai electrical grid substation status and health score",
+        "Inspect 11kV feeder lines and distribution transformers for TNEB",
+        "Trigger emergency de-energization protocol for flooded substations",
+        "Fetch real-time weather and cyclone surge telemetry for grid assets"
+      ]
+    }
+  ]
+}
