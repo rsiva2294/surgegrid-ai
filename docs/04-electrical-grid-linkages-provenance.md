@@ -340,11 +340,25 @@ A critical engineering tenet of SurgeGrid AI is acknowledging the boundary betwe
 
 To prevent misleading operators with false certainties, SurgeGrid AI classifies all network linkages into three confidence tiers:
 
-| Confidence Tier | Criteria | Visual Representation in UI | Eligible for Automated Outage Scoping? |
+| Confidence Tier | Criteria | Visual Representation in UI | Outage Scoping Role |
 | :--- | :--- | :--- | :--- |
-| **Level 1: Verified Physical Connection** | **Dual-Endpoint Confirmation** (Both source and destination substation IDs explicitly identified in authoritative TNEB circuit/asset registers) + **Geometrically Verified Termination** (endpoint strictly enclosed inside recipient switchyard polygon via `ST_Contains == TRUE`). | Solid high-contrast line with directional hierarchy pulse. | **Yes** — Authoritative physical topology basis. |
-| **Level 2: Probable / Inferred Connection** | Compatible voltage step-down ($110\text{kV} \rightarrow 33\text{kV}$) + physical urban proximity ($\le 8.5\text{km}$) + geometric polygon enclosure, but missing dual-terminal circuit confirmation or breaker schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Only** — Requires operator validation. |
-| **Level 3: Unverified Connection** | Fuzzy naming match or unverified Euclidean proximity without GIS conductor vectors. | Suppressed / Hidden from map canvas. | **No** — Excluded to eliminate false positives. |
+| **Level 1: Verified Physical Connection** | **Dual-Endpoint Confirmation** (Both source and destination substation IDs explicitly identified in authoritative TNEB circuit/asset registers) + **Geometrically Verified Termination** (endpoint strictly enclosed inside recipient switchyard polygon via `ST_Contains == TRUE`). | Solid high-contrast line with directional hierarchy pulse. | **Physical Topology Scoping Only** (authoritative asset bounding). Actual consumer outage determination requires real-time switching/operational confirmation. |
+| **Level 2: Probable / Inferred Connection** | Compatible voltage step-down ($110\text{kV} \rightarrow 33\text{kV}$) + physical urban proximity ($\le 8.5\text{km}$) + geometric polygon enclosure, but missing dual-terminal circuit confirmation or breaker schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Topology Scoping** (provisional asset bounding; requires engineering review). |
+| **Level 3: Unverified Connection** | Fuzzy naming match or unverified Euclidean proximity without GIS conductor vectors. | Suppressed / Hidden from map canvas. | **Ineligible / Excluded** from all outage scoping. |
+
+---
+
+### 3. Crucial Operational Distinction: Topology Bounding vs. Live Customer Impact
+
+When applying this model to outage monitoring in SurgeGrid AI and NammaMap:
+
+1. **Physical Topology Scoping (What Level 1 Confirms):**
+   * Establishes the bounded set of physical assets (feeder cables, ring main units, distribution transformers) physically connected to a circuit breaker.
+   * Enables automated spatial bounding of the maximum possible affected geographical footprint.
+
+2. **Actual Outage-Impact Determination (What Requires Operational Confirmation):**
+   * Establishing whether a specific DTR is de-energized depends on whether tie switches have re-routed feed from an adjacent circuit (e.g. RMU loop transfer during maintenance).
+   * Registered consumer counts (`dtconcount`) provide a baseline capacity estimate, not live confirmed dark meters. True customer impact determination requires smart meter (AMI/AMR) ping confirmation or SCADA breaker trip telemetry.
 
 ---
 
