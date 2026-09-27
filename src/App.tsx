@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
-import { Zap, ShieldCheck, RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
+import { Zap, RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
 import {
   fetchLiveWeatherConditions,
   type LiveWeatherConditions,
@@ -77,7 +77,7 @@ export default function App() {
       <header className={`h-14 px-5 flex items-center justify-between z-40 shrink-0 border-b transition-colors ${
         isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-900 border-slate-800 shadow-md'
       }`}>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
             <Zap className="w-5 h-5 text-white" />
           </div>
@@ -86,19 +86,19 @@ export default function App() {
               <h1 className={`text-sm font-extrabold tracking-wide uppercase ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 SurgeGrid AI
               </h1>
-              <span className={`text-xs font-mono px-2 py-0.5 rounded-md font-bold border tracking-wide ${
+              <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold border tracking-wide ${
                 isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
               }`}>
-                GROUND-TRUTH GRID V5
+                V5.0
               </span>
             </div>
             <p className={`text-xs font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-              GROUND-TRUTH GRID V5 • 271 SUBSTATIONS • 42K+ DTRs
+              Chennai's Real-Time Grid &amp; Flood Resiliency Console
             </p>
           </div>
         </div>
 
-        {/* Telemetry Stats Bar & Controls */}
+        {/* Telemetry Controls & Live Weather */}
         <div className="flex items-center gap-3 text-xs">
           {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
           {liveWeather && (
@@ -107,7 +107,7 @@ export default function App() {
                 ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs ring-1 ring-emerald-500/10'
                 : 'bg-emerald-950/30 border-emerald-800/80 text-emerald-200 shadow-2xs ring-1 ring-emerald-500/10'
             }`}>
-              <div className="flex items-center gap-1.5 shrink-0 max-w-[150px] sm:max-w-[210px]">
+              <div className="flex items-center gap-1.5 shrink-0 max-w-[170px] sm:max-w-[240px]">
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -131,11 +131,11 @@ export default function App() {
                   🌡️ {liveWeather.temperatureC.toFixed(1)}°C
                 </span>
 
-                <span className="hidden md:inline text-xs" title={`Wind: ${liveWeather.windDirectionCardinal}, Gusts: ${liveWeather.windGustKmh} km/h`}>
+                <span className="hidden sm:inline text-xs" title={`Wind: ${liveWeather.windDirectionCardinal}, Gusts: ${liveWeather.windGustKmh} km/h`}>
                   💨 {liveWeather.windSpeedKmh} km/h {liveWeather.windDirectionCardinal}
                 </span>
 
-                <span className="hidden lg:inline text-xs" title="Relative Humidity">
+                <span className="hidden md:inline text-xs" title="Relative Humidity">
                   💧 {liveWeather.humidityPercent}% RH
                 </span>
 
@@ -158,36 +158,6 @@ export default function App() {
               </button>
             </div>
           )}
-
-          {gridData && (
-            <div className={`hidden lg:flex items-center gap-4 px-3.5 py-1.5 rounded-xl border ${
-              isLight ? 'bg-slate-100 border-slate-200 text-slate-700' : 'bg-slate-950/70 border-slate-800/80 text-slate-300'
-            }`}>
-              <div className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full animate-pulse ${isLight ? 'bg-sky-600' : 'bg-cyan-400'}`}></span>
-                <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>Chennai Substations:</span>
-                <span className={`font-mono font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                  {gridData.counts.substations}
-                </span>
-              </div>
-              <span className={isLight ? 'text-slate-300' : 'text-slate-700'}>|</span>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>AE Section Offices:</span>
-                <span className={`font-mono font-bold ${isLight ? 'text-emerald-700' : 'text-emerald-300'}`}>
-                  {gridData.counts.sections}
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div className={`hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs ${
-            isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
-          }`}>
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span>Map Status:</span>
-            <span className="font-mono text-emerald-600 font-semibold">Active</span>
-          </div>
 
           {/* Light / Dark Mode Toggle Button */}
           <button
