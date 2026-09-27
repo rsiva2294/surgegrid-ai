@@ -35,6 +35,11 @@ All notable changes, architectural decisions, and data extractions for the Surge
     - **Tab 2: `[⚡ Circuits & Grid (N)]`**: Consolidated electrical topology combining upstream transmission incomers/links, an "Isolate Electrical Circuit" toggle switch with animated power flow lines, an expandable linked nodes drawer (`View Links` / `Hide Links`), and the full downstream 11kV feeder management suite with lifelines (`💧 CMWSSB`, `🏕️ Shelter`, `🏥 Hospital`) and search.
     - **Tab 3: `[🛡️ Civic & Crisis]`**: Dedicated municipal disaster management command featuring GCC Zone & Ward identity (CDMP 2023), GEE satellite hydrology (Runoff mm, Impervious built %), 2×2 emergency hotlines (Councillor, CMWSSB AE, GCC AE, Ripon 1913) with direct `tel:` links, and multi-agency restoration clearance SOP. Symmetrical ~390px height, 100% visible above the fold with zero scroll.
   - **Pinned Header Ambient Reference**: Retained a single global pill (`🏛️ Z13:W174`) providing ambient civic awareness across all tabs without duplicating card titles below.
+- **Feeder Card Decluttering & Jargon Cheat Sheet**:
+  - Addressed visual crowding and confusing technical jargon inside Tab 2 (`Circuits & Grid`) and Split Inspector:
+    - **Collapsible Grid Jargon Explainer**: Added an inline cheat sheet (`Explain Jargon (P1, ESF, RMU) ▼`) defining statutory codes (P1 NON-CUT, ESF 15 SLA, RMU Loops, Stage 3 Sequential Restoration).
+    - **Compact Metadata Strip**: Reduced feeder card vertical height by ~40% by replacing multi-badge blocks with a clean strip (`⏱️ 6h SLA`, `🔄 2 RMU`, `📋 Stage 3`) with native hover tooltips (`cursor-help`).
+    - **Plain-English Tooltips**: Every technical acronym (`P1 Non-Cut`, `ESF 15 SLA`, `RMU`, `Stage 3`, `UG`, `DTR`) now includes descriptive context on hover and tap.
 - **Reference Documentation**:
   - Published comprehensive architectural specification `docs/06-gcc-municipal-and-satellite-vulnerability-integration.md`.
 
