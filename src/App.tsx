@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
 import { RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
@@ -9,6 +8,7 @@ import {
   DEFAULT_CHENNAI_LAT,
   DEFAULT_CHENNAI_LNG
 } from './services/liveWeatherService';
+import { getActiveGridProvider } from './mcp';
 
 export default function App() {
   const [gridData, setGridData] = useState<ChennaiGridData | null>(null);
@@ -25,24 +25,36 @@ export default function App() {
   const [selectedSection, setSelectedSection] = useState<TnebSection | null>(null);
 
   useEffect(() => {
-    loadChennaiGrid()
-      .then((data) => {
-        setGridData(data);
+    const provider = getActiveGridProvider();
+    provider
+      .loadGridDataset()
+      .then((dataset) => {
+        setGridData({
+          version: dataset.manifest.id,
+          source: dataset.manifest.discom,
+          counts: {
+            substations: dataset.substations.length,
+            sections: dataset.sections.length
+          },
+          substations: dataset.substations,
+          sections: dataset.sections
+        });
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Failed to load Chennai TNEB grid data:', err);
+        console.error(`Failed to load grid via MCP provider [${provider.manifest.id}]:`, err);
         setError(err.message);
         setLoading(false);
       });
   }, []);
 
   // Fetch live weather from Google Maps Platform Weather API (DeepMind WeatherNext 3)
-  // Dynamically uses selected substation coordinates if a switchyard is selected, or Chennai Central
+  // Dynamically uses selected substation coordinates if a switchyard is selected, or active MCP provider center
   const handleRefreshWeather = useCallback(async (lat?: number, lng?: number) => {
     setIsLoadingWeather(true);
-    const useLat = lat ?? selectedSubstation?.lat ?? DEFAULT_CHENNAI_LAT;
-    const useLng = lng ?? selectedSubstation?.lng ?? DEFAULT_CHENNAI_LNG;
+    const providerCenter = getActiveGridProvider().manifest.centerCoordinates;
+    const useLat = lat ?? selectedSubstation?.lat ?? providerCenter?.lat ?? DEFAULT_CHENNAI_LAT;
+    const useLng = lng ?? selectedSubstation?.lng ?? providerCenter?.lng ?? DEFAULT_CHENNAI_LNG;
     try {
       const weather = await fetchLiveWeatherConditions(useLat, useLng);
       setLiveWeather(weather);
