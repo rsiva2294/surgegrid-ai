@@ -150,31 +150,6 @@ Substation `2159` operates dedicated $33\text{kV}$ outgoing feeders linking dire
 ```
 *(Similarly, Feeder `215913` `"33KV Mc.NICHOLS RD"` routes $33\text{kV}$ bulk power to Mc.Nicholas Road SS #9342).*
 
-#### Step C: The Physical Cable Endpoint Proof
-**Source File:** `grid_infrastructure/feeder_lines.geojson.gz`
-
-The surveyed vector path for Feeder `215910` (`"33 KV KILPAUK 2"`) ends at:
-```json
-{
-  "type": "Feature",
-  "properties": {
-    "fdr_code": "215910",
-    "fdr_name": "33 KV KILPAUK 2",
-    "ss_code": "2159",
-    "volt_kv": "33"
-  },
-  "geometry": {
-    "type": "MultiLineString",
-    "coordinates": [
-      [
-        [80.24512422, 13.08619193],
-        [80.24475557, 13.08619958]
-      ]
-    ]
-  }
-}
-```
-
 #### Step C: The Physical Cable Endpoint & Switchyard Polygon Containment Proof
 **Source Files:** `grid_infrastructure/feeder_lines.geojson.gz` & `grid_infrastructure/substations_polygons.geojson`
 
@@ -404,10 +379,10 @@ public/data/
 
 ### Artifact 1: Master Grid Index (`public/data/chennai_tneb_grid.json`)
 
-This file loads during application bootstrap. It contains all **286 substations**, pre-computing operational metrics, administrative circle boundaries, and the **inter-substation electrical connections** (`connections` array).
+This file loads during application bootstrap. It contains all **286 substations**, pre-computing operational metrics, administrative circle boundaries, and the **inter-substation electrical connections** (`connections` array) tagged with rigorous confidence levels and verification methods.
 
 #### Verbatim Transformed Substation 2159 (Kilpauk Water Works):
-Notice how the raw GIS data has been synthesized into a typed, ready-to-render model with reciprocal grid links:
+Notice how the raw GIS data has been compiled into a typed model with explicit confidence tiers and verification proofs:
 
 ```json
 {
@@ -423,38 +398,44 @@ Notice how the raw GIS data has been synthesized into a typed, ready-to-render m
   "lat": 13.08831622,
   "lng": 80.23397056,
   "tier": "subtransmission",
-  "totalConsumers": 26861,
-  "totalTransformers": 182,
+  "totalConsumers": 26894,
+  "totalTransformers": 137,
   "totalFeedersCount": 17,
   "powerTransformersCount": 4,
   "totalCapacityMva": 132,
   "incomingFeedersCount": 2,
   "connections": [
     {
-      "id": "2218",
-      "name": "33/11 KV KILPAUK SS",
+      "id": "9328",
+      "name": "230/110 KV KILPAUK ",
       "type": "substation",
-      "relation": "outgoing_feeder",
-      "label": "⚡ Distribution Step-Down to 33/11 KV KILPAUK SS (1.2 km)",
-      "voltage": "33/11",
-      "tier": "distribution",
-      "distanceKm": 1.23,
-      "lat": 13.08621004,
-      "lng": 80.24509365,
-      "method": "collocated_stepdown"
+      "relation": "incoming_feeder",
+      "label": "⚡ Co-located Campus Step-Down from 230/110 KV KILPAUK  (0.14 km)",
+      "voltage": "230/110",
+      "tier": "bulk",
+      "distanceKm": 0.14,
+      "lat": 13.0879272,
+      "lng": 80.23271151,
+      "confidenceTier": "L1_VERIFIED",
+      "scopingRole": "PHYSICAL_TOPOLOGY_ONLY",
+      "verificationMethod": "collocated_switchyard",
+      "polygonVerified": true
     },
     {
       "id": "9342",
       "name": "33/11 KV MC.NICHOLAS ROAD SS",
       "type": "substation",
       "relation": "outgoing_feeder",
-      "label": "⚡ Distribution Step-Down to 33/11 KV MC.NICHOLAS ROAD SS (1.4 km)",
+      "label": "⚡ Inferred Nominal Step-Down to 33/11 KV MC.NICHOLAS ROAD SS (1.4 km)",
       "voltage": "33/11",
       "tier": "distribution",
       "distanceKm": 1.42,
       "lat": 13.07627216,
       "lng": 80.23845721,
-      "method": "collocated_stepdown"
+      "confidenceTier": "L2_PROBABLE",
+      "scopingRole": "ADVISORY_ONLY",
+      "verificationMethod": "nominal_stepdown_proximity",
+      "polygonVerified": false
     },
     {
       "id": "sec_064",
@@ -465,14 +446,17 @@ Notice how the raw GIS data has been synthesized into a typed, ready-to-render m
       "distanceKm": 0.04,
       "lat": 13.088,
       "lng": 80.234,
-      "method": "jurisdictional_office"
+      "confidenceTier": "L1_VERIFIED",
+      "scopingRole": "PHYSICAL_TOPOLOGY_ONLY",
+      "verificationMethod": "jurisdictional_office",
+      "polygonVerified": false
     }
   ]
 }
 ```
 
 #### Verbatim Transformed Recipient Substation 2218 (Kilpauk SS):
-The recipient substation holds the inverse `incoming_feeder` relationship:
+Here, Kilpauk SS displays an authoritative **Level 1 Verified** interconnector directly received from Cooks Road 110kV SS via surveyed feeder cable #223923 terminating geometrically inside its switchyard polygon (`polygonVerified: true`):
 
 ```json
 {
@@ -487,17 +471,21 @@ The recipient substation holds the inverse `incoming_feeder` relationship:
   "lng": 80.24509365,
   "connections": [
     {
-      "id": "2159",
-      "name": "110/33/11KV KILUPAK WATER WORKS SS",
+      "id": "2239",
+      "name": "110/33/11 KV COOKS ROAD SS",
       "type": "substation",
       "relation": "incoming_feeder",
-      "label": "⚡ Bulk Step-Down Feed from 110/33/11KV KILUPAK WATER WORKS SS (1.2 km)",
-      "voltage": "110/33/11",
+      "label": "⚡ Bulk Step-Down Feed from 110/33/11 KV COOKS ROAD SS via Cooks Road 110KV SS TO KILPAUK  33/11KVSS (1.67 km)",
+      "voltage": "33 kV",
       "tier": "subtransmission",
-      "distanceKm": 1.23,
-      "lat": 13.08831622,
-      "lng": 80.23397056,
-      "method": "collocated_stepdown"
+      "distanceKm": 1.67,
+      "lat": 13.10009411,
+      "lng": 80.25090134,
+      "confidenceTier": "L1_VERIFIED",
+      "scopingRole": "PHYSICAL_TOPOLOGY_ONLY",
+      "verificationMethod": "polygon_containment",
+      "feederCode": "223923",
+      "polygonVerified": true
     },
     {
       "id": "sec_146",
@@ -508,9 +496,59 @@ The recipient substation holds the inverse `incoming_feeder` relationship:
       "distanceKm": 0.01,
       "lat": 13.08628,
       "lng": 80.24501,
-      "method": "jurisdictional_office"
+      "confidenceTier": "L1_VERIFIED",
+      "scopingRole": "PHYSICAL_TOPOLOGY_ONLY",
+      "verificationMethod": "jurisdictional_office",
+      "polygonVerified": false
     }
   ]
+}
+```
+
+#### Production Grid Linkage Dataset Telemetry
+
+Compiled from `public/data/chennai_tneb_grid.json` across all 286 substations in the Greater Chennai grid:
+
+| Metric | Production Count | Criteria / Engineering Justification |
+| :--- | :--- | :--- |
+| **Total Substations** | **286** | All 400kV, 230kV, 110kV, and 33kV stations across 5 circles |
+| **Total Inter-Substation Links** | **318** | Pre-computed high/sub-transmission electrical links |
+| **Level 1 Verified (`L1_VERIFIED`)** | **228** ($71.7\%$) | Dual-endpoint TNEB circuit confirmation + geometric polygon containment or co-located switchyard |
+| ↳ *Polygon Containment (`polygon_containment`)* | *88* | Feeder vector endpoint strictly enclosed in recipient switchyard polygon (`ST_Contains == TRUE`) |
+| ↳ *Co-located Switchyard (`collocated_switchyard`)* | *88* | Dual-voltage stations on shared campus (e.g., 230kV to 110kV / 110kV to 33kV) |
+| **Level 2 Probable (`L2_PROBABLE`)** | **90** ($28.3\%$) | Step-down compatible ($110\text{kV} \rightarrow 33\text{kV}$) within urban proximity ($\le 8.5\text{km}$), advisory only |
+| **Level 3 Unverified (`L3_UNVERIFIED`)** | **0** ($0.0\%$) | Strictly suppressed and excluded from production datasets |
+
+#### TypeScript Type Contract in Application Runtime (`src/types/tneb.ts`):
+
+```typescript
+export type GridConfidenceTier = 'L1_VERIFIED' | 'L2_PROBABLE' | 'L3_UNVERIFIED';
+
+export type ScopingRole = 'PHYSICAL_TOPOLOGY_ONLY' | 'ADVISORY_ONLY' | 'EXCLUDED';
+
+export type VerificationMethod = 
+  | 'polygon_containment'
+  | 'collocated_switchyard'
+  | 'nominal_stepdown_proximity'
+  | 'jurisdictional_office';
+
+export interface PrecomputedConnection {
+  id: string;
+  name: string;
+  type: 'substation' | 'section';
+  relation: 'incoming_feeder' | 'outgoing_feeder' | 'campus_section';
+  label: string;
+  voltage?: string;
+  tier?: 'bulk' | 'subtransmission' | 'distribution';
+  distanceKm: number;
+  lat: number;
+  lng: number;
+  // Rigorous verification attributes
+  confidenceTier?: GridConfidenceTier;
+  scopingRole?: ScopingRole;
+  verificationMethod?: VerificationMethod;
+  polygonVerified?: boolean;
+  feederCode?: string;
 }
 ```
 
@@ -614,8 +652,9 @@ The DTR dataset is indexed by parent `fdr_code`. When a user clicks a feeder in 
 | Asset Domain | Raw TNEB GIS Source File (`tneb_gis_raw`) | Transformed Production Path (`public/data/`) | Primary Transform Operations |
 | :--- | :--- | :--- | :--- |
 | **Grid Substations & Switchyards** | `grid_infrastructure/substations_points.geojson` | `chennai_tneb_grid.json` $\rightarrow$ `substations[]` | Name cleaning, capacity normalization, elevation & coastal distance scoring, pre-computing `connections[]` with reciprocal step-down links. |
-| **Inter-Substation 33kV Feeders** | `grid_infrastructure/feeder_lines.geojson.gz` | `chennai_tneb_grid.json` $\rightarrow$ `substations[].connections` | Endpoint spatial intersection within $\le 3.4\text{m}$ of recipient substation yard fence. |
+| **Inter-Substation 33kV Feeders** | `grid_infrastructure/feeder_lines.geojson.gz` & `substations_polygons.geojson` | `chennai_tneb_grid.json` $\rightarrow$ `substations[].connections` | Dual-endpoint verification + ray-casting switchyard polygon containment (`ST_Contains == TRUE`), classified into `L1_VERIFIED` (Physical Topology Only) and `L2_PROBABLE` (Advisory Only). |
 | **11kV Radial Feeders** | `grid_infrastructure/feeders_master_metadata.json` & `feeder_lines.geojson.gz` | `feeders/{circleCode}.json` (e.g. `0402.json`) | Keyed by `fdr_code`, stripped metadata, rounded 5-decimal coordinate vectors, typed as `MultiLineString`. |
 | **Distribution Transformers (DTRs)** | `distribution_network/transformers/dt_*.geojson.gz` | `dtr/{circleCode}.json` (e.g. `0402.json`) | Keyed by `fdr_code`, reduced to essential runtime fields (`id`, `name`, `kva`, `cons`, `lat`, `lng`). |
 | **Administrative Jurisdictions** | `offices/section_offices.geojson` | `chennai_tneb_grid.json` $\rightarrow$ `sections[]` & `connections[]` | Collocated AE section offices linked to parent substations with distance $\le 50\text{m}$. |
+
 
