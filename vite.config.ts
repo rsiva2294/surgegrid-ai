@@ -7,6 +7,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
+      '/api/v2': {
+        target: 'https://outage.nammamap.in',
+        changeOrigin: true
+      },
       '/api/outage-live': {
         target: 'https://outage.nammamap.in',
         changeOrigin: true,

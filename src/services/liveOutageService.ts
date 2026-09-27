@@ -39,10 +39,8 @@ export interface LiveOutageResponse {
 
 const IDB_LIVE_OUTAGES_KEY = 'sg_live_chennai_outages_v1';
 
-// Live endpoint with dev proxy support
-const API_URL = import.meta.env.DEV
-  ? '/api/outage-live/outages?district=Chennai'
-  : 'https://outage.nammamap.in/api/v2/outages?district=Chennai';
+// Live endpoint with same-origin routing (proxied in dev via Vite, routed in prod via Firebase Hosting function rewrite)
+const API_URL = '/api/v2/outages?district=Chennai';
 
 /**
  * Fetch live outages in Chennai from outage.nammamap.in with Stale-While-Revalidate via IndexedDB
