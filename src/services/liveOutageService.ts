@@ -39,10 +39,10 @@ export interface LiveOutageResponse {
 
 const IDB_LIVE_OUTAGES_KEY = 'sg_live_chennai_outages_v1';
 
-// Base endpoint with dev proxy support
+// Same-origin endpoint in production prevents CORS browser errors while dev uses proxy
 const API_URL = import.meta.env.DEV
   ? '/api/outage-live/outages?district=Chennai'
-  : 'https://outage.nammamap.in/api/v2/outages?district=Chennai';
+  : '/data/chennai_outages.json';
 
 /**
  * Fetch live outages in Chennai from outage.nammamap.in with Stale-While-Revalidate via IndexedDB

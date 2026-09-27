@@ -90,8 +90,8 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                     ? 'bg-pink-50/90 border-pink-300 text-pink-900 shadow-sm'
                     : 'bg-pink-950/50 border-pink-500/60 text-pink-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
-                  : 'bg-slate-950/60 border-slate-800/80 text-slate-500 line-through'
+                  ? 'bg-slate-100/90 border-slate-300 text-slate-700 line-through'
+                  : 'bg-slate-900/80 border-slate-700 text-slate-300 line-through'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -119,8 +119,8 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                     ? 'bg-amber-50/90 border-amber-300 text-amber-900 shadow-sm'
                     : 'bg-amber-950/50 border-amber-500/60 text-amber-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
-                  : 'bg-slate-950/60 border-slate-800/80 text-slate-500 line-through'
+                  ? 'bg-slate-100/90 border-slate-300 text-slate-700 line-through'
+                  : 'bg-slate-900/80 border-slate-700 text-slate-300 line-through'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -148,8 +148,8 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                     ? 'bg-sky-50/90 border-sky-300 text-sky-900 shadow-sm'
                     : 'bg-cyan-950/50 border-cyan-500/60 text-cyan-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
-                  : 'bg-slate-950/60 border-slate-800/80 text-slate-500 line-through'
+                  ? 'bg-slate-100/90 border-slate-300 text-slate-700 line-through'
+                  : 'bg-slate-900/80 border-slate-700 text-slate-300 line-through'
               }`}
             >
               <div className="flex items-center gap-2">
@@ -177,8 +177,8 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                     ? 'bg-emerald-50/90 border-emerald-300 text-emerald-900 shadow-sm'
                     : 'bg-emerald-950/50 border-emerald-500/60 text-emerald-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
-                  : 'bg-slate-950/60 border-slate-800/80 text-slate-500 line-through'
+                  ? 'bg-slate-100/90 border-slate-300 text-slate-700 line-through'
+                  : 'bg-slate-900/80 border-slate-700 text-slate-300 line-through'
               }`}
             >
               <div className="flex items-center gap-2">

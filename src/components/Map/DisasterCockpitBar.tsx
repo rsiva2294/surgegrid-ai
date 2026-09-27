@@ -56,33 +56,31 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             onClick={() => setDisasterScenario('NORMAL')}
             className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
               disasterScenario === 'NORMAL'
-                ? (isLight ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-500 text-slate-950 font-bold shadow-sm')
-                : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
+                ? (isLight ? 'bg-emerald-700 text-white shadow-sm' : 'bg-emerald-950 border border-emerald-500/70 text-emerald-200 font-bold shadow-sm')
+                : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-200 hover:text-white')
             }`}
             title="Real-time Chennai Grid Conditions via Google Maps Weather API (WeatherNext 3)"
           >
             <span className="relative flex h-2 w-2">
               <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
                 disasterScenario === 'NORMAL'
-                  ? (isLight ? 'bg-white' : 'bg-slate-950')
+                  ? (isLight ? 'bg-white' : 'bg-emerald-400')
                   : 'bg-emerald-400'
               }`}></span>
               <span className={`relative inline-flex rounded-full h-2 w-2 ${
                 disasterScenario === 'NORMAL'
-                  ? (isLight ? 'bg-white' : 'bg-slate-950')
+                  ? (isLight ? 'bg-white' : 'bg-emerald-400')
                   : 'bg-emerald-500'
               }`}></span>
             </span>
             <span className="tracking-wide uppercase font-bold">Live</span>
-            {liveWeather && (
-              <span className={`text-[10px] font-mono px-1 py-0.2 rounded font-bold ${
-                disasterScenario === 'NORMAL'
-                  ? (isLight ? 'bg-emerald-700/80 text-white' : 'bg-slate-950/30 text-slate-950')
-                  : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
-              }`}>
-                {Math.round(liveWeather.temperatureC)}°C
-              </span>
-            )}
+            <span className={`min-w-[34px] inline-flex items-center justify-center text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
+              disasterScenario === 'NORMAL'
+                ? (isLight ? 'bg-emerald-900 text-white' : 'bg-emerald-900/80 text-emerald-100 border border-emerald-600/50')
+                : (isLight ? 'bg-slate-200 text-slate-800' : 'bg-slate-800 text-slate-200')
+            }`}>
+              {liveWeather ? `${Math.round(liveWeather.temperatureC)}°C` : '--°C'}
+            </span>
           </button>
 
           <button
@@ -185,7 +183,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           title="Filter to infrastructure with poor operational stability & resiliency health score < 75"
         >
           <span>⚠️ Poor Stability (&lt;75)</span>
-          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
+          <span className={`min-w-[18px] inline-flex items-center justify-center font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
             crisisTriageFilter === 'poor_stability' 
               ? 'bg-black/25 text-white' 
               : (isLight ? 'bg-amber-200/80 text-amber-950' : 'bg-amber-500/20 text-amber-200 border border-amber-500/30')
@@ -208,7 +206,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           title="Filter to infrastructure vulnerable to waterlogging because elevation is not high enough (<= 3.2m MSL or High Flood / Surge Hazard)"
         >
           <span>🌊 Waterlogging Risk</span>
-          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
+          <span className={`min-w-[18px] inline-flex items-center justify-center font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
             crisisTriageFilter === 'waterlogging_risk' 
               ? 'bg-black/25 text-white' 
               : (isLight ? 'bg-cyan-200/80 text-cyan-950' : 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/30')
@@ -231,7 +229,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           title="Filter to grid nodes with active live outages or maintenance today (outage.nammamap.in)"
         >
           <span className="flex items-center gap-1">⚡ Live Outages</span>
-          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
+          <span className={`min-w-[18px] inline-flex items-center justify-center font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
             crisisTriageFilter === 'outages' 
               ? 'bg-black/25 text-white' 
               : liveOutagesCount > 0 

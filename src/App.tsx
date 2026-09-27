@@ -81,11 +81,18 @@ export default function App() {
           <div className={`w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-md shadow-cyan-500/20 border overflow-hidden shrink-0 ${
             isLight ? 'border-slate-200' : 'border-cyan-500/30'
           }`}>
-            <img
-              src="/new-logo.png"
-              alt="SurgeGrid AI"
-              className="w-full h-full object-contain p-0.5"
-            />
+            <picture>
+              <source srcSet="/logo-64.webp 1x, /logo-128.webp 2x" type="image/webp" />
+              <img
+                src="/logo-64.png"
+                alt="SurgeGrid AI"
+                width={36}
+                height={36}
+                loading="eager"
+                decoding="async"
+                className="w-full h-full object-contain p-0.5"
+              />
+            </picture>
           </div>
           <div>
             <div className="flex items-center gap-2">
