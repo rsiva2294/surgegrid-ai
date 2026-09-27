@@ -132,47 +132,91 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
   };
 }
 
+import { get, set } from 'idb-keyval';
+
+const IDB_GRID_KEY = 'surgegrid_chennai_grid_v5';
 let cachedGrid: ChennaiGridData | null = null;
 
+function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
+  data.substations.forEach(s => {
+    // Standard TNEB Switchgear equipment plinth clearance (1.5m above local GL)
+    s.plinthElevationM = 1.5;
+
+    // 2015 Flood Historical Benchmark (41 submerged substations up to 1.8m / 6ft)
+    if (s.elevationM !== undefined) {
+      if (s.elevationM <= 3.0) {
+        s.benchmarked2015FloodDepthM = 1.8; // Peak 6-ft waterlogging in 2015 (Adyar/Cooum/Buckingham basins)
+        s.yardDewateringRequired = true;
+      } else if (s.elevationM <= 6.0) {
+        s.benchmarked2015FloodDepthM = 0.9; // 3-ft waterlogging
+        s.yardDewateringRequired = false;
+      } else {
+        s.benchmarked2015FloodDepthM = 0.2;
+        s.yardDewateringRequired = false;
+      }
+    } else {
+      s.benchmarked2015FloodDepthM = 0.5;
+      s.yardDewateringRequired = false;
+    }
+
+    if (s.feeders) {
+      s.feeders = s.feeders.map(classifyFeeder);
+    }
+    if (s.connections) {
+      s.connections = s.connections.filter(isValidPhysicalGridConnection);
+    }
+  });
+  return data;
+}
+
 export async function loadChennaiGrid(): Promise<ChennaiGridData> {
+  // 1. In-memory RAM cache check (0ms)
   if (cachedGrid) return cachedGrid;
 
+  // 2. Persistent Offline IndexedDB check (< 15ms)
+  try {
+    const idbData = await get<ChennaiGridData>(IDB_GRID_KEY);
+    if (idbData && idbData.substations && idbData.substations.length > 0) {
+      cachedGrid = idbData;
+      console.log('[tnebGridService] Restored Chennai grid topology from IndexedDB cache (%d substations)', idbData.counts.substations);
+
+      // Stale-while-revalidate in background if online
+      if (typeof navigator !== 'undefined' && navigator.onLine) {
+        fetch('/data/chennai_tneb_grid.json')
+          .then(res => (res.ok ? res.json() : null))
+          .then(fresh => {
+            if (fresh && fresh.version === idbData.version) {
+              const sanitized = sanitizeGridData(fresh);
+              cachedGrid = sanitized;
+              set(IDB_GRID_KEY, sanitized);
+            }
+          })
+          .catch(() => {
+            // Background revalidation silently ignored during network drops
+          });
+      }
+      return idbData;
+    }
+  } catch (idbErr) {
+    console.warn('[tnebGridService] IndexedDB read error, falling back to network fetch:', idbErr);
+  }
+
+  // 3. Network Fetch if cache not present
   try {
     const res = await fetch('/data/chennai_tneb_grid.json');
     if (!res.ok) {
       throw new Error(`Failed to load chennai_tneb_grid.json: ${res.status}`);
     }
     const data: ChennaiGridData = await res.json();
-    data.substations.forEach(s => {
-      // Standard TNEB Switchgear equipment plinth clearance (1.5m above local GL)
-      s.plinthElevationM = 1.5;
+    const sanitized = sanitizeGridData(data);
+    cachedGrid = sanitized;
 
-      // 2015 Flood Historical Benchmark (41 submerged substations up to 1.8m / 6ft)
-      if (s.elevationM !== undefined) {
-        if (s.elevationM <= 3.0) {
-          s.benchmarked2015FloodDepthM = 1.8; // Peak 6-ft waterlogging in 2015 (Adyar/Cooum/Buckingham basins)
-          s.yardDewateringRequired = true;
-        } else if (s.elevationM <= 6.0) {
-          s.benchmarked2015FloodDepthM = 0.9; // 3-ft waterlogging
-          s.yardDewateringRequired = false;
-        } else {
-          s.benchmarked2015FloodDepthM = 0.2;
-          s.yardDewateringRequired = false;
-        }
-      } else {
-        s.benchmarked2015FloodDepthM = 0.5;
-        s.yardDewateringRequired = false;
-      }
-
-      if (s.feeders) {
-        s.feeders = s.feeders.map(classifyFeeder);
-      }
-      if (s.connections) {
-        s.connections = s.connections.filter(isValidPhysicalGridConnection);
-      }
+    // Persist to IndexedDB for offline crisis survivability
+    set(IDB_GRID_KEY, sanitized).catch(err => {
+      console.warn('[tnebGridService] Failed to write grid to IndexedDB:', err);
     });
-    cachedGrid = data;
-    return data;
+
+    return sanitized;
   } catch (err) {
     console.warn('[tnebGridService] Direct fetch failed, parsing compact index fallback:', err);
     // Fallback: parse super_index_v2.compact.json if chennai_tneb_grid.json is absent
