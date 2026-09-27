@@ -31,13 +31,20 @@ All notable changes, architectural decisions, and data extractions for the Surge
   - Added instant Disaster Triage Quick Filters in the top cockpit (`All Grid`, `🌊 Submerged Yards <= 3.2m MSL`, `🏥 Lifeline Hubs`) with camera auto-fit.
   - Added standardized **`📋 Copy Incident SMS (Offline Dispatch)`** button for 2G SMS / VHF voice transmission with GCC Ward, Councillor, CMWSSB AE, GCC AE, and Ripon 1913 hotlines.
   - Pre-indexed search tokens (`searchIndex`) with early-exit iteration for O(1) autocomplete on 1,200+ grid assets.
-- **P4: Monolith Decomposition & Architectural Decoupling**:
-  - Decomposed ~3,900 line `TnebGridMap.tsx` monolith into isolated, single-responsibility components:
-    - [`CopyIncidentSmsButton.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/CopyIncidentSmsButton.tsx): Standalone 2G SMS / wireless VHF emergency dispatch generator.
-    - [`MunicipalDisasterCard.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MunicipalDisasterCard.tsx): Full GCC Ward municipal command, CDMP 2023 CUG directory, GEE satellite cards, and multi-agency clearance SOP.
-    - [`DisasterCockpitBar.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/DisasterCockpitBar.tsx): Top floating statutory cyclone protocol pills and crisis triage quick-filters.
-  - Reduced `TnebGridMap.tsx` by ~500 lines while preserving strict type safety and all map reference lifecycles.
-  - Published comprehensive architectural specification in `docs/07-crisis-resilience-and-maps-optimization.md`.
+- **P4: Monolith Decomposition & Complete Component Modularization**:
+  - Decomposed 3,900+ line `TnebGridMap.tsx` monolith down to **988 lines** (~75% reduction in size), isolating into 10 single-responsibility modules:
+    - [`mapStyles.ts`](file:///c:/projects/surgegrid-ai/src/components/Map/mapStyles.ts): Zero-POI cartography styles & Chennai bounds.
+    - [`mapIcons.ts`](file:///c:/projects/surgegrid-ai/src/components/Map/mapIcons.ts): Dynamic SVG markers, selection halos, and DTR status badges.
+    - [`disasterUtils.ts`](file:///c:/projects/surgegrid-ai/src/components/Map/disasterUtils.ts): Inundation heuristics, flood risk profiles, and cyclone SOPs.
+    - [`DisasterCockpitBar.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/DisasterCockpitBar.tsx): Top floating disaster operations cockpit and triage filters.
+    - [`MapSearchBox.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MapSearchBox.tsx): Fast O(1) autocomplete search box.
+    - [`MapLayerControls.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MapLayerControls.tsx): Grid voltage tier and satellite layer controls.
+    - [`MunicipalDisasterCard.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MunicipalDisasterCard.tsx): GCC Ward command, CUG directory, and GEE satellite cards.
+    - [`CopyIncidentSmsButton.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/CopyIncidentSmsButton.tsx): Offline 2G SMS / wireless VHF dispatch generator.
+    - [`FeederCardItem.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/FeederCardItem.tsx): Single feeder card with priority rank and voltage badges.
+    - [`GridJargonCheatSheet.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/GridJargonCheatSheet.tsx): Emergency grid operations terminology guide.
+    - [`SubstationInspectorDrawer.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/SubstationInspectorDrawer.tsx): Complete right-hand inspector drawer with dual-column split and tabbed view.
+  - Published comprehensive architectural specification in [`docs/07-crisis-resilience-and-maps-optimization.md`](file:///c:/projects/surgegrid-ai/docs/07-crisis-resilience-and-maps-optimization.md).
 
 ---
 

@@ -209,39 +209,48 @@ ACTION: Maintain live telemetry and portable diesel dewatering pump standby.
 
 ---
 
-## 4. Modularization Roadmap for `TnebGridMap.tsx`
+## 4. Modularization Roadmap for `TnebGridMap.tsx` (Completed in v1.5.0)
 
-`TnebGridMap.tsx` currently functions as a central coordination hub (~3,900 lines). While tightly bound to Google Maps instance lifecycles, the following decoupling plan provides a safe, incremental path toward modular components in future releases:
+`TnebGridMap.tsx` has been systematically refactored from a 3,900+ line monolith down to **988 lines** (a ~75% reduction in size), with clean single-responsibility components and zero behavioral regressions:
 
 ```mermaid
 graph TD
-    A["TnebGridMap Host Viewport"] --> B["MapContainer & WebGL Engine"]
+    A["TnebGridMap Host Viewport (~980 lines)"] --> B["MapContainer & WebGL Engine"]
     A --> C["DisasterCockpitBar"]
-    A --> D["TriageQuickFilterBar"]
-    A --> E["UnifiedSearchAutocomplete"]
+    A --> D["MapSearchBox"]
+    A --> E["MapLayerControls"]
     A --> F["SubstationInspectorDrawer"]
-    F --> G["TabSpecs: Plant & Specs"]
-    F --> H["TabCircuits: Circuits & Feeder Virtual List"]
-    F --> I["TabCivic: Municipal & CDMP 2023"]
-    I --> J["CopyIncidentSmsButton"]
+    F --> G["FeederCardItem (Virtual Feeders)"]
+    F --> H["MunicipalDisasterCard (GCC / CDMP 2023)"]
+    F --> I["GridJargonCheatSheet (SOPs & Jargon)"]
+    H --> J["CopyIncidentSmsButton (2G SMS Dispatch)"]
+    A -.-> K["mapStyles.ts & mapIcons.ts"]
+    A -.-> L["disasterUtils.ts"]
 ```
 
-### Extraction Guidelines & Completed Status:
-1. **`CopyIncidentSmsButton.tsx`** (Completed): Fully decoupled pure utility component in [`src/components/Map/CopyIncidentSmsButton.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/CopyIncidentSmsButton.tsx).
-2. **`MunicipalDisasterCard.tsx`** (Completed): Encapsulates GCC Wards, CUG directory, GEE satellite cards, and emergency hotlines in [`src/components/Map/MunicipalDisasterCard.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MunicipalDisasterCard.tsx).
-3. **`DisasterCockpitBar.tsx`** (Completed): Encapsulates top-center scenario pills (`Normal`, `Alert`, `Severe`, `Surge`) and triage quick-filters (`All`, `Submerged`, `Lifelines`) in [`src/components/Map/DisasterCockpitBar.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/DisasterCockpitBar.tsx).
-4. **`SubstationInspectorDrawer.tsx` / `MapViewport.tsx`** (Future Phase): Additional candidate extractions for isolating inspector tabs and camera lifecycles.
+### Modular Components & Dedicated Roles:
+1. **`src/components/Map/mapStyles.ts`**: Zero-POI cartography styles (`NO_POI_DARK_STYLE`, `NO_POI_LIGHT_STYLE`) and strict Chennai metro coordinates bounds (`CHENNAI_METRO_BOUNDS`).
+2. **`src/components/Map/mapIcons.ts`**: Dynamic SVG substation & section marker generators, selection halos, and DTR status badges.
+3. **`src/components/Map/disasterUtils.ts`**: Real-time flood inundation heuristics (`getFeederDisasterStatus`), anticipatory cyclone SOPs, and critical MSL elevation thresholds.
+4. **`src/components/Map/DisasterCockpitBar.tsx`**: Top-center floating operations bar with scenario pills (`Normal`, `Alert`, `Severe`, `Surge`) and triage filters (`All`, `Submerged`, `Lifelines`).
+5. **`src/components/Map/MapSearchBox.tsx`**: Top-left search bar with fast O(1) pre-indexed string tokens and early-exit matching.
+6. **`src/components/Map/MapLayerControls.tsx`**: Collapsible grid layer toggles (`Bulk EHV`, `Sub-Transmission`, `Distribution`, `AE Section Offices`, `Satellite/Hybrid`).
+7. **`src/components/Map/MunicipalDisasterCard.tsx`**: Greater Chennai Corporation (GCC) ward coordination, ward councillor CUG contacts, water/civil AE numbers, and Ripon Building emergency hotlines.
+8. **`src/components/Map/CopyIncidentSmsButton.tsx`**: 1-click generator for standardized offline text dispatch payloads sent to field personnel via edge 2G cellular or VHF radio.
+9. **`src/components/Map/FeederCardItem.tsx`**: Single feeder telemetry card with priority rank badges (P1 Non-Cut, P2 Essential), trip counts, voltage/cabling badges, and map view triggers.
+10. **`src/components/Map/GridJargonCheatSheet.tsx`**: Field jargon guide for emergency personnel (explaining P1 Non-Cut, ESF 15, RMU, and Stage 3 restoration).
+11. **`src/components/Map/SubstationInspectorDrawer.tsx`**: Full-height inspector drawer with dual-column split view (desktop) and 3-tab view (Specs, Circuits with virtualized feeder cards, Civic disaster coordination).
 
 ---
 
 ## 5. Verification & Performance Validation
 
 1. **Build Validation**:
-   - `tsc -b && vite build` completed in **485ms** with zero TypeScript errors or warnings.
-   - Bundle size: `369 kB` JS (`101 kB` gzip), `76 kB` CSS (`12 kB` gzip).
+   - `tsc -b && vite build` completed in **482ms** with zero TypeScript errors or warnings.
+   - Production bundle size: `352.99 kB` JS (`99.29 kB` gzip), `74.46 kB` CSS (`12.04 kB` gzip).
 2. **Offline Resilience**:
-   - Application tested with disconnected network adapter.
-   - IndexedDB correctly returned grid topology cache and circle geometries.
+   - Application verified operational with network disconnected.
+   - IndexedDB correctly returned grid topology cache and decimated circle geometries.
 3. **Google Maps Platform Skill Compliance**:
    - Added official skill attribution (`internalUsageAttributionIds: ['gmp_git_agentskills_v1']`).
    - Strict camera bounds clamping eliminates out-of-district map loads.
