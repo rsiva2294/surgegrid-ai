@@ -175,12 +175,15 @@ export function formatDisplayDate(dateStr?: string): string {
 /**
  * Standardizes event date parsing and computes age in days relative to current evaluation date.
  */
-export function getEventAgeInDays(dateStr: string, referenceDateStr = '2026-09-27'): number {
+export function getEventAgeInDays(dateStr: string, referenceDateStr?: string): number {
   if (!dateStr) return 90;
   try {
     const isoDate = normalizeToISODate(dateStr);
     const eventTime = new Date(isoDate).getTime();
-    const refTime = new Date(referenceDateStr).getTime();
+    // Dynamically default to current system date so event age and penalties automatically decay as calendar days advance
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const refDate = referenceDateStr || todayIso;
+    const refTime = new Date(refDate).getTime();
     const diffDays = Math.round((refTime - eventTime) / (1000 * 60 * 60 * 24));
     return Math.max(0, diffDays);
   } catch {

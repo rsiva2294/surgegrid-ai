@@ -180,10 +180,10 @@ function classifyScope(workType, feeder) {
   return 'yard_core';
 }
 
-function getEventAgeInDays(dateStr, refStr = '2026-09-27') {
+function getEventAgeInDays(dateStr, refStr) {
   try {
     const t = new Date(dateStr).getTime();
-    const r = new Date(refStr).getTime();
+    const r = refStr ? new Date(refStr).getTime() : Date.now();
     return Math.max(0, Math.round((r - t) / 86400000));
   } catch {
     return 60;
