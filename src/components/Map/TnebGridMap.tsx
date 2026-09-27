@@ -1097,7 +1097,21 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return selectedSubstation.feeders.filter(f => Boolean(f.lifelineCategory)).length;
   }, [selectedSubstation]);
 
-  // Filtered feeders for selected substation
+  // Helper for Option 1 Feeder Sorting: Criticality & Voltage Priority
+  const getFeederPriorityRank = (f: FeederDetail): number => {
+    if (f.priorityLevel === 'P1_CRITICAL' || f.priorityLevel === 'P1_NON_CUT' || f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water') return 1;
+    if (f.priorityLevel === 'P2_ESSENTIAL' || f.lifelineCategory === 'transit' || f.lifelineCategory === 'governance') return 2;
+    if (f.priorityLevel === 'P3_COMMERCIAL' || f.isDedicated || f.type?.toLowerCase().includes('dedicated') || f.lifelineCategory === 'industrial_ht') return 3;
+    return 4;
+  };
+
+  const getFeederVoltageNum = (voltageStr?: string): number => {
+    if (!voltageStr) return 0;
+    const match = voltageStr.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  };
+
+  // Filtered feeders for selected substation (Sorted by Option 1: Criticality & Voltage Priority)
   const filteredFeeders = useMemo(() => {
     if (!selectedSubstation || !selectedSubstation.feeders) return [];
     let list = selectedSubstation.feeders;
@@ -1113,7 +1127,30 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         (f.lifelineLabel && f.lifelineLabel.toLowerCase().includes(q))
       );
     }
-    return list;
+    return list.slice().sort((a, b) => {
+      // 1. Priority rank (P1 non-cut lifelines -> P2 essential -> P3 commercial/dedicated -> P4 residential)
+      const pA = getFeederPriorityRank(a);
+      const pB = getFeederPriorityRank(b);
+      if (pA !== pB) return pA - pB;
+
+      // 2. Voltage tier (descending: 33 kV step-down subtransmission before 11 kV)
+      const vA = getFeederVoltageNum(a.voltage);
+      const vB = getFeederVoltageNum(b.voltage);
+      if (vA !== vB) return vB - vA;
+
+      // 3. Consumer population served (descending)
+      const cA = a.consumers || 0;
+      const cB = b.consumers || 0;
+      if (cA !== cB) return cB - cA;
+
+      // 4. Distribution transformers count (descending)
+      const tA = a.transformers || 0;
+      const tB = b.transformers || 0;
+      if (tA !== tB) return tB - tA;
+
+      // 5. Deterministic tie-breaker
+      return a.name.localeCompare(b.name);
+    });
   }, [selectedSubstation, feederFilter, feederCategoryFilter]);
 
   const isLight = theme === 'light';
@@ -1852,6 +1889,19 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         </div>
                       )}
 
+                      {/* Sort Order & Feeder Count Subheader */}
+                      <div className={`flex items-center justify-between text-[10px] px-1 py-0.5 shrink-0 ${
+                        isLight ? 'text-slate-500' : 'text-slate-400'
+                      }`}>
+                        <span className="flex items-center gap-1 font-medium">
+                          <Activity className="w-3 h-3 text-cyan-500 shrink-0" />
+                          <span>Sorted: Priority & Voltage Tier</span>
+                        </span>
+                        <span className="font-mono text-[9px]">
+                          {filteredFeeders.length} {filteredFeeders.length === 1 ? 'line' : 'lines'}
+                        </span>
+                      </div>
+
                       {/* Feeders Scroll List (Full Remaining Height) */}
                       <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
                         {filteredFeeders.length > 0 ? (
@@ -2136,6 +2186,19 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                             </button>
                           </div>
                         )}
+
+                        {/* Sort Order & Feeder Count Subheader */}
+                        <div className={`flex items-center justify-between text-[10px] px-1 py-0.5 shrink-0 ${
+                          isLight ? 'text-slate-500' : 'text-slate-400'
+                        }`}>
+                          <span className="flex items-center gap-1 font-medium">
+                            <Activity className="w-3 h-3 text-cyan-500 shrink-0" />
+                            <span>Sorted: Priority & Voltage Tier</span>
+                          </span>
+                          <span className="font-mono text-[9px]">
+                            {filteredFeeders.length} {filteredFeeders.length === 1 ? 'line' : 'lines'}
+                          </span>
+                        </div>
 
                         {/* Feeders Scroll List (Full Available Vertical Space!) */}
                         <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
