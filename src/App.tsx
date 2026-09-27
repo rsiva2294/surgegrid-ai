@@ -92,22 +92,22 @@ export default function App() {
                 V5.0
               </span>
             </div>
-            <p className={`text-xs font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+            <p className={`text-xs font-medium hidden sm:block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               Chennai's Real-Time Grid &amp; Flood Resiliency Console
             </p>
           </div>
         </div>
 
         {/* Telemetry Controls & Live Weather */}
-        <div className="flex items-center gap-3 text-xs">
+        <div className="flex items-center gap-2 sm:gap-3 text-xs">
           {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
           {liveWeather && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border transition-all ${
+            <div className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border transition-all ${
               isLight
                 ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs ring-1 ring-emerald-500/10'
                 : 'bg-emerald-950/30 border-emerald-800/80 text-emerald-200 shadow-2xs ring-1 ring-emerald-500/10'
             }`}>
-              <div className="flex items-center gap-1.5 shrink-0 max-w-[170px] sm:max-w-[240px]">
+              <div className="flex items-center gap-1.5 shrink-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[240px]">
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -126,8 +126,8 @@ export default function App() {
 
               <span className={isLight ? 'text-emerald-300' : 'text-emerald-800'}>|</span>
 
-              <div className="flex items-center gap-2 font-mono text-xs">
-                <span className="font-bold" title={`Feels like ${liveWeather.feelsLikeC.toFixed(1)}°C`}>
+              <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-xs">
+                <span className="font-bold whitespace-nowrap" title={`Feels like ${liveWeather.feelsLikeC.toFixed(1)}°C`}>
                   🌡️ {liveWeather.temperatureC.toFixed(1)}°C
                 </span>
 
@@ -139,7 +139,7 @@ export default function App() {
                   💧 {liveWeather.humidityPercent}% RH
                 </span>
 
-                <span className={`text-[11px] font-sans font-medium px-1.5 py-0.5 rounded ${
+                <span className={`hidden md:inline text-[11px] font-sans font-medium px-1.5 py-0.5 rounded ${
                   isLight ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' : 'bg-emerald-900/40 text-emerald-300 border border-emerald-700/40'
                 }`}>
                   {liveWeather.conditionText}
@@ -162,22 +162,23 @@ export default function App() {
           {/* Light / Dark Mode Toggle Button */}
           <button
             onClick={toggleTheme}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl font-medium text-xs transition-all shadow-sm border ${
+            className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl font-medium text-xs transition-all shadow-sm border ${
               isLight
                 ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 hover:border-slate-400'
                 : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-slate-600'
             }`}
             title={`Switch to ${isLight ? 'Dark' : 'Light'} Mode`}
+            aria-label={`Switch to ${isLight ? 'Dark' : 'Light'} Mode`}
           >
             {isLight ? (
               <>
-                <Moon className="w-4 h-4 text-indigo-600" />
-                <span className="font-semibold">Dark Mode</span>
+                <Moon className="w-4 h-4 text-indigo-600 shrink-0" />
+                <span className="font-semibold hidden sm:inline">Dark Mode</span>
               </>
             ) : (
               <>
-                <Sun className="w-4 h-4 text-amber-400" />
-                <span className="font-semibold">Light Mode</span>
+                <Sun className="w-4 h-4 text-amber-400 shrink-0" />
+                <span className="font-semibold hidden sm:inline">Light Mode</span>
               </>
             )}
           </button>

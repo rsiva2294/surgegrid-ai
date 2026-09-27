@@ -31,8 +31,8 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
   liveWeather
 }) => {
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-1.5 w-auto max-w-[calc(100vw-2rem)]">
-      <div className={`pointer-events-auto rounded-2xl p-1 border flex items-center gap-1 transition-all ${
+    <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-1.5 w-auto max-w-[calc(100vw-1rem)] md:max-w-none">
+      <div className={`pointer-events-auto rounded-2xl p-1 border flex items-center gap-1 transition-all max-w-full overflow-x-auto no-scrollbar ${
         isLight
           ? 'bg-white/98 border-slate-300/90 text-slate-900 shadow-[0_10px_35px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/95 border-slate-700/80 text-white shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
@@ -145,7 +145,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
 
       {/* Dynamic Statutory Protocol Readout Strip for Emergency Drills */}
       {disasterScenario !== 'NORMAL' && (
-        <div className={`pointer-events-auto px-3.5 py-1 rounded-full text-xs shadow-md border flex items-center justify-center gap-2 backdrop-blur-md text-center max-w-xl transition-all ${
+        <div className={`pointer-events-auto px-3 py-1 rounded-full text-[11px] sm:text-xs shadow-md border flex items-center justify-center gap-1.5 backdrop-blur-md text-center max-w-xl transition-all ${
           disasterScenario === 'CYCLONE_ALERT'
             ? (isLight ? 'bg-yellow-50/95 border-yellow-300 text-yellow-900 shadow-yellow-500/10' : 'bg-yellow-950/85 border-yellow-700/80 text-yellow-200 shadow-black/40') :
           disasterScenario === 'SEVERE_CYCLONE'
@@ -153,7 +153,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             (isLight ? 'bg-rose-50/95 border-rose-300 text-rose-900 shadow-rose-500/10' : 'bg-rose-950/85 border-rose-700/80 text-rose-200 shadow-black/40')
         }`}>
           <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-          <span className="font-semibold tracking-tight text-center">
+          <span className="font-semibold tracking-tight text-center leading-tight">
             {disasterScenario === 'CYCLONE_ALERT' && 'Cyclone Watch Advisory (Wind 65 km/h) • Lineman Foot Patrols Alerted'}
             {disasterScenario === 'SEVERE_CYCLONE' && 'TNSDMA §5.6 Mandate: Overhead Radial Lines Tripped (>80 km/h) • UG Ring Feeders Preserved'}
             {disasterScenario === 'EXTREME_SURGE' && 'TNSDMA 3.0m Surge Mandate: Substation Inundation & Mobile Dewatering Active'}
@@ -162,7 +162,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
       )}
 
       {/* Disaster Triage Quick Filters */}
-      <div className={`pointer-events-auto rounded-xl p-1 border flex items-center gap-1.5 transition-all text-xs ${
+      <div className={`pointer-events-auto rounded-xl p-1 border flex items-center gap-1.5 transition-all text-xs max-w-full overflow-x-auto no-scrollbar whitespace-nowrap ${
         isLight
           ? 'bg-white/98 border-slate-300/90 text-slate-800 shadow-[0_8px_25px_-4px_rgba(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/95 border-slate-700/80 text-white shadow-[0_8px_30px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'

@@ -135,15 +135,18 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 
   return (
     <div
-      className={`absolute top-4 bottom-4 right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 w-[calc(100vw-2rem)] md:w-[460px]`}
+      className={`absolute inset-x-0 bottom-0 md:inset-auto md:top-4 md:bottom-4 md:right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 w-full md:w-[460px] max-h-[75vh] md:max-h-none`}
     >
       <div
-        className={`pointer-events-auto rounded-2xl p-4 flex flex-col h-full w-full border transition-colors ${
+        className={`pointer-events-auto rounded-t-2xl md:rounded-2xl p-3.5 sm:p-4 flex flex-col h-full w-full border transition-colors ${
           isLight
-            ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[-16px_0_45px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
-            : 'bg-slate-900/95 border-l-2 border-slate-700/90 text-slate-200 shadow-[-16px_0_45px_rgba(0,0,0,0.9)] ring-1 ring-white/10 backdrop-blur-xl'
+            ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[0_-10px_35px_rgba(15,23,42,0.18)] md:shadow-[-16px_0_45px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
+            : 'bg-slate-900/95 border-t-2 md:border-t-0 md:border-l-2 border-slate-700/90 text-slate-200 shadow-[0_-12px_40px_rgba(0,0,0,0.9)] md:shadow-[-16px_0_45px_rgba(0,0,0,0.9)] ring-1 ring-white/10 backdrop-blur-xl'
         }`}
       >
+        {/* Mobile Sheet Drag Indicator */}
+        <div className="w-12 h-1 bg-slate-400/40 dark:bg-slate-500/40 rounded-full mx-auto -mt-1 mb-2.5 md:hidden shrink-0" />
+
         {/* Pinned Header */}
         <div className={`flex items-start justify-between gap-3 pb-3 border-b shrink-0 ${isLight ? 'border-slate-300/70' : 'border-slate-700/80'}`}>
           <div className="min-w-0 flex-1">

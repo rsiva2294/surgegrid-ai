@@ -96,7 +96,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showConnections, setShowConnections] = useState(false);
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
-  const [isLayersExpanded, setIsLayersExpanded] = useState(true);
+  const [isLayersExpanded, setIsLayersExpanded] = useState(() => {
+    return typeof window !== 'undefined' ? window.innerWidth >= 768 : true;
+  });
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
@@ -976,7 +978,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       />
 
       {/* Top Left Floating Search & Quick Filters */}
-      <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+      <div className="absolute top-[5.25rem] md:top-4 left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] md:max-w-sm pointer-events-none">
         <MapSearchBox
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
