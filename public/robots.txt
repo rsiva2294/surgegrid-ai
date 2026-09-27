@@ -1,0 +1,6 @@
+# https://surgegrid.nammamap.in robots.txt
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://surgegrid.nammamap.in/sitemap.xml
