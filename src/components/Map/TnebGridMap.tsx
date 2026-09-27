@@ -1097,12 +1097,19 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return selectedSubstation.feeders.filter(f => Boolean(f.lifelineCategory)).length;
   }, [selectedSubstation]);
 
-  // Helper for Option 1 Feeder Sorting: Criticality & Voltage Priority
+  // Helper for Feeder Sorting: Criticality, Sub-Transmission & Voltage Priority
   const getFeederPriorityRank = (f: FeederDetail): number => {
+    // Tier 1: P1 Critical Lifelines (Water / Sewage Pumping, Hospitals)
     if (f.priorityLevel === 'P1_CRITICAL' || f.priorityLevel === 'P1_NON_CUT' || f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water') return 1;
+    // Tier 2: P2 Essential Services (Metro, Rail, Govt / Defense HQ)
     if (f.priorityLevel === 'P2_ESSENTIAL' || f.lifelineCategory === 'transit' || f.lifelineCategory === 'governance') return 2;
-    if (f.priorityLevel === 'P3_COMMERCIAL' || f.isDedicated || f.type?.toLowerCase().includes('dedicated') || f.lifelineCategory === 'industrial_ht') return 3;
-    return 4;
+    // Tier 3: 33 kV Sub-transmission Trunks (inter-substation step-down lines / interconnects)
+    const is33kVTrunk = f.voltage?.includes('33') && !f.type?.toLowerCase().includes('dedicated') && f.lifelineCategory !== 'industrial_ht' && f.priorityLevel !== 'P3_COMMERCIAL';
+    if (is33kVTrunk) return 3;
+    // Tier 4: P3 Commercial / Dedicated Industrial HT Services
+    if (f.priorityLevel === 'P3_COMMERCIAL' || f.lifelineCategory === 'industrial_ht' || f.type?.toLowerCase().includes('dedicated')) return 4;
+    // Tier 5: Standard Low-Voltage Distribution Feeders
+    return 5;
   };
 
   const getFeederVoltageNum = (voltageStr?: string): number => {
@@ -1995,6 +2002,22 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                   </div>
                                 )}
 
+                                {!badge && f.voltage?.includes('33') && !f.type?.toLowerCase().includes('dedicated') && (
+                                  <div className="flex items-center gap-1.5 my-1 flex-wrap">
+                                    <span className={`px-1.5 py-0.2 rounded font-bold text-[9px] border flex items-center gap-1 ${
+                                      isLight ? 'bg-amber-50 text-amber-900 border-amber-300' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                    }`}>
+                                      <span>⚡</span>
+                                      <span>33 kV Sub-Transmission Trunk</span>
+                                    </span>
+                                    <span className={`px-1 py-0.2 rounded text-[9px] font-mono font-bold ${
+                                      isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-500 text-slate-950 font-black'
+                                    }`}>
+                                      INTER-SS
+                                    </span>
+                                  </div>
+                                )}
+
                                 <div className={`flex items-center justify-between text-[11px] font-mono ${
                                   isLight ? 'text-slate-600' : 'text-slate-400'
                                 }`}>
@@ -2290,6 +2313,22 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                           • Dedicated HT
                                         </span>
                                       )}
+                                    </div>
+                                  )}
+
+                                  {!badge && f.voltage?.includes('33') && !f.type?.toLowerCase().includes('dedicated') && (
+                                    <div className="flex items-center gap-1.5 my-1 flex-wrap">
+                                      <span className={`px-1.5 py-0.2 rounded font-bold text-[9px] border flex items-center gap-1 ${
+                                        isLight ? 'bg-amber-50 text-amber-900 border-amber-300' : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                      }`}>
+                                        <span>⚡</span>
+                                        <span>33 kV Sub-Transmission Trunk</span>
+                                      </span>
+                                      <span className={`px-1 py-0.2 rounded text-[9px] font-mono font-bold ${
+                                        isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-500 text-slate-950 font-black'
+                                      }`}>
+                                        INTER-SS
+                                      </span>
                                     </div>
                                   )}
 

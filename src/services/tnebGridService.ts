@@ -57,7 +57,8 @@ const LIFELINE_PATTERNS = {
 
 export function classifyFeeder(feeder: FeederDetail): FeederDetail {
   const name = feeder.name.toUpperCase();
-  const isDedicated = feeder.type.toLowerCase().includes('dedicated') || (feeder.transformers === 0 && feeder.consumers <= 5);
+  const is33kVTrunk = feeder.voltage?.includes('33') && !feeder.type?.toLowerCase().includes('dedicated');
+  const isDedicated = feeder.type.toLowerCase().includes('dedicated') || (!is33kVTrunk && feeder.transformers === 0 && feeder.consumers > 0 && feeder.consumers <= 5);
 
   for (const [cat, conf] of Object.entries(LIFELINE_PATTERNS)) {
     if (conf.regex.test(name)) {
@@ -72,7 +73,7 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
   }
 
   // Check if dedicated industrial/commercial HT
-  if (isDedicated && feeder.type.toLowerCase().includes('dedicated')) {
+  if (isDedicated && (feeder.type.toLowerCase().includes('dedicated') || !is33kVTrunk)) {
     return {
       ...feeder,
       isDedicated: true,
@@ -84,7 +85,7 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
 
   return {
     ...feeder,
-    isDedicated
+    isDedicated: Boolean(isDedicated)
   };
 }
 
