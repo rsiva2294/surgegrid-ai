@@ -134,7 +134,7 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
 
 import { get, set } from 'idb-keyval';
 
-const IDB_GRID_KEY = 'surgegrid_chennai_grid_v5';
+const IDB_GRID_KEY = 'surgegrid_chennai_grid_v12_all_authentic_outages_mapped';
 let cachedGrid: ChennaiGridData | null = null;
 
 function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
@@ -176,7 +176,8 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
   // 2. Persistent Offline IndexedDB check (< 15ms)
   try {
     const idbData = await get<ChennaiGridData>(IDB_GRID_KEY);
-    if (idbData && idbData.substations && idbData.substations.length > 0) {
+    const hasEvents = idbData?.substations?.some(s => s.healthProfile?.events && s.healthProfile.events.length > 0);
+    if (idbData && idbData.substations && idbData.substations.length > 0 && hasEvents) {
       cachedGrid = idbData;
       console.log('[tnebGridService] Restored Chennai grid topology from IndexedDB cache (%d substations)', idbData.counts.substations);
 

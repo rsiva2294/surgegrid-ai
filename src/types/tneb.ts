@@ -108,6 +108,38 @@ export interface TnebSubstation {
   wardTangedcoMobile?: string;
   wardGccAeMobile?: string;
   wardReliefSheltersCount?: number;
+  // Asset Health & 90-Day Operational Risk Profile
+  healthProfile?: SubstationHealthProfile;
+  outageHistory?: OutageHistoryEvent[];
+}
+
+export interface OutageHistoryEvent {
+  id?: string;
+  date: string; // ISO date YYYY-MM-DD or DD-MM-YYYY
+  workType: string;
+  category: 'periodic_maintenance' | 'forced_trip' | 'emergency_repair';
+  scope?: 'yard_core' | 'feeder_corridor' | 'lt_street'; // Switchyard Core (parent plant), Feeder Line, or Street-Level LT distribution
+  timing?: string;
+  location?: string;
+  feeder?: string;
+  durationHours?: number;
+  isLiveActive?: boolean;
+}
+
+export interface SubstationHealthProfile {
+  totalOutages90d: number;
+  periodicMaintenanceCount: number;
+  unscheduledTripsCount: number;
+  yardCoreMaintenanceCount?: number;
+  feederMaintenanceCount?: number;
+  ltStreetMaintenanceCount?: number;
+  cleanStreakDays?: number;
+  healthScore: number; // 0 - 100
+  healthGrade: 'A' | 'B' | 'C' | 'D'; // A: >=85, B: 75-84, C: 55-74, D: <55
+  disasterRiskMultiplier: number; // 1.0x to 1.5x
+  lastMaintenanceDate?: string;
+  lastTripDate?: string;
+  events: OutageHistoryEvent[];
 }
 
 export interface TnebSection {

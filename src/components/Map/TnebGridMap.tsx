@@ -3,10 +3,11 @@ import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import { getFeederGeometry, getFeederTransformers } from '../../services/feederGeometryService';
 import { Shield } from 'lucide-react';
-import { DisasterCockpitBar, type DisasterScenario } from './DisasterCockpitBar';
+import { DisasterCockpitBar, type DisasterScenario, type CrisisTriageFilter } from './DisasterCockpitBar';
 import { MapSearchBox } from './MapSearchBox';
 import { MapLayerControls } from './MapLayerControls';
 import { SubstationInspectorDrawer } from './SubstationInspectorDrawer';
+import { getLiveChennaiOutages, getOutagesForSubstation, type LiveOutage } from '../../services/liveOutageService';
 import { NO_POI_DARK_STYLE, NO_POI_LIGHT_STYLE, CHENNAI_METRO_BOUNDS } from './mapStyles';
 import {
   getNodeColor,
@@ -20,6 +21,7 @@ import {
   type FeederDisasterStatus,
   getFeederDisasterStatus
 } from './disasterUtils';
+import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
 
 export type { DisasterScenario, FeederDisasterStatus };
 export { getFeederDisasterStatus, CHENNAI_METRO_BOUNDS };
@@ -92,15 +94,38 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
-  const [crisisTriageFilter, setCrisisTriageFilter] = useState<'all' | 'submerged' | 'lifelines'>('all');
+  const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
+  const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
 
-  const submergedSubstationsCount = useMemo(() => {
-    return substations.filter(s => s.elevationM !== undefined && s.elevationM <= 3.2).length;
+  // Fetch real-time live outages from outage.nammamap.in on load
+  useEffect(() => {
+    let isMounted = true;
+    getLiveChennaiOutages().then(res => {
+      if (isMounted && res.data) {
+        setLiveOutages(res.data);
+      }
+    });
+    return () => { isMounted = false; };
+  }, []);
+
+  const poorStabilityCount = useMemo(() => {
+    return substations.filter(s => isSubstationAtRisk(s, liveOutages)).length;
+  }, [substations, liveOutages]);
+
+  const waterloggingRiskCount = useMemo(() => {
+    return substations.filter(s => isSubstationWaterloggingRisk(s)).length;
   }, [substations]);
 
-  const lifelineSubstationsCount = useMemo(() => {
-    return substations.filter(s => (s.feeders || []).some(f => Boolean(f.lifelineCategory))).length;
-  }, [substations]);
+  const substationsWithOutages = useMemo(() => {
+    if (liveOutages.length === 0) return new Set<string>();
+    const set = new Set<string>();
+    substations.forEach(s => {
+      if (getOutagesForSubstation(s, liveOutages).length > 0) {
+        set.add(s.code);
+      }
+    });
+    return set;
+  }, [substations, liveOutages]);
 
   // Reset showConnections and selectedFeeder when selected substation changes
   useEffect(() => {
@@ -322,9 +347,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
       const matchesTriage = crisisTriageFilter === 'all'
         ? true
-        : crisisTriageFilter === 'submerged'
-        ? (ss.elevationM !== undefined && ss.elevationM <= 3.2)
-        : (ss.feeders || []).some(f => Boolean(f.lifelineCategory));
+        : crisisTriageFilter === 'poor_stability'
+        ? isSubstationAtRisk(ss, liveOutages)
+        : crisisTriageFilter === 'waterlogging_risk'
+        ? isSubstationWaterloggingRisk(ss)
+        : substationsWithOutages.has(ss.code);
 
       const isVisible = matchesTriage && (isolatedNodeIds
         ? isolatedNodeIds.has(ss.code)
@@ -338,16 +365,18 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         if (marker.getMap() !== null) marker.setMap(null);
       }
     });
-  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, crisisTriageFilter, mapLoaded, substations]);
+  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, crisisTriageFilter, substationsWithOutages, mapLoaded, substations, liveOutages]);
 
   // Auto-fit camera when triage filter is selected
   useEffect(() => {
     if (!mapRef.current || !mapLoaded || crisisTriageFilter === 'all') return;
     const b = new google.maps.LatLngBounds();
     substations.forEach(s => {
-      const match = crisisTriageFilter === 'submerged'
-        ? (s.elevationM !== undefined && s.elevationM <= 3.2)
-        : (s.feeders || []).some(f => Boolean(f.lifelineCategory));
+      const match = crisisTriageFilter === 'poor_stability'
+        ? isSubstationAtRisk(s, liveOutages)
+        : crisisTriageFilter === 'waterlogging_risk'
+        ? isSubstationWaterloggingRisk(s)
+        : substationsWithOutages.has(s.code);
       if (match && typeof s.lat === 'number' && typeof s.lng === 'number' && !isNaN(s.lat) && !isNaN(s.lng)) {
         b.extend({ lat: s.lat, lng: s.lng });
       }
@@ -355,7 +384,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     if (!b.isEmpty()) {
       mapRef.current.fitBounds(b, { top: 90, right: 460, bottom: 90, left: 90 });
     }
-  }, [crisisTriageFilter, mapLoaded, substations]);
+  }, [crisisTriageFilter, mapLoaded, substations, liveOutages, substationsWithOutages]);
 
   // 4. Section Viewport & Layer Optimization (only active when layer toggled or selected)
   useEffect(() => {
@@ -928,8 +957,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         crisisTriageFilter={crisisTriageFilter}
         setCrisisTriageFilter={setCrisisTriageFilter}
         substationsCount={substations.length}
-        submergedSubstationsCount={submergedSubstationsCount}
-        lifelineSubstationsCount={lifelineSubstationsCount}
+        poorStabilityCount={poorStabilityCount}
+        waterloggingRiskCount={waterloggingRiskCount}
+        liveOutagesCount={liveOutages.length}
         isLight={isLight}
       />
 
@@ -976,6 +1006,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         selectedFeeder={selectedFeeder}
         setSelectedFeeder={setSelectedFeeder}
         disasterScenario={disasterScenario}
+        liveOutages={liveOutages}
         isLight={isLight}
       />
     </div>

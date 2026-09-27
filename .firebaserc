@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "namma-map-407ca"
+  },
+  "targets": {
+    "namma-map-407ca": {
+      "hosting": {
+        "surgegrid": [
+          "surgegrid"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

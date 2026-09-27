@@ -4,6 +4,31 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.6.0-authentic-outage-ingestion-and-calibrated-scoring] - 2026-09-27
+
+### Added & Calibrated (100% Authentic TNEB Outage Integration & Power Engineering Health Scoring)
+- **100% Authentic TNEB Outage Data Ingestion**:
+  - Replaced all synthetic mock operational event generators with direct ingestion of **1,094 authentic Chennai outage notices** from `data-archive/data/chennai_resolved_outages.json`.
+  - Mapped **595 direct substation and canonical alias matches** (covering complex name variants like *Pallavaram*, *Kilpauk Water Works*, *Ambattur IE*, *Vadapalani GIS*, *MKB Nagar*, *St. Thomas Mount*).
+  - Implemented spatial nearest-substation mapping ($\le 5.0\text{ km}$) for **499 O&M section-level and street calls** logged with `Unknown SS` (e.g., `AE/O&M/SAIDAPET/WEST`, `AE/O&M/SOWCARPET/EAST`), binding localized incidents to their parent grid nodes.
+  - Filtered out **152 statewide non-Chennai records** (Trichy Metro, Coimbatore, Madurai, Thoothukudi) scraped during statewide sweeps.
+  - Substation operational log breakdown: **840 scheduled maintenance & planned civic works** + **373 sudden forced trips / line breakdowns**.
+- **Power Engineering Calibrated Health Scoring Engine (`gridHealthService.ts`)**:
+  - **Substation Feeder Scale Normalization ($\frac{4}{\sqrt{N_{\text{feeders}}}}$)**: Eliminates unfair penalties on high-capacity multi-feeder hubs (e.g., *Pallavaram SS* with 25 feeders, 132 MVA); normalizes radial corridor trips to $3.6 - 8$ pts per incident rather than penalizing as whole-yard failures.
+  - **Scope-Based Base Penalties**: Distinct penalty weights for switchyard core equipment breakdowns (`yard_core` = 18 pts), 11kV radial line corridor faults (`feeder_corridor` = $8 \times \text{feederFactor}$), and low-tension street pillars (`lt_street` = 3 pts).
+  - **Civic & Scheduled Works Classification**: Accurately classifies planned road-widening pole shifts, RMU conversions, and planned transformer rectifications as `periodic_maintenance` rather than forced trips.
+  - **Post-Trip Maintenance Relief**: Subsequent scheduled maintenance provides a **45% penalty relief ($0.55\times$)** on prior trips, rewarding verified field crew remediation.
+  - **Recency Decay**: $\le 14\text{ days} = 1.0\times$, $15 - 45\text{ days} = 0.75\times$, $> 45\text{ days} = 0.50\times$.
+  - **Neglect Penalties**: $-12$ pts for 0 PM with trips; $-6$ pts for unaddressed trips following the last scheduled PM.
+- **Triage Filter Alignment**:
+  - Triage quick-filters in `DisasterCockpitBar.tsx` now accurately isolate:
+    - **⚠️ Poor Stability (`< 75`)**: Identifies exactly 10 chronically strained substations (e.g., *Chindhatripet SS*, *Perungudi SS*, *Velachery SS*, *Cooks Road SS*).
+    - **🌊 Waterlogging Risk**: Identifies 45 substations with low plinth elevation ($\le 3.2\text{m MSL}$) or critical surge inundation risk.
+- **Client Cache Invalidation**:
+  - Bumped IndexedDB key to `surgegrid_chennai_grid_v12_all_authentic_outages_mapped` in `tnebGridService.ts` for immediate browser cache rehydration.
+
+---
+
 ## [1.5.0-crisis-resilience-and-maps-optimization] - 2026-09-27
 
 ### Added & Optimized (Google Maps Platform & Crisis Resilience Architecture)

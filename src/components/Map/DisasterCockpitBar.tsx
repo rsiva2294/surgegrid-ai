@@ -3,14 +3,17 @@ import { Wind, AlertTriangle } from 'lucide-react';
 
 export type DisasterScenario = 'NORMAL' | 'CYCLONE_ALERT' | 'SEVERE_CYCLONE' | 'EXTREME_SURGE';
 
+export type CrisisTriageFilter = 'all' | 'poor_stability' | 'waterlogging_risk' | 'outages';
+
 export interface DisasterCockpitBarProps {
   disasterScenario: DisasterScenario;
   setDisasterScenario: (scenario: DisasterScenario) => void;
-  crisisTriageFilter: 'all' | 'submerged' | 'lifelines';
-  setCrisisTriageFilter: (filter: 'all' | 'submerged' | 'lifelines') => void;
-  substationsCount: number;
-  submergedSubstationsCount: number;
-  lifelineSubstationsCount: number;
+  crisisTriageFilter: CrisisTriageFilter;
+  setCrisisTriageFilter: (filter: CrisisTriageFilter) => void;
+  poorStabilityCount: number;
+  waterloggingRiskCount: number;
+  liveOutagesCount?: number;
+  substationsCount?: number;
   isLight: boolean;
 }
 
@@ -19,9 +22,9 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
   setDisasterScenario,
   crisisTriageFilter,
   setCrisisTriageFilter,
-  substationsCount,
-  submergedSubstationsCount,
-  lifelineSubstationsCount,
+  poorStabilityCount,
+  waterloggingRiskCount,
+  liveOutagesCount = 0,
   isLight
 }) => {
   return (
@@ -142,47 +145,75 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 text-slate-500">
           Triage:
         </span>
+
+        {/* 1. Poor Stability (<75 Health Score) */}
         <button
           type="button"
-          onClick={() => setCrisisTriageFilter('all')}
-          className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all ${
-            crisisTriageFilter === 'all'
-              ? (isLight ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'bg-indigo-500 text-white font-semibold shadow-xs')
-              : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-300')
-          }`}
-        >
-          All Grid ({substationsCount})
-        </button>
-        <button
-          type="button"
-          onClick={() => setCrisisTriageFilter('submerged')}
+          onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'poor_stability' ? 'all' : 'poor_stability')}
           className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-            crisisTriageFilter === 'submerged'
-              ? 'bg-rose-600 text-white font-semibold shadow-xs'
-              : (isLight ? 'hover:bg-rose-50 text-rose-700' : 'hover:bg-rose-950/60 text-rose-300')
+            crisisTriageFilter === 'poor_stability'
+              ? (isLight ? 'bg-amber-600 text-white font-semibold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
+              : (isLight ? 'hover:bg-amber-50 text-amber-700' : 'hover:bg-amber-950/60 text-amber-300')
           }`}
-          title="Filter to substations with elevation <= 3.2m (TNSDMA critical flood surge threshold)"
+          title="Filter to infrastructure with poor operational stability & resiliency health score < 75"
         >
-          <span>🌊 Submerged Yards</span>
+          <span>⚠️ Poor Stability (&lt;75)</span>
           <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/20 font-bold">
-            {submergedSubstationsCount}
+            {poorStabilityCount}
           </span>
         </button>
+
+        {/* 2. Waterlogging / Elevation Vulnerability */}
         <button
           type="button"
-          onClick={() => setCrisisTriageFilter('lifelines')}
+          onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'waterlogging_risk' ? 'all' : 'waterlogging_risk')}
           className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
-            crisisTriageFilter === 'lifelines'
-              ? 'bg-emerald-600 text-white font-semibold shadow-xs'
-              : (isLight ? 'hover:bg-emerald-50 text-emerald-700' : 'hover:bg-emerald-950/60 text-emerald-300')
+            crisisTriageFilter === 'waterlogging_risk'
+              ? (isLight ? 'bg-cyan-600 text-white font-semibold shadow-xs' : 'bg-cyan-500 text-slate-950 font-bold shadow-xs')
+              : (isLight ? 'hover:bg-cyan-50 text-cyan-700' : 'hover:bg-cyan-950/60 text-cyan-300')
           }`}
-          title="Filter to substations serving critical lifelines (Hospitals, Water/Sewage pumps, Metro/Transit)"
+          title="Filter to infrastructure vulnerable to waterlogging because elevation is not high enough (<= 3.2m MSL or High Flood / Surge Hazard)"
         >
-          <span>🏥 Lifeline Hubs</span>
+          <span>🌊 Waterlogging Risk</span>
           <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/20 font-bold">
-            {lifelineSubstationsCount}
+            {waterloggingRiskCount}
           </span>
         </button>
+
+        {/* 3. Live Outages */}
+        <button
+          type="button"
+          onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'outages' ? 'all' : 'outages')}
+          className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+            crisisTriageFilter === 'outages'
+              ? (isLight ? 'bg-amber-600 text-white font-semibold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
+              : (isLight ? 'hover:bg-amber-50 text-amber-700' : 'hover:bg-amber-950/60 text-amber-300')
+          }`}
+          title="Filter to grid nodes with active live outages or maintenance today (outage.nammamap.in)"
+        >
+          <span className="flex items-center gap-1">⚡ Live Outages</span>
+          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
+            liveOutagesCount > 0 ? 'bg-amber-500 text-slate-950' : 'bg-black/20'
+          }`}>
+            {liveOutagesCount}
+          </span>
+        </button>
+
+        {/* Clear Filter / Back to Full Grid */}
+        {crisisTriageFilter !== 'all' && (
+          <button
+            type="button"
+            onClick={() => setCrisisTriageFilter('all')}
+            className={`ml-1 px-1.5 py-0.5 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1 ${
+              isLight
+                ? 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
+            }`}
+            title="Clear filter and show full grid (default)"
+          >
+            <span>✕ Clear</span>
+          </button>
+        )}
       </div>
     </div>
   );

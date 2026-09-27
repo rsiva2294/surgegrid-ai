@@ -12,8 +12,6 @@ import {
   ArrowRight,
   ChevronDown,
   ChevronUp,
-  Columns2,
-  Minimize2,
   Info,
   Building2,
   AlertTriangle
@@ -24,7 +22,8 @@ import type { ConnectedGridNode } from './TnebGridMap';
 import { MunicipalDisasterCard } from './MunicipalDisasterCard';
 import { FeederCardItem } from './FeederCardItem';
 import { GridJargonCheatSheet } from './GridJargonCheatSheet';
-import { CopyIncidentSmsButton } from './CopyIncidentSmsButton';
+import { SubstationHealthCard } from './SubstationHealthCard';
+import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 
 interface SubstationInspectorDrawerProps {
   selectedSubstation: TnebSubstation | null;
@@ -38,6 +37,7 @@ interface SubstationInspectorDrawerProps {
   selectedFeeder: FeederDetail | null;
   setSelectedFeeder: React.Dispatch<React.SetStateAction<FeederDetail | null>>;
   disasterScenario: DisasterScenario;
+  liveOutages?: LiveOutage[];
   isLight: boolean;
 }
 
@@ -53,9 +53,9 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   selectedFeeder,
   setSelectedFeeder,
   disasterScenario,
+  liveOutages = [],
   isLight
 }) => {
-  const [isInspectorExpanded, setIsInspectorExpanded] = useState(false);
   const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
   const [showJargonGuide, setShowJargonGuide] = useState(false);
@@ -70,6 +70,14 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
     setShowJargonGuide(false);
     setFeederFilter('');
   }, [selectedSubstation]);
+
+  const activeSubstationOutages = useMemo(() => {
+    return selectedSubstation ? getOutagesForSubstation(selectedSubstation, liveOutages) : [];
+  }, [selectedSubstation, liveOutages]);
+
+  const activeSectionOutages = useMemo(() => {
+    return selectedSection ? getOutagesForSection(selectedSection, liveOutages) : [];
+  }, [selectedSection, liveOutages]);
 
   const getFeederPriorityRank = (f: FeederDetail): number => {
     if (f.priorityLevel === 'P1_CRITICAL' || f.priorityLevel === 'P1_NON_CUT' || f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water') return 1;
@@ -127,11 +135,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 
   return (
     <div
-      className={`absolute top-4 bottom-4 right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 ${
-        isInspectorExpanded && selectedSubstation
-          ? 'w-[calc(100vw-2rem)] md:w-[860px]'
-          : 'w-[calc(100vw-2rem)] md:w-[460px]'
-      }`}
+      className={`absolute top-4 bottom-4 right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 w-[calc(100vw-2rem)] md:w-[460px]`}
     >
       <div
         className={`pointer-events-auto rounded-2xl p-4 shadow-2xl flex flex-col h-full w-full border transition-colors ${
@@ -237,27 +241,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
-            {selectedSubstation && (
-              <button
-                onClick={() => setIsInspectorExpanded(!isInspectorExpanded)}
-                className={`p-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
-                  isInspectorExpanded
-                    ? isLight
-                      ? 'bg-sky-100 text-sky-800'
-                      : 'bg-cyan-500/20 text-cyan-300'
-                    : isLight
-                    ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200'
-                    : 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700'
-                }`}
-                title={
-                  isInspectorExpanded
-                    ? 'Switch to Single Column Tabbed View'
-                    : 'Split View: Show Connections & Feeders Side-by-Side'
-                }
-              >
-                {isInspectorExpanded ? <Minimize2 className="w-4 h-4" /> : <Columns2 className="w-4 h-4" />}
-              </button>
-            )}
             <button
               onClick={() => {
                 onSelectSubstation(null);
@@ -348,596 +331,8 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
             </div>
 
-            {/* Substation Content: Dual Column Split View OR Single Column Tabbed View */}
-            {isInspectorExpanded ? (
-              /* SPLIT COCKPIT VIEW */
-              <div className="flex-1 grid grid-cols-2 gap-4 min-h-0 pt-2.5">
-                {/* Left Panel: Connections & Substation Field Metadata */}
-                <div className="flex flex-col h-full min-h-0 pr-3 border-r border-current/10 space-y-2.5 overflow-y-auto">
-                  {/* Active Storm Surge / Inundation Alert */}
-                  {disasterScenario === 'EXTREME_SURGE' &&
-                    selectedSubstation.elevationM !== undefined &&
-                    selectedSubstation.elevationM <= 3.2 && (
-                      <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold leading-tight flex items-start gap-2 shadow-lg animate-pulse shrink-0 border border-rose-400/40">
-                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-200" />
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="uppercase tracking-wider font-black text-xs text-white">
-                              CRITICAL: Switchyard Inundation Event
-                            </span>
-                            <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-black/25 text-amber-200 font-bold uppercase">
-                              3.2m Surge Active
-                            </span>
-                          </div>
-                          <p className="font-normal opacity-95 text-xs mt-1 leading-snug">
-                            Yard elevation ({selectedSubstation.elevationM}m MSL) submerged by 3.2m surge. Switchyard
-                            pre-emptively isolated & de-energized. Deploy mobile diesel pumps per TANGEDCO SOP.
-                          </p>
-                        </div>
-                      </div>
-                    )}
 
-                  {/* Consolidated Administrative & Switchyard Capacity Overview */}
-                  {(() => {
-                    const validIncomers = (selectedSubstation.incomingFeederNames || []).filter((n) => {
-                      const clean = String(n).trim().toUpperCase();
-                      return clean && !['NA', 'N/A', 'NIL', 'NONE', '-', 'NULL'].includes(clean);
-                    });
-
-                    return (
-                      <div
-                        className={`p-2.5 rounded-xl border text-xs shrink-0 ${
-                          isLight
-                            ? 'bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-xs'
-                            : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <div
-                              className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                                isLight ? 'bg-sky-100 text-sky-700' : 'bg-sky-500/15 text-cyan-300'
-                              }`}
-                            >
-                              <Building2 className="w-3.5 h-3.5" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-bold text-xs truncate">
-                                  {selectedSubstation.circle || 'Chennai EDC'}
-                                </span>
-                                <span
-                                  className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-md shrink-0 ${
-                                    isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
-                                  }`}
-                                >
-                                  Region {selectedSubstation.regionCode || '01/09'}
-                                </span>
-                                {Boolean(selectedSubstation.totalCapacityMva) && (
-                                  <span
-                                    className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md shrink-0 ${
-                                      isLight
-                                        ? 'bg-amber-100 text-amber-900 border border-amber-200'
-                                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                                    }`}
-                                  >
-                                    {selectedSubstation.totalCapacityMva} MVA
-                                  </span>
-                                )}
-                              </div>
-                              <span
-                                className={`text-xs block truncate mt-0.5 ${
-                                  isLight ? 'text-slate-500' : 'text-slate-400'
-                                }`}
-                              >
-                                TNEB Distribution Circle • Switchyard GPS
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-1 shrink-0">
-                            <CopyIncidentSmsButton
-                              node={selectedSubstation}
-                              isLight={isLight}
-                            />
-                            <a
-                              href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
-                                isLight
-                                  ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
-                                  : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
-                              }`}
-                              title={`Open coordinates (${selectedSubstation.lat.toFixed(
-                                5
-                              )}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
-                            >
-                              <MapPin className="w-3 h-3 group-hover:scale-110 transition-transform" />
-                              <span>Maps ↗</span>
-                            </a>
-                          </div>
-                        </div>
-
-                        {(Boolean(selectedSubstation.powerTransformersCount) || Boolean(validIncomers.length)) && (
-                          <div
-                            className={`mt-2 pt-1.5 border-t flex items-center justify-between gap-2 text-xs font-mono ${
-                              isLight ? 'border-slate-200/80 text-slate-700' : 'border-slate-800 text-slate-300'
-                            }`}
-                          >
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <Zap className="w-3 h-3 text-amber-500 shrink-0" />
-                              <span className="font-semibold">
-                                {selectedSubstation.powerTransformersCount || 1} Transformers
-                              </span>
-                              <span className="opacity-40">•</span>
-                              <span>
-                                {selectedSubstation.incomingFeedersCount || validIncomers.length || 1} Incomers
-                              </span>
-                            </div>
-                            {validIncomers.length > 0 && (
-                              <div className="flex items-center gap-1 flex-wrap justify-end">
-                                <span
-                                  className={`px-2 py-0.5 rounded-md text-xs font-mono truncate max-w-[140px] cursor-help ${
-                                    isLight
-                                      ? 'bg-amber-50 text-amber-900 border border-amber-200'
-                                      : 'bg-slate-900 text-amber-200 border border-amber-800/40'
-                                  }`}
-                                  title={`Connected Incomer Feeders: ${validIncomers.join(', ')}`}
-                                >
-                                  ← {validIncomers[0]}
-                                  {validIncomers.length > 1 ? ` (+${validIncomers.length - 1} more)` : ''}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-
-                  {/* GCC Municipal & Satellite Vulnerability Stack */}
-                  <MunicipalDisasterCard node={selectedSubstation} isLight={isLight} />
-
-                  {/* Substation Terrain & Flood Risk Profile */}
-                  {selectedSubstation.elevationM !== undefined && (
-                    <div
-                      className={`p-2.5 rounded-xl border space-y-2 shrink-0 ${
-                        selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                          ? isLight
-                            ? 'bg-rose-50/70 border-rose-200 text-rose-950'
-                            : 'bg-rose-950/25 border-rose-800/60 text-rose-200'
-                          : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                          ? isLight
-                            ? 'bg-amber-50/70 border-amber-200 text-amber-950'
-                            : 'bg-amber-950/25 border-amber-800/60 text-amber-200'
-                          : isLight
-                          ? 'bg-slate-50 border-slate-200 text-slate-800'
-                          : 'bg-slate-950/60 border-slate-800/80 text-slate-200'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="font-bold text-xs flex items-center gap-1.5">
-                          <span>🌊</span>
-                          <span>Climate & Flood Risk</span>
-                        </span>
-                        <span
-                          className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md ${
-                            selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                              ? isLight
-                                ? 'bg-rose-600 text-white'
-                                : 'bg-rose-500 text-slate-950 font-black'
-                              : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                              ? isLight
-                                ? 'bg-amber-600 text-white'
-                                : 'bg-amber-400 text-slate-950 font-black'
-                              : isLight
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-emerald-500/20 text-emerald-300'
-                          }`}
-                        >
-                          {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                            ? 'CRITICAL SURGE'
-                            : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                            ? 'WATERLOGGING RISK'
-                            : 'SAFE ELEVATION'}
-                        </span>
-                      </div>
-
-                      {/* Compact 3-metric bar */}
-                      <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
-                        <div
-                          className={`py-1.5 px-1 rounded-lg ${
-                            isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'
-                          }`}
-                        >
-                          <span
-                            className={`text-xs uppercase font-medium block leading-tight ${
-                              isLight ? 'text-slate-500' : 'text-slate-400'
-                            }`}
-                          >
-                            Elevation
-                          </span>
-                          <strong className="text-xs font-bold block mt-0.5">
-                            {selectedSubstation.elevationM} m
-                          </strong>
-                        </div>
-                        <div
-                          className={`py-1.5 px-1 rounded-lg ${
-                            isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'
-                          }`}
-                        >
-                          <span
-                            className={`text-xs uppercase font-medium block leading-tight ${
-                              isLight ? 'text-slate-500' : 'text-slate-400'
-                            }`}
-                          >
-                            Coast Dist
-                          </span>
-                          <strong className="text-xs font-bold block mt-0.5">
-                            {selectedSubstation.distanceToCoastKm || 0} km
-                          </strong>
-                        </div>
-                        <div
-                          className={`py-1.5 px-1 rounded-lg ${
-                            isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'
-                          }`}
-                        >
-                          <span
-                            className={`text-xs uppercase font-medium block leading-tight ${
-                              isLight ? 'text-slate-500' : 'text-slate-400'
-                            }`}
-                          >
-                            Risk Score
-                          </span>
-                          <strong className="text-xs font-bold block mt-0.5">
-                            {selectedSubstation.compositeRiskScore || 0}/100
-                          </strong>
-                        </div>
-                      </div>
-
-                      {/* 2015 Flood Historical Benchmark */}
-                      <div
-                        className={`p-2.5 rounded-xl border text-xs space-y-1.5 ${
-                          isLight
-                            ? 'bg-white/90 border-slate-200 text-slate-800'
-                            : 'bg-slate-900/90 border-slate-700/80 text-slate-200'
-                        }`}
-                      >
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 font-mono text-xs">
-                          <div>
-                            <span className="opacity-75 block text-xs font-sans">2015 Flood Benchmark:</span>
-                            <strong
-                              className={
-                                selectedSubstation.benchmarked2015FloodDepthM &&
-                                selectedSubstation.benchmarked2015FloodDepthM >= 1.5
-                                  ? isLight
-                                    ? 'text-rose-700 font-bold'
-                                    : 'text-rose-400 font-bold'
-                                  : ''
-                              }
-                            >
-                              {selectedSubstation.benchmarked2015FloodDepthM || 0.9}m{' '}
-                              {selectedSubstation.benchmarked2015FloodDepthM &&
-                              selectedSubstation.benchmarked2015FloodDepthM >= 1.5
-                                ? '(6ft Submerged)'
-                                : ''}
-                            </strong>
-                          </div>
-                          <div>
-                            <span className="opacity-75 block text-xs font-sans">Switchgear Plinth:</span>
-                            <strong>{selectedSubstation.plinthElevationM || 1.5}m GL Clearance</strong>
-                          </div>
-                          <div>
-                            <span className="opacity-75 block text-xs font-sans">TNSDMA Limit:</span>
-                            <strong className="text-sky-600 dark:text-cyan-400">3.0m MSL Standard</strong>
-                          </div>
-                          <div>
-                            <span className="opacity-75 block text-xs font-sans">Dewatering SOP:</span>
-                            <span
-                              className={`px-2 py-0.5 rounded-md font-bold text-xs inline-block ${
-                                selectedSubstation.yardDewateringRequired
-                                  ? isLight
-                                    ? 'bg-amber-100 text-amber-800'
-                                    : 'bg-amber-500/20 text-amber-300'
-                                  : isLight
-                                  ? 'bg-emerald-100 text-emerald-800'
-                                  : 'bg-emerald-500/20 text-emerald-300'
-                              }`}
-                            >
-                              {selectedSubstation.yardDewateringRequired
-                                ? '⚠️ Mobile Diesel Pumps'
-                                : '✅ Gravity Drainage'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {selectedSubstation.anticipatorySop && (
-                        <div
-                          className={`p-2.5 rounded-xl text-xs leading-relaxed ${
-                            isLight
-                              ? 'bg-white/90 text-slate-700 border border-black/5'
-                              : 'bg-slate-900/80 text-slate-300 border border-white/10'
-                          }`}
-                        >
-                          <strong className="font-semibold mr-1">Field SOP:</strong>
-                          <span>{selectedSubstation.anticipatorySop}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Jurisdictional AE Section Office */}
-                  {jurisdictionalSections.length > 0 && (
-                    <div
-                      className={`px-2.5 py-1.5 rounded-xl border flex items-center justify-between gap-2 shrink-0 ${
-                        isLight
-                          ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
-                          : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                        <div className="min-w-0">
-                          <span className="font-bold text-xs truncate block">
-                            {jurisdictionalSections[0].name}
-                          </span>
-                          <span
-                            className={`text-xs block truncate mt-0.5 ${
-                              isLight ? 'text-emerald-700' : 'text-emerald-400/80'
-                            }`}
-                          >
-                            AE Depot •{' '}
-                            {jurisdictionalSections[0].section?.mobile
-                              ? `📞 ${jurisdictionalSections[0].section.mobile} • `
-                              : ''}
-                            {jurisdictionalSections[0].distanceKm} km
-                          </span>
-                        </div>
-                      </div>
-                      {jurisdictionalSections[0].section && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            onSelectSection(jurisdictionalSections[0].section!);
-                            onSelectSubstation(null);
-                          }}
-                          className={`px-2 py-1 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition-all ${
-                            isLight
-                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
-                              : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
-                          }`}
-                        >
-                          <span>Locate</span>
-                          <ArrowRight className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Connections Header & Switch */}
-                  <div
-                    className={`p-3 rounded-xl border shrink-0 transition-all ${
-                      showConnections
-                        ? isLight
-                          ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20'
-                          : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20'
-                        : isLight
-                        ? 'bg-slate-50 border-slate-200'
-                        : 'bg-slate-950/60 border-slate-800/80'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`p-1.5 rounded-lg ${
-                            showConnections
-                              ? isLight
-                                ? 'bg-sky-600 text-white shadow-sm'
-                                : 'bg-cyan-500 text-slate-950 shadow-sm'
-                              : isLight
-                              ? 'bg-slate-200 text-slate-600'
-                              : 'bg-slate-800 text-slate-400'
-                          }`}
-                        >
-                          <GitFork className="w-3.5 h-3.5" />
-                        </div>
-                        <div>
-                          <span className={`text-xs font-bold block ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                            Isolate Electrical Circuit
-                          </span>
-                          <span className={`text-xs ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                            {electricalNodes.length} interconnected grid stations
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={showConnections}
-                        onClick={() => setShowConnections(!showConnections)}
-                        disabled={electricalNodes.length === 0}
-                        className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                          electricalNodes.length === 0
-                            ? 'opacity-40 cursor-not-allowed bg-slate-300'
-                            : showConnections
-                            ? isLight
-                              ? 'bg-sky-600'
-                              : 'bg-cyan-500'
-                            : isLight
-                            ? 'bg-slate-300'
-                            : 'bg-slate-700'
-                        }`}
-                      >
-                        <span
-                          className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                            showConnections ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Operational Disclaimer Banner */}
-                  <div
-                    className={`px-2.5 py-1.5 rounded-lg border text-xs flex items-center justify-between gap-1.5 shrink-0 ${
-                      isLight
-                        ? 'bg-slate-100/90 border-slate-200 text-slate-600'
-                        : 'bg-slate-900/60 border-slate-800 text-slate-400'
-                    }`}
-                  >
-                    <span className="flex items-center gap-1 font-medium truncate">
-                      <Zap className="w-3 h-3 text-amber-400 shrink-0" />
-                      Mapped Physical Topology
-                    </span>
-                    <span className="font-mono text-xs opacity-75 shrink-0">SCADA State Pending</span>
-                  </div>
-
-                  {/* Connected Substations Scroll List */}
-                  <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
-                    {electricalNodes.map((node) => (
-                      <button
-                        key={node.id}
-                        onClick={() => {
-                          if (node.substation) {
-                            onSelectSubstation(node.substation);
-                            onSelectSection(null);
-                          }
-                        }}
-                        className={`w-full text-left p-2.5 rounded-xl text-xs border transition-all flex items-center justify-between group ${
-                          isLight
-                            ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800'
-                            : 'bg-slate-950/40 hover:bg-slate-950 border-slate-800 text-slate-200'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span
-                            className="w-2.5 h-2.5 rounded-full shrink-0 ring-2 ring-current/20"
-                            style={{ backgroundColor: node.color }}
-                          />
-                          <div className="min-w-0">
-                            <span className="font-semibold block truncate group-hover:text-cyan-400 transition-colors">
-                              {node.name}
-                            </span>
-                            <span
-                              className={`text-xs block truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}
-                            >
-                              {node.label} • {node.distanceKm} km
-                            </span>
-                          </div>
-                        </div>
-                        <ArrowRight
-                          className={`w-3.5 h-3.5 shrink-0 transition-transform group-hover:translate-x-0.5 ${
-                            isLight ? 'text-slate-400' : 'text-slate-500'
-                          }`}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Right Panel: Feeders List & Quick Triage Filter */}
-                <div className="flex flex-col h-full min-h-0 space-y-2">
-                  <div className="flex items-center justify-between gap-1.5 shrink-0">
-                    <div className="flex items-center gap-1.5">
-                      <Zap className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
-                      <span className="font-bold text-xs uppercase tracking-wider">
-                        Distribution Circuits ({selectedSubstation.feeders.length})
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setFeederCategoryFilter('all')}
-                        className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all ${
-                          feederCategoryFilter === 'all'
-                            ? isLight
-                              ? 'bg-slate-900 text-white shadow-xs'
-                              : 'bg-white text-slate-950 font-black shadow-xs'
-                            : isLight
-                            ? 'text-slate-600 hover:text-slate-900'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        All ({selectedSubstation.feeders.length})
-                      </button>
-
-                      {lifelineFeedersCount > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => setFeederCategoryFilter('lifelines')}
-                          className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
-                            feederCategoryFilter === 'lifelines'
-                              ? isLight
-                                ? 'bg-rose-600 text-white shadow-xs font-black'
-                                : 'bg-rose-500 text-slate-950 font-black shadow-xs'
-                              : isLight
-                              ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                              : 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
-                          }`}
-                        >
-                          <span>🚨 Lifelines</span>
-                          <span className="font-mono">({lifelineFeedersCount})</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {selectedSubstation.feeders.length > 4 && (
-                    <input
-                      type="text"
-                      placeholder={
-                        feederCategoryFilter === 'lifelines'
-                          ? 'Filter lifeline feeders...'
-                          : 'Filter feeder by name...'
-                      }
-                      value={feederFilter}
-                      onChange={(e) => setFeederFilter(e.target.value)}
-                      className={`w-full px-2.5 py-1 text-xs rounded-lg border outline-none shrink-0 ${
-                        isLight
-                          ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
-                          : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
-                      }`}
-                    />
-                  )}
-
-                  <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
-                    {filteredFeeders.length > 0 ? (
-                      filteredFeeders.map((f, idx) => (
-                        <FeederCardItem
-                          key={f.code || idx}
-                          feeder={f}
-                          isFeederActive={selectedFeeder?.code === f.code}
-                          selectedSubstation={selectedSubstation}
-                          disasterScenario={disasterScenario}
-                          isLight={isLight}
-                          onSelectFeeder={(feeder) =>
-                            setSelectedFeeder(selectedFeeder?.code === feeder.code ? null : feeder)
-                          }
-                        />
-                      ))
-                    ) : (
-                      <div
-                        className={`p-3 text-center rounded-xl border text-xs ${
-                          isLight
-                            ? 'bg-slate-50 border-slate-200 text-slate-500'
-                            : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
-                        }`}
-                      >
-                        {feederFilter
-                          ? 'No feeders match your search filter.'
-                          : feederCategoryFilter === 'lifelines'
-                          ? 'No critical lifeline feeders identified on this substation.'
-                          : 'Primary extra-high-voltage bulk grid node.'}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              /* SINGLE-COLUMN TABBED VIEW */
+            {/* Substation Content */}
               <div className="flex flex-col flex-1 min-h-0 pt-2 space-y-2">
                 {/* Navigation Tabs */}
                 <div
@@ -1286,6 +681,158 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 {/* Tab 1: Plant & Technical Specs */}
                 {inspectorTab === 'specs' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
+                    {/* Live Outage / Maintenance Alert Banner */}
+                    {activeSubstationOutages.length > 0 && (
+                      <div className={`p-2.5 rounded-xl border text-xs shrink-0 flex items-start gap-2 ${
+                        isLight
+                          ? 'bg-red-50 border-red-200 text-red-800'
+                          : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                      }`}>
+                        <Zap className={`w-4 h-4 shrink-0 mt-0.5 animate-pulse ${isLight ? 'text-red-500' : 'text-amber-400'}`} />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className={`font-bold ${isLight ? 'text-red-700' : 'text-amber-200'}`}>
+                              ⚡ {activeSubstationOutages.length} Live Outage{activeSubstationOutages.length > 1 ? 's' : ''} Today
+                            </span>
+                            <a
+                              href="https://outage.nammamap.in"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`font-mono text-[10px] px-1.5 py-0.5 rounded transition-colors ${
+                                isLight
+                                  ? 'bg-red-100 hover:bg-red-200 text-red-600'
+                                  : 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-300'
+                              }`}
+                              title="Verified via outage.nammamap.in"
+                            >
+                              outage.nammamap.in ↗
+                            </a>
+                          </div>
+                          {activeSubstationOutages.slice(0, 2).map((o, idx) => (
+                            <div key={idx} className="mt-1 text-[11px] leading-snug">
+                              <span className={`font-semibold ${isLight ? 'text-red-900' : 'text-white'}`}>{o.workType || 'Scheduled Maintenance'}</span>
+                              {o.fromTime && o.toTime && <span className={isLight ? 'text-red-700' : 'opacity-90'}> ({o.fromTime} - {o.toTime})</span>}
+                              {o.location && <div className={`truncate mt-0.5 ${isLight ? 'text-red-600' : 'text-amber-200/80'}`}>📍 {o.location}</div>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {/* Consolidated Administrative & Switchyard Capacity Overview */}
+                    {(() => {
+                      const validIncomers = (selectedSubstation.incomingFeederNames || []).filter((n) => {
+                        const clean = String(n).trim().toUpperCase();
+                        return clean && !['NA', 'N/A', 'NIL', 'NONE', '-', 'NULL'].includes(clean);
+                      });
+
+                      return (
+                        <div
+                          className={`p-2.5 rounded-xl border text-xs shrink-0 ${
+                            isLight
+                              ? 'bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-xs'
+                              : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                  isLight ? 'bg-sky-100 text-sky-700' : 'bg-sky-500/15 text-cyan-300'
+                                }`}
+                              >
+                                <Building2 className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="font-bold text-xs truncate">
+                                    {selectedSubstation.circle || 'Chennai EDC'}
+                                  </span>
+                                  <span
+                                    className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-md shrink-0 ${
+                                      isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                    }`}
+                                  >
+                                    Region {selectedSubstation.regionCode || '01/09'}
+                                  </span>
+                                  {Boolean(selectedSubstation.totalCapacityMva) && (
+                                    <span
+                                      className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md shrink-0 ${
+                                        isLight
+                                          ? 'bg-amber-100 text-amber-900 border border-amber-200'
+                                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                      }`}
+                                    >
+                                      {selectedSubstation.totalCapacityMva} MVA
+                                    </span>
+                                  )}
+                                </div>
+                                <span
+                                  className={`text-xs block truncate mt-0.5 ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}
+                                >
+                                  TNEB Distribution Circle • Switchyard GPS
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0">
+                              <a
+                                href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
+                                  isLight
+                                    ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
+                                    : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
+                                }`}
+                                title={`Open coordinates (${selectedSubstation.lat.toFixed(
+                                  5
+                                )}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
+                              >
+                                <MapPin className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                                <span>Maps ↗</span>
+                              </a>
+                            </div>
+                          </div>
+
+                          {(Boolean(selectedSubstation.powerTransformersCount) || Boolean(validIncomers.length)) && (
+                            <div
+                              className={`mt-2 pt-1.5 border-t flex items-center justify-between gap-2 text-xs font-mono ${
+                                isLight ? 'border-slate-200/80 text-slate-700' : 'border-slate-800 text-slate-300'
+                              }`}
+                            >
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Zap className="w-3 h-3 text-amber-500 shrink-0" />
+                                <span className="font-semibold">
+                                  {selectedSubstation.powerTransformersCount || 1} Transformers
+                                </span>
+                                <span className="opacity-40">•</span>
+                                <span>
+                                  {selectedSubstation.incomingFeedersCount || validIncomers.length || 1} Incomers
+                                </span>
+                              </div>
+                              {validIncomers.length > 0 && (
+                                <div className="flex items-center gap-1 flex-wrap justify-end">
+                                  <span
+                                    className={`px-2 py-0.5 rounded-md text-xs font-mono truncate max-w-[140px] cursor-help ${
+                                      isLight
+                                        ? 'bg-amber-50 text-amber-900 border border-amber-200'
+                                        : 'bg-slate-900 text-amber-200 border border-amber-800/40'
+                                    }`}
+                                    title={`Connected Incomer Feeders: ${validIncomers.join(', ')}`}
+                                  >
+                                    ← {validIncomers[0]}
+                                    {validIncomers.length > 1 ? ` (+${validIncomers.length - 1} more)` : ''}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+
                     {/* Active Inundation Alert */}
                     {disasterScenario === 'EXTREME_SURGE' &&
                       selectedSubstation.elevationM !== undefined &&
@@ -1303,6 +850,14 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                           </div>
                         </div>
                       )}
+
+                    {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
+                    <SubstationHealthCard
+                      substation={selectedSubstation}
+                      isLight={isLight}
+                      disasterScenario={disasterScenario}
+                      liveOutages={activeSubstationOutages}
+                    />
 
                     {/* Terrain & Flood Risk Profile */}
                     {selectedSubstation.elevationM !== undefined && (
@@ -1541,7 +1096,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   </div>
                 )}
               </div>
-            )}
           </div>
         )}
 
@@ -1572,6 +1126,44 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 >
                   Territory Active
                 </span>
+              </div>
+            )}
+
+            {/* Section Active Outage Alert Banner */}
+            {activeSectionOutages.length > 0 && (
+              <div className={`p-2.5 rounded-xl border text-xs shrink-0 flex items-start gap-2 ${
+                isLight
+                  ? 'bg-red-50 border-red-200 text-red-800'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+              }`}>
+                <Zap className={`w-4 h-4 shrink-0 mt-0.5 animate-pulse ${isLight ? 'text-red-500' : 'text-amber-400'}`} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className={`font-bold ${isLight ? 'text-red-700' : 'text-amber-200'}`}>
+                      ⚡ {activeSectionOutages.length} Live Outage{activeSectionOutages.length > 1 ? 's' : ''} in Beat
+                    </span>
+                    <a
+                      href="https://outage.nammamap.in"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`font-mono text-[10px] px-1.5 py-0.5 rounded transition-colors ${
+                        isLight
+                          ? 'bg-red-100 hover:bg-red-200 text-red-600'
+                          : 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-300'
+                      }`}
+                      title="Verified via outage.nammamap.in"
+                    >
+                      outage.nammamap.in ↗
+                    </a>
+                  </div>
+                  {activeSectionOutages.slice(0, 2).map((o, idx) => (
+                    <div key={idx} className="mt-1 text-[11px] leading-snug">
+                      <span className={`font-semibold ${isLight ? 'text-red-900' : 'text-white'}`}>{o.workType || 'Scheduled Maintenance'}</span>
+                      {o.fromTime && o.toTime && <span className={isLight ? 'text-red-700' : 'opacity-90'}> ({o.fromTime} - {o.toTime})</span>}
+                      {o.location && <div className={`truncate mt-0.5 ${isLight ? 'text-red-600' : 'text-amber-200/80'}`}>📍 {o.location}</div>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
