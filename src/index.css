@@ -29,3 +29,10 @@ html, body, #root {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 1);
 }
+
+/* Zero-dependency native DOM virtualization for high-density feeder lists */
+.feeder-card-virtual {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 90px;
+}
+

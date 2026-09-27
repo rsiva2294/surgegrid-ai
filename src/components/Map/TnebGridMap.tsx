@@ -2541,7 +2541,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 key={idx}
                                 type="button"
                                 onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
-                                className={`w-full text-left p-2.5 rounded-xl text-xs border transition-all ${
+                                className={`w-full feeder-card-virtual text-left p-2.5 rounded-xl text-xs border transition-all ${
                                   isFeederActive
                                     ? (isNonCut
                                         ? (isLight
@@ -3155,7 +3155,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                   key={idx}
                                   type="button"
                                   onClick={() => setSelectedFeeder(isFeederActive ? null : f)}
-                                  className={`w-full text-left p-2 rounded-xl text-xs border transition-all ${
+                                  className={`w-full feeder-card-virtual text-left p-2 rounded-xl text-xs border transition-all ${
                                     isFeederActive
                                       ? (isNonCut
                                           ? (isLight
