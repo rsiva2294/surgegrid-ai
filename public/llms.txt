@@ -7,15 +7,7 @@ SurgeGrid AI is an open-source, civic crisis-resilience platform for monitoring 
 ## Web Console & Applications
 - [SurgeGrid AI Web Console](https://surgegrid.nammamap.in/): Interactive geospatial dashboard visualizing Chennai's 286 electrical substations, 2,893 11kV feeder lines, and 17,000+ distribution transformers (DTR).
 - [Full Technical Specification](https://surgegrid.nammamap.in/llms-full.txt): Comprehensive technical architecture, physical grid topology, and operational protocols for LLMs and autonomous agents.
-
-## Core Data & Topology
-- [TNEB Chennai Electrical Grid Dataset](https://surgegrid.nammamap.in/data/chennai_tneb_grid.json): Complete topological model of Chennai's 400kV, 230kV, 110kV, and 33kV substations with incoming/outgoing feeder linkages and geo-coordinates.
-- [AI Catalog Manifest](https://surgegrid.nammamap.in/ai-catalog.json): Machine-readable Agentic Resource Discovery (ARD) catalog defining AI tools and MCP endpoints.
 - [Sitemap](https://surgegrid.nammamap.in/sitemap.xml): Search engine and crawler index of console endpoints.
-
-## Agentic & MCP Integration
-- [ARD Specification Manifest](https://surgegrid.nammamap.in/.well-known/ard.json): ARD standard manifest for autonomous grid telemetry, substation health scoring, and crisis triage.
-- [Well-Known AI Catalog](https://surgegrid.nammamap.in/.well-known/ai-catalog.json): Standard discovery descriptor for autonomous AI agents and crawler registries.
 
 ## Disaster Resilience & Statutory SOPs
 - [TNSDMA Statutory Disaster SOPs](https://surgegrid.nammamap.in/): Statutory SLAs and emergency power shutoff procedures based on flood inundation thresholds.

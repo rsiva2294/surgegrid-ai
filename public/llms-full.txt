@@ -29,11 +29,7 @@ Substations receive real-time composite health scores (0–100):
 - **Outage Aging**: Dynamic degradation based on active feeder tripping duration.
 - **Flood Proximity**: Real-time buffer analysis against reported waterlogged road sections.
 
-## 5. Machine-Readable Resources & APIs
-- **Topology Dataset**: https://surgegrid.nammamap.in/data/chennai_tneb_grid.json
-- **Agentic Resource Discovery (ARD)**: https://surgegrid.nammamap.in/.well-known/ard.json
-- **AI Catalog**: https://surgegrid.nammamap.in/ai-catalog.json
+## 5. Public Documentation
 - **Summary for LLMs**: https://surgegrid.nammamap.in/llms.txt
+- **Console Application**: https://surgegrid.nammamap.in/
 
-## 6. Model Context Protocol (MCP) Integration
-SurgeGrid AI exposes grid operational endpoints via the Model Context Protocol (MCP) to allow autonomous AI agents to query substation telemetry, inspect feeder criticality, and execute statutory crisis dispatch protocols.
