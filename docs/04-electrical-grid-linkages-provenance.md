@@ -632,6 +632,22 @@ The DTR dataset is indexed by parent `fdr_code`. When a user clicks a feeder in 
       "lng": 80.24334
     },
     {
+      "id": "221801082",
+      "name": "7 BRANSON GARDEN STREET SP",
+      "kva": "100",
+      "cons": 5,
+      "lat": 13.08493,
+      "lng": 80.24342
+    },
+    {
+      "id": "221801081",
+      "name": "9 HARLEYS ROAD RMU",
+      "kva": "250",
+      "cons": 2,
+      "lat": 13.08327,
+      "lng": 80.24165
+    },
+    {
       "id": "221801041",
       "name": "HARLEYS RD RMU",
       "kva": "250",
@@ -646,22 +662,6 @@ The DTR dataset is indexed by parent `fdr_code`. When a user clicks a feeder in 
       "cons": 58,
       "lat": 13.08309,
       "lng": 80.24274
-    },
-    {
-      "id": "221801013",
-      "name": "29, BALFOUR ROAD TP",
-      "kva": "500",
-      "cons": 51,
-      "lat": 13.08467,
-      "lng": 80.24467
-    },
-    {
-      "id": "221801069",
-      "name": "SAP CAMP 3WAY RMU SCH",
-      "kva": "500",
-      "cons": 59,
-      "lat": 13.08278,
-      "lng": 80.24138
     }
   ]
 }
