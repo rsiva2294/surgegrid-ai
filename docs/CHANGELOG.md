@@ -31,7 +31,12 @@ All notable changes, architectural decisions, and data extractions for the Surge
   - Added instant Disaster Triage Quick Filters in the top cockpit (`All Grid`, `🌊 Submerged Yards <= 3.2m MSL`, `🏥 Lifeline Hubs`) with camera auto-fit.
   - Added standardized **`📋 Copy Incident SMS (Offline Dispatch)`** button for 2G SMS / VHF voice transmission with GCC Ward, Councillor, CMWSSB AE, GCC AE, and Ripon 1913 hotlines.
   - Pre-indexed search tokens (`searchIndex`) with early-exit iteration for O(1) autocomplete on 1,200+ grid assets.
-- **P4: Architectural Documentation & Decoupling Roadmap**:
+- **P4: Monolith Decomposition & Architectural Decoupling**:
+  - Decomposed ~3,900 line `TnebGridMap.tsx` monolith into isolated, single-responsibility components:
+    - [`CopyIncidentSmsButton.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/CopyIncidentSmsButton.tsx): Standalone 2G SMS / wireless VHF emergency dispatch generator.
+    - [`MunicipalDisasterCard.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MunicipalDisasterCard.tsx): Full GCC Ward municipal command, CDMP 2023 CUG directory, GEE satellite cards, and multi-agency clearance SOP.
+    - [`DisasterCockpitBar.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/DisasterCockpitBar.tsx): Top floating statutory cyclone protocol pills and crisis triage quick-filters.
+  - Reduced `TnebGridMap.tsx` by ~500 lines while preserving strict type safety and all map reference lifecycles.
   - Published comprehensive architectural specification in `docs/07-crisis-resilience-and-maps-optimization.md`.
 
 ---

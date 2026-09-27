@@ -226,11 +226,11 @@ graph TD
     I --> J["CopyIncidentSmsButton"]
 ```
 
-### Extraction Guidelines:
-1. **`CopyIncidentSmsButton.tsx`**: Fully decoupled pure utility component; ready for direct extraction to `src/components/Map/CopyIncidentSmsButton.tsx`.
-2. **`MunicipalDisasterCard.tsx`**: Encapsulates GCC Wards, CUG directory, GEE satellite cards, and emergency hotlines. Can be moved to `src/components/Map/MunicipalDisasterCard.tsx`.
-3. **`DisasterCockpitBar.tsx`**: Encapsulates the top-center scenario pills (`Normal`, `Alert`, `Severe`, `Surge`) and the triage buttons (`All`, `Submerged`, `Lifelines`).
-4. **`MapViewport.tsx`**: Retains core `google.maps.Map`, `google.maps.Data`, and marker lifecycles.
+### Extraction Guidelines & Completed Status:
+1. **`CopyIncidentSmsButton.tsx`** (Completed): Fully decoupled pure utility component in [`src/components/Map/CopyIncidentSmsButton.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/CopyIncidentSmsButton.tsx).
+2. **`MunicipalDisasterCard.tsx`** (Completed): Encapsulates GCC Wards, CUG directory, GEE satellite cards, and emergency hotlines in [`src/components/Map/MunicipalDisasterCard.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/MunicipalDisasterCard.tsx).
+3. **`DisasterCockpitBar.tsx`** (Completed): Encapsulates top-center scenario pills (`Normal`, `Alert`, `Severe`, `Surge`) and triage quick-filters (`All`, `Submerged`, `Lifelines`) in [`src/components/Map/DisasterCockpitBar.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/DisasterCockpitBar.tsx).
+4. **`SubstationInspectorDrawer.tsx` / `MapViewport.tsx`** (Future Phase): Additional candidate extractions for isolating inspector tabs and camera lifecycles.
 
 ---
 
