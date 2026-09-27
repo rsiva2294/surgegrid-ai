@@ -6,6 +6,7 @@ import { Shield } from 'lucide-react';
 import { DisasterCockpitBar, type DisasterScenario, type CrisisTriageFilter } from './DisasterCockpitBar';
 import { MapSearchBox } from './MapSearchBox';
 import { MapLayerControls } from './MapLayerControls';
+import { TriageSubstationRosterCard } from './TriageSubstationRosterCard';
 import { SubstationInspectorDrawer } from './SubstationInspectorDrawer';
 import { getLiveChennaiOutages, getOutagesForSubstation, type LiveOutage } from '../../services/liveOutageService';
 import { NO_POI_DARK_STYLE, NO_POI_LIGHT_STYLE, CHENNAI_METRO_BOUNDS } from './mapStyles';
@@ -95,7 +96,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
+  const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
+
+  // Reset showLayersDuringTriage when triage filter changes
+  useEffect(() => {
+    setShowLayersDuringTriage(false);
+  }, [crisisTriageFilter]);
 
   // Fetch real-time live outages from outage.nammamap.in on load
   useEffect(() => {
@@ -353,11 +360,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         ? isSubstationWaterloggingRisk(ss)
         : substationsWithOutages.has(ss.code);
 
-      const isVisible = matchesTriage && (isolatedNodeIds
-        ? isolatedNodeIds.has(ss.code)
-        : ((ss.tier === 'bulk' && showBulk) ||
-           (ss.tier === 'subtransmission' && showSubTrans) ||
-           (ss.tier === 'distribution' && showDistribution)));
+      const isVisible = crisisTriageFilter !== 'all'
+        ? matchesTriage
+        : (isolatedNodeIds
+          ? isolatedNodeIds.has(ss.code)
+          : ((ss.tier === 'bulk' && showBulk) ||
+             (ss.tier === 'subtransmission' && showSubTrans) ||
+             (ss.tier === 'distribution' && showDistribution)));
 
       if (isVisible) {
         if (marker.getMap() !== map) marker.setMap(map);
@@ -974,23 +983,64 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           isLight={isLight}
         />
 
-        <MapLayerControls
-          isLayersExpanded={isLayersExpanded}
-          setIsLayersExpanded={setIsLayersExpanded}
-          isSatellite={isSatellite}
-          setIsSatellite={setIsSatellite}
-          showBulk={showBulk}
-          setShowBulk={setShowBulk}
-          showSubTrans={showSubTrans}
-          setShowSubTrans={setShowSubTrans}
-          showDistribution={showDistribution}
-          setShowDistribution={setShowDistribution}
-          showSections={showSections}
-          setShowSections={setShowSections}
-          substations={substations}
-          sections={sections}
-          isLight={isLight}
-        />
+        {crisisTriageFilter !== 'all' && !showLayersDuringTriage ? (
+          <TriageSubstationRosterCard
+            crisisTriageFilter={crisisTriageFilter}
+            setCrisisTriageFilter={setCrisisTriageFilter}
+            substations={substations}
+            selectedSubstation={selectedSubstation}
+            onSelectSubstation={onSelectSubstation}
+            onFlyToSubstation={(s) => {
+              if (mapRef.current) {
+                mapRef.current.panTo({ lat: s.lat, lng: s.lng });
+                mapRef.current.setZoom(14.5);
+              }
+            }}
+            liveOutages={liveOutages}
+            substationsWithOutages={substationsWithOutages}
+            isLight={isLight}
+            onShowLayers={() => setShowLayersDuringTriage(true)}
+          />
+        ) : (
+          <>
+            {crisisTriageFilter !== 'all' && showLayersDuringTriage && (
+              <button
+                type="button"
+                onClick={() => setShowLayersDuringTriage(false)}
+                className={`pointer-events-auto px-3 py-1.5 rounded-xl text-xs font-bold flex items-center justify-between shadow-lg transition-all ${
+                  isLight 
+                    ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 border border-amber-400' 
+                    : 'bg-amber-500 hover:bg-amber-400 text-slate-950 border border-amber-300'
+                }`}
+              >
+                <span>← Return to Triage List ({
+                  crisisTriageFilter === 'poor_stability' ? poorStabilityCount :
+                  crisisTriageFilter === 'waterlogging_risk' ? waterloggingRiskCount :
+                  substationsWithOutages.size
+                } SS)</span>
+                <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-black/20">View List</span>
+              </button>
+            )}
+
+            <MapLayerControls
+              isLayersExpanded={isLayersExpanded}
+              setIsLayersExpanded={setIsLayersExpanded}
+              isSatellite={isSatellite}
+              setIsSatellite={setIsSatellite}
+              showBulk={showBulk}
+              setShowBulk={setShowBulk}
+              showSubTrans={showSubTrans}
+              setShowSubTrans={setShowSubTrans}
+              showDistribution={showDistribution}
+              setShowDistribution={setShowDistribution}
+              showSections={showSections}
+              setShowSections={setShowSections}
+              substations={substations}
+              sections={sections}
+              isLight={isLight}
+            />
+          </>
+        )}
       </div>
 
       {/* Full-Height Substation / Section Inspector Drawer */}
