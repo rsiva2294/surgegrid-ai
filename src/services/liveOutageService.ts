@@ -106,6 +106,18 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
 }
 
 /**
+ * Precomputed Locality to Grid Asset Gazetteer derived from 1,170+ historical Chennai outages
+ */
+export const CHENNAI_LOCALITY_GAZETTEER: Record<string, { secCode?: string; ssCode?: string }> = {
+  vepery: { secCode: '141', ssCode: '2235' },
+  periamet: { secCode: '141', ssCode: '2235' },
+  periamedu: { secCode: '141', ssCode: '2235' },
+  sowcarpet: { ssCode: '2217' },
+  kondithope: { ssCode: '2217', secCode: '108' },
+  nazarethpet: { secCode: '304' }
+};
+
+/**
  * Normalizes text for lenient fuzzy keyword matching and Chennai Tamil-English transliterations
  */
 export function clean(str?: string | null): string {
@@ -125,11 +137,30 @@ export function clean(str?: string | null): string {
     .replace(/\bthiruvallikeni\b/gi, 'triplicane')
     .replace(/\bthiruninravur\b/gi, 'tiruninravur')
     .replace(/\bpulianthope\b/gi, 'pulianthope')
+    .replace(/\bpuliyanthopp?u\b/gi, 'pulianthope')
+    .replace(/\btaramani\b/gi, 'tharamani')
+    .replace(/\bgovernment\b/gi, 'govt')
+    .replace(/\bthiru\s*v\s*ka\s*nagar\b/gi, 'tvk nagar')
     .replace(/\bneelangarai\b/gi, 'neelankarai')
+    .replace(/\bmuthaialpet\b/gi, 'muthialpet')
+    .replace(/\bputhupet\b/gi, 'pudupet')
+    .replace(/\bpoombhukar\b/gi, 'poompuhar')
+    .replace(/[-_\s]+iii\b/gi, ' 3')
+    .replace(/[-_\s]+ii\b/gi, ' 2')
+    .replace(/[-_\s]+i\b/gi, ' 1')
     .replace(/ae\/?o&m\/?/gi, ' ')
+    .replace(/aee\/?o&m\/?/gi, ' ')
     .replace(/[^a-z0-9]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+/**
+ * Squashes strings for whitespace-insensitive and punctuation-insensitive matching
+ */
+export function squash(str?: string | null): string {
+  if (!str) return '';
+  return clean(str).replace(/\s+/g, '');
 }
 
 /**
@@ -141,44 +172,47 @@ export function getOutagesForSubstation(
 ): LiveOutage[] {
   if (!substation || !allOutages || allOutages.length === 0) return [];
 
-  const ssName = clean(substation.name);
-  const ssClean = clean(substation.cleanName);
-  const ssCode = clean(substation.code);
-  const feederNames = (substation.feeders || []).map(f => clean(f.name));
+  const ssSquash = squash(substation.name);
+  const ssCleanSquash = squash(substation.cleanName);
+  const ssCode = substation.code ? String(substation.code) : '';
+  const feederSquashes = (substation.feeders || []).map(f => squash(f.name));
 
   return allOutages.filter(outage => {
     // If the outage has already been resolved to this specific substation
-    if (outage.resolvedSubstationName && clean(outage.resolvedSubstationName) === ssName) {
+    if (outage.resolvedSubstationName && squash(outage.resolvedSubstationName) === ssSquash) {
       return true;
     }
 
-    const oSub = clean(outage.substation);
-    const oFdr = clean(outage.feeder);
-    const oTown = clean(outage.town);
-    const oSec = clean(outage.section);
+    const oSub = squash(outage.substation);
+    const oFdr = squash(outage.feeder);
+    const oTown = squash(outage.town);
+    const oSec = squash(outage.section);
+
+    // Check locality gazetteer
+    const locKey = Object.keys(CHENNAI_LOCALITY_GAZETTEER).find(k => oTown.includes(k) || oSec.includes(k) || oSub.includes(k));
+    if (locKey && CHENNAI_LOCALITY_GAZETTEER[locKey].ssCode === ssCode) {
+      return true;
+    }
 
     // 1. If outage explicitly specifies a substation
     if (oSub && oSub.length >= 3) {
       if (
-        ssName.includes(oSub) ||
-        oSub.includes(ssName) ||
-        (ssClean && (ssClean.includes(oSub) || oSub.includes(ssClean))) ||
+        ssSquash.includes(oSub) ||
+        oSub.includes(ssSquash) ||
+        (ssCleanSquash && (ssCleanSquash.includes(oSub) || oSub.includes(ssCleanSquash))) ||
         (ssCode && oSub === ssCode)
       ) {
         return true;
       }
-      // Outage specified a different substation; prevent false-positive cross matching
       return false;
     }
 
     // 2. Outage without specific substation: match by feeder
     if (oFdr && oFdr.length >= 4) {
-      // Check if feeder name references this substation
-      if (ssName.length >= 4 && (oFdr.includes(ssName) || ssName.includes(oFdr))) return true;
-      if (ssClean && ssClean.length >= 4 && (oFdr.includes(ssClean) || ssClean.includes(oFdr))) return true;
+      if (ssSquash.length >= 4 && (oFdr.includes(ssSquash) || ssSquash.includes(oFdr))) return true;
+      if (ssCleanSquash && ssCleanSquash.length >= 4 && (oFdr.includes(ssCleanSquash) || ssCleanSquash.includes(oFdr))) return true;
 
-      // Check if any feeder under this substation matches
-      if (feederNames.some(f => f.length >= 4 && (f.includes(oFdr) || oFdr.includes(f)))) {
+      if (feederSquashes.some(f => f.length >= 4 && (f.includes(oFdr) || oFdr.includes(f)))) {
         return true;
       }
     }
@@ -186,12 +220,10 @@ export function getOutagesForSubstation(
     // 3. Match by town or section matching a dedicated feeder or substation locality
     const area = oSec || oTown;
     if (area && area.length >= 4) {
-      // Direct feeder match (e.g. Neelankarai feeder in Perungudi SS)
-      if (feederNames.some(f => f.length >= 4 && (f === area || f.includes(area)))) {
+      if (feederSquashes.some(f => f.length >= 4 && (f === area || f.includes(area)))) {
         return true;
       }
-      // Substation locality match
-      if (ssName.includes(area) || area.includes(ssName) || (ssClean && ssClean.includes(area))) {
+      if (ssSquash.includes(area) || area.includes(ssSquash) || (ssCleanSquash && ssCleanSquash.includes(area))) {
         return true;
       }
     }
@@ -210,12 +242,12 @@ export function getOutagesForSection(
   if (!section || !allOutages || allOutages.length === 0) return [];
 
   const secCode = section.code ? String(section.code) : '';
-  const secName = clean(section.name);
-  const secClean = clean(section.cleanName);
+  const secSquash = squash(section.name);
+  const secCleanSquash = squash(section.cleanName);
 
   return allOutages.filter(outage => {
     // If resolved to this section directly
-    if (outage.resolvedSectionName && clean(outage.resolvedSectionName) === secName) {
+    if (outage.resolvedSectionName && squash(outage.resolvedSectionName) === secSquash) {
       return true;
     }
 
@@ -224,18 +256,25 @@ export function getOutagesForSection(
       return true;
     }
 
-    // Section name match
-    if (outage.section) {
-      const oSec = clean(outage.section);
-      if (oSec && (secName.includes(oSec) || oSec.includes(secName) || (secClean && (secClean.includes(oSec) || oSec.includes(secClean))))) {
+    const oSec = squash(outage.section);
+    const oTown = squash(outage.town);
+
+    // Check locality gazetteer
+    const locKey = Object.keys(CHENNAI_LOCALITY_GAZETTEER).find(k => oTown.includes(k) || oSec.includes(k));
+    if (locKey && CHENNAI_LOCALITY_GAZETTEER[locKey].secCode === secCode) {
+      return true;
+    }
+
+    // Section name match (whitespace and hyphen insensitive)
+    if (oSec && oSec.length >= 4) {
+      if (secSquash.includes(oSec) || oSec.includes(secSquash) || (secCleanSquash && (secCleanSquash.includes(oSec) || oSec.includes(secCleanSquash)))) {
         return true;
       }
     }
 
     // Town / Area match
-    if (outage.town) {
-      const oTown = clean(outage.town);
-      if (oTown.length >= 4 && (secName.includes(oTown) || oTown.includes(secName) || (secClean && (secClean.includes(oTown) || oTown.includes(secClean))))) {
+    if (oTown && oTown.length >= 4) {
+      if (secSquash.includes(oTown) || oTown.includes(secSquash) || (secCleanSquash && (secCleanSquash.includes(oTown) || oTown.includes(secCleanSquash)))) {
         return true;
       }
     }
@@ -255,55 +294,68 @@ export function enrichLiveOutagesWithGrid(
   if (!outages || outages.length === 0) return [];
 
   return outages.map(outage => {
-    const oSub = clean(outage.substation);
-    const oFdr = clean(outage.feeder);
-    const oTown = clean(outage.town);
-    const oSec = clean(outage.section);
+    const oSub = squash(outage.substation);
+    const oFdr = squash(outage.feeder);
+    const oTown = squash(outage.town);
+    const oSec = squash(outage.section);
 
     let matchedSS: TnebSubstation | undefined;
     let matchedSec: TnebSection | undefined;
 
+    // Check precomputed gazetteer
+    const locKey = Object.keys(CHENNAI_LOCALITY_GAZETTEER).find(k => oTown.includes(k) || oSec.includes(k) || oSub.includes(k));
+    if (locKey) {
+      const entry = CHENNAI_LOCALITY_GAZETTEER[locKey];
+      if (entry.ssCode) matchedSS = substations.find(s => s.code === entry.ssCode);
+      if (entry.secCode) matchedSec = sections.find(s => s.code === entry.secCode);
+    }
+
     // 1. Direct Substation match
-    if (oSub && oSub.length >= 3) {
+    if (!matchedSS && oSub && oSub.length >= 3) {
       matchedSS = substations.find(s => {
-        const ssName = clean(s.name);
-        const ssClean = clean(s.cleanName);
-        return ssName.includes(oSub) || oSub.includes(ssName) || (ssClean && (ssClean.includes(oSub) || oSub.includes(ssClean)));
+        const sName = squash(s.name);
+        const sClean = squash(s.cleanName);
+        return sName.includes(oSub) || oSub.includes(sName) || (sClean && (sClean.includes(oSub) || oSub.includes(sClean)));
       });
     }
 
     // 2. Feeder matches SS name or feeder in SS
     if (!matchedSS && oFdr && oFdr.length >= 4) {
       matchedSS = substations.find(s => {
-        const ssName = clean(s.name);
-        const ssClean = clean(s.cleanName);
-        if (ssName.length >= 4 && (oFdr.includes(ssName) || ssName.includes(oFdr))) return true;
-        if (ssClean && ssClean.length >= 4 && (oFdr.includes(ssClean) || ssClean.includes(oFdr))) return true;
+        const sName = squash(s.name);
+        const sClean = squash(s.cleanName);
+        if (sName.length >= 4 && (oFdr.includes(sName) || sName.includes(oFdr))) return true;
+        if (sClean && sClean.length >= 4 && (oFdr.includes(sClean) || sClean.includes(oFdr))) return true;
         return (s.feeders || []).some(f => {
-          const fName = clean(f.name);
+          const fName = squash(f.name);
           return fName.length >= 4 && (fName.includes(oFdr) || oFdr.includes(fName));
         });
       });
     }
 
-    // 3. Section match
-    const secTarget = oSec || oTown;
-    if (secTarget && secTarget.length >= 4) {
-      matchedSec = sections.find(s => {
-        const sName = clean(s.name);
-        const sClean = clean(s.cleanName);
-        return sName.includes(secTarget) || secTarget.includes(sName) || (sClean && (sClean.includes(secTarget) || secTarget.includes(sClean)));
-      });
+    // 3. Section match (whitespace and hyphen insensitive)
+    if (!matchedSec) {
+      const secTarget = oSec || oTown;
+      if (secTarget && secTarget.length >= 4) {
+        matchedSec = sections.find(s => {
+          const sName = squash(s.name);
+          const sClean = squash(s.cleanName);
+          return sName.includes(secTarget) || secTarget.includes(sName) || (sClean && (sClean.includes(secTarget) || secTarget.includes(sClean)));
+        });
+      }
     }
 
     // 4. Area / Town matches Feeder in SS (e.g. Neelankarai feeder in Perungudi SS)
-    if (!matchedSS && secTarget && secTarget.length >= 4) {
-      matchedSS = substations.find(s => {
-        return (s.feeders || []).some(f => {
-          const fName = clean(f.name);
-          return fName.length >= 4 && (fName === secTarget || fName.includes(secTarget));
+    if (!matchedSS) {
+      const area = oSec || oTown;
+      if (area && area.length >= 4) {
+        matchedSS = substations.find(s => {
+          return (s.feeders || []).some(f => {
+            const fName = squash(f.name);
+            return fName.length >= 4 && (fName === area || fName.includes(area));
+          });
         });
-      });
+      }
     }
 
     // Derive coordinates: prioritize section office coords for LT distribution faults, or substation coords
