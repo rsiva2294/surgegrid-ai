@@ -24,17 +24,17 @@ export const MapSearchBox: React.FC<MapSearchBoxProps> = ({
 }) => {
   return (
     <div
-      className={`pointer-events-auto rounded-xl p-2.5 shadow-2xl transition-colors ${
+      className={`pointer-events-auto rounded-xl p-2.5 transition-colors ${
         isLight
           ? 'bg-white/98 border border-slate-300/90 shadow-[0_8px_30px_rgb(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
-          : 'bg-slate-900 border border-slate-800'
+          : 'bg-slate-900/95 border border-slate-700/80 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
       }`}
     >
       <div
         className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all ${
           isLight
             ? 'bg-slate-100 border-slate-300/80 text-slate-900 focus-within:border-sky-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-sky-400/20'
-            : 'bg-slate-950/80 border-slate-800 text-white'
+            : 'bg-slate-950/90 border-slate-700/80 text-white focus-within:border-cyan-500 focus-within:ring-2 focus-within:ring-cyan-500/20'
         }`}
       >
         <Search className={`w-4 h-4 ${isLight ? 'text-slate-500' : 'text-slate-400'}`} />
@@ -61,7 +61,7 @@ export const MapSearchBox: React.FC<MapSearchBoxProps> = ({
       {searchQuery && (searchResults.substations.length > 0 || searchResults.sections.length > 0) && (
         <div
           className={`mt-2 pt-2 border-t max-h-60 overflow-y-auto space-y-1 ${
-            isLight ? 'border-slate-200' : 'border-slate-800'
+            isLight ? 'border-slate-300/70' : 'border-slate-700/80'
           }`}
         >
           {searchResults.substations.map((ss) => (

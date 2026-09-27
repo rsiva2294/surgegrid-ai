@@ -58,7 +58,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
   return (
     <div
       className={`p-3 rounded-xl border space-y-2.5 text-xs transition-all ${
-        isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/60 border-slate-800'
+        isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/70 border-slate-700/80 shadow-xs'
       }`}
     >
       {/* Header: Asset Health & Grade */}
@@ -83,7 +83,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
       <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
         <div
           className={`py-1.5 px-1 rounded-lg border ${
-            isLight ? 'bg-emerald-50/60 border-emerald-100' : 'bg-emerald-950/20 border-emerald-900/40'
+            isLight ? 'bg-emerald-50/60 border-emerald-100' : 'bg-emerald-950/30 border-emerald-800/60'
           }`}
         >
           <span className={`text-[10px] uppercase font-sans font-medium block ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
@@ -104,10 +104,10 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
             profile.unscheduledTripsCount > 0
               ? isLight
                 ? 'bg-rose-50/60 border-rose-100'
-                : 'bg-rose-950/20 border-rose-900/40'
+                : 'bg-rose-950/30 border-rose-800/60'
               : isLight
               ? 'bg-slate-100/60 border-slate-200'
-              : 'bg-slate-900/40 border-slate-800'
+              : 'bg-slate-900/60 border-slate-700/80'
           }`}
         >
           <span
@@ -145,7 +145,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
 
         <div
           className={`py-1.5 px-1 rounded-lg border ${
-            isLight ? 'bg-white/80 border-slate-200' : 'bg-black/30 border-slate-800'
+            isLight ? 'bg-white/80 border-slate-200' : 'bg-slate-900/60 border-slate-700/80'
           }`}
         >
           <span className={`text-[10px] uppercase font-sans font-medium block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
@@ -203,7 +203,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
           className={`w-full py-1 px-2 rounded-lg font-medium text-xs flex items-center justify-between transition-colors ${
             isLight
               ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              : 'bg-slate-900 hover:bg-slate-800 text-slate-300'
+              : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80'
           }`}
         >
           <span className="flex items-center gap-1.5">

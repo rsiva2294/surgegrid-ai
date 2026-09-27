@@ -157,11 +157,11 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
       className={`pointer-events-auto rounded-xl p-3 text-xs space-y-2.5 transition-all w-full max-h-[440px] flex flex-col ${
         isLight 
           ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[0_12px_40px_-4px_rgba(15,23,42,0.20)] ring-1 ring-slate-900/10 backdrop-blur-md' 
-          : 'bg-slate-900/95 border border-slate-700/80 text-slate-200 backdrop-blur-md shadow-2xl shadow-black/70'
+          : 'bg-slate-900/95 border border-slate-700/80 text-slate-200 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
       }`}
     >
       {/* 1. Header with Active Filter and Dismiss / Show Layers action */}
-      <div className={`pb-2 border-b flex items-center justify-between shrink-0 ${isLight ? 'border-slate-300/70' : 'border-slate-800'}`}>
+      <div className={`pb-2 border-b flex items-center justify-between shrink-0 ${isLight ? 'border-slate-300/70' : 'border-slate-700/80'}`}>
         <div className="flex items-center gap-2 min-w-0">
           <div className={`p-1.5 rounded-lg ${triageMeta.badgeBg} shrink-0`}>
             <HeaderIcon className="w-4 h-4" />
@@ -188,7 +188,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
               type="button"
               onClick={onShowLayers}
               className={`p-1 rounded-md transition-colors title="Show Map Layers" ${
-                isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-400'
+                isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-300 hover:text-white'
               }`}
               title="Toggle standard TNEB Grid Layers"
             >
@@ -202,7 +202,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
             className={`px-2 py-0.5 rounded-md font-semibold text-[10px] flex items-center gap-1 transition-all ${
               isLight 
                 ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80' 
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                : 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-700/80'
             }`}
             title="Clear triage filter and show all 286 substations"
           >
@@ -224,7 +224,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
             className={`w-full pl-6 pr-2 py-1 rounded-lg text-xs outline-none transition-all ${
               isLight
                 ? 'bg-slate-100 border border-slate-300/80 focus:border-sky-500 focus:bg-white text-slate-800'
-                : 'bg-slate-950/60 border border-slate-800 focus:border-cyan-500 text-slate-200'
+                : 'bg-slate-950/90 border border-slate-700/80 focus:border-cyan-500 text-slate-200'
             }`}
           />
         </div>
@@ -252,10 +252,10 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
                   isSelected
                     ? isLight
                       ? 'bg-sky-50 border-sky-400 shadow-xs ring-1 ring-sky-300/50'
-                      : 'bg-cyan-950/40 border-cyan-500 shadow-xs'
+                      : 'bg-cyan-950/60 border-cyan-400 shadow-xs ring-1 ring-cyan-400/30 text-white'
                     : isLight
                     ? 'bg-slate-50/90 hover:bg-sky-50/90 border-slate-200 hover:border-sky-300 shadow-2xs'
-                    : 'bg-slate-800/60 hover:bg-slate-800 border-slate-700/60 hover:border-slate-600'
+                    : 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700/80 hover:border-slate-600 text-slate-200'
                 }`}
               >
                 <div className="min-w-0 flex-1 space-y-1">
@@ -345,7 +345,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
 
       {/* 4. Footer Summary bar */}
       <div className={`pt-2 border-t flex items-center justify-between text-[10px] shrink-0 ${
-        isLight ? 'border-slate-300/70 text-slate-500' : 'border-slate-800 text-slate-400'
+        isLight ? 'border-slate-300/70 text-slate-500' : 'border-slate-700/80 text-slate-400'
       }`}>
         <span>Click any node to zoom & inspect</span>
         <button

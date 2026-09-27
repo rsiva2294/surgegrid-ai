@@ -141,11 +141,11 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
         className={`pointer-events-auto rounded-2xl p-4 flex flex-col h-full w-full border transition-colors ${
           isLight
             ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[-16px_0_45px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
-            : 'bg-slate-900 border-slate-700/80 text-slate-200 shadow-2xl'
+            : 'bg-slate-900/95 border-l-2 border-slate-700/90 text-slate-200 shadow-[-16px_0_45px_rgba(0,0,0,0.9)] ring-1 ring-white/10 backdrop-blur-xl'
         }`}
       >
         {/* Pinned Header */}
-        <div className={`flex items-start justify-between gap-3 pb-3 border-b shrink-0 ${isLight ? 'border-slate-300/70' : 'border-current/10'}`}>
+        <div className={`flex items-start justify-between gap-3 pb-3 border-b shrink-0 ${isLight ? 'border-slate-300/70' : 'border-slate-700/80'}`}>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span
@@ -250,8 +250,8 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               }}
               className={`p-1.5 rounded-lg transition-colors ${
                 isLight
-                  ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200'
-                  : 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700'
+                  ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                  : 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80'
               }`}
             >
               <X className="w-4 h-4" />
@@ -263,10 +263,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
         {selectedSubstation && (
           <div className="flex flex-col flex-1 min-h-0 pt-2">
             {/* Compact Horizontal Quick-Stats Ribbon */}
-            <div className={`grid grid-cols-3 gap-2 pb-2 shrink-0 border-b text-center text-xs ${isLight ? 'border-slate-300/70' : 'border-current/10'}`}>
+            <div className={`grid grid-cols-3 gap-2 pb-2 shrink-0 border-b text-center text-xs ${isLight ? 'border-slate-300/70' : 'border-slate-700/80'}`}>
               <div
                 className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-sky-50/80 border-sky-200/90 shadow-2xs' : 'bg-slate-950/50 border-slate-800/80'
+                  isLight ? 'bg-sky-50/80 border-sky-200/90 shadow-2xs' : 'bg-slate-950/70 border-slate-700/80 shadow-inner'
                 }`}
               >
                 <span
@@ -291,7 +291,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
               <div
                 className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-amber-50/80 border-amber-200/90 shadow-2xs' : 'bg-slate-950/50 border-slate-800/80'
+                  isLight ? 'bg-amber-50/80 border-amber-200/90 shadow-2xs' : 'bg-slate-950/70 border-slate-700/80 shadow-inner'
                 }`}
               >
                 <span
@@ -312,7 +312,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
               <div
                 className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-pink-50/80 border-pink-200/90 shadow-2xs' : 'bg-slate-950/50 border-slate-800/80'
+                  isLight ? 'bg-pink-50/80 border-pink-200/90 shadow-2xs' : 'bg-slate-950/70 border-slate-700/80 shadow-inner'
                 }`}
               >
                 <span
@@ -339,7 +339,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 {/* Navigation Tabs */}
                 <div
                   className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 text-xs ${
-                    isLight ? 'bg-slate-100 border-slate-300/80' : 'bg-slate-950 border-slate-800'
+                    isLight ? 'bg-slate-100 border-slate-300/80' : 'bg-slate-950/90 border-slate-700/80'
                   }`}
                 >
                   <button
@@ -349,10 +349,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       inspectorTab === 'specs'
                         ? isLight
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
-                          : 'bg-slate-800 text-white shadow-sm'
+                          : 'bg-slate-800 text-white shadow-sm border border-slate-600/70'
                         : isLight
                         ? 'text-slate-600 hover:text-slate-900'
-                        : 'text-slate-400 hover:text-slate-200'
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     <Info className="w-3.5 h-3.5 shrink-0" />
@@ -365,10 +365,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       inspectorTab === 'circuits'
                         ? isLight
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
-                          : 'bg-slate-800 text-white shadow-sm'
+                          : 'bg-slate-800 text-white shadow-sm border border-slate-600/70'
                         : isLight
                         ? 'text-slate-600 hover:text-slate-900'
-                        : 'text-slate-400 hover:text-slate-200'
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     <Zap className="w-3.5 h-3.5 shrink-0 text-amber-500" />
@@ -382,7 +382,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         ? 'bg-indigo-600 text-white shadow-sm'
                         : isLight
                         ? 'text-slate-600 hover:text-slate-900'
-                        : 'text-slate-400 hover:text-slate-200'
+                        : 'text-slate-300 hover:text-white'
                     }`}
                   >
                     <Shield className="w-3.5 h-3.5 shrink-0" />

@@ -6,13 +6,13 @@
  */
 
 export const NO_POI_DARK_STYLE: google.maps.MapTypeStyle[] = [
-  { elementType: "geometry", stylers: [{ color: "#0d131f" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#0d131f" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#74849e" }] },
+  { elementType: "geometry", stylers: [{ color: "#060a12" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#060a12" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#64748b" }] },
   {
     featureType: "administrative.locality",
     elementType: "labels.text.fill",
-    stylers: [{ color: "#e2e8f0" }]
+    stylers: [{ color: "#cbd5e1" }]
   },
   {
     featureType: "poi",
@@ -27,27 +27,27 @@ export const NO_POI_DARK_STYLE: google.maps.MapTypeStyle[] = [
   {
     featureType: "road",
     elementType: "geometry",
-    stylers: [{ color: "#192233" }]
+    stylers: [{ color: "#121b2a" }]
   },
   {
     featureType: "road",
     elementType: "geometry.stroke",
-    stylers: [{ color: "#131b2a" }]
+    stylers: [{ color: "#0a101b" }]
   },
   {
     featureType: "road",
     elementType: "labels.text.fill",
-    stylers: [{ color: "#64748b" }]
+    stylers: [{ color: "#475569" }]
   },
   {
     featureType: "road.highway",
     elementType: "geometry",
-    stylers: [{ color: "#25334c" }]
+    stylers: [{ color: "#1c283f" }]
   },
   {
     featureType: "road.highway",
     elementType: "geometry.stroke",
-    stylers: [{ color: "#172033" }]
+    stylers: [{ color: "#0f1726" }]
   },
   {
     featureType: "road.highway",
@@ -57,7 +57,7 @@ export const NO_POI_DARK_STYLE: google.maps.MapTypeStyle[] = [
   {
     featureType: "water",
     elementType: "geometry",
-    stylers: [{ color: "#071324" }]
+    stylers: [{ color: "#040914" }]
   },
   {
     featureType: "water",
@@ -67,7 +67,7 @@ export const NO_POI_DARK_STYLE: google.maps.MapTypeStyle[] = [
   {
     featureType: "water",
     elementType: "labels.text.stroke",
-    stylers: [{ color: "#071324" }]
+    stylers: [{ color: "#040914" }]
   }
 ];
 
