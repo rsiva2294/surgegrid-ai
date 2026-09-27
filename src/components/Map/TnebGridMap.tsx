@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import { getFeederGeometry, getFeederTransformers } from '../../services/feederGeometryService';
-import { Zap, Shield, Phone, Mail, MapPin, Layers, Search, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star, Columns2, Minimize2, Info, Building2, AlertTriangle } from 'lucide-react';
+import { Zap, Shield, Phone, Mail, MapPin, X, Users, Cable, Activity, GitFork, ArrowRight, ChevronDown, ChevronUp, Star, Columns2, Minimize2, Info, Building2, AlertTriangle } from 'lucide-react';
 import { MunicipalDisasterCard } from './MunicipalDisasterCard';
 import { DisasterCockpitBar, type DisasterScenario } from './DisasterCockpitBar';
+import { MapSearchBox } from './MapSearchBox';
+import { MapLayerControls } from './MapLayerControls';
 import { NO_POI_DARK_STYLE, NO_POI_LIGHT_STYLE, CHENNAI_METRO_BOUNDS } from './mapStyles';
 import {
   getNodeColor,
@@ -1013,204 +1015,32 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
       {/* Top Left Floating Search & Quick Filters */}
       <div className="absolute top-4 left-4 z-20 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
-        <div className={`pointer-events-auto rounded-xl p-2.5 shadow-xl transition-colors ${
-          isLight ? 'bg-white border border-slate-200' : 'bg-slate-900 border border-slate-800'
-        }`}>
-          <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-colors ${
-            isLight ? 'bg-slate-100 border-slate-200 text-slate-800' : 'bg-slate-950/80 border-slate-800 text-white'
-          }`}>
-            <Search className={`w-4 h-4 ${isLight ? 'text-slate-500' : 'text-slate-400'}`} />
-            <input
-              type="text"
-              placeholder="Search Substation or AE Section..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={`w-full bg-transparent text-sm outline-none ${
-                isLight ? 'text-slate-900 placeholder-slate-400' : 'text-white placeholder-slate-500'
-              }`}
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery('')} className={isLight ? 'text-slate-400 hover:text-slate-600' : 'text-slate-400 hover:text-white'}>
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
+        <MapSearchBox
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          searchResults={searchResults}
+          onSelectSubstation={onSelectSubstation}
+          onSelectSection={onSelectSection}
+          isLight={isLight}
+        />
 
-          {/* Quick Search Dropdown */}
-          {searchQuery && (searchResults.substations.length > 0 || searchResults.sections.length > 0) && (
-            <div className={`mt-2 pt-2 border-t max-h-60 overflow-y-auto space-y-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
-              {searchResults.substations.map(ss => (
-                <button
-                  key={ss.code}
-                  onClick={() => {
-                    onSelectSubstation(ss);
-                    onSelectSection(null);
-                    setSearchQuery('');
-                  }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                    isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-200'
-                  }`}
-                >
-                  <div className="truncate pr-2">
-                    <span className="font-semibold block truncate">{ss.name}</span>
-                    <span className={`text-xs ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                      {ss.totalConsumers ? `${ss.totalConsumers.toLocaleString()} consumers` : ss.circle}
-                    </span>
-                  </div>
-                  <span className={`px-1.5 py-0.5 rounded font-mono text-xs font-bold shrink-0 ${
-                    ss.tier === 'bulk' ? (isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300') :
-                    ss.tier === 'subtransmission' ? (isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300') :
-                    (isLight ? 'bg-sky-100 text-sky-700' : 'bg-cyan-500/20 text-cyan-300')
-                  }`}>
-                    {ss.voltage} kV
-                  </span>
-                </button>
-              ))}
-              {searchResults.sections.map(sec => (
-                <button
-                  key={sec.code}
-                  onClick={() => {
-                    onSelectSection(sec);
-                    onSelectSubstation(null);
-                    setSearchQuery('');
-                  }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                    isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-200'
-                  }`}
-                >
-                  <span className={`font-semibold truncate ${isLight ? 'text-emerald-700' : 'text-emerald-200'}`}>{sec.name}</span>
-                  <span className={`px-1.5 py-0.5 rounded font-mono text-xs ${
-                    isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/20 text-emerald-300'
-                  }`}>
-                    AE
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Floating Layer Controls (Positioned on Left below Search) */}
-        <div className={`pointer-events-auto rounded-xl p-3 shadow-xl text-xs space-y-2.5 transition-colors ${
-          isLight ? 'bg-white border border-slate-200 text-slate-800' : 'bg-slate-900 border border-slate-800 text-slate-200'
-        }`}>
-          <div className={`flex items-center justify-between ${isLayersExpanded ? 'border-b pb-2' : ''} ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
-            <button
-              onClick={() => setIsLayersExpanded(!isLayersExpanded)}
-              className="flex items-center gap-1.5 text-left font-bold uppercase tracking-wider text-xs hover:opacity-80 transition-opacity"
-            >
-              <Layers className={`w-3.5 h-3.5 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
-              <span className={isLight ? 'text-slate-700' : 'text-slate-300'}>TNEB Grid Layers</span>
-              {isLayersExpanded ? (
-                <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
-              ) : (
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-              )}
-            </button>
-            <button
-              onClick={() => setIsSatellite(!isSatellite)}
-              className={`px-2 py-0.5 rounded font-medium text-xs transition-colors ${
-                isSatellite
-                  ? (isLight ? 'bg-sky-600 text-white font-bold' : 'bg-cyan-500 text-slate-950 font-bold')
-                  : (isLight ? 'bg-slate-100 text-slate-600 hover:text-slate-900' : 'bg-slate-800 text-slate-400 hover:text-white')
-              }`}
-            >
-              {isSatellite ? 'Satellite' : 'Vector Map'}
-            </button>
-          </div>
-
-          {isLayersExpanded && (
-            <>
-              {/* Voltage Tiers */}
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => setShowBulk(!showBulk)}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
-                    showBulk
-                      ? (isLight ? 'bg-pink-50 border-pink-200 text-pink-900 shadow-sm' : 'bg-pink-950/40 border-pink-500/40 text-pink-200 shadow-sm')
-                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-pink-600 ring-2 ring-pink-300' : 'bg-pink-500 ring-2 ring-pink-400/40'}`}></span>
-                    <span className="font-medium">Bulk EHV (230-400kV)</span>
-                  </div>
-                  <span className={`font-mono text-xs px-1.5 py-0.5 rounded font-bold ${
-                    isLight ? 'bg-pink-100 text-pink-700' : 'bg-pink-500/20 text-pink-300'
-                  }`}>
-                    {substations.filter(s => s.tier === 'bulk').length}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setShowSubTrans(!showSubTrans)}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
-                    showSubTrans
-                      ? (isLight ? 'bg-amber-50 border-amber-200 text-amber-900 shadow-sm' : 'bg-amber-950/40 border-amber-500/40 text-amber-200 shadow-sm')
-                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-amber-600 ring-2 ring-amber-300' : 'bg-amber-500 ring-2 ring-amber-400/40'}`}></span>
-                    <span className="font-medium">Sub-Trans (110kV)</span>
-                  </div>
-                  <span className={`font-mono text-xs px-1.5 py-0.5 rounded font-bold ${
-                    isLight ? 'bg-amber-100 text-amber-700' : 'bg-amber-500/20 text-amber-300'
-                  }`}>
-                    {substations.filter(s => s.tier === 'subtransmission').length}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setShowDistribution(!showDistribution)}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
-                    showDistribution
-                      ? (isLight ? 'bg-sky-50 border-sky-200 text-sky-900 shadow-sm' : 'bg-cyan-950/40 border-cyan-500/40 text-cyan-200 shadow-sm')
-                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-sky-600 ring-2 ring-sky-300' : 'bg-cyan-400 ring-2 ring-cyan-400/40'}`}></span>
-                    <span className="font-medium">Distribution (33/11kV)</span>
-                  </div>
-                  <span className={`font-mono text-xs px-1.5 py-0.5 rounded font-bold ${
-                    isLight ? 'bg-sky-100 text-sky-700' : 'bg-cyan-500/20 text-cyan-300'
-                  }`}>
-                    {substations.filter(s => s.tier === 'distribution').length}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() => setShowSections(!showSections)}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
-                    showSections
-                      ? (isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm' : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200 shadow-sm')
-                      : (isLight ? 'bg-slate-50 border-slate-200 text-slate-400 line-through' : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through')
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-emerald-600 ring-2 ring-emerald-300' : 'bg-emerald-500 ring-2 ring-emerald-400/40'}`}></span>
-                    <span className="font-medium">AE Section Offices</span>
-                  </div>
-                  <span className={`font-mono text-xs px-1.5 py-0.5 rounded font-bold ${
-                    isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/20 text-emerald-300'
-                  }`}>
-                    {sections.length}
-                  </span>
-                </button>
-              </div>
-
-              <div className={`pt-2 border-t text-xs flex items-center justify-between ${isLight ? 'border-slate-200 text-slate-500' : 'border-slate-800 text-slate-400'}`}>
-                <span>Scope: <strong className={isLight ? 'text-slate-800' : 'text-slate-200'}>Chennai Only</strong></span>
-                <span className={`font-mono font-bold px-1.5 py-0.5 rounded ${
-                  isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/10 text-emerald-400'
-                }`}>
-                  NO POI
-                </span>
-              </div>
-            </>
-          )}
-        </div>
+        <MapLayerControls
+          isLayersExpanded={isLayersExpanded}
+          setIsLayersExpanded={setIsLayersExpanded}
+          isSatellite={isSatellite}
+          setIsSatellite={setIsSatellite}
+          showBulk={showBulk}
+          setShowBulk={setShowBulk}
+          showSubTrans={showSubTrans}
+          setShowSubTrans={setShowSubTrans}
+          showDistribution={showDistribution}
+          setShowDistribution={setShowDistribution}
+          showSections={showSections}
+          setShowSections={setShowSections}
+          substations={substations}
+          sections={sections}
+          isLight={isLight}
+        />
       </div>
 
       {/* Full-Height Substation / Section Inspector Drawer */}
