@@ -30,6 +30,8 @@ export interface FeederDetail {
   circuitState?: CircuitState;
   preEmptiveTripReason?: 'WIND_GUST_EXCEEDED' | 'PLINTH_INUNDATION_RISK' | 'YARD_SUBMERGED' | 'NONE';
   clearancePending?: boolean; // Lineman physical foot-patrol clearance certificate required
+  isCmwssbSps?: boolean; // Dedicated lifeline to CMWSSB Sewage Pumping Station
+  isGccShelterFeed?: boolean; // Direct feed to designated GCC Disaster Relief Center / Shelter
 }
 
 export type GridConfidenceTier = 'L1_VERIFIED' | 'L2_PROBABLE' | 'L3_UNVERIFIED';
@@ -94,6 +96,18 @@ export interface TnebSubstation {
   benchmarked2015FloodDepthM?: number; // 2015 Floods benchmark submersion depth (up to 1.8m / 6ft)
   yardDewateringRequired?: boolean; // Requires high-capacity mobile pumps before yard can be re-energized
   statutoryDeenergized?: boolean; // Pre-emptively isolated under TNSDMA Section 5.6 public safety mandate
+  // Municipal & Satellite Vulnerability Ground Truth (GCC CDMP 2023 & GEE 200 Wards)
+  gccZone?: number;
+  gccZoneName?: string;
+  gccWard?: number;
+  geeFloodCategory?: string;
+  geeRunoffMm?: number;
+  geeImperviousPct?: number;
+  wardCouncillorMobile?: string;
+  wardCmwssbMobile?: string;
+  wardTangedcoMobile?: string;
+  wardGccAeMobile?: string;
+  wardReliefSheltersCount?: number;
 }
 
 export interface TnebSection {
@@ -117,6 +131,37 @@ export interface TnebSection {
     type: 'Polygon' | 'MultiPolygon';
     coordinates: any;
   };
+  // Municipal & Satellite Vulnerability Ground Truth (GCC CDMP 2023 & GEE 200 Wards)
+  gccZone?: number;
+  gccZoneName?: string;
+  gccWard?: number;
+  geeFloodCategory?: string;
+  geeRunoffMm?: number;
+  geeImperviousPct?: number;
+  wardCouncillorMobile?: string;
+  wardCmwssbMobile?: string;
+  wardTangedcoMobile?: string;
+  wardGccAeMobile?: string;
+  wardReliefSheltersCount?: number;
+}
+
+export interface GccWardDisasterInfo {
+  ward: number;
+  zone: number;
+  zoneName: string;
+  councillorMobile: string;
+  cmwssbAeMobile?: string;
+  tangedcoAeMobile?: string;
+  gccAeMobile?: string;
+  gccElecMobile?: string;
+  policeMobile?: string;
+  fireMobile?: string;
+  reliefSheltersCount?: number;
+  geeRunoffMm?: number;
+  geeImperviousPct?: number;
+  geeElevationMeanM?: number;
+  geeFloodCategory?: string;
+  geeFloodScore?: number;
 }
 
 export interface ChennaiGridData {

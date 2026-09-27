@@ -4,6 +4,40 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.4.0-gcc-municipal-and-satellite-integration] - 2026-09-27
+
+### Added
+- **GCC 200-Ward City Disaster Management Ground Truth Fusion**:
+  - Extracted Ward Disaster Management Committees for all 200 Greater Chennai Corporation (GCC) Wards from the 804-page *City Disaster Management Perspective Plan 2023* (`CDMP 2023`).
+  - Parsed official CUG telephone directory:
+    - **Ward Councillor CUG**: `9445467xxx` series (`9445467000 + Ward`).
+    - **GCC Engineering Assistant Engineer**: `9445190xxx` series.
+    - **CMWSSB Water & Sewerage Area Engineer**: `8144930xxx` series.
+    - **TANGEDCO O&M Ward AE/JE**: `9445850xxx` series.
+    - **GCC Central Disaster Control Room**: `1913` (Ripon Building 24x7).
+- **Google Earth Engine (GEE) Satellite Vulnerability Integration**:
+  - Attached empirical satellite observations for all 200 wards:
+    - `simulated_surface_runoff_mm`: Cyclone rainfall accumulation and watershed surface flow.
+    - `urban_impervious_built_pct`: ESA WorldCover/Sentinel-2 impervious surface built percentage.
+    - `ward_flood_risk_score` and `flood_risk_category`.
+- **GCC Designated Disaster Relief Shelters**:
+  - Cross-referenced 162 official GCC designated shelters (schools, community halls, relief camps) across all 200 wards.
+- **High-Precision Spatial Containment Join (`shapely`)**:
+  - Point-in-polygon containment mapped **178 of 286 substations** (62.2%) and **211 of 352 section offices** (59.9%) directly to their respective GCC Zone (1–15) and Ward (1–200).
+  - Explicitly differentiated urban municipal grid nodes from the **108 peri-urban CMA nodes** (400kV/230kV bulk injection corridors in Kanchipuram/Tiruvallur/Chengalpattu circles), badged as `Peri-Urban CMA Grid Hub • EHT Transmission Corridor`.
+- **Lifeline Feeder Badging**:
+  - Automatically classified and badged:
+    - `[💧 CMWSSB Sewage Pumping]` (`P1 NON-CUT`)
+    - `[🏕️ GCC Relief Shelter Feed]` (`P1 CRITICAL`)
+- **Substation & Section Inspector Cockpit Enhancements**:
+  - **Pinned Header Badge**: Added `🏛️ Z{Zone}:W{Ward}` pill (e.g. `🏛️ Z6:W69` on Sembium SS) providing immediate municipal jurisdiction at a glance.
+  - **Administrative Jurisdiction Card**: Enriched to display `GCC Zone {X} ({ZoneName}) • Ward {Y}` and `GCC CDMP Disaster Ward`.
+  - **Municipal & Satellite Disaster Stack Card**: Displayed in Substation Inspector (Split View + Tab 3 Info) and AE Section Inspector with GEE runoff, impervious percentage, relief shelter count, and four direct `tel:` CUG emergency call buttons.
+- **Reference Documentation**:
+  - Published comprehensive architectural specification `docs/06-gcc-municipal-and-satellite-vulnerability-integration.md`.
+
+---
+
 ## [1.3.1-ui-ergonomics-refinement] - 2026-09-27
 
 ### Fixed & Refined
