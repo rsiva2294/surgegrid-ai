@@ -47,7 +47,7 @@ export interface LiveOutageResponse {
 const IDB_LIVE_OUTAGES_KEY = 'sg_live_chennai_outages_v1';
 
 // Live endpoint with same-origin routing (proxied in dev via Vite, routed in prod via Firebase Hosting function rewrite)
-const API_URL = '/api/v2/outages?district=Chennai';
+const API_URL = '/api/v2/outages';
 
 /**
  * Fetch live outages in Chennai from outage.nammamap.in with Stale-While-Revalidate via IndexedDB
@@ -71,10 +71,20 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
 
     if (res.ok) {
       const json = await res.json();
+      const all: LiveOutage[] = json.data || [];
+      // Filter for Chennai metropolitan area (matches Chennai district, Chennai circle, or Chennai metro substations like Kellys / Anna Nagar)
+      const chennaiData = all.filter(o => {
+        const d = (o.district || '').toLowerCase();
+        const c = (o.circle || '').toLowerCase();
+        const t = (o.town || '').toLowerCase();
+        const sub = (o.substation || '').toLowerCase();
+        return d === 'chennai' || c.includes('chennai') || t.includes('chennai') || sub.includes('anna nagar') || sub.includes('chennai');
+      });
+
       const payload: LiveOutageResponse = {
         success: true,
-        count: json.count || (json.data ? json.data.length : 0),
-        data: json.data || [],
+        count: chennaiData.length,
+        data: chennaiData,
         cached: false,
         lastFetched: new Date().toISOString()
       };

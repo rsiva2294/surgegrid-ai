@@ -172,7 +172,9 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
                 {triageMeta.title}
               </span>
               <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${triageMeta.badgeBg}`}>
-                {matchingSubstations.length} SS
+                {crisisTriageFilter === 'outages'
+                  ? `${matchingSubstations.length} SS · ${liveOutages.length} Outages`
+                  : `${matchingSubstations.length} SS`}
               </span>
             </div>
             <p className={`text-[10px] truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
