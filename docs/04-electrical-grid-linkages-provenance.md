@@ -175,11 +175,40 @@ The surveyed vector path for Feeder `215910` (`"33 KV KILPAUK 2"`) ends at:
 }
 ```
 
-* **Physical Cable Termination Coordinate:** `[80.245124, 13.086192]`
-* **Substation 2218 Switchyard Point:** `[80.245094, 13.086210]`
-* **Coordinate Distance Delta:** **3.4 meters** ($\Delta < 0.00003^\circ$)
+#### Step C: The Physical Cable Endpoint & Switchyard Polygon Containment Proof
+**Source Files:** `grid_infrastructure/feeder_lines.geojson.gz` & `grid_infrastructure/substations_polygons.geojson`
 
-This proves beyond doubt that the physical electrical conductor surveyed by TNEB field engineers directly penetrates the switchyard fence of the recipient substation.
+The surveyed vector path for Feeder `215910` (`"33 KV KILPAUK 2"`) terminates at:
+```json
+{
+  "type": "Feature",
+  "properties": {
+    "fdr_code": "215910",
+    "fdr_name": "33 KV KILPAUK 2",
+    "ss_code": "2159",
+    "volt_kv": "33"
+  },
+  "geometry": {
+    "type": "MultiLineString",
+    "coordinates": [
+      [
+        [80.24512422, 13.08619193],
+        [80.24475557, 13.08619958]
+      ]
+    ]
+  }
+}
+```
+
+* **Physical Cable Termination Coordinate:** `[80.24512422, 13.08619193]`
+* **Substation 2218 Center Switchyard Point:** `[80.24509365, 13.08621004]`
+* **Point-to-Point Distance Delta:** **3.4 meters** ($\Delta < 0.00003^\circ$)
+
+Furthermore, checking against the actual **28-vertex switchyard boundary polygon** in `substations_polygons.geojson` (bounding box: Lng `[80.244940, 80.245235]`, Lat `[13.086007, 13.086393]`):
+
+$$\text{ST\_Contains}(\text{Substation\_2218\_Polygon}, \text{Feeder\_Endpoint}(80.245124, 13.086192)) = \mathbf{TRUE}$$
+
+The physical electrical conductor surveyed by TNEB field engineers does not merely land "near" the substation; it is **geometrically enclosed inside the verified perimeter fence** of the recipient switchyard.
 
 ---
 
@@ -202,18 +231,18 @@ From Substation `2218` (`33/11 KV KILPAUK SS`), let us trace an actual $11\text{
 
 ```json
 {
-  "gid": 202,
-  "fdr_name": "11 KV BARAKA FEEDER",
-  "fdr_code": "221812",
-  "fdr_length": 2.73,
+  "gid": 105,
+  "fdr_name": "11 KV SAP CAMP FEEDER",
+  "fdr_code": "221801",
+  "fdr_length": 2.87,
   "ss_name": "33/11 KV KILPAUK SS",
   "ss_code": "2218",
   "cir_code": "0402",
   "region_id": "01",
   "volt_kv": "11",
-  "lt_length": 10284.06,
-  "no_of_dt": 14,
-  "conscount": 1178,
+  "lt_length": 10849.62,
+  "no_of_dt": 19,
+  "conscount": 809,
   "fdrconfig": "UG",
   "feedarea": "Urban",
   "feedown": "TANGEDCO",
@@ -222,15 +251,15 @@ From Substation `2218` (`33/11 KV KILPAUK SS`), let us trace an actual $11\text{
 }
 ```
 
-* **Feeder Code:** `221812` (starts with `2218`, confirming its parent substation).
+* **Feeder Code:** `221801` (starts with `2218`, confirming its parent substation).
 * **Operating Voltage:** $11\text{ kV}$ Distribution.
-* **Underground Line Length:** $2.73\text{ km}$ of HT cable + $10.28\text{ km}$ of LT lines.
-* **Connected Asset Base:** Exactly **14 Distribution Transformers** supplying **1,178 consumers**.
+* **Underground Line Length:** $2.87\text{ km}$ of HT cable + $10.85\text{ km}$ of LT lines.
+* **Connected Asset Base:** Exactly **19 Distribution Transformers** supplying **809 consumers**.
 
 #### Step B: Raw Distribution Transformer (DTR) Asset
 **Source File:** `distribution_network/transformers/dt_0402_Chennai-Central.geojson.gz`
 
-Here is a verbatim DTR connected to Kilpauk SS's $11\text{kV}$ radial feeder network:
+Here is a verbatim DTR connected directly to Feeder `221801`:
 
 ```json
 {
@@ -274,9 +303,53 @@ Here is a verbatim DTR connected to Kilpauk SS's $11\text{kV}$ radial feeder net
 
 ---
 
-## 4. How SurgeGrid AI Leverages Both Linkages in the Cockpit
+## 4. Methodological Rigor: Confidence Model & Grid Taxonomy
 
-SurgeGrid AI dynamically connects these two layers into a unified real-time operations interface:
+A critical engineering tenet of SurgeGrid AI is acknowledging the boundary between **static GIS infrastructure** and **real-time electrical operational state**.
+
+### 1. The Three Concepts That Must Never Be Conflated
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 1. Physical Connectivity (Static GIS Asset Infrastructure)                 │
+│    • Conductor cables in trenches, switchyard fences, DTR nameplates.        │
+│    • Answers: "Is there a physical wire connecting Asset A to Asset B?"     │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 2. Operational Switching State (SCADA / Breaker Topology)                   │
+│    • Breaker positions (Open/Closed), Bus Couplers, RMU Tie Switches.        │
+│    • Answers: "Is this circuit currently energized and closed?"             │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ 3. Dynamic Customer Impact (Outage Meter Telemetry)                         │
+│    • Smart meter pings, AMR telemetry, registered consumer counts.           │
+│    • Answers: "Which exact households are dark right now?"                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+* **Physical Connectivity**: Grounded via surveyed GIS lines, composite codes (`ss_code → fdr_code → dt_code`), and switchyard polygon containment.
+* **Operational Switching State**: In an urban distribution mesh like Chennai, substations frequently maintain multiple incoming feeds (e.g. Kilpauk SS lists incomers from Kilpauk 230kV, Cooks Road 110kV, and Anna Nagar 110kV). Without direct real-time SCADA RTU integration, SurgeGrid AI models the **physical capacity and available electrical paths**, not an assumed rigid single-source supply.
+* **Dynamic Customer Impact**: The `dtconcount` (e.g. 105 consumers on Venkatapathy RMU) represents **registered billing meter baseline**. If an RMU loop switch is transferred to an adjacent feeder during maintenance, live impact diverges from the static GIS mapping until re-synchronized.
+
+---
+
+### 2. The Three-Level Confidence Model
+
+To prevent misleading operators with false certainties, SurgeGrid AI classifies all network linkages into three confidence tiers:
+
+| Confidence Tier | Criteria | Visual Representation in UI | Eligible for Automated Outage Scoping? |
+| :--- | :--- | :--- | :--- |
+| **Level 1: Verified Connection** | Authoritative feeder circuit ID + endpoint strictly contained inside switchyard boundary polygon (`ST_Contains == TRUE`). | Solid high-contrast line with directional pulse. | **Yes** — Authoritative ground-truth basis. |
+| **Level 2: Probable / Inferred Connection** | Compatible voltage tier ($110\text{kV} \rightarrow 33\text{kV}$) + physical urban proximity ($\le 8.5\text{km}$) + partial endpoint proximity, but missing complete breaker schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Only** — Requires operator confirmation. |
+| **Level 3: Unverified Connection** | Fuzzy naming match or unverified Euclidean proximity without GIS conductor vectors. | Suppressed / Hidden from map canvas. | **No** — Excluded to eliminate false positives. |
+
+---
+
+## 5. How SurgeGrid AI Leverages Both Linkages in the Cockpit
+
+SurgeGrid AI dynamically connects these layers into a unified real-time operations interface:
 
 ### 1. Inter-Substation Grid Mode (Transmission & Sub-Transmission View)
 * **Switchyard Visuals:** Substations are rendered as interactive nodes color-coded by voltage tier ($230\text{kV}$ Purple, $110\text{kV}$ Amber, $33\text{kV}$ Sky Blue).
@@ -285,12 +358,12 @@ SurgeGrid AI dynamically connects these two layers into a unified real-time oper
 
 ### 2. Feeder & Distribution Mode (Neighborhood & DTR View)
 * **Substation Inspector Feeder Roster:** Selecting any substation opens the live feeder panel showing all outgoing $11\text{kV}$ and $33\text{kV}$ lines.
-* **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $14\text{ DTRs}$, $32\text{ MVA}$ capacity) and displays live consumer counts.
+* **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $19\text{ DTRs}$, $809\text{ consumers}$) and displays live consumer counts.
 * **Outage Precision:** When TNEB issues an outage for a specific feeder name or code, SurgeGrid AI highlights the precise 11kV cable vector, rings the affected DTR markers, and calculates the exact affected population.
 
 ---
 
-## 5. Transformed Production Dataset in SurgeGrid AI (`public/data`)
+## 6. Transformed Production Dataset in SurgeGrid AI (`public/data`)
 
 While the raw GIS archive in `tneb_gis_raw` provides the immutable source of truth, it spans over **1.2 GB** of unindexed GeoJSON files, compressed GZips, and Geoserver layer dumps. To achieve instantaneous, 60fps client-side rendering in the browser without freezing the main thread, SurgeGrid AI transforms and compiles the raw assets into three lean, indexed production schemas stored in `public/data/`:
 
@@ -520,7 +593,7 @@ The DTR dataset is indexed by parent `fdr_code`. When a user clicks a feeder in 
 
 ---
 
-## 6. Summary Reference Table: Raw vs. Transformed Pipeline
+## 7. Summary Reference Table: Raw vs. Transformed Pipeline
 
 | Asset Domain | Raw TNEB GIS Source File (`tneb_gis_raw`) | Transformed Production Path (`public/data/`) | Primary Transform Operations |
 | :--- | :--- | :--- | :--- |
