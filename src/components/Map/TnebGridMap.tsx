@@ -8,7 +8,7 @@ import { MapSearchBox } from './MapSearchBox';
 import { MapLayerControls } from './MapLayerControls';
 import { TriageSubstationRosterCard } from './TriageSubstationRosterCard';
 import { SubstationInspectorDrawer } from './SubstationInspectorDrawer';
-import { getLiveChennaiOutages, getOutagesForSubstation, type LiveOutage } from '../../services/liveOutageService';
+import { getLiveChennaiOutages, getOutagesForSubstation, enrichLiveOutagesWithGrid, type LiveOutage } from '../../services/liveOutageService';
 import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import { NO_POI_DARK_STYLE, NO_POI_LIGHT_STYLE, CHENNAI_METRO_BOUNDS } from './mapStyles';
 import {
@@ -108,16 +108,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     setShowLayersDuringTriage(false);
   }, [crisisTriageFilter]);
 
-  // Fetch real-time live outages from outage.nammamap.in on load
+  // Fetch real-time live outages from outage.nammamap.in on load and enrich with grid topology
   useEffect(() => {
     let isMounted = true;
     getLiveChennaiOutages().then(res => {
       if (isMounted && res.data) {
-        setLiveOutages(res.data);
+        const enriched = enrichLiveOutagesWithGrid(res.data, substations, sections);
+        setLiveOutages(enriched);
       }
     });
     return () => { isMounted = false; };
-  }, []);
+  }, [substations, sections]);
 
   const poorStabilityCount = useMemo(() => {
     return substations.filter(s => isSubstationAtRisk(s, liveOutages)).length;
