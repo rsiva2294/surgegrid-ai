@@ -765,7 +765,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
   const [isInspectorExpanded, setIsInspectorExpanded] = useState(false);
-  const [inspectorTab, setInspectorTab] = useState<'info' | 'feeders' | 'civic' | 'connections'>('info');
+  const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
+  const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
 
   // Reset showConnections, selectedFeeder, feederCategoryFilter, and inspectorTab when selected substation changes
@@ -773,7 +774,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     setShowConnections(false);
     setSelectedFeeder(null);
     setFeederCategoryFilter('all');
-    setInspectorTab('info');
+    setInspectorTab('specs');
+    setIsLinksListExpanded(false);
   }, [selectedSubstation]);
 
   // Fast O(1) Entity Maps
@@ -2677,34 +2679,35 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                 ) : (
                   /* SINGLE-COLUMN TABBED VIEW (Full Height Dedicated to Selected Tab) */
                   <div className="flex flex-col flex-1 min-h-0 pt-2 space-y-2">
-                    {/* Navigation Tabs (4-Way Equal Spacing: Grid Specs, Feeders, Civic / GCC, Grid Links) */}
+                    {/* Navigation Tabs (3-Way Balanced Spacing: Plant & Specs, Circuits & Grid, Civic & Crisis) */}
                     <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 text-xs ${
                       isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
                     }`}>
                       <button
                         type="button"
-                        onClick={() => setInspectorTab('info')}
+                        onClick={() => setInspectorTab('specs')}
                         className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
-                          inspectorTab === 'info'
+                          inspectorTab === 'specs'
                             ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
                             : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
-                        title="Substation Specs, Transformers, Elevation & Field SOP"
+                        title="Substation Specs, Transformers, Elevation, Flood Benchmark & Field SOP"
                       >
                         <Info className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Grid Specs</span>
+                        <span className="truncate">Plant & Specs</span>
                       </button>
                       <button
                         type="button"
-                        onClick={() => setInspectorTab('feeders')}
+                        onClick={() => setInspectorTab('circuits')}
                         className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
-                          inspectorTab === 'feeders'
+                          inspectorTab === 'circuits'
                             ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
                             : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
+                        title="Distribution Feeders, Upstream Transmission Links & Grid Circuit Isolation"
                       >
-                        <Cable className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Feeders ({selectedSubstation.feeders.length})</span>
+                        <Zap className="w-3.5 h-3.5 shrink-0 text-amber-500" />
+                        <span className="truncate">Circuits & Grid ({selectedSubstation.feeders.length})</span>
                       </button>
                       <button
                         type="button"
@@ -2716,26 +2719,150 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                         }`}
                         title="GCC Zone & Ward Disaster Management Committee & GEE Satellite Telemetry"
                       >
-                        <Building2 className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Civic / GCC</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setInspectorTab('connections')}
-                        className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
-                          inspectorTab === 'connections'
-                            ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
-                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
-                        }`}
-                      >
-                        <GitFork className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate">Links ({electricalNodes.length})</span>
+                        <Shield className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Civic & Crisis</span>
                       </button>
                     </div>
 
-                    {/* Tab 1: Feeders Content (Takes Full Height) */}
-                    {inspectorTab === 'feeders' && (
+                    {/* Tab 2: Circuits & Grid Content (Takes Full Height) */}
+                    {inspectorTab === 'circuits' && (
                       <div className="flex flex-col flex-1 min-h-0 space-y-2">
+                        {/* Upstream Grid Links & Circuit Isolation Card */}
+                        <div className={`p-2.5 rounded-xl border shrink-0 transition-all ${
+                          showConnections
+                            ? (isLight ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20' : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20')
+                            : (isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80')
+                        }`}>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className={`p-1.5 rounded-lg shrink-0 ${
+                                showConnections
+                                  ? (isLight ? 'bg-sky-600 text-white shadow-sm' : 'bg-cyan-500 text-slate-950 shadow-sm')
+                                  : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                              }`}>
+                                <GitFork className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className={`text-xs font-bold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                                    Isolate Electrical Circuit
+                                  </span>
+                                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold shrink-0 ${
+                                    electricalNodes.length > 0
+                                      ? (isLight ? 'bg-sky-100 text-sky-800' : 'bg-cyan-500/20 text-cyan-300')
+                                      : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
+                                  }`}>
+                                    {electricalNodes.length} {electricalNodes.length === 1 ? 'electrical link' : 'electrical links'}
+                                  </span>
+                                </div>
+                                <p className={`text-[10px] leading-tight truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                  {showConnections
+                                    ? 'Circuit isolated • Unrelated markers hidden • Power flow animated'
+                                    : 'Isolate circuit & hide unrelated markers on map'}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              {electricalNodes.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => setIsLinksListExpanded(!isLinksListExpanded)}
+                                  className={`px-2 py-1 rounded-lg text-[10px] font-bold border transition-all flex items-center gap-1 ${
+                                    isLinksListExpanded
+                                      ? (isLight ? 'bg-sky-100 border-sky-300 text-sky-800' : 'bg-cyan-950 border-cyan-700 text-cyan-200')
+                                      : (isLight ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100' : 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800')
+                                  }`}
+                                  title="Expand/collapse connected transmission lines & campus trunks"
+                                >
+                                  <span>{isLinksListExpanded ? 'Hide Links' : 'View Links'}</span>
+                                  {isLinksListExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                </button>
+                              )}
+
+                              <button
+                                type="button"
+                                role="switch"
+                                aria-checked={showConnections}
+                                onClick={() => setShowConnections(!showConnections)}
+                                disabled={electricalNodes.length === 0}
+                                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                  electricalNodes.length === 0
+                                    ? 'opacity-40 cursor-not-allowed bg-slate-300'
+                                    : showConnections
+                                    ? (isLight ? 'bg-sky-600' : 'bg-cyan-500')
+                                    : (isLight ? 'bg-slate-300' : 'bg-slate-700')
+                                }`}
+                              >
+                                <span
+                                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                                    showConnections ? 'translate-x-4' : 'translate-x-0'
+                                  }`}
+                                />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Expandable Connected Grid Nodes Drawer */}
+                          {isLinksListExpanded && electricalNodes.length > 0 && (
+                            <div className="mt-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-800/80 space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                              <div className="flex items-center justify-between text-[10px] font-semibold px-0.5 mb-1">
+                                <span className={isLight ? 'text-slate-600' : 'text-slate-400'}>
+                                  Linked Substations & Trunks ({electricalNodes.length})
+                                </span>
+                                <span className="text-[9px] font-mono opacity-60">Click node to navigate</span>
+                              </div>
+                              {electricalNodes.map(node => (
+                                <button
+                                  key={node.id}
+                                  onClick={() => {
+                                    if (node.substation) {
+                                      onSelectSubstation(node.substation);
+                                      onSelectSection(null);
+                                    }
+                                  }}
+                                  className={`w-full text-left p-2 rounded-lg border text-xs flex items-center justify-between gap-2 transition-all ${
+                                    isLight
+                                      ? 'bg-white hover:bg-slate-50 border-slate-200 hover:border-sky-300 text-slate-800 shadow-xs'
+                                      : 'bg-slate-900/90 hover:bg-slate-850 border-slate-800 hover:border-cyan-500/40 text-slate-200'
+                                  }`}
+                                >
+                                  <div className="flex items-center gap-2 truncate min-w-0">
+                                    <span
+                                      className="w-2.5 h-2.5 rounded-full shrink-0 ring-1 ring-white/20"
+                                      style={{ backgroundColor: node.color }}
+                                    />
+                                    <div className="truncate">
+                                      <span className="font-semibold block truncate text-[11px] leading-tight">{node.name}</span>
+                                      <span className={`text-[9.5px] flex items-center gap-1 mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                        <span>{node.label}</span>
+                                        {node.voltage && <span className="font-mono font-bold">• {node.voltage}</span>}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5 shrink-0 font-mono text-[9.5px]">
+                                    {node.confidenceTier === 'L1_VERIFIED' ? (
+                                      <span className="px-1.5 py-0.2 rounded text-[8px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 border border-emerald-500/30">
+                                        L1 Verified
+                                      </span>
+                                    ) : (
+                                      <span className="px-1.5 py-0.2 rounded text-[8px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-500/30">
+                                        L2 Inferred
+                                      </span>
+                                    )}
+                                    <span className={`px-1.5 py-0.2 rounded font-bold ${isLight ? 'bg-slate-100 text-slate-700' : 'bg-slate-800 text-slate-300'}`}>
+                                      {node.distanceKm} km
+                                    </span>
+                                    <ArrowRight className={`w-3 h-3 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Feeder Listing Header */}
                         <div className="flex items-center justify-between shrink-0">
                           <span className={`text-xs font-bold flex items-center gap-1.5 ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
                             <Cable className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
@@ -3071,152 +3198,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                       </div>
                     )}
 
-                    {/* Tab 2: Connections Content (Takes Full Height) */}
-                    {inspectorTab === 'connections' && (
-                      <div className="flex flex-col flex-1 min-h-0 space-y-3">
-                        {/* 2-Step Flow: Show Connections Switch & Circuit Isolation */}
-                        <div className={`p-3 rounded-xl border shrink-0 transition-all ${
-                          showConnections
-                            ? (isLight ? 'bg-sky-50/80 border-sky-300 ring-2 ring-sky-400/20' : 'bg-cyan-950/40 border-cyan-500/50 ring-2 ring-cyan-500/20')
-                            : (isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80')
-                        }`}>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                              <div className={`p-1.5 rounded-lg ${
-                                showConnections
-                                  ? (isLight ? 'bg-sky-600 text-white shadow-sm' : 'bg-cyan-500 text-slate-950 shadow-sm')
-                                  : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
-                              }`}>
-                                <GitFork className="w-4 h-4" />
-                              </div>
-                              <div>
-                                <div className="flex items-center gap-1.5">
-                                  <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
-                                    Isolate Electrical Circuit
-                                  </span>
-                                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
-                                    electricalNodes.length > 0
-                                      ? (isLight ? 'bg-sky-100 text-sky-800' : 'bg-cyan-500/20 text-cyan-300')
-                                      : (isLight ? 'bg-slate-200 text-slate-600' : 'bg-slate-800 text-slate-400')
-                                  }`}>
-                                    {electricalNodes.length} {electricalNodes.length === 1 ? 'electrical link' : 'electrical links'}
-                                  </span>
-                                </div>
-                                <p className={`text-[10px] leading-tight mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                  {showConnections
-                                    ? 'Circuit isolated • Unrelated markers hidden • Power flow animated'
-                                    : 'Isolate circuit & hide unrelated markers on map'}
-                                </p>
-                              </div>
-                            </div>
-
-                            <button
-                              type="button"
-                              role="switch"
-                              aria-checked={showConnections}
-                              onClick={() => setShowConnections(!showConnections)}
-                              disabled={electricalNodes.length === 0}
-                              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                electricalNodes.length === 0
-                                  ? 'opacity-40 cursor-not-allowed bg-slate-300'
-                                  : showConnections
-                                  ? (isLight ? 'bg-sky-600' : 'bg-cyan-500')
-                                  : (isLight ? 'bg-slate-300' : 'bg-slate-700')
-                              }`}
-                            >
-                              <span
-                                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
-                                  showConnections ? 'translate-x-5' : 'translate-x-0'
-                                }`}
-                              />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Operational Disclaimer Banner */}
-                        <div className={`p-2.5 rounded-xl border text-[11px] flex items-center justify-between gap-2 shrink-0 ${
-                          isLight ? 'bg-amber-50/80 border-amber-200/90 text-amber-900' : 'bg-amber-500/10 border-amber-500/20 text-amber-300'
-                        }`}>
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                            <span className="font-semibold truncate">Mapped Physical Grid Topology</span>
-                          </div>
-                          <span className="font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 shrink-0">
-                            SCADA State Pending
-                          </span>
-                        </div>
-
-                        {/* Connected Nodes Directory */}
-                        <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
-                          <div className="flex items-center justify-between px-1 mb-1">
-                            <span className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                              Linked Substations & Trunks ({electricalNodes.length})
-                            </span>
-                            <span className={`text-[10px] font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
-                              Click node to navigate
-                            </span>
-                          </div>
-
-                          {electricalNodes.length > 0 ? (
-                            electricalNodes.map(node => (
-                              <button
-                                key={node.id}
-                                onClick={() => {
-                                  if (node.substation) {
-                                    onSelectSubstation(node.substation);
-                                    onSelectSection(null);
-                                  }
-                                }}
-                                className={`w-full text-left p-2.5 rounded-xl border text-xs flex items-center justify-between gap-2 transition-all ${
-                                  isLight
-                                    ? 'bg-slate-50 hover:bg-slate-100/90 border-slate-200 hover:border-sky-300 text-slate-800 shadow-sm'
-                                    : 'bg-slate-950/60 hover:bg-slate-900 border-slate-800/80 hover:border-cyan-500/40 text-slate-200'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5 truncate">
-                                  <span
-                                    className="w-3 h-3 rounded-full shrink-0 ring-2 ring-white/20"
-                                    style={{ backgroundColor: node.color }}
-                                  />
-                                  <div className="truncate">
-                                    <span className="font-semibold block truncate leading-tight">{node.name}</span>
-                                    <span className={`text-[10px] flex items-center gap-1.5 mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                      <span>{node.label}</span>
-                                      {node.voltage && <span className="font-mono font-bold">• {node.voltage}</span>}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center gap-1.5 shrink-0 font-mono text-[10px]">
-                                  {node.confidenceTier === 'L1_VERIFIED' ? (
-                                    <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                                      L1 Verified
-                                    </span>
-                                  ) : (
-                                    <span className="px-1.5 py-0.5 rounded text-[8.5px] font-mono font-bold uppercase tracking-wider bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                                      L2 Inferred
-                                    </span>
-                                  )}
-                                  <span className={`px-1.5 py-0.5 rounded font-bold ${isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'}`}>
-                                    {node.distanceKm} km
-                                  </span>
-                                  <ArrowRight className={`w-3.5 h-3.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`} />
-                                </div>
-                              </button>
-                            ))
-                          ) : (
-                            <div className={`p-4 text-center rounded-xl border text-xs ${
-                              isLight ? 'bg-slate-50 border-slate-200 text-slate-500' : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
-                            }`}>
-                              No direct electrical interconnections recorded for this node.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Tab 3: Substation Info & Field AE Depot */}
-                    {inspectorTab === 'info' && (
+                    {/* Tab 1: Plant Specs & Field AE Depot */}
+                    {inspectorTab === 'specs' && (
                       <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
                         {/* Active Storm Surge / Inundation Alert - CRITICAL INFO PROMOTED TO TOP */}
                         {disasterScenario === 'EXTREME_SURGE' && selectedSubstation.elevationM !== undefined && selectedSubstation.elevationM <= 3.2 && (

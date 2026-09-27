@@ -29,12 +29,12 @@ All notable changes, architectural decisions, and data extractions for the Surge
   - Automatically classified and badged:
     - `[💧 CMWSSB Sewage Pumping]` (`P1 NON-CUT`)
     - `[🏕️ GCC Relief Shelter Feed]` (`P1 CRITICAL`)
-- **Decoupled 4-Tab Architecture & Zero-Redundancy Ergonomics (Option A)**:
-  - Eliminated visual redundancy across the Substation Inspector by establishing strict separation of concerns between electrical engineering and civic disaster administration.
-  - **4-Tab Navigation Bar**: Introduced `[ℹ️ Grid Specs]`, `[⚡ Feeders (N)]`, `[🏛️ Civic / GCC]`, and `[🔗 Links (N)]`.
-  - **Pure Electrical Specs (`Grid Specs`)**: Reverted Card 1 to pure TNEB Circle (`CHENNAI SOUTH 2` • `Region 01` • `16 MVA` • Switchyard GPS), removing all duplicate municipal strings. Promoted switchyard terrain and 2015 Flood submersion benchmarks to the top with **100% zero-scroll visibility**.
-  - **Dedicated Civic Command (`Civic / GCC`)**: Dedicated tab showcasing GCC Zone & Ward identity, GEE satellite runoff/impervious stack, 4 clickable `tel:` emergency hotlines (Councillor, CMWSSB, GCC AE, Ripon 1913), relief shelter feeds, and multi-agency restoration clearance SOP.
-  - **Pinned Header Pill**: Retained a single global pill (`🏛️ Z13:W174`) as an ambient reference across all tabs without duplicate card titles below.
+- **Balanced 3-Tab Architecture & Zero-Scroll Standard**:
+  - Replaced the temporary 4-tab model with a balanced, ergonomic 3-tab layout:
+    - **Tab 1: `[ℹ️ Plant & Specs]`**: Pure TNEB physical switchyard asset profile (**`CHENNAI SOUTH 2`** • `Region 01` • `16 MVA` • Switchyard GPS), civil elevation defense (Elevation MSL, Coast Dist, Composite Risk Score, 2015 Flood benchmark, Switchgear plinth clearance $1.5\text{m GL}$, Dewatering SOP), and jurisdictional AE Section Depot. Symmetrical ~380px height, 100% visible above the fold with zero scroll.
+    - **Tab 2: `[⚡ Circuits & Grid (N)]`**: Consolidated electrical topology combining upstream transmission incomers/links, an "Isolate Electrical Circuit" toggle switch with animated power flow lines, an expandable linked nodes drawer (`View Links` / `Hide Links`), and the full downstream 11kV feeder management suite with lifelines (`💧 CMWSSB`, `🏕️ Shelter`, `🏥 Hospital`) and search.
+    - **Tab 3: `[🛡️ Civic & Crisis]`**: Dedicated municipal disaster management command featuring GCC Zone & Ward identity (CDMP 2023), GEE satellite hydrology (Runoff mm, Impervious built %), 2×2 emergency hotlines (Councillor, CMWSSB AE, GCC AE, Ripon 1913) with direct `tel:` links, and multi-agency restoration clearance SOP. Symmetrical ~390px height, 100% visible above the fold with zero scroll.
+  - **Pinned Header Ambient Reference**: Retained a single global pill (`🏛️ Z13:W174`) providing ambient civic awareness across all tabs without duplicating card titles below.
 - **Reference Documentation**:
   - Published comprehensive architectural specification `docs/06-gcc-municipal-and-satellite-vulnerability-integration.md`.
 
