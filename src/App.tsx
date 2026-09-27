@@ -54,13 +54,13 @@ export default function App() {
               <h1 className={`text-sm font-extrabold tracking-wide uppercase ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 SurgeGrid AI
               </h1>
-              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-bold border tracking-wide ${
+              <span className={`text-xs font-mono px-2 py-0.5 rounded-md font-bold border tracking-wide ${
                 isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
               }`}>
                 GROUND-TRUTH GRID V5
               </span>
             </div>
-            <p className={`text-[11px] font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+            <p className={`text-xs font-medium ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               GROUND-TRUTH GRID V5 • 271 SUBSTATIONS • 42K+ DTRs
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function App() {
             </div>
           )}
 
-          <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-[11px] ${
+          <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs ${
             isLight ? 'bg-slate-100 border-slate-200 text-slate-600' : 'bg-slate-900 border-slate-800 text-slate-400'
           }`}>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
