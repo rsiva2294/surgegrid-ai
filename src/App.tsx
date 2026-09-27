@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
-import { Zap, RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
+import { RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
 import {
   fetchLiveWeatherConditions,
   type LiveWeatherConditions,
@@ -78,8 +78,14 @@ export default function App() {
         isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-900 border-slate-800 shadow-md'
       }`}>
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
-            <Zap className="w-5 h-5 text-white" />
+          <div className={`w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-md shadow-cyan-500/20 border overflow-hidden shrink-0 ${
+            isLight ? 'border-slate-200' : 'border-cyan-500/30'
+          }`}>
+            <img
+              src="/new-logo.png"
+              alt="SurgeGrid AI"
+              className="w-full h-full object-contain p-0.5"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2">
