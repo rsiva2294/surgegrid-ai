@@ -4,6 +4,24 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.2.2-feeder-tiering-engine] - 2026-09-27
+
+### Added
+- **Deterministic 5-Tier Electrical & Priority Feeder Sorting**:
+  - Replaced arbitrary raw database row ordering in the Substation Inspector Drawer and Split View Cockpit with a 5-tier electrical hierarchy:
+    1. **Tier 1 (P1 Critical Lifelines)**: Water headworks, sewage pumping, major trauma hospitals (`P1 NON-CUT`).
+    2. **Tier 2 (P2 Essential Infrastructure)**: Metro Rail, suburban transit, Government/Emergency HQ (`P2 ESSENTIAL`).
+    3. **Tier 3 (33 kV Sub-Transmission Trunks)**: Inter-substation step-down lines badged `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]`.
+    4. **Tier 4 (P3 Commercial & Dedicated Industrial HT)**: Heavy manufacturing and industrial estate taps badged `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]`.
+    5. **Tier 5 (Local Distribution Feeders)**: Neighborhood 11 kV lines ranked strictly descending by registered consumer population served.
+- **Dedicated Feeder List Status Bar**: Added an ergonomic subheader tag (`⚡ Sorted: Priority & Voltage Tier • N lines`) providing immediate visual confirmation of the applied sorting logic.
+
+### Fixed
+- **Sub-Transmission vs. Dedicated HT Heuristic Disambiguation**: Resolved false positive `isDedicated: true` bug on 33 kV sub-transmission interconnect lines (e.g. `33 KV ANNAINAGAR SS`, `33KV TNHB KORATTUR SS`, `6th AVENUE ANNANAGAR`). Because these lines feed downstream substations, their pole transformer count and retail consumer count at the feeding yard are zero (`transformers: 0`, `consumers: 0`), which previously triggered the single-customer tap heuristic and caused them to be visually sandwiched between P3 Commercial feeders.
+- **Contiguous Industrial Classification**: P3 Commercial HT lines (`TVS LUCAS`, `WHEELS INDIA`, `SIDCO`, etc.) now render contiguously in Tier 4 without inter-substation trunks in between.
+
+---
+
 ## [1.2.1-v5-confidence-engine] - 2026-09-27
 
 ### Added

@@ -35,3 +35,32 @@ This document details the core spatial, meteorological, and electrical datasets 
 ## 2. Coordinate Reference System
 * **Spatial Projection**: WGS 84 (`EPSG:4326`)
 * **Bounding Box**: Lat `[12.750, 13.350]`, Lon `[79.950, 80.350]`
+
+---
+
+## 3. Feeder Asset Attributes & 5-Tier Electrical Hierarchy
+
+Feeders nested inside `substations[].feeders` in `chennai_tneb_grid.json` and dynamically hydrated via `tnebGridService.ts` carry the following operational schema:
+
+| Field | Type | Description | Values / Examples |
+|---|---|---|---|
+| `name` | string | Official feeder line name from GIS records | `"11 KV SAP CAMP"`, `"TVS LUCAS"`, `"33 KV ANNAINAGAR SS"` |
+| `code` | string | Unique 6-digit TNEB feeder code | `"221801"`, `"930423"` |
+| `voltage` | string | Nominal operating voltage tier | `"11 kV"`, `"33 kV"`, `"22 kV"` |
+| `lengthKm` | number | Surveyed line length in kilometers | `2.87` |
+| `transformers` | number | Number of pole-mounted Distribution Transformers (DTRs) | `19` |
+| `consumers` | number | Registered connected consumers from billing registers | `809` |
+| `config` | string | Physical line installation type | `"UG"` (Underground), `"Overhead"`, `"Mixed"` |
+| `type` | string | Grid asset designation | `"Distribution"`, `"Dedicated (HT Service)"`, `"Interconnector"` |
+| `isDedicated` | boolean | Single-customer exclusive HT service (not sub-transmission trunk) | `true` (factories/institutions), `false` (trunks & neighborhood lines) |
+| `lifelineCategory` | string (optional) | Municipal emergency priority classification | `'hospital'`, `'water'`, `'transit'`, `'governance'`, `'industrial_ht'` |
+| `lifelineLabel` | string (optional) | Human-readable operational category badge | `"🏥 Hospital (Dedicated HT)"`, `"🚰 Water / Sewage Pumping (Dedicated)"` |
+| `priorityLevel` | string (optional) | Disaster response load-shedding priority tier | `'P1_CRITICAL'`, `'P1_NON_CUT'`, `'P2_ESSENTIAL'`, `'P3_COMMERCIAL'` |
+
+### Roster Sorting Order:
+1. **Tier 1 (P1 Critical Lifelines)**: `P1_NON_CUT` / `P1_CRITICAL` (Water headworks, drainage pumping, major hospitals).
+2. **Tier 2 (P2 Essential Infrastructure)**: `P2_ESSENTIAL` (Metro Rail, suburban railways, Government/Defense HQ).
+3. **Tier 3 (33 kV Sub-Transmission Trunks)**: Inter-substation bulk step-down feeds, badged `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]`.
+4. **Tier 4 (P3 Commercial & Dedicated Industrial HT)**: Heavy industrial manufacturing feeds badged `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]`.
+5. **Tier 5 (Local Low-Voltage Distribution)**: Mixed neighborhood feeders ranked strictly descending by registered consumer count (`consumers`).
+

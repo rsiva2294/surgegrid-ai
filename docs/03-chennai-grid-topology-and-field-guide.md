@@ -151,4 +151,11 @@ Electricity behaves like a high-pressure water system. Power generated at distan
     - **Level 2 Probable (`L2_PROBABLE`)**: Rendered as dashed amber lines (`#f59e0b`) indicating nominal step-down proximity without full dual-terminal polygon enclosure. Badged with amber `[L2 Inferred]` tags.
 14. **Operational Topology Scoping Disclaimer**: To ensure operators never confuse static GIS infrastructure with live breaker state, the map renders an authoritative banner:
     > *"Mapped lines represent physical GIS infrastructure paths and nominal step-down hierarchy. Directional pulses indicate physical step-down direction, not confirmed energized power flow. Real-time switching state (open breakers, bus couplers, RMU transfers) requires live SCADA telemetry."*
+15. **Deterministic 5-Tier Feeder Sorting & Sub-Transmission Trunk Differentiation**: Both the Substation Inspector Drawer and Split View Cockpit organize outgoing feeder rosters by operational load-shedding and electrical priority:
+    - **Tier 1 (P1 Critical Lifelines)**: Water headworks, sewage pumping stations (`P1 NON-CUT`), and major trauma hospitals.
+    - **Tier 2 (P2 Essential Infrastructure)**: Metro Rail, suburban transit, and Government / Police HQ lines (`P2 ESSENTIAL`).
+    - **Tier 3 (33 kV Sub-Transmission Trunks)**: Inter-substation bulk step-down feeds supplying downstream distribution yards, badged `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]`. These are strictly separated from single-consumer dedicated taps (`isDedicated`).
+    - **Tier 4 (P3 Commercial & Dedicated Industrial HT)**: Dedicated factory and industrial customer services badged with `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]`.
+    - **Tier 5 (Local Distribution Feeders)**: Residential and commercial 11 kV neighborhood lines, ordered strictly descending by registered consumer population served.
+    - **Live Header Indicator**: The feeder list header renders an active sort indicator (`⚡ Sorted: Priority & Voltage Tier • N lines`) confirming the operational hierarchy to the dispatcher.
 

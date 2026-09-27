@@ -369,6 +369,57 @@ SurgeGrid AI dynamically connects these layers into a unified real-time operatio
 * **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $19\text{ DTRs}$, $809\text{ consumers}$) and displays the registered consumer baseline.
 * **Outage Scoping:** When TNEB issues an outage for a specific feeder name or code, SurgeGrid AI highlights the precise 11kV cable vector, rings the affected DTR markers, and calculates the baseline registered consumer population. Dynamic switching transfers (e.g., RMU loop cut-overs) remain subject to field confirmation.
 
+### 3. Outgoing Feeder Roster Sorting & 5-Tier Electrical Hierarchy
+In emergency operations and cyclone load-shedding, un-sorted feeder rosters force dispatchers to scan through dozens of raw database entries. SurgeGrid AI implements a deterministic **5-Tier Electrical & Disaster Priority Sort Engine** across both the Drawer Feeder List and the Side-by-Side Split View Cockpit:
+
+```mermaid
+flowchart TD
+    T1["Tier 1: P1 Critical Lifelines\n(Water Headworks, Sewage Pumping, Major Hospitals)"] --> T2
+    T2["Tier 2: P2 Essential Services\n(Metro Rail, Suburban Transit, Police/Govt HQ)"] --> T3
+    T3["Tier 3: 33 kV Sub-Transmission Trunks\n(Inter-Substation Step-Down Lines feeding downstream yards)"] --> T4
+    T4["Tier 4: P3 Commercial & Dedicated Industrial HT\n(Factory HT Services, Heavy Industrial Estates)"] --> T5
+    T5["Tier 5: General Distribution Feeders\n(11kV Neighborhood lines ranked by consumer population)"]
+
+    style T1 fill:#be123c,stroke:#f43f5e,stroke-width:2px,color:#fff
+    style T2 fill:#6d28d9,stroke:#a855f7,stroke-width:2px,color:#fff
+    style T3 fill:#b45309,stroke:#f59e0b,stroke-width:2px,color:#fff
+    style T4 fill:#334155,stroke:#64748b,stroke-width:2px,color:#fff
+    style T5 fill:#0369a1,stroke:#0284c7,stroke-width:2px,color:#fff
+```
+
+#### The 5 Tiers Explained:
+1. **Tier 1 (P1 Critical Lifelines):** Non-cut municipal lifelines (`P1_NON_CUT` / `P1_CRITICAL`). Water headworks (e.g., CMWSSB Pumping Stations, Kilpauk Water Works), sewage treatment plants, and major trauma hospitals are pinned to the top of the roster.
+2. **Tier 2 (P2 Essential Infrastructure):** Essential transit and civil administration lines (`P2_ESSENTIAL`), including CMRL Chennai Metro traction feeds, Southern Railway corridors, and Secretariat / Police HQ lines.
+3. **Tier 3 (33 kV Sub-Transmission Trunks):** High-capacity step-down interconnector lines (`33 kV UG/Overhead`) that deliver multi-megawatt bulk power from $110\text{kV}$ transmission hubs into downstream $33/11\text{kV}$ neighborhood substations.
+   * **Visual Badging:** Distinctively badged as `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]`.
+   * **Data Model Classification Rule:** Inter-substation trunks have zero pole-mounted distribution transformers (`transformers: 0`) and zero retail consumers (`consumers: 0`) recorded at the upstream feeding yard. The classification engine explicitly protects these trunks from being falsely categorized as dedicated retail consumer taps (`isDedicated`).
+4. **Tier 4 (P3 Commercial & Dedicated Industrial HT):** Dedicated single-customer High Tension lines serving manufacturing facilities, foundries, and industrial estates (`SUNDRAM CLAYTON FOUNDRY`, `WHEELS INDIA`, `TVS LUCAS`, `SIDCO`). Badged with `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL] • Dedicated HT`.
+5. **Tier 5 (Local Low-Voltage Distribution Feeders):** Mixed commercial and residential $11\text{kV}$ neighborhood feeders. Sorted **strictly descending by registered consumer population** (e.g., feeders serving 7,000+ residents appear ahead of 500-resident lines), followed by distribution transformer count (`transformers`), with deterministic alphabetical tie-breaking.
+
+#### Verification Case Study: 110/33-11 kV PADI SS Feeder Roster
+
+| Position | Line Name | Operating Voltage | Type / Classification | Applied Badge | Hierarchy Rationale |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **#1** | **PUMPING STATION** | 11 kV | Dedicated (HT Service) | `[🚰 Water / Sewage Pumping] [P1 NON-CUT]` | Tier 1: Vital municipal drainage lifeline |
+| **#2** | **33 KV ANNAINAGAR SS** | 33 kV | Distribution (Interconnect) | `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]` | Tier 3: Bulk feed to Anna Nagar SS |
+| **#3** | **33KV BAM DLR** | 33 kV | Distribution (Interconnect) | `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]` | Tier 3: Bulk step-down trunk |
+| **#4** | **33KV POTHYS** | 33 kV | Distribution (Interconnect) | `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]` | Tier 3: Bulk step-down trunk |
+| **#5** | **33KV TNHB KORATTUR SS** | 33 kV | Distribution (Interconnect) | `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]` | Tier 3: Bulk feed to Korattur SS |
+| **#6** | **6th AVENUE ANNANAGAR** | 33 kV | Distribution (Interconnect) | `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]` | Tier 3: Bulk 33 kV tie line |
+| **#7** | **SUNDRAM CLAYTON FOUNDRY** | 33 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: Industrial manufacturing HT feed |
+| **#8** | **WHEELS INDIA** | 33 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: Industrial manufacturing HT feed |
+| **#9** | **33KV SUNDARAM FASTNERS** | 33 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: Industrial manufacturing HT feed |
+| **#10** | **TVS LUCAS** | 33 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: Industrial manufacturing HT feed |
+| **#11** | **SIDCO** | 33 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: Industrial estate HT feed |
+| **#12** | **WHEELS INDIA** | 11 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: 11kV Industrial service tap |
+| **#13** | **SUNDARAM BRAKE LINING** | 11 kV | Dedicated (HT Service) | `[🏭 Dedicated HT Commercial/Industrial] [P3 COMMERCIAL]` | Tier 4: 11kV Industrial service tap |
+| **#14** | **PADI-LAKSHMIPURAM** | 11 kV | Distribution | Standard Distribution (2,651 consumers) | Tier 5: Highest population feeder |
+| **#15** | **PADI LOCAL** | 11 kV | Distribution | Standard Distribution (2,598 consumers) | Tier 5: High population feeder |
+| **#16** | **PADI EXPRESS** | 11 kV | Distribution | Standard Distribution (2,240 consumers) | Tier 5: Residential distribution |
+| **#17** | **ANNAI NAGAR** | 11 kV | Distribution | Standard Distribution (2,143 consumers) | Tier 5: Residential distribution |
+| **#18** | **SUNDRAM CLAYTON** | 11 kV | Distribution | Standard Distribution (1,109 consumers) | Tier 5: Mixed commercial distribution |
+| **#19** | **PADI-KOLATHUR** | 11 kV | Distribution | Standard Distribution (1,065 consumers) | Tier 5: Neighborhood distribution |
+
 ---
 
 ## 6. Transformed Production Dataset in SurgeGrid AI (`public/data`)
