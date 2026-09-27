@@ -138,12 +138,14 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
       className={`absolute top-4 bottom-4 right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 w-[calc(100vw-2rem)] md:w-[460px]`}
     >
       <div
-        className={`pointer-events-auto rounded-2xl p-4 shadow-2xl flex flex-col h-full w-full border transition-colors ${
-          isLight ? 'bg-white border-slate-200 text-slate-800' : 'bg-slate-900 border-slate-700/80 text-slate-200'
+        className={`pointer-events-auto rounded-2xl p-4 flex flex-col h-full w-full border transition-colors ${
+          isLight
+            ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[-16px_0_45px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
+            : 'bg-slate-900 border-slate-700/80 text-slate-200 shadow-2xl'
         }`}
       >
         {/* Pinned Header */}
-        <div className="flex items-start justify-between gap-3 pb-3 border-b shrink-0 border-current/10">
+        <div className={`flex items-start justify-between gap-3 pb-3 border-b shrink-0 ${isLight ? 'border-slate-300/70' : 'border-current/10'}`}>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <span
@@ -261,10 +263,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
         {selectedSubstation && (
           <div className="flex flex-col flex-1 min-h-0 pt-2">
             {/* Compact Horizontal Quick-Stats Ribbon */}
-            <div className="grid grid-cols-3 gap-2 pb-2 shrink-0 border-b border-current/10 text-center text-xs">
+            <div className={`grid grid-cols-3 gap-2 pb-2 shrink-0 border-b text-center text-xs ${isLight ? 'border-slate-300/70' : 'border-current/10'}`}>
               <div
                 className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-sky-50/70 border-sky-100' : 'bg-slate-950/50 border-slate-800/80'
+                  isLight ? 'bg-sky-50/80 border-sky-200/90 shadow-2xs' : 'bg-slate-950/50 border-slate-800/80'
                 }`}
               >
                 <span
@@ -289,7 +291,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
               <div
                 className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-amber-50/70 border-amber-100' : 'bg-slate-950/50 border-slate-800/80'
+                  isLight ? 'bg-amber-50/80 border-amber-200/90 shadow-2xs' : 'bg-slate-950/50 border-slate-800/80'
                 }`}
               >
                 <span
@@ -310,7 +312,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
               <div
                 className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-pink-50/70 border-pink-100' : 'bg-slate-950/50 border-slate-800/80'
+                  isLight ? 'bg-pink-50/80 border-pink-200/90 shadow-2xs' : 'bg-slate-950/50 border-slate-800/80'
                 }`}
               >
                 <span
@@ -337,7 +339,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 {/* Navigation Tabs */}
                 <div
                   className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 text-xs ${
-                    isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
+                    isLight ? 'bg-slate-100 border-slate-300/80' : 'bg-slate-950 border-slate-800'
                   }`}
                 >
                   <button
@@ -346,7 +348,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-xs ${
                       inspectorTab === 'specs'
                         ? isLight
-                          ? 'bg-white text-slate-900 shadow-sm'
+                          ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
                           : 'bg-slate-800 text-white shadow-sm'
                         : isLight
                         ? 'text-slate-600 hover:text-slate-900'
@@ -362,7 +364,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-xs ${
                       inspectorTab === 'circuits'
                         ? isLight
-                          ? 'bg-white text-slate-900 shadow-sm'
+                          ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
                           : 'bg-slate-800 text-white shadow-sm'
                         : isLight
                         ? 'text-slate-600 hover:text-slate-900'

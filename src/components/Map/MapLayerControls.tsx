@@ -39,13 +39,15 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
 }) => {
   return (
     <div
-      className={`pointer-events-auto rounded-xl p-3 shadow-xl text-xs space-y-2.5 transition-colors ${
-        isLight ? 'bg-white border border-slate-200 text-slate-800' : 'bg-slate-900 border border-slate-800 text-slate-200'
+      className={`pointer-events-auto rounded-xl p-3 text-xs space-y-2.5 transition-colors ${
+        isLight
+          ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[0_10px_35px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
+          : 'bg-slate-900 border border-slate-800 text-slate-200 shadow-xl'
       }`}
     >
       <div
         className={`flex items-center justify-between ${isLayersExpanded ? 'border-b pb-2' : ''} ${
-          isLight ? 'border-slate-200' : 'border-slate-800'
+          isLight ? 'border-slate-300/70' : 'border-slate-800'
         }`}
       >
         <button
@@ -68,7 +70,7 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                 ? 'bg-sky-600 text-white font-bold'
                 : 'bg-cyan-500 text-slate-950 font-bold'
               : isLight
-              ? 'bg-slate-100 text-slate-600 hover:text-slate-900'
+              ? 'bg-slate-100 text-slate-700 border border-slate-300/70 hover:text-slate-900'
               : 'bg-slate-800 text-slate-400 hover:text-white'
           }`}
         >
@@ -85,10 +87,10 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
               className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
                 showBulk
                   ? isLight
-                    ? 'bg-pink-50 border-pink-200 text-pink-900 shadow-sm'
+                    ? 'bg-pink-50/90 border-pink-300 text-pink-900 shadow-sm'
                     : 'bg-pink-950/40 border-pink-500/40 text-pink-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-200 text-slate-400 line-through'
+                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
                   : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through'
               }`}
             >
@@ -114,10 +116,10 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
               className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
                 showSubTrans
                   ? isLight
-                    ? 'bg-amber-50 border-amber-200 text-amber-900 shadow-sm'
+                    ? 'bg-amber-50/90 border-amber-300 text-amber-900 shadow-sm'
                     : 'bg-amber-950/40 border-amber-500/40 text-amber-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-200 text-slate-400 line-through'
+                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
                   : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through'
               }`}
             >
@@ -143,10 +145,10 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
               className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
                 showDistribution
                   ? isLight
-                    ? 'bg-sky-50 border-sky-200 text-sky-900 shadow-sm'
+                    ? 'bg-sky-50/90 border-sky-300 text-sky-900 shadow-sm'
                     : 'bg-cyan-950/40 border-cyan-500/40 text-cyan-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-200 text-slate-400 line-through'
+                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
                   : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through'
               }`}
             >
@@ -172,10 +174,10 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
               className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
                 showSections
                   ? isLight
-                    ? 'bg-emerald-50 border-emerald-200 text-emerald-900 shadow-sm'
+                    ? 'bg-emerald-50/90 border-emerald-300 text-emerald-900 shadow-sm'
                     : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200 shadow-sm'
                   : isLight
-                  ? 'bg-slate-50 border-slate-200 text-slate-400 line-through'
+                  ? 'bg-slate-50 border-slate-300/70 text-slate-400 line-through'
                   : 'bg-slate-950/30 border-slate-800 text-slate-500 line-through'
               }`}
             >
@@ -199,7 +201,7 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
 
           <div
             className={`pt-2 border-t text-xs flex items-center justify-between ${
-              isLight ? 'border-slate-200 text-slate-500' : 'border-slate-800 text-slate-400'
+              isLight ? 'border-slate-300/70 text-slate-600' : 'border-slate-800 text-slate-400'
             }`}
           >
             <span>

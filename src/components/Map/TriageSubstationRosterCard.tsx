@@ -154,14 +154,14 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
 
   return (
     <div
-      className={`pointer-events-auto rounded-xl p-3 shadow-2xl text-xs space-y-2.5 transition-all w-full max-h-[440px] flex flex-col ${
+      className={`pointer-events-auto rounded-xl p-3 text-xs space-y-2.5 transition-all w-full max-h-[440px] flex flex-col ${
         isLight 
-          ? 'bg-white/95 border border-slate-200/90 text-slate-800 backdrop-blur-md shadow-slate-300/40' 
-          : 'bg-slate-900/95 border border-slate-700/80 text-slate-200 backdrop-blur-md shadow-black/70'
+          ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[0_12px_40px_-4px_rgba(15,23,42,0.20)] ring-1 ring-slate-900/10 backdrop-blur-md' 
+          : 'bg-slate-900/95 border border-slate-700/80 text-slate-200 backdrop-blur-md shadow-2xl shadow-black/70'
       }`}
     >
       {/* 1. Header with Active Filter and Dismiss / Show Layers action */}
-      <div className={`pb-2 border-b flex items-center justify-between shrink-0 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+      <div className={`pb-2 border-b flex items-center justify-between shrink-0 ${isLight ? 'border-slate-300/70' : 'border-slate-800'}`}>
         <div className="flex items-center gap-2 min-w-0">
           <div className={`p-1.5 rounded-lg ${triageMeta.badgeBg} shrink-0`}>
             <HeaderIcon className="w-4 h-4" />
@@ -175,7 +175,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
                 {matchingSubstations.length} SS
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 truncate">
+            <p className={`text-[10px] truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
               {triageMeta.badgeLabel}
             </p>
           </div>
@@ -188,7 +188,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
               type="button"
               onClick={onShowLayers}
               className={`p-1 rounded-md transition-colors title="Show Map Layers" ${
-                isLight ? 'hover:bg-slate-100 text-slate-500' : 'hover:bg-slate-800 text-slate-400'
+                isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-400'
               }`}
               title="Toggle standard TNEB Grid Layers"
             >
@@ -201,7 +201,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
             onClick={() => setCrisisTriageFilter('all')}
             className={`px-2 py-0.5 rounded-md font-semibold text-[10px] flex items-center gap-1 transition-all ${
               isLight 
-                ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200' 
+                ? 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300/80' 
                 : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
             }`}
             title="Clear triage filter and show all 286 substations"
@@ -223,7 +223,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
             placeholder={`Filter ${matchingSubstations.length} substations...`}
             className={`w-full pl-6 pr-2 py-1 rounded-lg text-xs outline-none transition-all ${
               isLight
-                ? 'bg-slate-50 border border-slate-200 focus:border-sky-500 text-slate-800'
+                ? 'bg-slate-100 border border-slate-300/80 focus:border-sky-500 focus:bg-white text-slate-800'
                 : 'bg-slate-950/60 border border-slate-800 focus:border-cyan-500 text-slate-200'
             }`}
           />
@@ -251,10 +251,10 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
                 className={`w-full text-left p-2 rounded-lg border transition-all flex items-center justify-between gap-2 group ${
                   isSelected
                     ? isLight
-                      ? 'bg-sky-50 border-sky-400 shadow-xs'
+                      ? 'bg-sky-50 border-sky-400 shadow-xs ring-1 ring-sky-300/50'
                       : 'bg-cyan-950/40 border-cyan-500 shadow-xs'
                     : isLight
-                    ? 'bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-300'
+                    ? 'bg-slate-50/90 hover:bg-sky-50/90 border-slate-200 hover:border-sky-300 shadow-2xs'
                     : 'bg-slate-800/60 hover:bg-slate-800 border-slate-700/60 hover:border-slate-600'
                 }`}
               >
@@ -344,14 +344,14 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
       </div>
 
       {/* 4. Footer Summary bar */}
-      <div className={`pt-2 border-t flex items-center justify-between text-[10px] text-slate-400 shrink-0 ${
-        isLight ? 'border-slate-200' : 'border-slate-800'
+      <div className={`pt-2 border-t flex items-center justify-between text-[10px] shrink-0 ${
+        isLight ? 'border-slate-300/70 text-slate-500' : 'border-slate-800 text-slate-400'
       }`}>
         <span>Click any node to zoom & inspect</span>
         <button
           type="button"
           onClick={() => setCrisisTriageFilter('all')}
-          className="hover:underline font-medium text-slate-400 hover:text-slate-200"
+          className={`hover:underline font-medium ${isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200'}`}
         >
           View all 286 SS
         </button>

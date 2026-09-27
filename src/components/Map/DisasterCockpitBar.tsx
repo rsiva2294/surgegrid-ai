@@ -31,7 +31,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-1.5 w-auto max-w-[calc(100vw-2rem)]">
       <div className={`pointer-events-auto rounded-2xl p-1 shadow-2xl border flex items-center gap-1 transition-all ${
         isLight
-          ? 'bg-white/95 border-slate-200/90 text-slate-900 shadow-slate-300/40 backdrop-blur-md'
+          ? 'bg-white/98 border-slate-300/90 text-slate-900 shadow-[0_10px_35px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/90 border-slate-700/80 text-white shadow-black/60 backdrop-blur-md'
       }`}>
         <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 border-r shrink-0 border-current/10">
@@ -137,12 +137,12 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
       )}
 
       {/* Disaster Triage Quick Filters */}
-      <div className={`pointer-events-auto rounded-xl p-1 shadow-lg border flex items-center gap-1 transition-all text-xs ${
+      <div className={`pointer-events-auto rounded-xl p-1 shadow-xl border flex items-center gap-1.5 transition-all text-xs ${
         isLight
-          ? 'bg-white/95 border-slate-200/90 text-slate-800 shadow-slate-200/60 backdrop-blur-md'
+          ? 'bg-white/98 border-slate-300/90 text-slate-800 shadow-[0_8px_25px_-4px_rgba(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/90 border-slate-700/80 text-white shadow-black/50 backdrop-blur-md'
       }`}>
-        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 text-slate-500">
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ${isLight ? 'text-slate-600 font-bold' : 'text-slate-500'}`}>
           Triage:
         </span>
 
@@ -152,13 +152,15 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'poor_stability' ? 'all' : 'poor_stability')}
           className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
             crisisTriageFilter === 'poor_stability'
-              ? (isLight ? 'bg-amber-600 text-white font-semibold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
-              : (isLight ? 'hover:bg-amber-50 text-amber-700' : 'hover:bg-amber-950/60 text-amber-300')
+              ? (isLight ? 'bg-amber-600 text-white font-bold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
+              : (isLight ? 'bg-amber-50/70 hover:bg-amber-100 text-amber-900 border border-amber-300/70 font-semibold' : 'hover:bg-amber-950/60 text-amber-300')
           }`}
           title="Filter to infrastructure with poor operational stability & resiliency health score < 75"
         >
           <span>⚠️ Poor Stability (&lt;75)</span>
-          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/20 font-bold">
+          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
+            crisisTriageFilter === 'poor_stability' ? 'bg-black/25 text-white' : (isLight ? 'bg-amber-200/80 text-amber-950' : 'bg-black/20')
+          }`}>
             {poorStabilityCount}
           </span>
         </button>
@@ -169,13 +171,15 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'waterlogging_risk' ? 'all' : 'waterlogging_risk')}
           className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
             crisisTriageFilter === 'waterlogging_risk'
-              ? (isLight ? 'bg-cyan-600 text-white font-semibold shadow-xs' : 'bg-cyan-500 text-slate-950 font-bold shadow-xs')
-              : (isLight ? 'hover:bg-cyan-50 text-cyan-700' : 'hover:bg-cyan-950/60 text-cyan-300')
+              ? (isLight ? 'bg-cyan-600 text-white font-bold shadow-xs' : 'bg-cyan-500 text-slate-950 font-bold shadow-xs')
+              : (isLight ? 'bg-cyan-50/70 hover:bg-cyan-100 text-cyan-900 border border-cyan-300/70 font-semibold' : 'hover:bg-cyan-950/60 text-cyan-300')
           }`}
           title="Filter to infrastructure vulnerable to waterlogging because elevation is not high enough (<= 3.2m MSL or High Flood / Surge Hazard)"
         >
           <span>🌊 Waterlogging Risk</span>
-          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/20 font-bold">
+          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
+            crisisTriageFilter === 'waterlogging_risk' ? 'bg-black/25 text-white' : (isLight ? 'bg-cyan-200/80 text-cyan-950' : 'bg-black/20')
+          }`}>
             {waterloggingRiskCount}
           </span>
         </button>
@@ -186,14 +190,18 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'outages' ? 'all' : 'outages')}
           className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
             crisisTriageFilter === 'outages'
-              ? (isLight ? 'bg-amber-600 text-white font-semibold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
-              : (isLight ? 'hover:bg-amber-50 text-amber-700' : 'hover:bg-amber-950/60 text-amber-300')
+              ? (isLight ? 'bg-orange-600 text-white font-bold shadow-xs' : 'bg-orange-500 text-slate-950 font-bold shadow-xs')
+              : (isLight ? 'bg-orange-50/70 hover:bg-orange-100 text-orange-900 border border-orange-300/70 font-semibold' : 'hover:bg-orange-950/60 text-orange-300')
           }`}
           title="Filter to grid nodes with active live outages or maintenance today (outage.nammamap.in)"
         >
           <span className="flex items-center gap-1">⚡ Live Outages</span>
           <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${
-            liveOutagesCount > 0 ? 'bg-amber-500 text-slate-950' : 'bg-black/20'
+            crisisTriageFilter === 'outages' 
+              ? 'bg-black/25 text-white' 
+              : liveOutagesCount > 0 
+              ? (isLight ? 'bg-orange-500 text-white' : 'bg-orange-400 text-slate-950') 
+              : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-black/20')
           }`}>
             {liveOutagesCount}
           </span>

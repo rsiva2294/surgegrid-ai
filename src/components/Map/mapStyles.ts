@@ -72,7 +72,7 @@ export const NO_POI_DARK_STYLE: google.maps.MapTypeStyle[] = [
 ];
 
 export const NO_POI_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
-  { elementType: "geometry", stylers: [{ color: "#f8fafc" }] },
+  { elementType: "geometry", stylers: [{ color: "#edf2f7" }] },
   { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }, { weight: 3 }] },
   { elementType: "labels.text.fill", stylers: [{ color: "#1e293b" }] },
   {
@@ -98,7 +98,7 @@ export const NO_POI_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
   {
     featureType: "road",
     elementType: "geometry.stroke",
-    stylers: [{ color: "#e2e8f0" }]
+    stylers: [{ color: "#dbe3eb" }]
   },
   {
     featureType: "road",
@@ -108,27 +108,27 @@ export const NO_POI_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
   {
     featureType: "road.highway",
     elementType: "geometry",
-    stylers: [{ color: "#f1f5f9" }]
+    stylers: [{ color: "#ffffff" }]
   },
   {
     featureType: "road.highway",
     elementType: "geometry.stroke",
-    stylers: [{ color: "#cbd5e1" }]
+    stylers: [{ color: "#94a3b8" }]
   },
   {
     featureType: "road.highway",
     elementType: "labels.text.fill",
-    stylers: [{ color: "#334155" }]
+    stylers: [{ color: "#1e293b" }, { weight: 600 }]
   },
   {
     featureType: "water",
     elementType: "geometry",
-    stylers: [{ color: "#cce3f5" }]
+    stylers: [{ color: "#bfe1f8" }]
   },
   {
     featureType: "water",
     elementType: "labels.text.fill",
-    stylers: [{ color: "#0284c7" }]
+    stylers: [{ color: "#0369a1" }]
   },
   {
     featureType: "water",

@@ -24,13 +24,17 @@ export const MapSearchBox: React.FC<MapSearchBoxProps> = ({
 }) => {
   return (
     <div
-      className={`pointer-events-auto rounded-xl p-2.5 shadow-xl transition-colors ${
-        isLight ? 'bg-white border border-slate-200' : 'bg-slate-900 border border-slate-800'
+      className={`pointer-events-auto rounded-xl p-2.5 shadow-2xl transition-colors ${
+        isLight
+          ? 'bg-white/98 border border-slate-300/90 shadow-[0_8px_30px_rgb(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
+          : 'bg-slate-900 border border-slate-800'
       }`}
     >
       <div
-        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-colors ${
-          isLight ? 'bg-slate-100 border-slate-200 text-slate-800' : 'bg-slate-950/80 border-slate-800 text-white'
+        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all ${
+          isLight
+            ? 'bg-slate-100 border-slate-300/80 text-slate-900 focus-within:border-sky-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-sky-400/20'
+            : 'bg-slate-950/80 border-slate-800 text-white'
         }`}
       >
         <Search className={`w-4 h-4 ${isLight ? 'text-slate-500' : 'text-slate-400'}`} />
