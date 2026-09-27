@@ -4,6 +4,22 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.3.1-ui-ergonomics-refinement] - 2026-09-27
+
+### Fixed & Refined
+- **Disaster Protocol Selector Ergonomics**:
+  - Eliminated horizontal scroll container (`overflow-x-auto`) that previously forced scrolling and clipped the first option (`Normal Grid`).
+  - Compacted labels into clean, high-visibility pills (`🌤️ Normal`, `🟡 Alert`, `🌀 Severe >80k`, `🌊 Surge 3.2m`) with `whitespace-nowrap` ensuring all 4 options fit side-by-side across all viewport sizes.
+- **Unified Statutory Alert Banner Alignment**:
+  - Replaced disjointed multi-line wrapped container with awkward pipe separators (`|`) by a unified, centered, single-line alert pill (`max-w-xl text-center justify-center`).
+  - Delivers balanced, polished typography under all active disaster scenarios (e.g. `⚠️ TNSDMA 3.0m Surge Mandate: Substation Inundation & Mobile Dewatering Active`).
+- **Substation Info Card Above-the-Fold Restructuring**:
+  - **Emergency Alert Promotion**: Dynamically promoted the active switchyard inundation alert (`CRITICAL: Switchyard Inundation Event`) to the **very top** of Tab `Info` so life-safety notifications are immediately visible without scrolling.
+  - **Consolidated Administrative & Switchyard Specs**: Merged administrative circle, region code, MVA capacity, transformer count, and incomer feeder tags into a unified, space-efficient single card with compact Google Maps GPS navigation.
+  - **2×2 High-Density Flood Risk Matrix**: Streamlined terrain elevation (-1m MSL), coast distance (7 km), composite risk score (51.1/100), 2015 Flood submersion benchmark, switchgear plinth clearance ($1.5\text{ m GL}$), and dewatering pump SOP into a tight, scannable grid completely visible above the fold.
+
+---
+
 ## [1.3.0-disaster-resilience-engine] - 2026-09-27
 
 ### Added

@@ -87,21 +87,25 @@ Following **Cyclone Vardah (2016)**, which collapsed Chennai's grid demand from 
 
 ## 5. UI/UX Cockpit Implementation
 
-The SurgeGrid AI application reflects these operational realities across two synchronized surfaces:
+The SurgeGrid AI application reflects these operational realities across three synchronized cockpit surfaces:
 
 1. **Top Center Disaster Protocol Cockpit Bar:**
-   - Real-time scenario switcher:
-     - `🌤️ Normal Grid`: Standard operating conditions.
-     - `🟡 Cyclone Alert`: Standby alert at $65\text{ km/h}$.
-     - `🌀 Severe Cyclone (>80km/h)`: Executes TNSDMA §5.6 statutory pre-emptive trip on overhead lines; underground cables remain live.
-     - `🌊 Extreme Surge (3.2m)`: Triggers coastal storm surge flooding sentinel exceeding the 3.0m TNSDMA threshold.
-2. **Feeder Inspection Cards:**
+   - Real-time scenario selector designed for zero-scroll instant access:
+     - `🌤️ Normal`: Standard clear-sky grid operations.
+     - `🟡 Alert`: Standby alert at $65\text{ km/h}$ with lineman foot-patrol mobilization.
+     - `🌀 Severe >80k`: Executes TNSDMA §5.6 statutory pre-emptive trip on overhead lines ($>80\text{ km/h}$); underground cables remain live.
+     - `🌊 Surge 3.2m`: Triggers coastal storm surge flooding sentinel exceeding the $3.0\text{ m MSL}$ regulatory threshold.
+   - **Zero-Scroll Ergonomics:** Configured with `whitespace-nowrap` and compact padding so all 4 buttons fit side-by-side across all viewports without horizontal scrolling or clipping.
+   - **Unified Statutory Readout Banner:** Dynamic centered pill banner displaying regulatory mandates without ragged multi-line breaking (e.g. `⚠️ TNSDMA 3.0m Surge Mandate: Substation Inundation & Mobile Dewatering Active`).
+
+2. **Substation Info Card & Emergency Sentinel:**
+   - **Above-the-Fold Emergency Promotion:** Active switchyard inundation events (`CRITICAL: Switchyard Inundation Event`) are dynamically promoted to the **very top** of Tab `Info`, ensuring life-safety status is immediately visible without scrolling.
+   - **Consolidated Switchyard Specs:** Unifies administrative circle, region code, MVA capacity, transformer units, incoming feeders, and Google Maps GPS navigation into a compact, single-card header.
+   - **2×2 High-Density Climate & Flood Risk Matrix:** Displays terrain elevation (m MSL), distance to coast, composite risk score, 2015 Flood submersion benchmark, switchgear plinth clearance ($1.5\text{ m GL}$), and dewatering pump requirements in a clean, scannable grid completely visible above the fold.
+   - **Jurisdictional AE Depot:** Compact single-row contact strip with direct phone dialer and map locator.
+
+3. **Feeder Inspection Cards:**
    - **Statutory ESF 15 SLA Badge:** `⏱️ ESF 15: 6h SLA` (P1) vs. `12h SLA` (P2/Trunk) vs. `24h SLA` (HT) vs. `48h SLA` (LT).
    - **RMU Loop Sectionalizing Badge:** `🔄 {N} RMU Loops`.
    - **Restoration Stage Badge:** `Stage 3: Sub-Transmission Trunk` or `Stage 4: Automated RMU`.
    - **Disaster Status Callout:** Displays clear statutory justification (e.g., `⚠️ PRE-EMPTIVE TRIP (WIND) • TNSDMA Mandate §5.6: Wind > 80 km/h • Public Electrocution Prevention`).
-3. **Substation Risk Profile Panel:**
-   - Historical **2015 Flood Submersion Benchmark** ($1.8\text{ m}$ peak submersion).
-   - TNEB Equipment **Plinth Height Clearance** ($1.5\text{ m}$).
-   - **TNSDMA 2023 Coastal Surge Limit** ($3.0\text{ m MSL}$).
-   - **Yard Dewatering Mandate** status (Mobile diesel pumps vs gravity drainage).
