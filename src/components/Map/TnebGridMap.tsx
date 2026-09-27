@@ -259,6 +259,55 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
   }
 }
 
+function CopyIncidentSmsButton({
+  node,
+  isLight
+}: {
+  node: TnebSubstation | TnebSection;
+  isLight: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    const isSubstation = 'voltage' in node;
+    const elev = isSubstation ? (node as TnebSubstation).elevationM : undefined;
+    const isSubmerged = elev !== undefined && elev <= 3.2;
+    const sop = isSubstation ? (node as TnebSubstation).anticipatorySop : undefined;
+    const text = `[TNEB CRISIS DISPATCH]
+NODE: ${node.name} (Code: ${node.code})
+STATUS: ${isSubmerged ? 'CRITICAL - SWITCHYARD INUNDATION (Surge <= 3.2m MSL)' : 'ACTIVE STORM PATROL'}
+WARD: GCC Zone ${node.gccZone || 'NA'} • Ward ${node.gccWard || 'NA'} (${node.gccZoneName || 'CMA'})
+COUNCILLOR CUG: ${node.wardCouncillorMobile || 'NA'}
+CMWSSB WATER AE: ${node.wardCmwssbMobile || 'NA'}
+GCC CIVIL AE: ${node.wardGccAeMobile || 'NA'}
+RIPON CONTROL: 1913 (24x7)
+ACTION: ${sop || 'Maintain live telemetry and portable diesel dewatering pump standby.'}`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className={`w-full py-1.5 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer ${
+        copied
+          ? 'bg-emerald-600 text-white border-emerald-500 font-bold'
+          : (isLight
+              ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-600 shadow-indigo-600/20'
+              : 'bg-indigo-600 hover:bg-indigo-500 text-white border-indigo-500 shadow-indigo-950')
+      }`}
+      title="Copy standardized crisis incident format for 2G SMS or wireless VHF dispatch"
+    >
+      <span>{copied ? '✓ Copied to Clipboard!' : '📋 Copy Incident SMS (Offline Dispatch)'}</span>
+    </button>
+  );
+}
+
 function MunicipalDisasterCard({
   node,
   isLight,
@@ -442,6 +491,9 @@ function MunicipalDisasterCard({
             </a>
           </div>
         </div>
+
+        {/* 2G SMS / Wireless Incident Dispatch Generator */}
+        <CopyIncidentSmsButton node={node} isLight={isLight} />
 
         {/* Multi-Agency Standing Operating Protocol Guidance */}
         <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
@@ -792,6 +844,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
   const [showJargonGuide, setShowJargonGuide] = useState(false);
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
+  const [crisisTriageFilter, setCrisisTriageFilter] = useState<'all' | 'submerged' | 'lifelines'>('all');
+
+  const submergedSubstationsCount = useMemo(() => {
+    return substations.filter(s => s.elevationM !== undefined && s.elevationM <= 3.2).length;
+  }, [substations]);
+
+  const lifelineSubstationsCount = useMemo(() => {
+    return substations.filter(s => (s.feeders || []).some(f => Boolean(f.lifelineCategory))).length;
+  }, [substations]);
 
   // Reset showConnections, selectedFeeder, feederCategoryFilter, and inspectorTab when selected substation changes
   useEffect(() => {
@@ -1016,11 +1077,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const marker = markersRef.current[ss.code];
       if (!marker) return;
 
-      const isVisible = isolatedNodeIds
+      const matchesTriage = crisisTriageFilter === 'all'
+        ? true
+        : crisisTriageFilter === 'submerged'
+        ? (ss.elevationM !== undefined && ss.elevationM <= 3.2)
+        : (ss.feeders || []).some(f => Boolean(f.lifelineCategory));
+
+      const isVisible = matchesTriage && (isolatedNodeIds
         ? isolatedNodeIds.has(ss.code)
         : ((ss.tier === 'bulk' && showBulk) ||
            (ss.tier === 'subtransmission' && showSubTrans) ||
-           (ss.tier === 'distribution' && showDistribution));
+           (ss.tier === 'distribution' && showDistribution)));
 
       if (isVisible) {
         if (marker.getMap() !== map) marker.setMap(map);
@@ -1028,7 +1095,24 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         if (marker.getMap() !== null) marker.setMap(null);
       }
     });
-  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, mapLoaded, substations]);
+  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, crisisTriageFilter, mapLoaded, substations]);
+
+  // Auto-fit camera when triage filter is selected
+  useEffect(() => {
+    if (!mapRef.current || !mapLoaded || crisisTriageFilter === 'all') return;
+    const b = new google.maps.LatLngBounds();
+    substations.forEach(s => {
+      const match = crisisTriageFilter === 'submerged'
+        ? (s.elevationM !== undefined && s.elevationM <= 3.2)
+        : (s.feeders || []).some(f => Boolean(f.lifelineCategory));
+      if (match && typeof s.lat === 'number' && typeof s.lng === 'number' && !isNaN(s.lat) && !isNaN(s.lng)) {
+        b.extend({ lat: s.lat, lng: s.lng });
+      }
+    });
+    if (!b.isEmpty()) {
+      mapRef.current.fitBounds(b, { top: 90, right: 460, bottom: 90, left: 90 });
+    }
+  }, [crisisTriageFilter, mapLoaded, substations]);
 
   // 4. Section Viewport & Layer Optimization (only active when layer toggled or selected)
   useEffect(() => {
@@ -1537,18 +1621,42 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [selectedFeeder, selectedSubstation, mapLoaded, theme]);
 
-  // Filtered search list
+  // Pre-indexed search tokens for O(1) / fast early-break lookups
+  const searchIndex = useMemo(() => {
+    const ssIndex = substations.map(s => ({
+      item: s,
+      text: `${s.name} ${s.code} ${s.circle}`.toLowerCase(),
+    }));
+    const secIndex = sections.map(s => ({
+      item: s,
+      text: `${s.name} ${s.division}`.toLowerCase(),
+    }));
+    return { ssIndex, secIndex };
+  }, [substations, sections]);
+
+  // Fast search with pre-indexed tokens and early-exit iteration
   const searchResults = useMemo<{ substations: TnebSubstation[]; sections: TnebSection[] }>(() => {
-    if (!searchQuery.trim()) return { substations: [], sections: [] };
-    const q = searchQuery.toLowerCase();
-    const matchedSS = substations
-      .filter(s => s.name.toLowerCase().includes(q) || s.code.includes(q) || s.circle.toLowerCase().includes(q))
-      .slice(0, 5);
-    const matchedSec = sections
-      .filter(s => s.name.toLowerCase().includes(q) || s.division.toLowerCase().includes(q))
-      .slice(0, 5);
+    const trimmed = searchQuery.trim().toLowerCase();
+    if (!trimmed) return { substations: [], sections: [] };
+
+    const matchedSS: TnebSubstation[] = [];
+    for (let i = 0; i < searchIndex.ssIndex.length; i++) {
+      if (searchIndex.ssIndex[i].text.includes(trimmed)) {
+        matchedSS.push(searchIndex.ssIndex[i].item);
+        if (matchedSS.length >= 5) break;
+      }
+    }
+
+    const matchedSec: TnebSection[] = [];
+    for (let i = 0; i < searchIndex.secIndex.length; i++) {
+      if (searchIndex.secIndex[i].text.includes(trimmed)) {
+        matchedSec.push(searchIndex.secIndex[i].item);
+        if (matchedSec.length >= 5) break;
+      }
+    }
+
     return { substations: matchedSS, sections: matchedSec };
-  }, [searchQuery, substations, sections]);
+  }, [searchQuery, searchIndex]);
 
   // Total count of lifeline feeders on the selected substation
   const lifelineFeedersCount = useMemo(() => {
@@ -1743,6 +1851,58 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             </span>
           </div>
         )}
+
+        {/* Disaster Triage Quick Filters */}
+        <div className={`pointer-events-auto rounded-xl p-1 shadow-lg border flex items-center gap-1 transition-all text-xs ${
+          isLight
+            ? 'bg-white/95 border-slate-200/90 text-slate-800 shadow-slate-200/60 backdrop-blur-md'
+            : 'bg-slate-900/90 border-slate-700/80 text-white shadow-black/50 backdrop-blur-md'
+        }`}>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 text-slate-500">
+            Triage:
+          </span>
+          <button
+            type="button"
+            onClick={() => setCrisisTriageFilter('all')}
+            className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all ${
+              crisisTriageFilter === 'all'
+                ? (isLight ? 'bg-indigo-600 text-white font-semibold shadow-xs' : 'bg-indigo-500 text-white font-semibold shadow-xs')
+                : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-300')
+            }`}
+          >
+            All Grid ({substations.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setCrisisTriageFilter('submerged')}
+            className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+              crisisTriageFilter === 'submerged'
+                ? 'bg-rose-600 text-white font-semibold shadow-xs'
+                : (isLight ? 'hover:bg-rose-50 text-rose-700' : 'hover:bg-rose-950/60 text-rose-300')
+            }`}
+            title="Filter to substations with elevation <= 3.2m (TNSDMA critical flood surge threshold)"
+          >
+            <span>🌊 Submerged Yards</span>
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/20 font-bold">
+              {submergedSubstationsCount}
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setCrisisTriageFilter('lifelines')}
+            className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+              crisisTriageFilter === 'lifelines'
+                ? 'bg-emerald-600 text-white font-semibold shadow-xs'
+                : (isLight ? 'hover:bg-emerald-50 text-emerald-700' : 'hover:bg-emerald-950/60 text-emerald-300')
+            }`}
+            title="Filter to substations serving critical lifelines (Hospitals, Water/Sewage pumps, Metro/Transit)"
+          >
+            <span>🏥 Lifeline Hubs</span>
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/20 font-bold">
+              {lifelineSubstationsCount}
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Top Left Floating Search & Quick Filters */}
