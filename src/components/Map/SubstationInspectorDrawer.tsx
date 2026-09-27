@@ -14,7 +14,8 @@ import {
   ChevronUp,
   Info,
   Building2,
-  AlertTriangle
+  AlertTriangle,
+  Radio
 } from 'lucide-react';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import type { DisasterScenario } from './DisasterCockpitBar';
@@ -24,6 +25,7 @@ import { FeederCardItem } from './FeederCardItem';
 import { GridJargonCheatSheet } from './GridJargonCheatSheet';
 import { SubstationHealthCard } from './SubstationHealthCard';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
+import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 
 interface SubstationInspectorDrawerProps {
   selectedSubstation: TnebSubstation | null;
@@ -38,6 +40,7 @@ interface SubstationInspectorDrawerProps {
   setSelectedFeeder: React.Dispatch<React.SetStateAction<FeederDetail | null>>;
   disasterScenario: DisasterScenario;
   liveOutages?: LiveOutage[];
+  liveWeather?: LiveWeatherConditions | null;
   isLight: boolean;
 }
 
@@ -54,6 +57,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   setSelectedFeeder,
   disasterScenario,
   liveOutages = [],
+  liveWeather,
   isLight
 }) => {
   const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
@@ -852,6 +856,94 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                           </div>
                         </div>
                       )}
+
+                    {/* Live Switchyard Weather Telemetry (Google Maps Platform Weather API - WeatherNext 3) */}
+                    {liveWeather && (
+                      <div
+                        className={`p-3 rounded-xl border space-y-2.5 shrink-0 transition-all ${
+                          isLight
+                            ? 'bg-emerald-50/80 border-emerald-300/80 text-emerald-950 shadow-xs'
+                            : 'bg-emerald-950/25 border-emerald-800/70 text-emerald-200'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-1.5 flex-wrap">
+                          <div className="flex items-center gap-1.5 font-bold text-xs">
+                            <Radio className="w-3.5 h-3.5 text-emerald-500 animate-pulse shrink-0" />
+                            <span>Live Switchyard Weather</span>
+                          </div>
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${
+                              isLight
+                                ? 'bg-emerald-200/90 text-emerald-900 border border-emerald-300'
+                                : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                            }`}
+                          >
+                            WeatherNext 3
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 font-mono">
+                          <div
+                            className={`p-2 rounded-lg ${
+                              isLight ? 'bg-white border border-emerald-200 shadow-2xs' : 'bg-black/30 border border-white/5'
+                            }`}
+                          >
+                            <span className="text-[10px] uppercase font-sans font-semibold opacity-75 block">
+                              Ambient Temp
+                            </span>
+                            <span className="text-sm font-bold block mt-0.5">
+                              🌡️ {liveWeather.temperatureC.toFixed(1)}°C
+                            </span>
+                            <span className="text-[10px] opacity-70 block">
+                              Feels like {liveWeather.feelsLikeC.toFixed(1)}°C
+                            </span>
+                          </div>
+
+                          <div
+                            className={`p-2 rounded-lg ${
+                              isLight ? 'bg-white border border-emerald-200 shadow-2xs' : 'bg-black/30 border border-white/5'
+                            }`}
+                          >
+                            <span className="text-[10px] uppercase font-sans font-semibold opacity-75 block">
+                              Wind Velocity
+                            </span>
+                            <span className="text-sm font-bold block mt-0.5">
+                              💨 {liveWeather.windSpeedKmh} km/h
+                            </span>
+                            <span className="text-[10px] opacity-70 block truncate" title={`Gusts up to ${liveWeather.windGustKmh} km/h ${liveWeather.windDirectionCardinal}`}>
+                              Gusts {liveWeather.windGustKmh} km/h {liveWeather.windDirectionCardinal}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Statutory Overhead Radial Line Tripping Gauge (TNSDMA §5.6 Mandate: 80 km/h) */}
+                        <div className="space-y-1 pt-0.5">
+                          <div className="flex justify-between text-[10px] font-medium">
+                            <span className="opacity-80">Wind vs Radial Line Trip Threshold:</span>
+                            <span className="font-mono font-bold">
+                              {liveWeather.windSpeedKmh} / 80 km/h ({liveWeather.windSpeedKmh >= 80 ? 'TRIP' : 'Normal'})
+                            </span>
+                          </div>
+                          <div className="w-full bg-slate-200 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all duration-500 ${
+                                liveWeather.windSpeedKmh >= 80
+                                  ? 'bg-rose-500'
+                                  : liveWeather.windSpeedKmh >= 50
+                                  ? 'bg-amber-500'
+                                  : 'bg-emerald-500'
+                              }`}
+                              style={{ width: `${Math.min(100, Math.max(5, (liveWeather.windSpeedKmh / 80) * 100))}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] pt-1 border-t border-current/10 font-mono opacity-90">
+                          <span>💧 {liveWeather.humidityPercent}% RH • 🎈 {liveWeather.airPressureHpa} hPa</span>
+                          <span className="font-sans font-medium truncate max-w-[130px]" title={liveWeather.conditionText}>{liveWeather.conditionText}</span>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
                     <SubstationHealthCard
