@@ -4,10 +4,27 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [1.2.1-v5-confidence-engine] - 2026-09-27
+
+### Added
+- **Ray-Casting Polygon Containment Engine (`ST_Contains`)**: Implemented bounding-box accelerated Jordan curve point-in-polygon tests indexing 1,956 switchyard boundary polygons (`substations_polygons.geojson`), proving physical feeder vector entry inside recipient yards.
+- **3-Tier Grid Confidence Model**: Classified all 318 inter-substation electrical connections into mutually exclusive pathways:
+  - **Level 1 Verified (228 links, 71.7%)**: 88 polygon containment (`ST_Contains == TRUE`), 88 co-located campus step-downs ($\le 150\text{m}$), and 52 surveyed 400kV/230kV EHT bulk transmission corridors.
+  - **Level 2 Probable (90 links, 28.3%)**: Nominal step-down proximity ($\le 8.5\text{km}$), advisory only.
+  - **Level 3 Unverified (0 links, 0.0%)**: Strictly excluded from production datasets.
+- **Scoping Role Attribute & Governance**: Enforced `scopingRole` (`PHYSICAL_TOPOLOGY_ONLY` for L1; `ADVISORY_ONLY` for L2) ensuring automated outage algorithms do not assume live customer de-energization without real-time SCADA confirmation.
+- **Cockpit Visual Confidence Styling**:
+  - Rendered Level 1 links as solid, high-contrast polylines with directional step-down pulse animations and emerald `[L1 Verified]` badges.
+  - Rendered Level 2 links as dashed amber polylines (`#f59e0b`) with amber `[L2 Inferred]` badges.
+- **Operational Topology Scoping Disclaimer**: Added map canvas banner distinguishing static GIS conductor paths from live breaker/SCADA state.
+- **Technical Provenance Reference**: Published `docs/04-electrical-grid-linkages-provenance.md` detailing the dual-endpoint methodology, verbatim JSON extracts, and circuit reconciliation across 286 substations and 5,192,167 registered consumers.
+
+---
+
 ## [1.2.0-v5-ground-truth] - 2026-09-27
 
 ### Added
-- **Ground-Truth Grid V5 Architecture**: Comprehensive data pipeline update resolving all duplicate entities and deploying a 100% verified master registry of 271 unique Chennai substations.
+- **Ground-Truth Grid V5 Architecture**: Comprehensive data pipeline update resolving all duplicate entities and deploying a 100% verified master registry of 286 unique Chennai substations.
 - **Option A Electrical Grid Links**: Implemented incoming-to-outgoing feeder line validation matching downstream incoming lines (`in_fdr_n_1/2/3`) against upstream feeding substations, eliminating all fictional cross-city ties.
 - **Surveyed Feeder Vector Loader & 42k+ DTRs**: Asynchronous on-demand loader (`feederGeometryService.ts`) for real surveyed 11 kV MultiLineString street routes (`/data/feeders/{circle}.json`) and 42,000+ Distribution Transformers (`/data/dtr/{circle}.json`) with live kVA, asset IDs, and metered consumer telemetry.
 - **External Google Maps Hyperlink**: Replaced raw decimal GPS coordinates with an interactive `Google Maps ↗` button opening directly in a new tab (`https://www.google.com/maps?q=${lat},${lng}`) with full coordinate hover tooltips.

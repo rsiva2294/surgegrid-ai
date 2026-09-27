@@ -14,10 +14,10 @@ Ground-Truth Grid V5 represents a foundational architectural overhaul of SurgeGr
 
 ## 2. Core V5 Accomplishments
 
-### 2.1 Deduplication & Substation Master Registry (271 Substations)
+### 2.1 Deduplication & Substation Master Registry (286 Substations)
 * **Root Cause of Prior Duplicates:** Earlier rebuild scripts merged fuzzy-matched substation entities across adjacent circles (e.g. South I vs. South II border nodes), creating ~15 duplicate marker overlays with conflicting coordinates.
 * **V5 Resolution:** Enforced strict deduplication keyed on normalized TNEB substation asset codes (`ss_code`), resolving identical co-located compounds (such as EHV 400/230 kV bulk yards co-located with 33/11 kV distribution step-downs) while eliminating duplicate markers.
-* **Result:** A clean master registry of **271 unique Chennai substations** spanning all four voltage tiers:
+* **Result:** A clean master registry of **286 canonical Chennai substations** spanning all four voltage tiers:
   - 400 kV Extra High Voltage (EHV) Bulk Transmission
   - 230 kV High Voltage Bulk Transmission
   - 110 kV Sub-Transmission Hubs
@@ -26,8 +26,8 @@ Ground-Truth Grid V5 represents a foundational architectural overhaul of SurgeGr
 ---
 
 ### 2.2 Feeder Routing: Ground Truth Vectors vs. Zero Approximations
-* **Surveyed 11 kV MultiLineString Street Geometry:** Integrated asynchronous on-demand loading of digitized feeder street routes (`/data/feeders/{circleCode}.json`). When a user selects a feeder, the system queries its physical surveyed geometry and plots the conductor cables directly along Chennai's street network.
-* **42,000+ Surveyed Distribution Transformers (DTRs):** Ingested `/data/dtr/{circleCode}.json`, providing on-demand spatial plotting of real pole-mounted and plinth-mounted transformers. Each DTR displays:
+* **Surveyed 11 kV MultiLineString Street Geometry:** Integrated asynchronous on-demand loading of digitized feeder street routes (`/data/feeders/{circleCode}.json`) across 8 circles (3,438 feeder lines). When a user selects a feeder, the system queries its physical surveyed geometry and plots the conductor cables directly along Chennai's street network.
+* **65,557 Surveyed Distribution Transformers (DTRs):** Ingested `/data/dtr/{circleCode}.json`, providing on-demand spatial plotting of real pole-mounted and plinth-mounted transformers. Each DTR displays:
   - Unique TNEB Asset Code
   - Step-down rating (e.g., $11\text{ kV} \rightarrow 240\text{V} / 415\text{V}$)
   - Capacity ($kVA$)
@@ -38,13 +38,19 @@ Ground-Truth Grid V5 represents a foundational architectural overhaul of SurgeGr
 
 ---
 
-### 2.3 Option A Electrical Grid Links Architecture
+### 2.3 Confidence-Aware Electrical Grid Links Architecture
 * **The Problem:** Generic distance-based clustering previously drew straight and curved splines between substations that had no actual electrical tie, occasionally drawing cross-city lines up to 21 km away.
-* **Option A Solution:** Replaced all synthetic linkages with authentic incoming-to-outgoing feeder line validation:
-  1. Inspects the incoming transmission line roster of downstream substations (`in_fdr_n_1`, `in_fdr_n_2`, `in_fdr_n_3`).
-  2. Matches incoming feeder names against the outgoing feeder schedules of upstream feeding substations.
-  3. Enforces physical urban voltage distance ceilings ($33\text{ kV} \le 8.5\text{ km}$, $110\text{ kV} \le 12.0\text{ km}$, $230/400\text{ kV} \le 30.0\text{ km}$).
-* **Result:** 100% verified electrical grid links across the network, accurately modeling radial and loop sub-transmission topologies across Chennai.
+* **V5 Solution:** Implemented ray-casting switchyard polygon containment (`ST_Contains`), dual-endpoint circuit identification, and explicit confidence classification:
+  1. **Level 1: Verified Physical Connection (228 links, 71.7%):**
+     - `polygon_containment` (88 links): Feeder vector endpoint strictly enclosed in recipient switchyard polygon (`ST_Contains == TRUE`) with dual-endpoint circuit confirmation.
+     - `collocated_switchyard` (88 links): Verified shared-campus busbar step-down ($\le 150\text{m}$, e.g. 230kV to 110kV).
+     - `surveyed_eht_line` (52 links): 400kV/230kV bulk transmission corridors mapped from TANTRANSCO surveyed line vectors.
+     - Role: `PHYSICAL_TOPOLOGY_ONLY` (authoritative asset bounding; live interruption requires operational confirmation).
+  2. **Level 2: Probable / Inferred Connection (90 links, 28.3%):**
+     - `nominal_stepdown_proximity`: Compatible step-down ($110\text{kV} \rightarrow 33\text{kV}$) within urban cable radius ($\le 8.5\text{km}$), advisory only.
+  3. **Level 3: Unverified (0 links):**
+     - Strictly suppressed and excluded from production datasets.
+* **Result:** Exactly 318 reconciled, verified and probable electrical connections across Greater Chennai with zero cross-city artifacts.
 
 ---
 
@@ -68,15 +74,16 @@ Ground-Truth Grid V5 represents a foundational architectural overhaul of SurgeGr
 
 | Component | Source / Verification Method | Approximation Status |
 | :--- | :--- | :--- |
-| **Substations** | Official TNEB / TANTRANSCO Asset Registers | **0% Approximation (100% Ground Truth)** |
+| **Substations (286)** | Official TNEB / TANTRANSCO Asset Registers | **0% Approximation (100% Ground Truth)** |
 | **GPS Locations** | Surveyed Physical Switchyard Coordinates | **0% Approximation (100% Ground Truth)** |
-| **Administrative EDC & Region** | Official TNEB Operational Hierarchy | **0% Approximation (100% Ground Truth)** |
+| **Administrative EDC & Region** | Official TNEB Operational Hierarchy (352 Sections) | **0% Approximation (100% Ground Truth)** |
 | **Switchyard Hardware & Incomers** | TANTRANSCO SLDC Single-Line Diagrams (SLDs) | **0% Approximation (100% Ground Truth)** |
-| **Feeder Line Vectors** | TNEB Surveyed MultiLineString Street Geometry | **0% Approximation (100% Ground Truth)** |
-| **Distribution Transformers (DTRs)** | 42,000+ Surveyed DTR Points with Consumer Counts | **0% Approximation (100% Ground Truth)** |
+| **Feeder Line Vectors (3,438)** | TNEB Surveyed MultiLineString Street Geometry | **0% Approximation (100% Ground Truth)** |
+| **Distribution Transformers (65,557 DTRs)** | Surveyed DTR Points with 5.19M Registered Consumer Baseline | **0% Approximation (100% Ground Truth)** |
 | **Elevation (MSL)** | NASA SRTM 30m Digital Elevation Model | **Physical Topography Telemetry** |
 | **Distance to Coast** | Geodesic Distance to OpenStreetMap Coastline | **Exact Mathematical Geodesic** |
-| **Electrical Grid Links** | Incomer-to-Source Line Matching (Option A) | **100% Verified Electrical Relationships** |
+| **Level 1 Electrical Links (228)** | Ray-Casting Polygon Containment (`ST_Contains`), Collocated Yards & EHT Corridors | **Geometrically & Circuit Verified** |
+| **Level 2 Electrical Links (90)** | Nominal Voltage Step-Down Proximity ($\le 8.5\text{km}$) | **Advisory Topology Scoping** |
 | **Flood Risk Score (0-100)** | Hydro-topographical Index Formula | **Analytical Risk Formula** |
 
 ---

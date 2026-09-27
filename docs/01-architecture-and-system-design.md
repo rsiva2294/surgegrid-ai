@@ -14,7 +14,7 @@ During severe cyclonic storms in the Bay of Bengal (e.g. *Cyclone Michaung, Vard
 SurgeGrid AI shifts disaster operations from post-landfall recovery to **pre-landfall anticipatory protection** by integrating:
 1. **Google DeepMind WeatherNext 3 (August 2026)** for hourly cyclone trajectory forecasting.
 2. **Google Earth Engine (GEE 2024–2026)** for 10-band multi-hazard terrain, built-up concrete surface, and historical water recurrence modeling.
-3. **TNEB Super Index V2 Topology** mapping all 242 Chennai Substations and 11kV distribution feeders.
+3. **TNEB V5 GIS-Based Electrical Connectivity Model** mapping all 286 Chennai Substations, 352 AE Section Offices, 5,192,167 registered consumers baseline, and 318 inter-substation connections with Level 1 dual-endpoint polygon containment verification (`ST_Contains == TRUE`), circle-partitioned 11kV radial feeders, and 65,000+ distribution transformers (DTRs).
 4. **GCC Municipal Hydrology** mapping 5,513 stormwater drains and 162 emergency relief shelters.
 5. **Google Gemini 3.7 Flash** for multimodal automated early-warning dispatches, grid isolation SOPs, and parametric insurance liquidity calculations.
 
@@ -47,7 +47,9 @@ SurgeGrid AI shifts disaster operations from post-landfall recovery to **pre-lan
                                                      v
   [ LAYER 3: INFRASTRUCTURE & LIFELINE FUSION ENGINE ]
   +-----------------------------------------------------------------------------------------------------+
-  | - 242 TNEB Substations (33kV to 400kV) with 1,252 Historical Outage Vulnerability Profiles          |
+  | - 286 TNEB Substations (33kV to 400kV) with 318 Inter-Substation Connections (L1 Verified & L2)     |
+  | - 352 TNEB AE Section Offices & 5,192,167 Registered Consumer Baseline                              |
+  | - Circle-partitioned 11kV Feeders & 65,000+ Distribution Transformers (DTRs)                        |
   | - 5,513 GCC Stormwater Drains (Gravity Flow vs Uphill Backflow Chokepoints)                         |
   | - 162 GCC Relief Shelters (Automated 11kV Backup Tie-Line Routing Engine)                           |
   | - 4 Major Waterways (Adyar, Cooum, Kosasthalaiyar, Buckingham Canal)                                |

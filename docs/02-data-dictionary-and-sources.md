@@ -1,6 +1,6 @@
 # 02 - Data Dictionary & Sources: SurgeGrid AI
 
-This document details all 21 datasets powering the SurgeGrid AI platform.
+This document details the core spatial, meteorological, and electrical datasets powering the SurgeGrid AI platform.
 
 ---
 
@@ -8,6 +8,9 @@ This document details all 21 datasets powering the SurgeGrid AI platform.
 
 | Dataset File | Size | Records | Source | Primary Schema Fields |
 |---|---|---|---|---|
+| `chennai_tneb_grid.json` | 5.41 MB | 286 substations, 352 sections | TNEB V5 Ground-Truth Rebuild Engine | `substations[]`, `sections[]`, `connections[]` (with `confidenceTier`, `scopingRole`, `verificationMethod`, `polygonVerified`, `feederCode`), `totalConsumers` |
+| `feeders/{circleCode}.json` | 27.2 MB (8 circles) | 3,438 feeder lines | TNEB GIS Vector Surveys | Keyed by `fdr_code`: `name`, `code`, `ss_code`, `volt`, `len`, `dts`, `cons`, `type`, `coords` (MultiLineString) |
+| `dtr/{circleCode}.json` | 6.27 MB (8 circles) | 65,557 DTR points | TNEB GIS Distribution Network | Keyed by `fdr_code`: `id`, `name`, `kva`, `cons`, `lat`, `lng` |
 | `weathernext3_chennai_cyclone_48h.json` | 28 KB | 61 hourly steps | Google DeepMind WeatherNext 3 | `timestep_hour`, `wind_speed_10m_kmh`, `imerg_tp_1hr_mm`, `mean_sea_level_pressure_hpa`, `simulated_storm_surge_msl_m`, `alert_phase` |
 | `gee_chennai_substations_risk.json` | 190 KB | 242 nodes | GEE (NASA SRTM, Dynamic World, GPM, ERA5) | `name`, `coordinates`, `elevation_m`, `distance_to_coastline_km`, `urban_impervious_built_pct`, `composite_risk_score`, `risk_category`, `anticipatory_sop` |
 | `gee_chennai_wards_vulnerability.json` | 60 KB | 200 wards | GEE Zonal Statistics | `ward_number`, `zone_number`, `elevation_mean_m`, `elevation_min_m`, `urban_impervious_built_pct`, `dynamic_world_water_prob_2024_2026_pct`, `flood_risk_category` |

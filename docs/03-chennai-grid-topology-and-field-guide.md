@@ -128,7 +128,7 @@ Electricity behaves like a high-pressure water system. Power generated at distan
 
 ## 4. Cockpit Map Architecture & Performance Features
 
-1. **Topological Precomputation**: All 1,493 bi-directional electrical and jurisdictional relationships are pre-indexed into `public/data/chennai_tneb_grid.json`, enabling $O(1)$ instantaneous lookups on click with zero backend network latency.
+1. **Topological Precomputation**: All 286 substations, 352 AE Section Offices, 5,192,167 registered consumers, and 318 high/sub-transmission electrical interconnections are pre-indexed into `public/data/chennai_tneb_grid.json`, enabling $O(1)$ instantaneous lookups on click with zero backend network latency.
 2. **On-Demand Section Office Jurisdictional Boundaries**: GeoJSON boundary polygons extracted from official TNEB district boundaries are embedded directly into section records, rendering a warm translucent amber polygon with auto-framing bounds when an AE Section is selected.
 3. **Pure Zero-POI Vector Canvas**: Custom light and dark styles strip out all commercial, retail, transit, and landmark points of interest, presenting a distraction-free electrical grid canvas.
 4. **Targeting Beacon Halo Ring**: An animated high-contrast dual-stroke halo ring (`selectionHaloRef`) projects around selected nodes for instant visual clarity across both light and dark backgrounds.
@@ -146,4 +146,9 @@ Electricity behaves like a high-pressure water system. Power generated at distan
 10. **Ergonomic De-duplicated Feeder Telemetry**: Streamlined active corridor status into a minimal 1-line action bar (`Plotted on map: [Feeder Name] (N DTRs) [Clear Map]`), completely avoiding redundant duplicated cards when filtering down to single lifeline feeders, paired with strict single-icon rendering across all lifeline categories.
 11. **Substation Ground Elevation & Flood / Surge Risk Profiling (P0)**: Ground elevation above Mean Sea Level (MSL) sourced from Google Earth Engine SRTM DEM is integrated into every substation record. Substation headers dynamically flag low-elevation yards (`⛰️ 2.1m MSL • 🌊 Surge Risk`), while the Info tab and Split View detail distance to coast, composite climate vulnerability scores, and field-ready standard operating procedures (SOPs).
 12. **Feeder Breakdown Fragility & Trip History Badging (P0)**: Feeders with recorded Q3 2026 outages from TNEB logs display trip frequency badges (e.g. `⚡ 4 Trips`) directly on the feeder cards with hoverable incident date logs, pinpointing chronic trip hotspots before storm landfall.
+13. **V5 Confidence-Aware Grid Link Visuals**: The cockpit renders electrical interconnections with explicit confidence styling:
+    - **Level 1 Verified (`L1_VERIFIED`)**: Rendered as crisp, solid lines with voltage-tier coloring (Cyan for 33kV, Amber for 110kV, Purple for 230kV/400kV) and directional step-down pulse animations. Badged with emerald `[L1 Verified]` tags in both Tab 2 and the Split View.
+    - **Level 2 Probable (`L2_PROBABLE`)**: Rendered as dashed amber lines (`#f59e0b`) indicating nominal step-down proximity without full dual-terminal polygon enclosure. Badged with amber `[L2 Inferred]` tags.
+14. **Operational Topology Scoping Disclaimer**: To ensure operators never confuse static GIS infrastructure with live breaker state, the map renders an authoritative banner:
+    > *"Mapped lines represent physical GIS infrastructure paths and nominal step-down hierarchy. Directional pulses indicate physical step-down direction, not confirmed energized power flow. Real-time switching state (open breakers, bus couplers, RMU transfers) requires live SCADA telemetry."*
 
