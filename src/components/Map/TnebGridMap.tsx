@@ -769,6 +769,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const feederGlowLinesRef = useRef<google.maps.Polyline[]>([]);
   const dtrMarkersRef = useRef<google.maps.Marker[]>([]);
   const dtrInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const feederDataLayerRef = useRef<google.maps.Data | null>(null);
+  const zoomListenerRef = useRef<google.maps.MapsEventListener | null>(null);
 
   const [mapLoaded, setMapLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -1309,9 +1311,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [selectedSubstation, electricalNodes, mapLoaded, showConnections]);
 
-  // Render on-demand Ground-Truth Feeder Wire Geometry and DTR markers when a feeder is selected
+  // Render on-demand Ground-Truth Feeder Wire Geometry via unified Data layer and DTR markers with zoom-gated LOD
   useEffect(() => {
-    // Clear previous feeder lines and DTR markers
+    // Clear previous feeder Data layer, polylines, and DTR markers
+    if (feederDataLayerRef.current) {
+      feederDataLayerRef.current.setMap(null);
+      feederDataLayerRef.current = null;
+    }
+    if (zoomListenerRef.current) {
+      zoomListenerRef.current.remove();
+      zoomListenerRef.current = null;
+    }
     feederLinesRef.current.forEach(l => l.setMap(null));
     feederLinesRef.current = [];
     feederGlowLinesRef.current.forEach(l => l.setMap(null));
@@ -1338,6 +1348,30 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       if (!isMounted || !mapRef.current) return;
 
       if (geo && geo.coords) {
+        // Hardware-accelerated unified Data Layer (single WebGL batch draw call)
+        const dataLayer = new google.maps.Data();
+        dataLayer.addGeoJson({
+          type: 'Feature',
+          geometry: {
+            type: geo.type,
+            coordinates: geo.coords
+          },
+          properties: {
+            isNonCut,
+            name: selectedFeeder.name
+          }
+        });
+
+        dataLayer.setStyle({
+          strokeColor: themeColors.core,
+          strokeOpacity: 1.0,
+          strokeWeight: isNonCut ? 4.0 : 3.2,
+          zIndex: 50
+        });
+
+        dataLayer.setMap(map);
+        feederDataLayerRef.current = dataLayer;
+
         const rawSegments = geo.type === 'MultiLineString'
           ? (geo.coords as [number, number][][])
           : [(geo.coords as [number, number][])];
@@ -1347,28 +1381,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
         rawSegments.forEach(seg => {
           if (!seg || seg.length < 2) return;
-          const path = seg.map(pt => ({ lat: pt[1], lng: pt[0] }));
-          path.forEach(pt => {
-            bounds.extend(pt);
-            const dLat = pt.lat - selectedSubstation.lat;
-            const dLng = pt.lng - selectedSubstation.lng;
+          seg.forEach(pt => {
+            const latLng = { lat: pt[1], lng: pt[0] };
+            bounds.extend(latLng);
+            const dLat = pt[1] - selectedSubstation.lat;
+            const dLng = pt[0] - selectedSubstation.lng;
             const distM = Math.sqrt(dLat * dLat + dLng * dLng) * 111000;
             if (distM < minTakeoffDist) {
               minTakeoffDist = distM;
-              closestTakeoffPt = pt;
+              closestTakeoffPt = latLng;
             }
           });
-
-          // Razor-sharp solid utility-grade conductor cable (100% crisp opacity, zero blur)
-          const coreLine = new google.maps.Polyline({
-            path,
-            strokeColor: themeColors.core,
-            strokeOpacity: 1.0,
-            strokeWeight: isNonCut ? 4.0 : 3.2,
-            zIndex: 50,
-            map
-          });
-          feederLinesRef.current.push(coreLine);
         });
 
         // Substation switchyard takeoff tie line (if feeder begins outside the fence within 500m)
@@ -1431,7 +1454,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               icon: dtrIcon,
               zIndex: 55,
               title: `${dtr.name} (${selectedFeeder.name} Feeder)`,
-              map
+              map: null // Detached by default; dynamically attached at street zoom (LOD)
             });
 
             marker.addListener('click', () => {
@@ -1466,6 +1489,24 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
             dtrMarkersRef.current.push(marker);
           });
+
+          // Zoom-Gated Level of Detail (LOD): Attach DTR pins only at street scale (zoom >= 13.8)
+          const syncDtrLod = () => {
+            if (!mapRef.current) return;
+            const currentZoom = mapRef.current.getZoom() || 11.5;
+            const isStreetLevel = currentZoom >= 13.8;
+            dtrMarkersRef.current.forEach(m => {
+              if (isStreetLevel) {
+                if (m.getMap() !== mapRef.current) m.setMap(mapRef.current);
+              } else {
+                if (m.getMap() !== null) m.setMap(null);
+              }
+            });
+          };
+
+          syncDtrLod();
+          if (zoomListenerRef.current) zoomListenerRef.current.remove();
+          zoomListenerRef.current = map.addListener('zoom_changed', syncDtrLod);
         }
 
         // Fit map camera around real feeder extent
@@ -1477,6 +1518,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
     return () => {
       isMounted = false;
+      if (feederDataLayerRef.current) {
+        feederDataLayerRef.current.setMap(null);
+        feederDataLayerRef.current = null;
+      }
+      if (zoomListenerRef.current) {
+        zoomListenerRef.current.remove();
+        zoomListenerRef.current = null;
+      }
       feederLinesRef.current.forEach(l => l.setMap(null));
       feederLinesRef.current = [];
       feederGlowLinesRef.current.forEach(l => l.setMap(null));
