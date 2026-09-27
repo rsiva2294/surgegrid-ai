@@ -29,10 +29,12 @@ All notable changes, architectural decisions, and data extractions for the Surge
   - Automatically classified and badged:
     - `[💧 CMWSSB Sewage Pumping]` (`P1 NON-CUT`)
     - `[🏕️ GCC Relief Shelter Feed]` (`P1 CRITICAL`)
-- **Substation & Section Inspector Cockpit Enhancements**:
-  - **Pinned Header Badge**: Added `🏛️ Z{Zone}:W{Ward}` pill (e.g. `🏛️ Z6:W69` on Sembium SS) providing immediate municipal jurisdiction at a glance.
-  - **Administrative Jurisdiction Card**: Enriched to display `GCC Zone {X} ({ZoneName}) • Ward {Y}` and `GCC CDMP Disaster Ward`.
-  - **Municipal & Satellite Disaster Stack Card**: Displayed in Substation Inspector (Split View + Tab 3 Info) and AE Section Inspector with GEE runoff, impervious percentage, relief shelter count, and four direct `tel:` CUG emergency call buttons.
+- **Decoupled 4-Tab Architecture & Zero-Redundancy Ergonomics (Option A)**:
+  - Eliminated visual redundancy across the Substation Inspector by establishing strict separation of concerns between electrical engineering and civic disaster administration.
+  - **4-Tab Navigation Bar**: Introduced `[ℹ️ Grid Specs]`, `[⚡ Feeders (N)]`, `[🏛️ Civic / GCC]`, and `[🔗 Links (N)]`.
+  - **Pure Electrical Specs (`Grid Specs`)**: Reverted Card 1 to pure TNEB Circle (`CHENNAI SOUTH 2` • `Region 01` • `16 MVA` • Switchyard GPS), removing all duplicate municipal strings. Promoted switchyard terrain and 2015 Flood submersion benchmarks to the top with **100% zero-scroll visibility**.
+  - **Dedicated Civic Command (`Civic / GCC`)**: Dedicated tab showcasing GCC Zone & Ward identity, GEE satellite runoff/impervious stack, 4 clickable `tel:` emergency hotlines (Councillor, CMWSSB, GCC AE, Ripon 1913), relief shelter feeds, and multi-agency restoration clearance SOP.
+  - **Pinned Header Pill**: Retained a single global pill (`🏛️ Z13:W174`) as an ambient reference across all tabs without duplicate card titles below.
 - **Reference Documentation**:
   - Published comprehensive architectural specification `docs/06-gcc-municipal-and-satellite-vulnerability-integration.md`.
 

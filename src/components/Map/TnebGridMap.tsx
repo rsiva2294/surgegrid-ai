@@ -255,22 +255,199 @@ function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
   }
 }
 
-function MunicipalDisasterCard({ node, isLight }: { node: TnebSubstation | TnebSection; isLight: boolean }) {
+function MunicipalDisasterCard({
+  node,
+  isLight,
+  isDedicatedTab = false
+}: {
+  node: TnebSubstation | TnebSection;
+  isLight: boolean;
+  isDedicatedTab?: boolean;
+}) {
   if (!node.gccZone) {
     return (
-      <div className={`p-2 rounded-xl border text-xs shrink-0 flex items-center justify-between gap-2 ${
+      <div className={`p-3 rounded-xl border text-xs shrink-0 space-y-2 ${
         isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-300'
       }`}>
-        <div className="flex items-center gap-1.5">
-          <span>🌐</span>
-          <span className="font-semibold text-[11px]">Peri-Urban CMA Grid Hub</span>
-          <span className="opacity-60 text-[10px]">• EHT Transmission Corridor</span>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🌐</span>
+            <div>
+              <span className="font-bold text-xs block">Peri-Urban CMA Grid Hub</span>
+              <span className="opacity-75 text-[10.5px]">Outside GCC Municipal Wards • CMA Regional Outer Ring</span>
+            </div>
+          </div>
+          <span className={`text-[9px] font-mono px-2 py-0.5 rounded font-bold ${
+            isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+          }`}>
+            CMA EHT Corridor
+          </span>
         </div>
-        <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold ${
-          isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+        <p className="text-[11px] leading-relaxed opacity-85">
+          This node serves as an Extra High Voltage (EHT) bulk transmission injection corridor (Kanchipuram / Tiruvallur / Chengalpattu circles), feeding power directly into the Chennai metropolitan core.
+        </p>
+      </div>
+    );
+  }
+
+  if (isDedicatedTab) {
+    return (
+      <div className="space-y-2.5">
+        {/* GCC Municipal Command Card */}
+        <div className={`p-3 rounded-xl border text-xs shadow-xs space-y-2 ${
+          isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
         }`}>
-          CMA Outer Ring
-        </span>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isLight ? 'bg-indigo-200/80 text-indigo-800' : 'bg-indigo-500/20 text-indigo-300'
+              }`}>
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-sm block leading-tight">
+                  GCC Zone {node.gccZone} ({node.gccZoneName})
+                </span>
+                <span className={`text-[10.5px] block mt-0.5 font-mono ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>
+                  Greater Chennai Corporation • Ward {node.gccWard}
+                </span>
+              </div>
+            </div>
+
+            <span className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold ${
+              isLight ? 'bg-indigo-600 text-white' : 'bg-indigo-500 text-slate-950 font-black'
+            }`}>
+              Z{node.gccZone}:W{node.gccWard}
+            </span>
+          </div>
+
+          <p className="text-[11px] leading-relaxed opacity-90 pt-1 border-t border-current/10">
+            Statutory municipal jurisdiction under the <em>GCC City Disaster Management Perspective Plan 2023 (CDMP)</em>. Governs inter-agency de-energization, fallen tree clearance, and flood shelter feeds.
+          </p>
+        </div>
+
+        {/* GEE Satellite Hydrology & Inundation Matrix */}
+        {node.geeRunoffMm !== undefined && (
+          <div className={`p-3 rounded-xl border space-y-2 ${
+            isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800 text-slate-200'
+          }`}>
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold flex items-center gap-1.5">
+                <span>🛰️</span>
+                <span>Google Earth Engine (GEE) Satellite Stack</span>
+              </span>
+              <span className={`text-[9.5px] font-mono font-bold px-2 py-0.5 rounded ${
+                node.geeFloodCategory === 'CRITICAL_SURGE_RISK' || node.geeFloodCategory === 'SEVERE_INUNDATION_ZONE'
+                  ? (isLight ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40')
+                  : (isLight ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40')
+              }`}>
+                {node.geeFloodCategory?.replace(/_/g, ' ') || 'SATELLITE VERIFIED'}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center font-mono">
+              <div className={`p-2 rounded-lg ${isLight ? 'bg-white border border-slate-200' : 'bg-black/30 border border-white/5'}`}>
+                <span className={`text-[9px] uppercase font-semibold block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Simulated Runoff</span>
+                <strong className="text-xs font-bold block mt-0.5">🌧️ {node.geeRunoffMm} mm</strong>
+              </div>
+              <div className={`p-2 rounded-lg ${isLight ? 'bg-white border border-slate-200' : 'bg-black/30 border border-white/5'}`}>
+                <span className={`text-[9px] uppercase font-semibold block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Impervious Built</span>
+                <strong className="text-xs font-bold block mt-0.5">🧱 {node.geeImperviousPct}%</strong>
+              </div>
+              <div className={`p-2 rounded-lg ${isLight ? 'bg-white border border-slate-200' : 'bg-black/30 border border-white/5'}`}>
+                <span className={`text-[9px] uppercase font-semibold block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Relief Shelters</span>
+                <strong className="text-xs font-bold block mt-0.5">🏕️ {node.wardReliefSheltersCount || 0} Camps</strong>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Official Ward Disaster Committee Emergency Hotlines */}
+        <div className={`p-3 rounded-xl border space-y-2.5 ${
+          isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-slate-900 border-slate-800 text-slate-200 shadow-xs'
+        }`}>
+          <div className="flex items-center justify-between text-xs pb-1 border-b border-current/10">
+            <span className="font-bold flex items-center gap-1.5">
+              <span>📞</span>
+              <span>Ward Disaster Committee (Official CUGs)</span>
+            </span>
+            <span className={`text-[9px] font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+              Click to Call Directly
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            {node.wardCouncillorMobile && (
+              <a
+                href={`tel:${node.wardCouncillorMobile}`}
+                className={`p-2 rounded-xl border flex flex-col justify-between transition-all group ${
+                  isLight ? 'bg-indigo-50/50 hover:bg-indigo-100/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/20 hover:bg-indigo-950/40 border-indigo-800/60 text-indigo-200'
+                }`}
+              >
+                <span className="text-[10px] font-medium opacity-75">Ward Councillor (CUG)</span>
+                <div className="flex items-center gap-1.5 font-mono font-bold mt-1">
+                  <Phone className="w-3 h-3 text-indigo-600 group-hover:scale-110 transition-transform" />
+                  <span>{node.wardCouncillorMobile}</span>
+                </div>
+              </a>
+            )}
+
+            {node.wardCmwssbMobile && (
+              <a
+                href={`tel:${node.wardCmwssbMobile}`}
+                className={`p-2 rounded-xl border flex flex-col justify-between transition-all group ${
+                  isLight ? 'bg-cyan-50/50 hover:bg-cyan-100/70 border-cyan-200 text-cyan-950' : 'bg-cyan-950/20 hover:bg-cyan-950/40 border-cyan-800/60 text-cyan-200'
+                }`}
+              >
+                <span className="text-[10px] font-medium opacity-75">CMWSSB Water/Drainage AE</span>
+                <div className="flex items-center gap-1.5 font-mono font-bold mt-1">
+                  <Phone className="w-3 h-3 text-cyan-600 group-hover:scale-110 transition-transform" />
+                  <span>{node.wardCmwssbMobile}</span>
+                </div>
+              </a>
+            )}
+
+            {node.wardGccAeMobile && (
+              <a
+                href={`tel:${node.wardGccAeMobile}`}
+                className={`p-2 rounded-xl border flex flex-col justify-between transition-all group ${
+                  isLight ? 'bg-purple-50/50 hover:bg-purple-100/70 border-purple-200 text-purple-950' : 'bg-purple-950/20 hover:bg-purple-950/40 border-purple-800/60 text-purple-200'
+                }`}
+              >
+                <span className="text-[10px] font-medium opacity-75">GCC Civil/Electrical AE</span>
+                <div className="flex items-center gap-1.5 font-mono font-bold mt-1">
+                  <Phone className="w-3 h-3 text-purple-600 group-hover:scale-110 transition-transform" />
+                  <span>{node.wardGccAeMobile}</span>
+                </div>
+              </a>
+            )}
+
+            <a
+              href="tel:1913"
+              className={`p-2 rounded-xl border flex flex-col justify-between transition-all group ${
+                isLight ? 'bg-rose-50/50 hover:bg-rose-100/70 border-rose-200 text-rose-950' : 'bg-rose-950/20 hover:bg-rose-950/40 border-rose-800/60 text-rose-200'
+              }`}
+            >
+              <span className="text-[10px] font-medium opacity-75">GCC Ripon Control Room</span>
+              <div className="flex items-center gap-1.5 font-mono font-bold mt-1">
+                <Phone className="w-3 h-3 text-rose-600 group-hover:scale-110 transition-transform" />
+                <span>1913 (24x7 Helpline)</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        {/* Multi-Agency Standing Operating Protocol Guidance */}
+        <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+          isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-400'
+        }`}>
+          <span className={`font-semibold block ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+            ⚡ Inter-Agency Field Protocol (ESF 14 & 15):
+          </span>
+          <p className="text-[11px] leading-relaxed">
+            Prior to re-energizing residential LT feeders in Ward {node.gccWard}, TANGEDCO section line gangs must obtain physical foot-patrol clearance certificate (PTW) confirming GCC conservancy has cleared fallen trees and CMWSSB sewage pumping stations have established operational suction head.
+          </p>
+        </div>
       </div>
     );
   }
@@ -588,7 +765,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
   const [isLayersExpanded, setIsLayersExpanded] = useState(true);
   const [isInspectorExpanded, setIsInspectorExpanded] = useState(false);
-  const [inspectorTab, setInspectorTab] = useState<'info' | 'feeders' | 'connections'>('info');
+  const [inspectorTab, setInspectorTab] = useState<'info' | 'feeders' | 'civic' | 'connections'>('info');
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
 
   // Reset showConnections, selectedFeeder, feederCategoryFilter, and inspectorTab when selected substation changes
@@ -1865,14 +2042,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="font-bold text-xs truncate">
-                                      {selectedSubstation.gccZone
-                                        ? `GCC Zone ${selectedSubstation.gccZone} (${selectedSubstation.gccZoneName}) • Ward ${selectedSubstation.gccWard}`
-                                        : (selectedSubstation.circle || 'Chennai EDC')}
+                                      {selectedSubstation.circle || 'Chennai EDC'}
                                     </span>
                                     <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
                                       isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
                                     }`}>
-                                      {selectedSubstation.gccZone ? `Z${selectedSubstation.gccZone}-W${selectedSubstation.gccWard}` : `Region ${selectedSubstation.regionCode || '01/09'}`}
+                                      Region {selectedSubstation.regionCode || '01/09'}
                                     </span>
                                     {Boolean(selectedSubstation.totalCapacityMva) && (
                                       <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
@@ -1883,7 +2058,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                     )}
                                   </div>
                                   <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                    {selectedSubstation.gccZone ? `${selectedSubstation.circle || 'Chennai EDC'} • GCC CDMP Disaster Ward` : 'TNEB Distribution Circle • Switchyard GPS'}
+                                    TNEB Distribution Circle • Switchyard GPS
                                   </span>
                                 </div>
                               </div>
@@ -2502,46 +2677,59 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                 ) : (
                   /* SINGLE-COLUMN TABBED VIEW (Full Height Dedicated to Selected Tab) */
                   <div className="flex flex-col flex-1 min-h-0 pt-2 space-y-2">
-                    {/* Navigation Tabs (Equal 3-Way Spacing, Info First) */}
+                    {/* Navigation Tabs (4-Way Equal Spacing: Grid Specs, Feeders, Civic / GCC, Grid Links) */}
                     <div className={`flex items-center gap-1 p-1 rounded-xl border shrink-0 text-xs ${
                       isLight ? 'bg-slate-100 border-slate-200' : 'bg-slate-950 border-slate-800'
                     }`}>
                       <button
                         type="button"
                         onClick={() => setInspectorTab('info')}
-                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                        className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
                           inspectorTab === 'info'
                             ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
                             : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
-                        title="Substation Info, Field AE Depot & Terrain Risk"
+                        title="Substation Specs, Transformers, Elevation & Field SOP"
                       >
-                        <Info className="w-3.5 h-3.5" />
-                        <span>Info</span>
+                        <Info className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Grid Specs</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setInspectorTab('feeders')}
-                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                        className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
                           inspectorTab === 'feeders'
                             ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
                             : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
                       >
-                        <Cable className="w-3.5 h-3.5" />
-                        <span>Feeders ({selectedSubstation.feeders.length})</span>
+                        <Cable className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Feeders ({selectedSubstation.feeders.length})</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setInspectorTab('civic')}
+                        className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
+                          inspectorTab === 'civic'
+                            ? (isLight ? 'bg-indigo-600 text-white shadow-sm' : 'bg-indigo-600 text-white shadow-sm')
+                            : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
+                        }`}
+                        title="GCC Zone & Ward Disaster Management Committee & GEE Satellite Telemetry"
+                      >
+                        <Building2 className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Civic / GCC</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setInspectorTab('connections')}
-                        className={`flex-1 py-1.5 px-2 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1.5 ${
+                        className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[11px] ${
                           inspectorTab === 'connections'
                             ? (isLight ? 'bg-white text-slate-900 shadow-sm' : 'bg-slate-800 text-white shadow-sm')
                             : (isLight ? 'text-slate-600 hover:text-slate-900' : 'text-slate-400 hover:text-slate-200')
                         }`}
                       >
-                        <GitFork className="w-3.5 h-3.5" />
-                        <span>Grid Links ({electricalNodes.length})</span>
+                        <GitFork className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate">Links ({electricalNodes.length})</span>
                       </button>
                     </div>
 
@@ -3067,14 +3255,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                   <div className="min-w-0">
                                     <div className="flex items-center gap-1.5 flex-wrap">
                                       <span className="font-bold text-xs truncate">
-                                        {selectedSubstation.gccZone
-                                          ? `GCC Zone ${selectedSubstation.gccZone} (${selectedSubstation.gccZoneName}) • Ward ${selectedSubstation.gccWard}`
-                                          : (selectedSubstation.circle || 'Chennai EDC')}
+                                        {selectedSubstation.circle || 'Chennai EDC'}
                                       </span>
                                       <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
                                         isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
                                       }`}>
-                                        {selectedSubstation.gccZone ? `Z${selectedSubstation.gccZone}-W${selectedSubstation.gccWard}` : `Region ${selectedSubstation.regionCode || '01/09'}`}
+                                        Region {selectedSubstation.regionCode || '01/09'}
                                       </span>
                                       {Boolean(selectedSubstation.totalCapacityMva) && (
                                         <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
@@ -3085,7 +3271,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                       )}
                                     </div>
                                     <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                      {selectedSubstation.gccZone ? `${selectedSubstation.circle || 'Chennai EDC'} • GCC CDMP Disaster Ward` : 'TNEB Distribution Circle • Switchyard GPS'}
+                                      TNEB Distribution Circle • Switchyard GPS
                                     </span>
                                   </div>
                                 </div>
@@ -3132,9 +3318,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                             </div>
                           );
                         })()}
-
-                        {/* GCC Municipal & Satellite Vulnerability Stack */}
-                        <MunicipalDisasterCard node={selectedSubstation} isLight={isLight} />
 
                         {/* Substation Terrain & Flood Risk Profile */}
                         {selectedSubstation.elevationM !== undefined && (
@@ -3275,6 +3458,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               : 'Distribution substation stepping down to 11kV. Operates local feeder circuit breakers under jurisdictional Assistant Engineer (AE) control.'}
                           </p>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Tab 3: Dedicated GCC Municipal & Satellite Disaster Stack */}
+                    {inspectorTab === 'civic' && (
+                      <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
+                        <MunicipalDisasterCard node={selectedSubstation} isLight={isLight} isDedicatedTab={true} />
                       </div>
                     )}
                   </div>
