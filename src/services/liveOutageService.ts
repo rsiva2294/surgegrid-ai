@@ -25,6 +25,12 @@ export interface LiveOutage {
   resolvedSubstationName?: string;
   resolvedSectionName?: string;
   raw_extraction?: {
+    substation_english?: string;
+    section_english?: string;
+    feeder_english?: string;
+    substation_tamil?: string;
+    section_tamil?: string;
+    feeder_tamil?: string;
     reason?: {
       full_english?: string;
       full_tamil?: string;
@@ -32,7 +38,11 @@ export interface LiveOutage {
       short_tamil?: string;
     };
     affected_areas_english?: string[];
+    affected_areas_tamil?: string[];
     notice_category?: string;
+    start_time?: string | null;
+    end_time?: string | null;
+    date?: string;
   };
 }
 
@@ -47,10 +57,14 @@ export interface LiveOutageResponse {
 const IDB_LIVE_OUTAGES_KEY = 'sg_live_chennai_outages_v1';
 
 // Live endpoint with same-origin routing (proxied in dev via Vite, routed in prod via Firebase Hosting function rewrite)
+// Direct Cloud Storage CDN endpoints for raw notices (zero proxy, zero rate limits, sub-100ms)
+const GCS_TWITTER_NOTICES_URL = 'https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/outages/twitter_notices_resolved.json';
+const GCS_STATEWIDE_NOTICES_URL = 'https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/outages/statewide.json';
 const API_URL = '/api/v2/outages';
 
 /**
- * Fetch live outages in Chennai from outage.nammamap.in with Stale-While-Revalidate via IndexedDB
+ * Fetch raw live notices in Chennai directly from GCS / Firestore feeds with Stale-While-Revalidate.
+ * Strips any upstream resolution to guarantee 100% sovereign SurgeGrid grid topology mapping.
  */
 export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
   // 1. Try local cache first for instant offline/low-bandwidth resilience
@@ -61,19 +75,29 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
     console.warn('[LiveOutageService] IndexedDB read failed:', err);
   }
 
-  // 2. Fetch fresh telemetry in the background or immediately
+  // 2. Fetch fresh raw telemetry directly from GCS
   try {
-    const res = await fetch(API_URL, {
-      headers: {
-        'Accept': 'application/json'
+    let rawItems: LiveOutage[] = [];
+    try {
+      const [twRes, swRes] = await Promise.all([
+        fetch(GCS_TWITTER_NOTICES_URL).then(r => (r.ok ? r.json() : [])),
+        fetch(GCS_STATEWIDE_NOTICES_URL).then(r => (r.ok ? r.json() : []))
+      ]);
+      const twList = Array.isArray(twRes) ? twRes : [];
+      const swList = Array.isArray(swRes) ? swRes : [];
+      rawItems = [...twList, ...swList];
+    } catch (gcsErr) {
+      console.warn('[LiveOutageService] Direct GCS fetch failed, attempting API fallback:', gcsErr);
+      const res = await fetch(API_URL, { headers: { Accept: 'application/json' } });
+      if (res.ok) {
+        const json = await res.json();
+        rawItems = json.data || [];
       }
-    });
+    }
 
-    if (res.ok) {
-      const json = await res.json();
-      const all: LiveOutage[] = json.data || [];
-      // Filter for Chennai metropolitan area (matches Chennai district, Chennai circle, or Chennai metro substations like Kellys / Anna Nagar)
-      const chennaiData = all.filter(o => {
+    if (rawItems.length > 0) {
+      // Filter for Chennai metropolitan area
+      const chennaiRaw = rawItems.filter(o => {
         const d = (o.district || '').toLowerCase();
         const c = (o.circle || '').toLowerCase();
         const t = (o.town || '').toLowerCase();
@@ -81,10 +105,29 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
         return d === 'chennai' || c.includes('chennai') || t.includes('chennai') || sub.includes('anna nagar') || sub.includes('chennai');
       });
 
+      // Strip upstream resolution so SurgeGrid autonomously resolves physical assets from ground truth
+      const autonomousOutages: LiveOutage[] = chennaiRaw.map(raw => {
+        const ext = raw.raw_extraction || {};
+        return {
+          ...raw,
+          // Strip upstream resolution and approximate coordinates
+          latitude: null,
+          longitude: null,
+          resolvedSubstationName: undefined,
+          resolvedSectionName: undefined,
+          resolutionMethod: undefined,
+          // Feed pristine raw extraction strings
+          substation: ext.substation_english || raw.substation || '',
+          section: ext.section_english || raw.section || raw.town || '',
+          feeder: ext.feeder_english || raw.feeder || '',
+          town: raw.town || ext.section_english || ''
+        };
+      });
+
       const payload: LiveOutageResponse = {
         success: true,
-        count: chennaiData.length,
-        data: chennaiData,
+        count: autonomousOutages.length,
+        data: autonomousOutages,
         cached: false,
         lastFetched: new Date().toISOString()
       };
@@ -97,7 +140,7 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
       return payload;
     }
   } catch (err) {
-    console.warn('[LiveOutageService] Network fetch failed, falling back to local IDB cache:', err);
+    console.warn('[LiveOutageService] Telemetry fetch failed, falling back to local IDB cache:', err);
   }
 
   // Fallback to cache if network failed
@@ -170,7 +213,8 @@ export const CHENNAI_LOCALITY_GAZETTEER: Record<string, { secCode?: string; ssCo
   nazarethpet: { secCode: '304' },
   pudupet: { secCode: '138' },
   chintadripet: { secCode: '140' },
-  triplicane: { secCode: '144', ssCode: '2228' }
+  triplicane: { secCode: '144', ssCode: '2228' },
+  neelankarai: { secCode: '294', ssCode: '9417' }
 };
 
 /**
