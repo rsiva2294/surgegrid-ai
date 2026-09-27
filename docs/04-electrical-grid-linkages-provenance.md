@@ -208,7 +208,8 @@ Furthermore, checking against the actual **28-vertex switchyard boundary polygon
 
 $$\text{ST\_Contains}(\text{Substation\_2218\_Polygon}, \text{Feeder\_Endpoint}(80.245124, 13.086192)) = \mathbf{TRUE}$$
 
-The physical electrical conductor surveyed by TNEB field engineers does not merely land "near" the substation; it is **geometrically enclosed inside the verified perimeter fence** of the recipient switchyard.
+* **Classification:** **Geometrically Verified Termination (Polygon Enclosure)**.
+* **Engineering Limitation:** While `ST_Contains` rigorously proves that the surveyed conductor terminates inside the perimeter fence of the recipient switchyard, physical proximity and polygon enclosure alone do not independently prove energized electrical coupling to the substation's busbar. Authoritative single-line diagrams (SLDs) or bay assignment schedules are required to confirm physical busbar termination.
 
 ---
 
@@ -341,8 +342,8 @@ To prevent misleading operators with false certainties, SurgeGrid AI classifies 
 
 | Confidence Tier | Criteria | Visual Representation in UI | Eligible for Automated Outage Scoping? |
 | :--- | :--- | :--- | :--- |
-| **Level 1: Verified Connection** | Authoritative feeder circuit ID + endpoint strictly contained inside switchyard boundary polygon (`ST_Contains == TRUE`). | Solid high-contrast line with directional pulse. | **Yes** — Authoritative ground-truth basis. |
-| **Level 2: Probable / Inferred Connection** | Compatible voltage tier ($110\text{kV} \rightarrow 33\text{kV}$) + physical urban proximity ($\le 8.5\text{km}$) + partial endpoint proximity, but missing complete breaker schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Only** — Requires operator confirmation. |
+| **Level 1: Verified Physical Connection** | **Dual-Endpoint Confirmation** (Both source and destination substation IDs explicitly identified in authoritative TNEB circuit/asset registers) + **Geometrically Verified Termination** (endpoint strictly enclosed inside recipient switchyard polygon via `ST_Contains == TRUE`). | Solid high-contrast line with directional hierarchy pulse. | **Yes** — Authoritative physical topology basis. |
+| **Level 2: Probable / Inferred Connection** | Compatible voltage step-down ($110\text{kV} \rightarrow 33\text{kV}$) + physical urban proximity ($\le 8.5\text{km}$) + geometric polygon enclosure, but missing dual-terminal circuit confirmation or breaker schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Only** — Requires operator validation. |
 | **Level 3: Unverified Connection** | Fuzzy naming match or unverified Euclidean proximity without GIS conductor vectors. | Suppressed / Hidden from map canvas. | **No** — Excluded to eliminate false positives. |
 
 ---
@@ -354,12 +355,13 @@ SurgeGrid AI dynamically connects these layers into a unified real-time operatio
 ### 1. Inter-Substation Grid Mode (Transmission & Sub-Transmission View)
 * **Switchyard Visuals:** Substations are rendered as interactive nodes color-coded by voltage tier ($230\text{kV}$ Purple, $110\text{kV}$ Amber, $33\text{kV}$ Sky Blue).
 * **Circuit Isolation:** Selecting any substation (e.g. Kilpauk Water Works #2159) allows operators to click **"Isolate Electrical Circuit"**. The cockpit filters out unrelated city markers and zooms directly to the connected electrical circuit.
-* **Animated Power Flow:** Directional dashed pulses stream outward along verified interconnect paths from the $110\text{kV}$ hub to downstream $33\text{kV}$ substations.
+* **Mapped Supply Hierarchy & Pulse:** Directional dashed pulses stream outward along verified interconnect paths from the $110\text{kV}$ hub to downstream $33\text{kV}$ substations, illustrating the **nominal physical step-down hierarchy** ($110\text{kV} \rightarrow 33\text{kV}$).
+  > **Operational Caveat:** These visual pulses represent **mapped physical infrastructure connectivity**, not confirmed live electrical power flow (which requires real-time SCADA telemetry for breaker/energization state).
 
 ### 2. Feeder & Distribution Mode (Neighborhood & DTR View)
 * **Substation Inspector Feeder Roster:** Selecting any substation opens the live feeder panel showing all outgoing $11\text{kV}$ and $33\text{kV}$ lines.
 * **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $19\text{ DTRs}$, $809\text{ consumers}$) and displays live consumer counts.
-* **Outage Precision:** When TNEB issues an outage for a specific feeder name or code, SurgeGrid AI highlights the precise 11kV cable vector, rings the affected DTR markers, and calculates the exact affected population.
+* **Outage Scoping:** When TNEB issues an outage for a specific feeder name or code, SurgeGrid AI highlights the precise 11kV cable vector, rings the affected DTR markers, and calculates the baseline registered consumer population. Dynamic switching transfers (e.g., RMU loop cut-overs) remain subject to field confirmation.
 
 ---
 
