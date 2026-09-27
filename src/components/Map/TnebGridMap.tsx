@@ -1272,14 +1272,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       )}
 
       {/* Top Center Floating Disaster Operations & Cyclone Protocol Cockpit */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-1.5 max-w-2xl w-[92%] sm:w-auto">
-        <div className={`pointer-events-auto rounded-2xl p-1.5 shadow-2xl border flex items-center gap-1 transition-all ${
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-1.5 w-auto max-w-[calc(100vw-2rem)]">
+        <div className={`pointer-events-auto rounded-2xl p-1 shadow-2xl border flex items-center gap-1 transition-all ${
           isLight
             ? 'bg-white/95 border-slate-200/90 text-slate-900 shadow-slate-300/40 backdrop-blur-md'
             : 'bg-slate-900/90 border-slate-700/80 text-white shadow-black/60 backdrop-blur-md'
         }`}>
-          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 border-r shrink-0 border-current/10">
-            <Wind className={`w-4 h-4 ${
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 border-r shrink-0 border-current/10">
+            <Wind className={`w-3.5 h-3.5 ${
               disasterScenario === 'NORMAL' ? (isLight ? 'text-emerald-600' : 'text-emerald-400') :
               disasterScenario === 'CYCLONE_ALERT' ? (isLight ? 'text-yellow-600' : 'text-yellow-400') :
               disasterScenario === 'SEVERE_CYCLONE' ? (isLight ? 'text-amber-600' : 'text-amber-400') :
@@ -1290,22 +1290,22 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center gap-1 overflow-x-auto">
+          <div className="flex items-center gap-1 whitespace-nowrap">
             <button
               onClick={() => setDisasterScenario('NORMAL')}
-              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
+              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all shrink-0 ${
                 disasterScenario === 'NORMAL'
                   ? (isLight ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-500 text-slate-950 font-bold shadow-sm')
                   : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-400')
               }`}
             >
               <span>🌤️</span>
-              <span>Normal Grid</span>
+              <span>Normal</span>
             </button>
 
             <button
               onClick={() => setDisasterScenario('CYCLONE_ALERT')}
-              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
+              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all shrink-0 ${
                 disasterScenario === 'CYCLONE_ALERT'
                   ? (isLight ? 'bg-yellow-500 text-slate-950 font-bold shadow-sm' : 'bg-yellow-400 text-slate-950 font-bold shadow-sm')
                   : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-400')
@@ -1313,12 +1313,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               title="Cyclone Watch Alert (Wind 65 km/h, Surge 0.8m) • Standby Mode"
             >
               <span>🟡</span>
-              <span>Cyclone Alert</span>
+              <span>Alert</span>
             </button>
 
             <button
               onClick={() => setDisasterScenario('SEVERE_CYCLONE')}
-              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
+              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all shrink-0 ${
                 disasterScenario === 'SEVERE_CYCLONE'
                   ? (isLight ? 'bg-amber-600 text-white shadow-sm' : 'bg-amber-500 text-slate-950 font-bold shadow-sm')
                   : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-400')
@@ -1326,19 +1326,19 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               title="Cyclone Michaung / Vardah Landfall (Wind 90 km/h) • Statutory Pre-Emptive Trip of Overhead Lines"
             >
               <span>🌀</span>
-              <span>Severe Cyclone</span>
+              <span>Severe</span>
               <span className={`text-[9px] font-mono px-1 py-0.2 rounded ${
                 disasterScenario === 'SEVERE_CYCLONE'
                   ? (isLight ? 'bg-amber-700 text-white' : 'bg-slate-950 text-amber-300 font-bold')
                   : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
               }`}>
-                &gt;80km/h
+                &gt;80k
               </span>
             </button>
 
             <button
               onClick={() => setDisasterScenario('EXTREME_SURGE')}
-              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
+              className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all shrink-0 ${
                 disasterScenario === 'EXTREME_SURGE'
                   ? (isLight ? 'bg-rose-600 text-white shadow-sm' : 'bg-rose-500 text-slate-950 font-bold shadow-sm')
                   : (isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-400')
@@ -1346,7 +1346,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               title="Catastrophic Coastal Surge (3.2m Surge) • Exceeds TNSDMA 3.0m Regulatory Threshold"
             >
               <span>🌊</span>
-              <span>Extreme Surge</span>
+              <span>Surge</span>
               <span className={`text-[9px] font-mono px-1 py-0.2 rounded ${
                 disasterScenario === 'EXTREME_SURGE'
                   ? (isLight ? 'bg-rose-700 text-white' : 'bg-slate-950 text-rose-300 font-bold')
@@ -1360,22 +1360,18 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
         {/* Dynamic Statutory Protocol Readout Strip */}
         {disasterScenario !== 'NORMAL' && (
-          <div className={`pointer-events-auto px-3 py-1 rounded-full text-[10px] font-mono shadow-lg border flex items-center gap-2 backdrop-blur-md animate-in fade-in duration-200 ${
+          <div className={`pointer-events-auto px-3.5 py-1 rounded-full text-[11px] shadow-md border flex items-center justify-center gap-2 backdrop-blur-md text-center max-w-xl transition-all ${
             disasterScenario === 'CYCLONE_ALERT'
-              ? (isLight ? 'bg-yellow-50/90 border-yellow-300 text-yellow-900' : 'bg-yellow-950/80 border-yellow-700 text-yellow-200') :
+              ? (isLight ? 'bg-yellow-50/95 border-yellow-300 text-yellow-900 shadow-yellow-500/10' : 'bg-yellow-950/85 border-yellow-700/80 text-yellow-200 shadow-black/40') :
             disasterScenario === 'SEVERE_CYCLONE'
-              ? (isLight ? 'bg-amber-50/90 border-amber-300 text-amber-900' : 'bg-amber-950/80 border-amber-700 text-amber-200') :
-              (isLight ? 'bg-rose-50/90 border-rose-300 text-rose-900' : 'bg-rose-950/80 border-rose-700 text-rose-200')
+              ? (isLight ? 'bg-amber-50/95 border-amber-300 text-amber-900 shadow-amber-500/10' : 'bg-amber-950/85 border-amber-700/80 text-amber-200 shadow-black/40') :
+              (isLight ? 'bg-rose-50/95 border-rose-300 text-rose-900 shadow-rose-500/10' : 'bg-rose-950/85 border-rose-700/80 text-rose-200 shadow-black/40')
           }`}>
-            <span className="flex items-center gap-1 font-bold">
-              <AlertTriangle className="w-3 h-3 shrink-0" />
-              {disasterScenario === 'CYCLONE_ALERT' && 'Cyclone Watch Advisory (Wind 65 km/h) • Lineman Foot Patrol Alert'}
-              {disasterScenario === 'SEVERE_CYCLONE' && 'TNSDMA §5.6 Mandate: Overhead Radial Pre-Emptive De-energization (Wind > 80 km/h)'}
-              {disasterScenario === 'EXTREME_SURGE' && 'TNSDMA 3.0m Surge Threshold Breached • Substation Inundation & Dewatering Protocol'}
-            </span>
-            <span className="opacity-40">|</span>
-            <span className="hidden md:inline">
-              ESF 15 SLA: P1 Lifelines (6h) • UG Ring Feeders Preserved
+            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+            <span className="font-semibold tracking-tight text-center">
+              {disasterScenario === 'CYCLONE_ALERT' && 'Cyclone Watch Advisory (Wind 65 km/h) • Lineman Foot Patrols Alerted'}
+              {disasterScenario === 'SEVERE_CYCLONE' && 'TNSDMA §5.6 Mandate: Overhead Radial Lines Tripped (>80 km/h) • UG Ring Feeders Preserved'}
+              {disasterScenario === 'EXTREME_SURGE' && 'TNSDMA 3.0m Surge Mandate: Substation Inundation & Mobile Dewatering Active'}
             </span>
           </div>
         )}
@@ -1710,114 +1706,123 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                   /* SPLIT COCKPIT VIEW (Side-by-Side: Connections & Specs on Left, Feeders on Right) */
                   <div className="flex-1 grid grid-cols-2 gap-4 min-h-0 pt-2.5">
                     {/* Left Panel: Connections & Substation Field Metadata */}
-                    <div className="flex flex-col h-full min-h-0 pr-3 border-r border-current/10 space-y-3 overflow-hidden">
-                      {/* Modern Administrative & Switchyard GPS Identity Card */}
-                      <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 shrink-0 ${
-                        isLight
-                          ? 'bg-slate-50/80 border-slate-200/90 text-slate-900 shadow-xs'
-                          : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
-                      }`}>
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                            isLight
-                              ? 'bg-sky-100 text-sky-700 border border-sky-200/60'
-                              : 'bg-sky-500/15 text-cyan-300 border border-sky-500/20'
-                          }`}>
-                            <Building2 className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="font-bold text-xs truncate">
-                                {selectedSubstation.circle || 'Chennai EDC'}
-                              </span>
-                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${
-                                isLight
-                                  ? 'bg-slate-200/80 text-slate-700 border border-slate-300/60'
-                                  : 'bg-slate-800 text-slate-300 border border-slate-700'
-                              }`}>
-                                Region {selectedSubstation.regionCode || '01/09'}
-                              </span>
+                    <div className="flex flex-col h-full min-h-0 pr-3 border-r border-current/10 space-y-2.5 overflow-y-auto">
+                      {/* Active Storm Surge / Inundation Alert - CRITICAL INFO PROMOTED TO TOP */}
+                      {disasterScenario === 'EXTREME_SURGE' && selectedSubstation.elevationM !== undefined && selectedSubstation.elevationM <= 3.2 && (
+                        <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold leading-tight flex items-start gap-2 shadow-lg animate-pulse shrink-0 border border-rose-400/40">
+                          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-200" />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="uppercase tracking-wider font-black text-[11px] text-white">CRITICAL: Switchyard Inundation Event</span>
+                              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-black/25 text-amber-200 font-bold uppercase">3.2m Surge Active</span>
                             </div>
-                            <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                              TNEB Distribution Circle • Switchyard GPS
-                            </span>
+                            <p className="font-normal opacity-95 text-[10.5px] mt-0.5 leading-snug">
+                              Yard elevation ({selectedSubstation.elevationM}m MSL) submerged by 3.2m surge. Switchyard pre-emptively isolated & de-energized. Deploy mobile diesel pumps per TANGEDCO SOP.
+                            </p>
                           </div>
-                        </div>
-
-                        <a
-                          href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
-                            isLight
-                              ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
-                              : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
-                          }`}
-                          title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
-                        >
-                          <MapPin className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                          <span>Google Maps ↗</span>
-                        </a>
-                      </div>
-
-                      {/* Switchyard Hardware & Incoming Feeder Specs */}
-                      {(Boolean(selectedSubstation.totalCapacityMva) || Boolean(selectedSubstation.powerTransformersCount) || Boolean(selectedSubstation.incomingFeederNames?.length)) && (
-                        <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 ${
-                          isLight ? 'bg-amber-50/50 border-amber-200/80 text-amber-950' : 'bg-amber-950/20 border-amber-800/40 text-amber-200'
-                        }`}>
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-[11px] flex items-center gap-1.5">
-                              <Zap className="w-3.5 h-3.5 text-amber-500" />
-                              <span>Switchyard & Capacity</span>
-                            </span>
-                            {Boolean(selectedSubstation.totalCapacityMva) && (
-                              <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
-                                isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              }`}>
-                                {selectedSubstation.totalCapacityMva} MVA
-                              </span>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-2 gap-1.5 text-center font-mono text-[10px]">
-                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
-                              <span className="text-[8px] opacity-75 block font-sans">Transformers</span>
-                              <strong className="text-[11px]">{selectedSubstation.powerTransformersCount || 1} units</strong>
-                            </div>
-                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
-                              <span className="text-[8px] opacity-75 block font-sans">Incoming Lines</span>
-                              <strong className="text-[11px]">{selectedSubstation.incomingFeedersCount || selectedSubstation.incomingFeederNames?.length || 1} lines</strong>
-                            </div>
-                          </div>
-                          {selectedSubstation.incomingFeederNames && selectedSubstation.incomingFeederNames.length > 0 && (
-                            <div className="pt-1 border-t border-amber-200/60 dark:border-amber-900/40 space-y-1">
-                              {selectedSubstation.incomingFeederNames.slice(0, 2).map((name, idx) => (
-                                <div key={idx} className={`px-1.5 py-0.5 rounded text-[10px] font-mono truncate flex items-center gap-1 ${
-                                  isLight ? 'bg-white/80 text-slate-800' : 'bg-slate-900/60 text-amber-200'
-                                }`}>
-                                  <span className="text-amber-500 font-bold shrink-0">←</span>
-                                  <span className="truncate">{name}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
                       )}
 
+                      {/* Consolidated Administrative & Switchyard Capacity Overview */}
+                      {(() => {
+                        const validIncomers = (selectedSubstation.incomingFeederNames || []).filter(n => {
+                          const clean = String(n).trim().toUpperCase();
+                          return clean && !['NA', 'N/A', 'NIL', 'NONE', '-', 'NULL'].includes(clean);
+                        });
+
+                        return (
+                          <div className={`p-2.5 rounded-xl border text-xs shrink-0 ${
+                            isLight ? 'bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-xs' : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
+                          }`}>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                  isLight ? 'bg-sky-100 text-sky-700' : 'bg-sky-500/15 text-cyan-300'
+                                }`}>
+                                  <Building2 className="w-3.5 h-3.5" />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="font-bold text-xs truncate">
+                                      {selectedSubstation.circle || 'Chennai EDC'}
+                                    </span>
+                                    <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
+                                      isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                    }`}>
+                                      Region {selectedSubstation.regionCode || '01/09'}
+                                    </span>
+                                    {Boolean(selectedSubstation.totalCapacityMva) && (
+                                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
+                                        isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                      }`}>
+                                        {selectedSubstation.totalCapacityMva} MVA
+                                      </span>
+                                    )}
+                                  </div>
+                                  <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                    TNEB Distribution Circle • Switchyard GPS
+                                  </span>
+                                </div>
+                              </div>
+
+                              <a
+                                href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
+                                  isLight
+                                    ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
+                                    : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
+                                }`}
+                                title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
+                              >
+                                <MapPin className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                                <span>Maps ↗</span>
+                              </a>
+                            </div>
+
+                            {(Boolean(selectedSubstation.powerTransformersCount) || Boolean(validIncomers.length)) && (
+                              <div className={`mt-2 pt-1.5 border-t flex items-center justify-between gap-2 text-[10px] font-mono ${
+                                isLight ? 'border-slate-200/80 text-slate-700' : 'border-slate-800 text-slate-300'
+                              }`}>
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <Zap className="w-3 h-3 text-amber-500 shrink-0" />
+                                  <span className="font-semibold">{selectedSubstation.powerTransformersCount || 1} Transformers</span>
+                                  <span className="opacity-40">•</span>
+                                  <span>{selectedSubstation.incomingFeedersCount || validIncomers.length || 1} Incomers</span>
+                                </div>
+                                {validIncomers.length > 0 && (
+                                  <div className="flex items-center gap-1 flex-wrap justify-end">
+                                    {validIncomers.slice(0, 2).map((name, idx) => (
+                                      <span key={idx} className={`px-1.5 py-0.2 rounded text-[9px] font-mono truncate max-w-[100px] ${
+                                        isLight ? 'bg-amber-50 text-amber-900 border border-amber-200' : 'bg-slate-900 text-amber-200 border border-amber-800/40'
+                                      }`}>
+                                        ← {name}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
                       {/* Substation Terrain & Flood Risk Profile */}
                       {selectedSubstation.elevationM !== undefined && (
-                        <div className={`p-2.5 rounded-xl border text-xs space-y-1.5 shrink-0 ${
+                        <div className={`p-2.5 rounded-xl border space-y-2 shrink-0 ${
                           selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                             ? (isLight ? 'bg-rose-50/70 border-rose-200 text-rose-950' : 'bg-rose-950/25 border-rose-800/60 text-rose-200')
                             : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
                             ? (isLight ? 'bg-amber-50/70 border-amber-200 text-amber-950' : 'bg-amber-950/25 border-amber-800/60 text-amber-200')
                             : (isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800/80 text-slate-200')
                         }`}>
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-[11px] flex items-center gap-1.5">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold text-xs flex items-center gap-1.5">
                               <span>🌊</span>
-                              <span>Terrain & Flood Risk</span>
+                              <span>Climate & Flood Risk</span>
                             </span>
-                            <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
+                            <span className={`text-[9.5px] font-mono font-bold px-2 py-0.2 rounded ${
                               selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                                 ? (isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-black')
                                 : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
@@ -1827,71 +1832,65 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                                 ? 'CRITICAL SURGE'
                                 : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                                ? 'HIGH WATERLOG'
+                                ? 'WATERLOGGING RISK'
                                 : 'SAFE ELEVATION'}
                             </span>
                           </div>
-                          <div className="grid grid-cols-3 gap-1.5 text-center font-mono text-[10px]">
-                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
-                              <span className="text-[8px] opacity-75 block">Elevation</span>
-                              <strong className="text-[11px]">{selectedSubstation.elevationM}m</strong>
+
+                          {/* Compact 3-metric bar */}
+                          <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
+                            <div className={`py-1 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                              <span className={`text-[9px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Elevation</span>
+                              <strong className="text-xs font-bold block mt-0.2">{selectedSubstation.elevationM} m</strong>
                             </div>
-                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
-                              <span className="text-[8px] opacity-75 block">To Coast</span>
-                              <strong className="text-[11px]">{selectedSubstation.distanceToCoastKm || 0}km</strong>
+                            <div className={`py-1 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                              <span className={`text-[9px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Coast Dist</span>
+                              <strong className="text-xs font-bold block mt-0.2">{selectedSubstation.distanceToCoastKm || 0} km</strong>
                             </div>
-                            <div className={`p-1 rounded ${isLight ? 'bg-white/80' : 'bg-black/30'}`}>
-                              <span className="text-[8px] opacity-75 block">Risk Score</span>
-                              <strong className="text-[11px]">{selectedSubstation.compositeRiskScore || 0}/100</strong>
+                            <div className={`py-1 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                              <span className={`text-[9px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Risk Score</span>
+                              <strong className="text-xs font-bold block mt-0.2">{selectedSubstation.compositeRiskScore || 0}/100</strong>
                             </div>
                           </div>
+
                           {/* 2015 Flood Historical Benchmark & TNSDMA Surge Standards */}
-                          <div className={`p-2 rounded-lg border text-[10.5px] space-y-1.5 ${
+                          <div className={`p-2 rounded-lg border text-[11px] space-y-1 ${
                             isLight ? 'bg-white/90 border-slate-200 text-slate-800' : 'bg-slate-900/90 border-slate-700/80 text-slate-200'
                           }`}>
-                            <div className="flex items-center justify-between font-mono text-[10px]">
-                              <span className="opacity-75">2015 Flood Submersion:</span>
-                              <strong className={selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold') : ''}>
-                                {selectedSubstation.benchmarked2015FloodDepthM || 0.9}m {selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? '(6ft Peak Submersion)' : ''}
-                              </strong>
-                            </div>
-                            <div className="flex items-center justify-between font-mono text-[10px]">
-                              <span className="opacity-75">Switchgear Plinth Height:</span>
-                              <strong>{selectedSubstation.plinthElevationM || 1.5}m GL Clearance</strong>
-                            </div>
-                            <div className="flex items-center justify-between font-mono text-[10px]">
-                              <span className="opacity-75">TNSDMA 2023 Surge Limit:</span>
-                              <strong className="text-sky-600 dark:text-cyan-400">3.0m MSL Standard</strong>
-                            </div>
-                            <div className="flex items-center justify-between font-mono text-[10px] pt-1 border-t border-current/10">
-                              <span className="opacity-75">Yard Dewatering SOP:</span>
-                              <span className={`px-1.5 py-0.2 rounded font-bold ${
-                                selectedSubstation.yardDewateringRequired
-                                  ? (isLight ? 'bg-amber-100 text-amber-800' : 'bg-amber-500/20 text-amber-300')
-                                  : (isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300')
-                              }`}>
-                                {selectedSubstation.yardDewateringRequired ? '⚠️ Mobile Diesel Pumps Required' : '✅ Gravity Sump Drainage'}
-                              </span>
+                            <div className="grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[10px]">
+                              <div>
+                                <span className="opacity-75 block text-[9px] font-sans">2015 Flood Benchmark:</span>
+                                <strong className={selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold') : ''}>
+                                  {selectedSubstation.benchmarked2015FloodDepthM || 0.9}m {selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? '(6ft Submerged)' : ''}
+                                </strong>
+                              </div>
+                              <div>
+                                <span className="opacity-75 block text-[9px] font-sans">Switchgear Plinth:</span>
+                                <strong>{selectedSubstation.plinthElevationM || 1.5}m GL Clearance</strong>
+                              </div>
+                              <div>
+                                <span className="opacity-75 block text-[9px] font-sans">TNSDMA Limit:</span>
+                                <strong className="text-sky-600 dark:text-cyan-400">3.0m MSL Standard</strong>
+                              </div>
+                              <div>
+                                <span className="opacity-75 block text-[9px] font-sans">Dewatering SOP:</span>
+                                <span className={`px-1 py-0.2 rounded font-bold text-[9px] inline-block ${
+                                  selectedSubstation.yardDewateringRequired
+                                    ? (isLight ? 'bg-amber-100 text-amber-800' : 'bg-amber-500/20 text-amber-300')
+                                    : (isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300')
+                                }`}>
+                                  {selectedSubstation.yardDewateringRequired ? '⚠️ Mobile Diesel Pumps' : '✅ Gravity Drainage'}
+                                </span>
+                              </div>
                             </div>
                           </div>
 
-                          {/* Active Storm Surge Alert if Yard is Inundated */}
-                          {disasterScenario === 'EXTREME_SURGE' && selectedSubstation.elevationM <= 3.2 && (
-                            <div className="p-2 rounded-lg bg-rose-600 text-white text-[10px] font-bold leading-tight flex items-start gap-1.5 shadow-md animate-pulse">
-                              <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                              <div>
-                                <span className="block uppercase tracking-wider font-black">CRITICAL: Switchyard Inundation Event</span>
-                                <span className="font-normal opacity-95">Ground elevation ({selectedSubstation.elevationM}m) submerged by 3.2m surge • Yard pre-emptively isolated • Mobile dewatering pumps deployed per TANGEDCO Manual.</span>
-                              </div>
-                            </div>
-                          )}
-
                           {selectedSubstation.anticipatorySop && (
-                            <div className={`p-1.5 rounded text-[9.5px] leading-tight ${
-                              isLight ? 'bg-white/90 text-slate-700' : 'bg-slate-900/80 text-slate-300'
+                            <div className={`px-2 py-1 rounded text-[10.5px] leading-snug ${
+                              isLight ? 'bg-white/90 text-slate-700 border border-black/5' : 'bg-slate-900/80 text-slate-300 border border-white/10'
                             }`}>
-                              <span className="font-bold">⚡ SOP: </span>
-                              {selectedSubstation.anticipatorySop}
+                              <strong className="font-semibold mr-1">Field SOP:</strong>
+                              <span>{selectedSubstation.anticipatorySop}</span>
                             </div>
                           )}
                         </div>
@@ -1899,21 +1898,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                       {/* Jurisdictional AE Section Office */}
                       {jurisdictionalSections.length > 0 && (
-                        <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 shrink-0 ${
+                        <div className={`px-2.5 py-1.5 rounded-xl border flex items-center justify-between gap-2 shrink-0 ${
                           isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
                         }`}>
                           <div className="flex items-center gap-2 min-w-0">
-                            <div className={`p-1.5 rounded-lg shrink-0 ${
-                              isLight ? 'bg-emerald-600 text-white' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            }`}>
-                              <Shield className="w-3.5 h-3.5" />
-                            </div>
+                            <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                             <div className="min-w-0">
                               <span className="font-bold text-xs truncate block">
                                 {jurisdictionalSections[0].name}
                               </span>
                               <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
-                                AE Depot • {jurisdictionalSections[0].distanceKm} km
+                                AE Depot • {jurisdictionalSections[0].section?.mobile ? `📞 ${jurisdictionalSections[0].section.mobile} • ` : ''}{jurisdictionalSections[0].distanceKm} km
                               </span>
                             </div>
                           </div>
@@ -1924,13 +1919,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 onSelectSection(jurisdictionalSections[0].section!);
                                 onSelectSubstation(null);
                               }}
-                              className={`px-2 py-1 rounded-lg text-[10px] font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                              className={`px-2 py-1 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition-all ${
                                 isLight
-                                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
                                   : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
                               }`}
                             >
-                              Locate
+                              <span>Locate</span>
                               <ArrowRight className="w-3 h-3" />
                             </button>
                           )}
@@ -2909,106 +2904,101 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     {/* Tab 3: Substation Info & Field AE Depot */}
                     {inspectorTab === 'info' && (
                       <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
-                        {/* Modern Administrative & Switchyard GPS Identity Card */}
-                        <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-3 shrink-0 ${
-                          isLight
-                            ? 'bg-slate-50/80 border-slate-200/90 text-slate-900 shadow-xs'
-                            : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
-                        }`}>
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                              isLight
-                                ? 'bg-sky-100 text-sky-700 border border-sky-200/60'
-                                : 'bg-sky-500/15 text-cyan-300 border border-sky-500/20'
-                            }`}>
-                              <Building2 className="w-4 h-4" />
-                            </div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="font-bold text-xs truncate">
-                                  {selectedSubstation.circle || 'Chennai EDC'}
-                                </span>
-                                <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shrink-0 ${
-                                  isLight
-                                    ? 'bg-slate-200/80 text-slate-700 border border-slate-300/60'
-                                    : 'bg-slate-800 text-slate-300 border border-slate-700'
-                                }`}>
-                                  Region {selectedSubstation.regionCode || '01/09'}
-                                </span>
+                        {/* Active Storm Surge / Inundation Alert - CRITICAL INFO PROMOTED TO TOP */}
+                        {disasterScenario === 'EXTREME_SURGE' && selectedSubstation.elevationM !== undefined && selectedSubstation.elevationM <= 3.2 && (
+                          <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold leading-tight flex items-start gap-2 shadow-lg animate-pulse shrink-0 border border-rose-400/40">
+                            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-200" />
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="uppercase tracking-wider font-black text-[11px] text-white">CRITICAL: Switchyard Inundation Event</span>
+                                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-black/25 text-amber-200 font-bold uppercase">3.2m Surge Active</span>
                               </div>
-                              <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                                TNEB Distribution Circle • Switchyard GPS
-                              </span>
+                              <p className="font-normal opacity-95 text-[10.5px] mt-0.5 leading-snug">
+                                Yard elevation ({selectedSubstation.elevationM}m MSL) submerged by 3.2m surge. Switchyard pre-emptively isolated & de-energized. Deploy mobile diesel pumps per TANGEDCO SOP.
+                              </p>
                             </div>
                           </div>
+                        )}
 
-                          <a
-                            href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
-                              isLight
-                                ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
-                                : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
-                            }`}
-                            title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
-                          >
-                            <MapPin className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
-                            <span>Google Maps ↗</span>
-                          </a>
-                        </div>
-
-                        {/* Switchyard Hardware & Incoming Feeder Specs */}
-                        {Boolean(selectedSubstation.totalCapacityMva || selectedSubstation.powerTransformersCount || selectedSubstation.incomingFeederNames?.length) && (() => {
+                        {/* Consolidated Administrative & Switchyard Capacity Overview */}
+                        {(() => {
                           const validIncomers = (selectedSubstation.incomingFeederNames || []).filter(n => {
                             const clean = String(n).trim().toUpperCase();
                             return clean && !['NA', 'N/A', 'NIL', 'NONE', '-', 'NULL'].includes(clean);
                           });
 
                           return (
-                            <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
-                              isLight ? 'bg-amber-50/50 border-amber-200/80 text-amber-950' : 'bg-amber-950/20 border-amber-800/40 text-amber-200'
+                            <div className={`p-2.5 rounded-xl border text-xs shrink-0 ${
+                              isLight ? 'bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-xs' : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
                             }`}>
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="font-bold text-xs flex items-center gap-1.5">
-                                  <Zap className="w-3.5 h-3.5 text-amber-500" />
-                                  <span>Switchyard & Hardware</span>
-                                </span>
-                                {Boolean(selectedSubstation.totalCapacityMva) && (
-                                  <span className={`text-[11px] font-mono font-bold px-2 py-0.5 rounded ${
-                                    isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                                    isLight ? 'bg-sky-100 text-sky-700' : 'bg-sky-500/15 text-cyan-300'
                                   }`}>
-                                    {selectedSubstation.totalCapacityMva} MVA Capacity
-                                  </span>
-                                )}
-                              </div>
-
-                              <div className="grid grid-cols-2 gap-2 text-xs">
-                                <div className={`px-2.5 py-1.5 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
-                                  <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Transformers</span>
-                                  <span className="font-bold font-mono text-xs block mt-0.5">{selectedSubstation.powerTransformersCount || 1} units</span>
-                                </div>
-                                <div className={`px-2.5 py-1.5 rounded-lg border text-center ${isLight ? 'bg-white border-amber-100' : 'bg-slate-900/80 border-amber-900/30'}`}>
-                                  <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-amber-800/70' : 'text-amber-400/70'}`}>Incoming Lines</span>
-                                  <span className="font-bold font-mono text-xs block mt-0.5">{selectedSubstation.incomingFeedersCount || validIncomers.length || 1} lines</span>
-                                </div>
-                              </div>
-
-                              {validIncomers.length > 0 && (
-                                <div className="space-y-1.5 pt-0.5">
-                                  <span className={`text-[10px] uppercase font-bold tracking-wider block ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
-                                    Incomers ({validIncomers.length}):
-                                  </span>
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    {validIncomers.map((name, idx) => (
-                                      <span key={idx} className={`px-2.5 py-1 rounded text-xs font-mono font-medium inline-flex items-center gap-1.5 ${
-                                        isLight ? 'bg-white border border-amber-200 text-slate-800 shadow-xs' : 'bg-slate-900/80 border border-amber-900/40 text-amber-200'
-                                      }`}>
-                                        <span className="text-amber-500 font-bold">←</span>
-                                        <span>{name}</span>
-                                      </span>
-                                    ))}
+                                    <Building2 className="w-3.5 h-3.5" />
                                   </div>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                      <span className="font-bold text-xs truncate">
+                                        {selectedSubstation.circle || 'Chennai EDC'}
+                                      </span>
+                                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
+                                        isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+                                      }`}>
+                                        Region {selectedSubstation.regionCode || '01/09'}
+                                      </span>
+                                      {Boolean(selectedSubstation.totalCapacityMva) && (
+                                        <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded shrink-0 ${
+                                          isLight ? 'bg-amber-100 text-amber-900 border border-amber-200' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                                        }`}>
+                                          {selectedSubstation.totalCapacityMva} MVA
+                                        </span>
+                                      )}
+                                    </div>
+                                    <span className={`text-[10px] block truncate mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                                      TNEB Distribution Circle • Switchyard GPS
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <a
+                                  href={`https://www.google.com/maps?q=${selectedSubstation.lat},${selectedSubstation.lng}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all shadow-xs group ${
+                                    isLight
+                                      ? 'bg-sky-600 hover:bg-sky-700 text-white shadow-sky-600/20'
+                                      : 'bg-sky-500/20 hover:bg-sky-500/30 text-cyan-300 border border-sky-500/30'
+                                  }`}
+                                  title={`Open coordinates (${selectedSubstation.lat.toFixed(5)}, ${selectedSubstation.lng.toFixed(5)}) in Google Maps`}
+                                >
+                                  <MapPin className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                                  <span>Maps ↗</span>
+                                </a>
+                              </div>
+
+                              {(Boolean(selectedSubstation.powerTransformersCount) || Boolean(validIncomers.length)) && (
+                                <div className={`mt-2 pt-1.5 border-t flex items-center justify-between gap-2 text-[10px] font-mono ${
+                                  isLight ? 'border-slate-200/80 text-slate-700' : 'border-slate-800 text-slate-300'
+                                }`}>
+                                  <div className="flex items-center gap-1.5 shrink-0">
+                                    <Zap className="w-3 h-3 text-amber-500 shrink-0" />
+                                    <span className="font-semibold">{selectedSubstation.powerTransformersCount || 1} Transformers</span>
+                                    <span className="opacity-40">•</span>
+                                    <span>{selectedSubstation.incomingFeedersCount || validIncomers.length || 1} Incomers</span>
+                                  </div>
+                                  {validIncomers.length > 0 && (
+                                    <div className="flex items-center gap-1 flex-wrap justify-end">
+                                      {validIncomers.map((name, idx) => (
+                                        <span key={idx} className={`px-1.5 py-0.2 rounded text-[9px] font-mono truncate max-w-[100px] ${
+                                          isLight ? 'bg-amber-50 text-amber-900 border border-amber-200' : 'bg-slate-900 text-amber-200 border border-amber-800/40'
+                                        }`}>
+                                          ← {name}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
@@ -3017,7 +3007,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
                         {/* Substation Terrain & Flood Risk Profile */}
                         {selectedSubstation.elevationM !== undefined && (
-                          <div className={`p-3 rounded-xl border space-y-2 shrink-0 ${
+                          <div className={`p-2.5 rounded-xl border space-y-2 shrink-0 ${
                             selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                               ? (isLight ? 'bg-rose-50/70 border-rose-200 text-rose-950' : 'bg-rose-950/25 border-rose-800/60 text-rose-200')
                               : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
@@ -3029,7 +3019,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                 <span>🌊</span>
                                 <span>Climate & Flood Risk</span>
                               </span>
-                              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${
+                              <span className={`text-[9.5px] font-mono font-bold px-2 py-0.2 rounded ${
                                 selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                                   ? (isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-black')
                                   : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
@@ -3044,97 +3034,81 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-3 gap-2 text-center font-mono">
-                              <div className={`py-2 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Elevation</span>
-                                <strong className="text-xs font-bold block mt-0.5">{selectedSubstation.elevationM} m</strong>
+                            {/* Compact 3-metric bar */}
+                            <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
+                              <div className={`py-1 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className={`text-[9px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Elevation</span>
+                                <strong className="text-xs font-bold block mt-0.2">{selectedSubstation.elevationM} m</strong>
                               </div>
-                              <div className={`py-2 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Coast Dist</span>
-                                <strong className="text-xs font-bold block mt-0.5">{selectedSubstation.distanceToCoastKm || 0} km</strong>
+                              <div className={`py-1 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className={`text-[9px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Coast Dist</span>
+                                <strong className="text-xs font-bold block mt-0.2">{selectedSubstation.distanceToCoastKm || 0} km</strong>
                               </div>
-                              <div className={`py-2 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
-                                <span className={`text-[10px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Risk Score</span>
-                                <strong className="text-xs font-bold block mt-0.5">{selectedSubstation.compositeRiskScore || 0}/100</strong>
+                              <div className={`py-1 px-1 rounded-lg ${isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'}`}>
+                                <span className={`text-[9px] uppercase font-semibold block leading-tight ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Risk Score</span>
+                                <strong className="text-xs font-bold block mt-0.2">{selectedSubstation.compositeRiskScore || 0}/100</strong>
                               </div>
                             </div>
 
                             {/* 2015 Flood Historical Benchmark & TNSDMA Surge Standards */}
-                            <div className={`p-2.5 rounded-lg border text-xs space-y-1.5 ${
+                            <div className={`p-2 rounded-lg border text-[11px] space-y-1 ${
                               isLight ? 'bg-white/90 border-slate-200 text-slate-800' : 'bg-slate-900/90 border-slate-700/80 text-slate-200'
                             }`}>
-                              <div className="flex items-center justify-between font-mono text-[11px]">
-                                <span className="opacity-75">2015 Flood Benchmark:</span>
-                                <strong className={selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold') : ''}>
-                                  {selectedSubstation.benchmarked2015FloodDepthM || 0.9}m {selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? '(6ft Peak Submersion)' : ''}
-                                </strong>
-                              </div>
-                              <div className="flex items-center justify-between font-mono text-[11px]">
-                                <span className="opacity-75">Switchgear Equipment Plinth:</span>
-                                <strong>{selectedSubstation.plinthElevationM || 1.5}m GL Clearance</strong>
-                              </div>
-                              <div className="flex items-center justify-between font-mono text-[11px]">
-                                <span className="opacity-75">TNSDMA 2023 Surge Standard:</span>
-                                <strong className="text-sky-600 dark:text-cyan-400">3.0m MSL Regulatory Limit</strong>
-                              </div>
-                              <div className="flex items-center justify-between font-mono text-[11px] pt-1.5 border-t border-current/10">
-                                <span className="opacity-75">Yard Dewatering SOP:</span>
-                                <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                                  selectedSubstation.yardDewateringRequired
-                                    ? (isLight ? 'bg-amber-100 text-amber-800' : 'bg-amber-500/20 text-amber-300')
-                                    : (isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300')
-                                }`}>
-                                  {selectedSubstation.yardDewateringRequired ? '⚠️ Mobile Diesel Pumps Required' : '✅ Standard Gravity Drainage'}
-                                </span>
+                              <div className="grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[10px]">
+                                <div>
+                                  <span className="opacity-75 block text-[9px] font-sans">2015 Flood Benchmark:</span>
+                                  <strong className={selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? (isLight ? 'text-rose-700 font-bold' : 'text-rose-400 font-bold') : ''}>
+                                    {selectedSubstation.benchmarked2015FloodDepthM || 0.9}m {selectedSubstation.benchmarked2015FloodDepthM && selectedSubstation.benchmarked2015FloodDepthM >= 1.5 ? '(6ft Submerged)' : ''}
+                                  </strong>
+                                </div>
+                                <div>
+                                  <span className="opacity-75 block text-[9px] font-sans">Switchgear Plinth:</span>
+                                  <strong>{selectedSubstation.plinthElevationM || 1.5}m GL Clearance</strong>
+                                </div>
+                                <div>
+                                  <span className="opacity-75 block text-[9px] font-sans">TNSDMA Limit:</span>
+                                  <strong className="text-sky-600 dark:text-cyan-400">3.0m MSL Standard</strong>
+                                </div>
+                                <div>
+                                  <span className="opacity-75 block text-[9px] font-sans">Dewatering SOP:</span>
+                                  <span className={`px-1 py-0.2 rounded font-bold text-[9px] inline-block ${
+                                    selectedSubstation.yardDewateringRequired
+                                      ? (isLight ? 'bg-amber-100 text-amber-800' : 'bg-amber-500/20 text-amber-300')
+                                      : (isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300')
+                                  }`}>
+                                    {selectedSubstation.yardDewateringRequired ? '⚠️ Mobile Diesel Pumps' : '✅ Gravity Drainage'}
+                                  </span>
+                                </div>
                               </div>
                             </div>
 
-                            {/* Active Storm Surge Alert if Yard is Inundated */}
-                            {disasterScenario === 'EXTREME_SURGE' && selectedSubstation.elevationM <= 3.2 && (
-                              <div className="p-2.5 rounded-lg bg-rose-600 text-white text-xs font-bold leading-tight flex items-start gap-2 shadow-md animate-pulse">
-                                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                                <div>
-                                  <span className="block uppercase tracking-wider font-black">CRITICAL: Switchyard Inundation Event</span>
-                                  <span className="font-normal opacity-95">Ground elevation ({selectedSubstation.elevationM}m) submerged by 3.2m surge • Yard pre-emptively isolated • Mobile dewatering pumps deployed per TANGEDCO Manual.</span>
-                                </div>
-                              </div>
-                            )}
-
                             {selectedSubstation.anticipatorySop && (
-                              <div className={`px-2.5 py-1.5 rounded-lg text-xs leading-relaxed ${
+                              <div className={`px-2 py-1 rounded text-[10.5px] leading-snug ${
                                 isLight ? 'bg-white/90 text-slate-700 border border-black/5' : 'bg-slate-900/80 text-slate-300 border border-white/10'
                               }`}>
-                                <strong className="font-semibold mr-1.5">Field SOP:</strong>
+                                <strong className="font-semibold mr-1">Field SOP:</strong>
                                 <span>{selectedSubstation.anticipatorySop}</span>
                               </div>
                             )}
                           </div>
                         )}
 
-                        {/* Jurisdictional Assistant Engineer (AE) Section Office */}
+                        {/* Jurisdictional AE Section Office */}
                         {jurisdictionalSections.length > 0 && (
-                          <div className={`px-3.5 py-2.5 rounded-xl border flex items-center justify-between gap-2.5 shrink-0 ${
+                          <div className={`px-2.5 py-1.5 rounded-xl border flex items-center justify-between gap-2 shrink-0 ${
                             isLight ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950' : 'bg-emerald-950/25 border-emerald-800/60 text-emerald-200'
                           }`}>
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                               <div className="min-w-0">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="font-bold text-xs truncate">
-                                    {jurisdictionalSections[0].name}
-                                  </span>
-                                  <span className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded ${
-                                    isLight ? 'bg-emerald-200/70 text-emerald-900' : 'bg-emerald-900/50 text-emerald-300'
-                                  }`}>
-                                    AE Depot
-                                  </span>
-                                </div>
-                                <span className={`text-xs block truncate mt-0.5 ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
-                                  {jurisdictionalSections[0].section?.mobile ? `📞 ${jurisdictionalSections[0].section.mobile} • ` : ''}{jurisdictionalSections[0].distanceKm} km
+                                <span className="font-bold text-xs truncate block">
+                                  {jurisdictionalSections[0].name}
+                                </span>
+                                <span className={`text-[10px] block truncate ${isLight ? 'text-emerald-700' : 'text-emerald-400/80'}`}>
+                                  AE Depot • {jurisdictionalSections[0].section?.mobile ? `📞 ${jurisdictionalSections[0].section.mobile} • ` : ''}{jurisdictionalSections[0].distanceKm} km
                                 </span>
                               </div>
                             </div>
-
                             {jurisdictionalSections[0].section && (
                               <button
                                 type="button"
@@ -3142,15 +3116,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                                   onSelectSection(jurisdictionalSections[0].section!);
                                   onSelectSubstation(null);
                                 }}
-                                className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition-all ${
+                                className={`px-2 py-1 rounded-lg text-xs font-semibold shrink-0 flex items-center gap-1 transition-all ${
                                   isLight
-                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
                                     : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30'
                                 }`}
-                                title="Locate Section Office on Map"
                               >
-                                Locate
-                                <ArrowRight className="w-3.5 h-3.5" />
+                                <span>Locate</span>
+                                <ArrowRight className="w-3 h-3" />
                               </button>
                             )}
                           </div>
