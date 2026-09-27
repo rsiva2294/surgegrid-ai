@@ -1304,15 +1304,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       )}
 
-                    {/* SMS incident dispatch action */}
-                    <div className="flex items-center justify-between p-2 rounded-xl border bg-slate-50/50 dark:bg-slate-950/50 border-slate-200 dark:border-slate-800">
-                      <span className="text-xs font-semibold">Crisis Dispatch Generator:</span>
-                      <CopyIncidentSmsButton
-                        node={selectedSubstation}
-                        isLight={isLight}
-                      />
-                    </div>
-
                     {/* Terrain & Flood Risk Profile */}
                     {selectedSubstation.elevationM !== undefined && (
                       <div
