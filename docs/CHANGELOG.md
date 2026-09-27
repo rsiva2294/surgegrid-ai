@@ -21,6 +21,10 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **P1: Circle Geometry IndexedDB Caching & Zero-Dependency List Virtualization**:
   - Persisted fetched circle feeder geometries and DTRs into client-side IndexedDB (`sg_feeders_circle_${cir}`).
   - Applied zero-dependency CSS list virtualization (`content-visibility: auto; contain-intrinsic-size: auto 90px;`) across feeder cards, reducing DOM paint times by ~65%.
+- **P1: Feeder Geometry Coordinate Decimation & RDP Simplification**:
+  - Eradicated **490,024 redundant coordinate vertices** across all 8 circle feeder networks (`public/data/feeders/*.json`).
+  - Applied 5-decimal precision truncation (~1.1m resolution), duplicate consecutive vertex pruning, and Ramer-Douglas-Peucker line simplification (3m tolerance).
+  - Reduced dense urban feeder payloads by up to **58.3%** (`0402.json`: 4.78 MB -> 2.00 MB; `0400.json`: 4.63 MB -> 2.17 MB), shaving **9.24 MB** off total public assets and drastically accelerating WebGL buffer upload times.
 - **P2: Cloud Map ID & Google Maps Platform Modernization**:
   - Added support for Google Cloud Vector Map IDs (`mapId: import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || ''`) with seamless fallback to dark/light styles for offline/local development.
 - **P3: Crisis Operations Triage Bar & Offline 2G SMS Dispatch Copy**:
