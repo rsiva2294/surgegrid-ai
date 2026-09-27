@@ -1,12 +1,12 @@
 # Electrical Grid & Feeder Linkages: Technical Provenance Reference
 
-> **Comprehensive Ground-Truth Architecture:** How both **Inter-Substation Grid Linkages** and **Substation-to-Feeder-to-DTR Distribution Linkages** are constructed in SurgeGrid AI directly from authoritative TNEB GIS survey records.
+> **GIS-Based Electrical Connectivity Model:** How both **Inter-Substation Grid Linkages** and **Substation-to-Feeder-to-DTR Distribution Linkages** are modeled in SurgeGrid AI using available TNEB GIS and asset records.
 
 ---
 
 ## 1. Executive Summary: The Two Electrical Linkage Systems
 
-In a utility-grade power grid like TNEB (TANGEDCO), power delivery operates across two fundamentally distinct electrical systems. SurgeGrid AI faithfully models **both**:
+In a utility-grade power grid like TNEB (TANGEDCO), power delivery operates across two fundamentally distinct electrical systems. SurgeGrid AI models the mapped infrastructure for **both** using available GIS and asset records:
 
 ```mermaid
 flowchart TD
@@ -128,10 +128,15 @@ All records below are quoted verbatim from:
 }
 ```
 
-#### Step B: Authoritative Inter-Substation 33kV Feeder Metadata
+#### Step B: Authoritative Inter-Substation 33kV Feeder Metadata & Circuit Reconciliation
 **Source File:** `grid_infrastructure/feeders_master_metadata.json`
 
-Substation `2159` operates dedicated $33\text{kV}$ outgoing feeders linking directly to these recipient yards:
+Notice that Substation `2218` (`33/11 KV KILPAUK SS`) lists **three distinct incoming circuits** for N-1 transmission redundancy:
+1. `in_fdr_n_1`: `"KILPAUK 230KV SS TO KILPAUK 33KV"` (Campus feed from 230kV Kilpauk #9328 / Water Works #2159)
+2. `in_fdr_n_2`: `"COOKS ROAD 110KV TO KILPAUK 33KV"` (Bulk step-down feed from Cooks Road 110kV SS #2239 via Feeder #223923)
+3. `in_fdr_n_3`: `"ANNA NAGAR 110KV TO KILPAUK 33KV"` (Tie feed from Anna Nagar 110kV SS #2102)
+
+From the source hub `2159` (`110/33/11 KV KILPAUK WATER WORKS SS`), TNEB operates outgoing 33kV feeder `215910` feeding directly into Kilpauk 33kV SS (satisfying `in_fdr_n_1`):
 
 ```json
 {
@@ -150,10 +155,20 @@ Substation `2159` operates dedicated $33\text{kV}$ outgoing feeders linking dire
 ```
 *(Similarly, Feeder `215913` `"33KV Mc.NICHOLS RD"` routes $33\text{kV}$ bulk power to Mc.Nicholas Road SS #9342).*
 
+In the compiled production index (`public/data/chennai_tneb_grid.json`), Substation `2218` highlights **Cooks Road 110kV SS (`2239`) via Feeder `223923`** as its primary mapped incoming Level 1 connection because Feeder `223923` provides the full vector line path with complete polygon containment in Circle 0402, while Feeder `215910` provides the verified interconnector path from the North Circle hub.
+
+---
+
 #### Step C: The Physical Cable Endpoint & Switchyard Polygon Containment Proof
 **Source Files:** `grid_infrastructure/feeder_lines.geojson.gz` & `grid_infrastructure/substations_polygons.geojson`
 
-The surveyed vector path for Feeder `215910` (`"33 KV KILPAUK 2"`) terminates at:
+##### Feeder Endpoint Directionality & Validation Method:
+A polyline coordinate sequence in GIS does not inherently indicate electrical directionality. SurgeGrid AI validates both endpoints using a strict dual-terminal procedure:
+1. **Source Terminal Validation (Terminal A):** The initial vertex (`coords[0][0]`) is validated against the source substation's switchyard coordinates and confirmed by foreign key matching against `ss_code` (`2159`) in `feeders_master_metadata.json`.
+2. **Recipient Terminal Validation (Terminal B):** The terminal vertex (`coords[last][last]`) is spatial-tested against all candidate substation switchyard polygons using ray-casting point-in-polygon (`ST_Contains`).
+3. **Circuit Register Confirmation:** The relationship is cross-referenced against the recipient station's authoritative `in_fdr_n_*` attribute list to confirm that the circuit name matches the source facility.
+
+For Feeder `215910` (`"33 KV KILPAUK 2"`), the surveyed vector path terminates at:
 ```json
 {
   "type": "Feature",
@@ -175,7 +190,7 @@ The surveyed vector path for Feeder `215910` (`"33 KV KILPAUK 2"`) terminates at
 }
 ```
 
-* **Physical Cable Termination Coordinate:** `[80.24512422, 13.08619193]`
+* **Physical Cable Termination Coordinate (Terminal B):** `[80.24512422, 13.08619193]`
 * **Substation 2218 Center Switchyard Point:** `[80.24509365, 13.08621004]`
 * **Point-to-Point Distance Delta:** **3.4 meters** ($\Delta < 0.00003^\circ$)
 
@@ -275,7 +290,7 @@ Here is a verbatim DTR connected directly to Feeder `221801`:
 ### Relational Rigor of the Feeder Linkage
 1. **Substation Binding (`ss_code: "2218"`):** Explicitly hard-linked to `33/11 KV KILPAUK SS`.
 2. **Feeder Code Inheritance (`dt_code: "221801014"`):** The DTR code is a composite key prefixed by the parent feeder (`221801`), followed by the DTR sequence (`014`).
-3. **Consumer Ground Truth (`dtconcount: 105`):** When Feeder `221801` experiences a breaker trip or maintenance shutdown, the system can instantly identify that this transformer and its exact **105 downstream consumers** are off-power.
+3. **Registered Consumer Baseline (`dtconcount: 105`):** Exactly **105 registered consumers** are associated with this DTR in authoritative billing registers. In an automated outage workflow, this provides a baseline population bound for the transformer; actual customer interruption remains subject to operational confirmation (e.g., field switching or smart meter confirmation).
 
 ---
 
@@ -311,15 +326,17 @@ A critical engineering tenet of SurgeGrid AI is acknowledging the boundary betwe
 
 ---
 
-### 2. The Three-Level Confidence Model
+### 2. The Three-Level Confidence Model: Specific Verification Pathways
 
-To prevent misleading operators with false certainties, SurgeGrid AI classifies all network linkages into three confidence tiers:
+To prevent misleading operators with false certainties, SurgeGrid AI classifies all network linkages into three confidence tiers with distinct verification pathways:
 
-| Confidence Tier | Criteria | Visual Representation in UI | Outage Scoping Role |
-| :--- | :--- | :--- | :--- |
-| **Level 1: Verified Physical Connection** | **Dual-Endpoint Confirmation** (Both source and destination substation IDs explicitly identified in authoritative TNEB circuit/asset registers) + **Geometrically Verified Termination** (endpoint strictly enclosed inside recipient switchyard polygon via `ST_Contains == TRUE`). | Solid high-contrast line with directional hierarchy pulse. | **Physical Topology Scoping Only** (authoritative asset bounding). Actual consumer outage determination requires real-time switching/operational confirmation. |
-| **Level 2: Probable / Inferred Connection** | Compatible voltage step-down ($110\text{kV} \rightarrow 33\text{kV}$) + physical urban proximity ($\le 8.5\text{km}$) + geometric polygon enclosure, but missing dual-terminal circuit confirmation or breaker schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Topology Scoping** (provisional asset bounding; requires engineering review). |
-| **Level 3: Unverified Connection** | Fuzzy naming match or unverified Euclidean proximity without GIS conductor vectors. | Suppressed / Hidden from map canvas. | **Ineligible / Excluded** from all outage scoping. |
+| Confidence Tier | Verification Pathway | Explicit Evidence Criteria | Visual Representation in UI | Outage Scoping Role |
+| :--- | :--- | :--- | :--- | :--- |
+| **Level 1: Verified Physical Connection** | **`polygon_containment`** | **Dual-Endpoint Circuit + Geometric Enclosure**: Source station ID explicitly confirmed in feeder metadata + conductor vector endpoint strictly enclosed in recipient switchyard polygon via ray-casting (`ST_Contains == TRUE`). | Solid high-contrast line with directional pulse. | **Physical Topology Scoping Only** (authoritative asset bounding). Actual customer interruption requires operational confirmation. |
+| **Level 1: Verified Physical Connection** | **`collocated_switchyard`** | **Verified Shared Campus Busbar Step-Down**: Dual-voltage transformation yards located on the same physical campus (distance $\le 150\text{m}$, e.g., 230kV to 110kV or 110kV to 33kV) with confirmed transformation capacity in primary asset records. | Solid line with co-located badge. | **Physical Topology Scoping Only** (authoritative asset bounding). |
+| **Level 1: Verified Physical Connection** | **`surveyed_eht_line`** | **Surveyed EHT Transmission Corridor**: 400kV and 230kV Extra High Tension bulk transmission lines mapped from TANTRANSCO surveyed line vectors between named gantry terminal substations. | Solid transmission line with EHT corridor badge. | **Physical Topology Scoping Only** (bulk grid transmission corridor). |
+| **Level 2: Probable / Inferred Connection** | **`nominal_stepdown_proximity`** | **Compatible Nominal Step-Down**: Step-down compatible voltage ratio ($110\text{kV} \rightarrow 33\text{kV}$) within urban cable radius ($\le 8.5\text{km}$), but lacking full dual-terminal vector enclosure or bay assignment schedule. | Amber dashed line with `inferred: true` badge in Inspector. | **Advisory Topology Scoping** (provisional asset bounding; requires engineering review). |
+| **Level 3: Unverified Connection** | *Unverified* | Fuzzy naming match or unverified Euclidean proximity without GIS conductor vectors. | Suppressed / Hidden from map canvas. | **Ineligible / Excluded** from all outage scoping. |
 
 ---
 
@@ -348,8 +365,8 @@ SurgeGrid AI dynamically connects these layers into a unified real-time operatio
   > **Operational Caveat:** These visual pulses represent **mapped physical infrastructure connectivity**, not confirmed live electrical power flow (which requires real-time SCADA telemetry for breaker/energization state).
 
 ### 2. Feeder & Distribution Mode (Neighborhood & DTR View)
-* **Substation Inspector Feeder Roster:** Selecting any substation opens the live feeder panel showing all outgoing $11\text{kV}$ and $33\text{kV}$ lines.
-* **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $19\text{ DTRs}$, $809\text{ consumers}$) and displays live consumer counts.
+* **Substation Inspector Feeder Roster:** Selecting any substation opens the feeder roster showing all outgoing $11\text{kV}$ and $33\text{kV}$ lines.
+* **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $19\text{ DTRs}$, $809\text{ consumers}$) and displays the registered consumer baseline.
 * **Outage Scoping:** When TNEB issues an outage for a specific feeder name or code, SurgeGrid AI highlights the precise 11kV cable vector, rings the affected DTR markers, and calculates the baseline registered consumer population. Dynamic switching transfers (e.g., RMU loop cut-overs) remain subject to field confirmation.
 
 ---
@@ -509,34 +526,39 @@ Here, Kilpauk SS displays an authoritative **Level 1 Verified** interconnector d
 
 Compiled from `public/data/chennai_tneb_grid.json` across all 286 substations in the Greater Chennai grid:
 
-| Metric | Production Count | Criteria / Engineering Justification |
-| :--- | :--- | :--- |
-| **Total Substations** | **286** | All 400kV, 230kV, 110kV, and 33kV stations across 5 circles |
-| **Total Inter-Substation Links** | **318** | Pre-computed high/sub-transmission electrical links |
-| **Level 1 Verified (`L1_VERIFIED`)** | **228** ($71.7\%$) | Dual-endpoint TNEB circuit confirmation + geometric polygon containment or co-located switchyard |
-| ↳ *Polygon Containment (`polygon_containment`)* | *88* | Feeder vector endpoint strictly enclosed in recipient switchyard polygon (`ST_Contains == TRUE`) |
-| ↳ *Co-located Switchyard (`collocated_switchyard`)* | *88* | Dual-voltage stations on shared campus (e.g., 230kV to 110kV / 110kV to 33kV) |
-| **Level 2 Probable (`L2_PROBABLE`)** | **90** ($28.3\%$) | Step-down compatible ($110\text{kV} \rightarrow 33\text{kV}$) within urban proximity ($\le 8.5\text{km}$), advisory only |
-| **Level 3 Unverified (`L3_UNVERIFIED`)** | **0** ($0.0\%$) | Strictly suppressed and excluded from production datasets |
+| Metric | Production Count | Percentage | Criteria / Engineering Justification |
+| :--- | :--- | :--- | :--- |
+| **Total Substations** | **286** | — | All 400kV, 230kV, 110kV, and 33kV stations across 5 circles |
+| **Total Inter-Substation Links** | **318** | **100.0%** | All pre-computed high-voltage & sub-transmission electrical paths |
+| **Level 1: Verified (`L1_VERIFIED`)** | **228** | **71.7%** | Dual-endpoint TNEB circuit confirmation, polygon containment, or co-located switchyard |
+| ↳ *Polygon Containment (`polygon_containment`)* | *88* | *27.7%* | Feeder vector endpoint strictly enclosed in recipient switchyard polygon (`ST_Contains == TRUE`) |
+| ↳ *Co-located Switchyard (`collocated_switchyard`)* | *88* | *27.7%* | Dual-voltage transformation yards on shared physical campus (distance $\le 150\text{m}$) |
+| ↳ *Surveyed EHT Line (`surveyed_eht_line`)* | *52* | *16.3%* | 400kV and 230kV bulk transmission corridors mapped between named gantry terminal substations |
+| **Level 2: Probable (`L2_PROBABLE`)** | **90** | **28.3%** | Nominal step-down compatible ($110\text{kV} \rightarrow 33\text{kV}$) within urban cable reach ($\le 8.5\text{km}$), advisory only |
+| **Level 3: Unverified (`L3_UNVERIFIED`)** | **0** | **0.0%** | Strictly suppressed and excluded from production datasets |
+
+*(Note: $88 + 88 + 52 = 228$ Level 1 links; $228 \text{ (L1)} + 90 \text{ (L2)} = 318 \text{ total links}$. Full mutually exclusive reconciliation).*
 
 #### TypeScript Type Contract in Application Runtime (`src/types/tneb.ts`):
 
 ```typescript
 export type GridConfidenceTier = 'L1_VERIFIED' | 'L2_PROBABLE' | 'L3_UNVERIFIED';
 
-export type ScopingRole = 'PHYSICAL_TOPOLOGY_ONLY' | 'ADVISORY_ONLY' | 'EXCLUDED';
+export type ScopingRole = 'PHYSICAL_TOPOLOGY_ONLY' | 'ADVISORY_ONLY';
 
 export type VerificationMethod = 
   | 'polygon_containment'
+  | 'dual_endpoint_circuit'
   | 'collocated_switchyard'
   | 'nominal_stepdown_proximity'
+  | 'surveyed_eht_line'
   | 'jurisdictional_office';
 
 export interface PrecomputedConnection {
   id: string;
   name: string;
   type: 'substation' | 'section';
-  relation: 'incoming_feeder' | 'outgoing_feeder' | 'campus_section';
+  relation: 'incoming_feeder' | 'outgoing_feeder' | 'colocated_stepdown' | 'campus_section';
   label: string;
   voltage?: string;
   tier?: 'bulk' | 'subtransmission' | 'distribution';
