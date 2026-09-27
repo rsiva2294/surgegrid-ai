@@ -860,6 +860,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   }, [showConnections, selectedSubstation, electricalNodes]);
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || '';
 
   const activeMapStyle = useMemo(() => {
     if (isSatellite) return [];
@@ -898,7 +899,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           internalUsageAttributionIds: ['gmp_git_agentskills_v1'],
           gestureHandling: 'greedy',
           mapTypeId: isSatellite ? 'hybrid' : 'roadmap',
-          styles: activeMapStyle,
+          ...(mapId ? { mapId } : { styles: activeMapStyle }),
           disableDefaultUI: false,
           zoomControl: true,
           mapTypeControl: false,
