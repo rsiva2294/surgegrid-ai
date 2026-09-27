@@ -732,6 +732,21 @@ const NO_POI_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
 
 let isGoogleMapsLoaderConfigured = false;
 
+/**
+ * Strict Chennai Metropolitan Area (CMA) District & Peri-Urban EHT Corridor Bounds
+ * North: Minjur / Alamathy 400kV (13.40 N)
+ * South: Kelambakkam / Siruseri / Chengalpattu border (12.75 N)
+ * West: Sriperumbudur 400kV corridor (79.85 E)
+ * East: Bay of Bengal coastline (80.38 E)
+ * Clamps viewport to prevent out-of-district tile requests and unnecessary network bandwidth.
+ */
+export const CHENNAI_METRO_BOUNDS: google.maps.LatLngBoundsLiteral = {
+  north: 13.4000,
+  south: 12.7500,
+  west: 79.8500,
+  east: 80.3800
+};
+
 export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   theme,
   substations,
@@ -871,8 +886,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         const map = new google.maps.Map(mapContainerRef.current, {
           center: { lat: 13.0500, lng: 80.2300 },
           zoom: 11.5,
-          minZoom: 9.8,
-          maxZoom: 18,
+          minZoom: 10.5,
+          maxZoom: 18.0,
+          restriction: {
+            latLngBounds: CHENNAI_METRO_BOUNDS,
+            strictBounds: true
+          },
+          // Google Maps Platform Skill usage tracking & attribution
+          internalUsageAttributionIds: ['gmp_git_agentskills_v1'],
           gestureHandling: 'greedy',
           mapTypeId: isSatellite ? 'hybrid' : 'roadmap',
           styles: activeMapStyle,
@@ -882,7 +903,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           streetViewControl: false,
           fullscreenControl: false,
           backgroundColor: theme === 'light' ? '#f8fafc' : '#0b0f19'
-        });
+        } as google.maps.MapOptions);
 
         mapRef.current = map;
         setMapLoaded(true);
