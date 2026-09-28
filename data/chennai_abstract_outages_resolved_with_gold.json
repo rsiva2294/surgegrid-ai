@@ -1,25 +1,28 @@
 {
   "metadata": {
-    "generatedAt": "2026-09-28T13:06:45.034Z",
+    "generatedAt": "2026-09-28T17:03:14.000Z",
     "evaluation": "WITH_GOLD_REGISTRY",
     "stats": {
       "total": 792,
-      "verifiedAsset": 765,
-      "verifiedAssetPct": "96.6%",
-      "localizedArea": 16,
-      "localizedAreaPct": "2.0%",
-      "unmapped": 11,
-      "unmappedPct": "1.4%",
-      "totalMapped": 781,
-      "totalMappedPct": "98.6%",
+      "verifiedAsset": 786,
+      "verifiedAssetPct": "99.2%",
+      "localizedArea": 2,
+      "localizedAreaPct": "0.3%",
+      "unmapped": 4,
+      "unmappedPct": "0.5%",
+      "totalMapped": 788,
+      "totalMappedPct": "99.5%",
       "avgConfidence": "0.855",
       "methods": {
-        "guarded_section_match": 36,
+        "guarded_section_match": 23,
         "guarded_substation_match": 619,
-        "gold_registry_verified": 100,
-        "unmapped_advisory_notice": 11,
+        "gold_registry_verified": 99,
+        "unmapped_advisory_notice": 4,
         "locality_gazetteer": 14,
-        "guarded_feeder_match": 12
+        "guarded_feeder_match": 12,
+        "section_to_ss_registry_mapping": 9,
+        "gemini_reasoned_asset_recovery": 6,
+        "gemini_fuzzy_catalog_match": 6
       }
     }
   },
@@ -1818,10 +1821,15 @@
       },
       "latitude": 12.91271,
       "longitude": 80.18895,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "110/33-11KV TNSCB SS",
+        "code": "9412",
+        "lat": 12.87981925,
+        "lng": 80.20557215
+      },
       "resolvedSection": {
         "name": "AE/O&M/MEDAVAKKAM",
         "code": "249",
@@ -2294,10 +2302,15 @@
       },
       "latitude": 13.08796,
       "longitude": 80.28176,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "33/11 KV WEST GEORGE TOWN SS",
+        "code": "2217",
+        "lat": 13.09392258,
+        "lng": 80.27688042
+      },
       "resolvedSection": {
         "name": "AE/O&M/PARKTOWN",
         "code": "195",
@@ -3334,10 +3347,15 @@
       },
       "latitude": 13.08555,
       "longitude": 80.25011,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "33/11 KV KILPAUK SS",
+        "code": "2218",
+        "lat": 13.08621004,
+        "lng": 80.24509365
+      },
       "resolvedSection": {
         "name": "AE/O&M/NAMMALWARPET",
         "code": "150",
@@ -3550,12 +3568,17 @@
         "detected_feeder": "Causing Feeder",
         "detected_section": null
       },
-      "latitude": 12.98027,
-      "longitude": 80.22091,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "gold_registry_verified",
-      "confidence": 1,
-      "resolvedSubstation": null,
+      "latitude": 12.97994495,
+      "longitude": 80.2206696,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_fuzzy_catalog_match",
+      "confidence": 0.98,
+      "resolvedSubstation": {
+        "name": "110/33-11 KV VELACHERRY SS",
+        "code": "9424",
+        "lat": 12.97994495,
+        "lng": 80.2206696
+      },
       "resolvedSection": {
         "name": "AE/O&M/VELACHERY CENTRAL",
         "code": "288",
@@ -3571,7 +3594,13 @@
         "component_type": "Current Transformer (CT)",
         "failure_mode": "Fire / Explosion",
         "grid_severity": "MODERATE_FEEDER_TRIP",
-        "explanation": "A fire incident involving a 110 kV R-Phase Current Transformer (CT) at the 110 kV Velachery SS caused a feeder trip on the Taramani\u2013Velachery Feeder."
+        "explanation": "A fire incident involving a 110 kV R-Phase Current Transformer (CT) at the 110 kV Velachery SS caused a feeder trip on the Taramani\u2013Velachery Feeder.",
+        "fuzzy_match": {
+          "outage_id": "2026-07-13_10-36-47_3940122351497372738_18",
+          "matched_ss_name": "110/33-11 KV VELACHERRY SS",
+          "confidence": 0.98,
+          "reasoning": "The area 'Velachery' and the previous substation name 'VELACHERY SS' directly map to the verified catalog entry '110/33-11 KV VELACHERRY SS'."
+        }
       }
     },
     {
@@ -12319,10 +12348,15 @@
       },
       "latitude": 13.01015,
       "longitude": 80.24726,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "230/110KV THARAMANI SS",
+        "code": "9226",
+        "lat": 12.97634141,
+        "lng": 80.2406828
+      },
       "resolvedSection": {
         "name": "AE/O&M/THARAMANI",
         "code": "220",
@@ -14073,12 +14107,17 @@
         "detected_feeder": "33 kV Bus-1 Fault in 33 kV Bus Coupler Feeder",
         "detected_section": null
       },
-      "latitude": 13.09527,
-      "longitude": 80.16491,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
-      "confidence": 0.8,
-      "resolvedSubstation": null,
+      "latitude": 13.07669412,
+      "longitude": 80.27257119,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_fuzzy_catalog_match",
+      "confidence": 0.98,
+      "resolvedSubstation": {
+        "name": "110/33/11 KV CHINDHATRIPET SS",
+        "code": "2201",
+        "lat": 13.07669412,
+        "lng": 80.27257119
+      },
       "resolvedSection": {
         "name": "AE/IE CENTRAL",
         "code": "429",
@@ -14094,7 +14133,13 @@
         "component_type": "Busbar Coupler",
         "failure_mode": "Supply Interruption",
         "grid_severity": "MAJOR_SUBSTATION_CORE",
-        "explanation": "A 33 kV Bus-1 fault occurred in the 33 kV Bus Coupler Feeder of the 110 kV Chindadiripet SS, impacting the substation core."
+        "explanation": "A 33 kV Bus-1 fault occurred in the 33 kV Bus Coupler Feeder of the 110 kV Chindadiripet SS, impacting the substation core.",
+        "fuzzy_match": {
+          "outage_id": "2026-08-12_13-15-36_3961945557572925315_80",
+          "matched_ss_name": "110/33/11 KV CHINDHATRIPET SS",
+          "confidence": 0.98,
+          "reasoning": "The area 'Chindadiripet' and the previous substation name 'CHINTADRIPET SS' are a close spelling match to '110/33/11 KV CHINDHATRIPET SS'."
+        }
       }
     },
     {
@@ -18806,12 +18851,17 @@
         "detected_feeder": "11 kV local Feeder",
         "detected_section": null
       },
-      "latitude": 12.98027,
-      "longitude": 80.22091,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
-      "confidence": 0.8,
-      "resolvedSubstation": null,
+      "latitude": 12.97994495,
+      "longitude": 80.2206696,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_fuzzy_catalog_match",
+      "confidence": 0.98,
+      "resolvedSubstation": {
+        "name": "110/33-11 KV VELACHERRY SS",
+        "code": "9424",
+        "lat": 12.97994495,
+        "lng": 80.2206696
+      },
       "resolvedSection": {
         "name": "AE/O&M/VELACHERY CENTRAL",
         "code": "288",
@@ -18827,7 +18877,13 @@
         "component_type": "Distribution Transformer",
         "failure_mode": "Component Replacement / Maintenance",
         "grid_severity": "MINOR_STREET_FAULT",
-        "explanation": "A 500 kVA Distribution Transformer (DT) replacement work was carried out on the 11 kV local Feeder of 110 kV Velachery SS."
+        "explanation": "A 500 kVA Distribution Transformer (DT) replacement work was carried out on the 11 kV local Feeder of 110 kV Velachery SS.",
+        "fuzzy_match": {
+          "outage_id": "2026-08-26_10-54-25_3972021355151504651_11",
+          "matched_ss_name": "110/33-11 KV VELACHERRY SS",
+          "confidence": 0.98,
+          "reasoning": "The area 'Velachery' and the previous substation name 'VELACHERY SS' directly map to the verified catalog entry '110/33-11 KV VELACHERRY SS'."
+        }
       }
     },
     {
@@ -19067,12 +19123,17 @@
         "detected_feeder": null,
         "detected_section": "LV- 2 PT Failure in Pulianthoppu SS of Pulianthoppu Section"
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
+      "latitude": 13.099108,
+      "longitude": 80.26867827,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_fuzzy_catalog_match",
+      "confidence": 0.98,
+      "resolvedSubstation": {
+        "name": "33/11 KV PULIANTHOPE SS",
+        "code": "2214",
+        "lat": 13.099108,
+        "lng": 80.26867827
+      },
       "resolvedSection": null,
       "gemini_enrichment": {
         "outage_id": "2026-08-26_10-54-25_3972021355151504651_30",
@@ -19082,7 +19143,13 @@
         "component_type": "Potential Transformer (PT)",
         "failure_mode": "Supply Interruption",
         "grid_severity": "MODERATE_FEEDER_TRIP",
-        "explanation": "A LV- 2 Potential Transformer (PT) failure occurred at Pulianthoppu SS within the Pulianthoppu Section."
+        "explanation": "A LV- 2 Potential Transformer (PT) failure occurred at Pulianthoppu SS within the Pulianthoppu Section.",
+        "fuzzy_match": {
+          "outage_id": "2026-08-26_10-54-25_3972021355151504651_30",
+          "matched_ss_name": "33/11 KV PULIANTHOPE SS",
+          "confidence": 0.98,
+          "reasoning": "The area 'Pulianthoppu' and the previous substation name 'PULIANTHOPU SS' directly map to the verified catalog entry '33/11 KV PULIANTHOPE SS'."
+        }
       }
     },
     {
@@ -21823,12 +21890,17 @@
         "detected_feeder": null,
         "detected_section": null
       },
-      "latitude": 13.09594,
-      "longitude": 80.16495,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
-      "confidence": 0.8,
-      "resolvedSubstation": null,
+      "latitude": 13.17536139,
+      "longitude": 80.2717603,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_fuzzy_catalog_match",
+      "confidence": 0.7,
+      "resolvedSubstation": {
+        "name": "230/110/33/11 KV MANALI SS",
+        "code": "2119",
+        "lat": 13.17536139,
+        "lng": 80.2717603
+      },
       "resolvedSection": {
         "name": "AE/IE SOUTH",
         "code": "035",
@@ -21844,7 +21916,13 @@
         "component_type": "Transmission Source Grid",
         "failure_mode": "Supply Interruption",
         "grid_severity": "CRITICAL_GRID_COLLAPSE",
-        "explanation": "Incoming supply failure at the 230 kV KITS SS affected 9 Nos. of 11 kV Feeders and 2 Nos. of 33 kV Feeders, indicating a critical grid collapse."
+        "explanation": "Incoming supply failure at the 230 kV KITS SS affected 9 Nos. of 11 kV Feeders and 2 Nos. of 33 kV Feeders, indicating a critical grid collapse.",
+        "fuzzy_match": {
+          "outage_id": "2026-09-05_10-28-42_3979256170552629363_22",
+          "matched_ss_name": "230/110/33/11 KV MANALI SS",
+          "confidence": 0.7,
+          "reasoning": "The previous substation name 'KITS SS' is not in the catalog. However, the cause mentions '230 kV KITS SS' and '230/110/33/11 KV MANALI SS' is a high-voltage substation in the Chennai area. Without further information, this is a tentative match based on voltage and proximity."
+        }
       }
     },
     {
@@ -24929,12 +25007,17 @@
         "detected_feeder": "11kV CBH Feeder",
         "detected_section": null
       },
-      "latitude": 13.17217,
-      "longitude": 80.30574,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
-      "confidence": 0.8,
-      "resolvedSubstation": null,
+      "latitude": 13.14435139,
+      "longitude": 80.29481034,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_fuzzy_catalog_match",
+      "confidence": 0.98,
+      "resolvedSubstation": {
+        "name": "33/11 KV TOLLGATE SS",
+        "code": "2101",
+        "lat": 13.14435139,
+        "lng": 80.29481034
+      },
       "resolvedSection": {
         "name": "AE/O&M/THIRUVOTRIYUR O&M",
         "code": "021",
@@ -24950,7 +25033,13 @@
         "component_type": "Feeder Breaker",
         "failure_mode": "Overload Trip",
         "grid_severity": "MODERATE_FEEDER_TRIP",
-        "explanation": "A feeder trip occurred on the 11kV CBH Feeder of 33/11 kV Tolaget SS, likely due to an overload condition."
+        "explanation": "A feeder trip occurred on the 11kV CBH Feeder of 33/11 kV Tolaget SS, likely due to an overload condition.",
+        "fuzzy_match": {
+          "outage_id": "2026-09-12_14-39-43_3984455943450709410_17",
+          "matched_ss_name": "33/11 KV TOLLGATE SS",
+          "confidence": 0.98,
+          "reasoning": "The previous substation name 'TOLAGET SS' is a clear spelling variant of '33/11 KV TOLLGATE SS', and the area 'Thiruvotriyur' is consistent with its location."
+        }
       }
     },
     {
@@ -28163,10 +28252,15 @@
       },
       "latitude": 13.08555,
       "longitude": 80.25011,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "33/11 KV KILPAUK SS",
+        "code": "2218",
+        "lat": 13.08621004,
+        "lng": 80.24509365
+      },
       "resolvedSection": {
         "name": "AE/O&M/NAMMALWARPET",
         "code": "150",
@@ -28970,10 +29064,15 @@
       },
       "latitude": 12.9963,
       "longitude": 80.08679,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "KAVANUR 33/11KV SS",
+        "code": "9261",
+        "lat": 12.99634725,
+        "lng": 80.08685256
+      },
       "resolvedSection": {
         "name": "AE/O&M/KUNDRATHUR RURAL",
         "code": "305",
@@ -31980,10 +32079,15 @@
       },
       "latitude": 13.08555,
       "longitude": 80.25011,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "33/11 KV KILPAUK SS",
+        "code": "2218",
+        "lat": 13.08621004,
+        "lng": 80.24509365
+      },
       "resolvedSection": {
         "name": "AE/O&M/NAMMALWARPET",
         "code": "150",
@@ -32659,10 +32763,15 @@
       },
       "latitude": 13.05272,
       "longitude": 80.20338,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "110/33 KV GIS SS",
+        "code": "2248",
+        "lat": 13.06769429,
+        "lng": 80.27634015
+      },
       "resolvedSection": {
         "name": "AE/O&M/SALIGRAMAM",
         "code": "278",
@@ -33221,10 +33330,15 @@
       },
       "latitude": 12.91271,
       "longitude": 80.18895,
-      "mappingStatus": "LOCALIZED_AREA",
-      "resolutionMethod": "guarded_section_match",
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "section_to_ss_registry_mapping",
       "confidence": 0.8,
-      "resolvedSubstation": null,
+      "resolvedSubstation": {
+        "name": "33/11 KV KILPAUK SS",
+        "code": "2218",
+        "lat": 13.08621004,
+        "lng": 80.24509365
+      },
       "resolvedSection": {
         "name": "AE/O&M/MEDAVAKKAM",
         "code": "249",

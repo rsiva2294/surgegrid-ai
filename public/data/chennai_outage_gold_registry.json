@@ -1,10 +1,10 @@
 {
   "version": "2.0.0",
-  "updatedAt": "2026-09-28T22:30:00.000Z",
+  "updatedAt": "2026-09-28T17:03:14.000Z",
   "description": "Master Gold Standard Outage Registry v2.0: Canonical switchyard, section, and feeder mapping signatures for Chennai and CMA",
   "counts": {
     "verifiedInstances": 2298,
-    "uniqueSignatures": 2785,
+    "uniqueSignatures": 2789,
     "gazetteerLocalities": 10
   },
   "localities": {
@@ -31891,6 +31891,54 @@
       "secLng": 80.28183105,
       "verifiedAt": "2026-09-28",
       "source": "gemini_abstract_enrichment"
+    },
+    "1103311kvvelacherryss|taramanivelacheryfeeder": {
+      "ssName": "110/33-11 KV VELACHERRY SS",
+      "ssCode": "9424",
+      "ssLat": 12.97994495,
+      "ssLng": 80.2206696,
+      "secName": "AE/IE CENTRAL",
+      "secCode": "429",
+      "secLat": 12.97994495,
+      "secLng": 80.2206696,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_fuzzy_catalog_match"
+    },
+    "1103311kvchindhatripetss|buscouplerfeeder": {
+      "ssName": "110/33/11 KV CHINDHATRIPET SS",
+      "ssCode": "2201",
+      "ssLat": 13.07669412,
+      "ssLng": 80.27257119,
+      "secName": "AE/O&M/PUDUPET",
+      "secCode": "113",
+      "secLat": 13.07669412,
+      "secLng": 80.27257119,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_fuzzy_catalog_match"
+    },
+    "1103311kvvelacherryss|localfeeder": {
+      "ssName": "110/33-11 KV VELACHERRY SS",
+      "ssCode": "9424",
+      "ssLat": 12.97994495,
+      "ssLng": 80.2206696,
+      "secName": "AE/IE CENTRAL",
+      "secCode": "429",
+      "secLat": 12.97994495,
+      "secLng": 80.2206696,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_fuzzy_catalog_match"
+    },
+    "3311kvtollgatess|cbhfeeder": {
+      "ssName": "33/11 KV TOLLGATE SS",
+      "ssCode": "2101",
+      "ssLat": 13.14435139,
+      "ssLng": 80.29481034,
+      "secName": "AE/O&M/KALADIPET",
+      "secCode": "005",
+      "secLat": 13.14435139,
+      "secLng": 80.29481034,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_fuzzy_catalog_match"
     }
   }
 }
