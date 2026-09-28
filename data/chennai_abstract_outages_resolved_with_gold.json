@@ -556,7 +556,17 @@
       "resolutionMethod": "unmapped_advisory_notice",
       "confidence": 0,
       "resolvedSubstation": null,
-      "resolvedSection": null
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-07-05_10-03-41_3934307478465120487_8",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Muthialpet Section",
+        "component_type": "Underground Cable",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A cable fault occurred in Angappan Street within the Muthialpet Section, indicating a localized underground cable issue."
+      }
     },
     {
       "outage_id": "2026-07-05_10-03-41_3934307478465120487_12",
@@ -1526,6 +1536,16 @@
         "circle": "CENTRAL",
         "lat": 13.03155,
         "lng": 80.2619
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-07-07_10-41-35_3935776111452117454_10",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Mandaveli Section",
+        "component_type": "Underground Cable",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A main cable fault was reported in Adam Street within the Mandaveli Section, suggesting an underground cable failure."
       }
     },
     {
@@ -1808,6 +1828,16 @@
         "circle": "CHENNAI SOUTH 2",
         "lat": 12.91271,
         "lng": 80.18895
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-07-07_10-41-35_3935776111452117454_48",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Medavakkam Section",
+        "component_type": "Other",
+        "failure_mode": "Overload Trip",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "An LT Fuse Blown event in Cali Nayagam Street within the Medavakkam Section indicates a localized overload or fault condition."
       }
     },
     {
@@ -2274,6 +2304,16 @@
         "circle": "CENTRAL",
         "lat": 13.08796,
         "lng": 80.28176
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-07-10_11-13-58_3937966738910728822_4",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Park Town Section",
+        "component_type": "Underground Cable",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A cable fault in Tharappa and Rasappa Streets within the Park Town Section points to an underground cable issue."
       }
     },
     {
@@ -2353,6 +2393,16 @@
         "circle": "CENTRAL",
         "lat": 13.04684,
         "lng": 80.24893
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-07-10_11-13-58_3937966738910728822_8",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Teynampet Section",
+        "component_type": "Distribution Transformer",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A transformer cable fault in OS Garden within the Teynampet Section indicates an issue with the cable connecting to a distribution transformer."
       }
     },
     {
@@ -2672,7 +2722,7 @@
       "duration": "30 Mins",
       "duration_minutes": 30,
       "power_status": "Restored",
-      "cause": "Jumper Cut in 11 kV Ayyappan Kovil Feeder of 110/33–11 kV Manali SS",
+      "cause": "Jumper Cut in 11 kV Ayyappan Kovil Feeder of 110/33\u201311 kV Manali SS",
       "parsed_entities": {
         "detected_substation": "11 kV Manali SS",
         "detected_feeder": "11 kV Ayyappan Kovil Feeder",
@@ -2893,13 +2943,28 @@
         "detected_feeder": "33KV Mudichoor Feeder",
         "detected_section": null
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
-      "resolvedSection": null
+      "latitude": 12.92904242,
+      "longitude": 80.1016689,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_reasoned_asset_recovery",
+      "confidence": 0.95,
+      "resolvedSubstation": {
+        "name": "110/11 PUDUTHANGAL SS",
+        "code": "9404",
+        "lat": 12.92904242,
+        "lng": 80.1016689
+      },
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-07-11_09-48-16_3938648377970102125_12",
+        "substation_name": "PUDHUTHANGAL SS",
+        "feeder_name": "Mudichoor Feeder",
+        "section_name": null,
+        "component_type": "Other",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A fault occurred in the 33KV Mudichoor Feeder originating from the 110kV Pudhuthangal SS, causing a feeder trip."
+      }
     },
     {
       "outage_id": "2026-07-11_09-48-16_3938648377970102125_29",
@@ -3279,6 +3344,16 @@
         "circle": "CENTRAL",
         "lat": 13.08555,
         "lng": 80.25011
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-07-13_10-36-47_3940122351497372738_1",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Nammalwarpet Section",
+        "component_type": "Pillar Box",
+        "failure_mode": "Component Replacement / Maintenance",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "Pillar maintenance was conducted in Nammalwarpet Section affecting SS Puram A Block, indicating planned work on a pillar box."
       }
     },
     {
@@ -3469,7 +3544,7 @@
       "duration": "29 Mins",
       "duration_minutes": 29,
       "power_status": "Restored",
-      "cause": "110 kV R-Phase Current Transformer (CT) Fire Causing Feeder Trip in the 110 kV Taramani–Velachery Feeder of 110 kV Velachery SS",
+      "cause": "110 kV R-Phase Current Transformer (CT) Fire Causing Feeder Trip in the 110 kV Taramani\u2013Velachery Feeder of 110 kV Velachery SS",
       "parsed_entities": {
         "detected_substation": "110 kV Velachery SS",
         "detected_feeder": "Causing Feeder",
@@ -3487,6 +3562,16 @@
         "circle": "CHENNAI SOUTH 2",
         "lat": 12.98027,
         "lng": 80.22091
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-07-13_10-36-47_3940122351497372738_18",
+        "substation_name": "VELACHERY SS",
+        "feeder_name": "Taramani\u2013Velachery Feeder",
+        "section_name": null,
+        "component_type": "Current Transformer (CT)",
+        "failure_mode": "Fire / Explosion",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A fire incident involving a 110 kV R-Phase Current Transformer (CT) at the 110 kV Velachery SS caused a feeder trip on the Taramani\u2013Velachery Feeder."
       }
     },
     {
@@ -11038,13 +11123,28 @@
         "detected_feeder": "11 kV Ayanar Feeder",
         "detected_section": null
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
-      "resolvedSection": null
+      "latitude": 13.01039429,
+      "longitude": 80.11422644,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_reasoned_asset_recovery",
+      "confidence": 0.95,
+      "resolvedSubstation": {
+        "name": "33/11 KV KOVOOR SS",
+        "code": "9238",
+        "lat": 13.01039429,
+        "lng": 80.11422644
+      },
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-08-06_11-30-47_3957544141022446127_50",
+        "substation_name": "KOVOOR SS",
+        "feeder_name": "Ayanar Feeder",
+        "section_name": null,
+        "component_type": "Feeder Breaker",
+        "failure_mode": "Flashover / Sparking",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A feeder breaker experienced flashing at the 33/11 kV Kovur SS on the 11 kV Ayanar Feeder."
+      }
     },
     {
       "outage_id": "2026-08-07_10-48-41_3958247728723704259_2",
@@ -12229,6 +12329,16 @@
         "circle": "CHENNAI SOUTH 2",
         "lat": 13.01015,
         "lng": 80.24726
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-08-09_10-06-38_3959676119804981926_8",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Tharamani Section",
+        "component_type": "Distribution Transformer",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A 250 kVA Distribution Transformer (DT) failed at Pragati Apartment, Kottur, under the Tharamani Section."
       }
     },
     {
@@ -12806,13 +12916,28 @@
         "detected_feeder": "33 kV side Feeder",
         "detected_section": null
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
-      "resolvedSection": null
+      "latitude": 13.099108,
+      "longitude": 80.26867827,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_reasoned_asset_recovery",
+      "confidence": 0.95,
+      "resolvedSubstation": {
+        "name": "33/11 KV PULIANTHOPE SS",
+        "code": "2214",
+        "lat": 13.099108,
+        "lng": 80.26867827
+      },
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-08-10_09-51-56_3960393490215604861_3",
+        "substation_name": "PULIANTHOPE SS",
+        "feeder_name": "HV-I / 33 kV side Feeder",
+        "section_name": null,
+        "component_type": "Other",
+        "failure_mode": "Fire / Explosion",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A fire occurred at the 33 kV side termination of the HV-I / 33 kV side Feeder of Pulianthoppu SS."
+      }
     },
     {
       "outage_id": "2026-08-10_09-51-56_3960393490215604861_6",
@@ -13960,6 +14085,16 @@
         "circle": "WEST",
         "lat": 13.09527,
         "lng": 80.16491
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-08-12_13-15-36_3961945557572925315_80",
+        "substation_name": "CHINTADRIPET SS",
+        "feeder_name": "Bus Coupler Feeder",
+        "section_name": null,
+        "component_type": "Busbar Coupler",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MAJOR_SUBSTATION_CORE",
+        "explanation": "A 33 kV Bus-1 fault occurred in the 33 kV Bus Coupler Feeder of the 110 kV Chindadiripet SS, impacting the substation core."
       }
     },
     {
@@ -14076,7 +14211,17 @@
       "resolutionMethod": "unmapped_advisory_notice",
       "confidence": 0,
       "resolvedSubstation": null,
-      "resolvedSection": null
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-08-13_10-54-56_3962599532529903660_2",
+        "substation_name": null,
+        "feeder_name": "Pallavakkam Feeder",
+        "section_name": "Pallavakkam Section",
+        "component_type": "Underground Cable",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A 240 sq. mm Cable Fault occurred in the 11 kV Pallavakkam Feeder within the Pallavakkam Section."
+      }
     },
     {
       "outage_id": "2026-08-13_10-54-56_3962599532529903660_3",
@@ -14100,13 +14245,28 @@
         "detected_feeder": null,
         "detected_section": null
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
-      "resolvedSection": null
+      "latitude": 13.05165976,
+      "longitude": 80.11230455,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_reasoned_asset_recovery",
+      "confidence": 0.95,
+      "resolvedSubstation": {
+        "name": "33/11 KV POONAMALLEE SS",
+        "code": "9210",
+        "lat": 13.05165976,
+        "lng": 80.11230455
+      },
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-08-13_10-54-56_3962599532529903660_3",
+        "substation_name": "POONAMALLEE SS",
+        "feeder_name": null,
+        "section_name": null,
+        "component_type": "Transmission Source Grid",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MAJOR_SUBSTATION_CORE",
+        "explanation": "Incoming supply failure from Thiruverkaadu to the 33 kV Poonthamallee SS affected 4 Nos. of 11 kV Feeders, indicating a transmission source issue."
+      }
     },
     {
       "outage_id": "2026-08-13_10-54-56_3962599532529903660_9",
@@ -18658,6 +18818,16 @@
         "circle": "CHENNAI SOUTH 2",
         "lat": 12.98027,
         "lng": 80.22091
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-08-26_10-54-25_3972021355151504651_11",
+        "substation_name": "VELACHERY SS",
+        "feeder_name": "local Feeder",
+        "section_name": null,
+        "component_type": "Distribution Transformer",
+        "failure_mode": "Component Replacement / Maintenance",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A 500 kVA Distribution Transformer (DT) replacement work was carried out on the 11 kV local Feeder of 110 kV Velachery SS."
       }
     },
     {
@@ -18903,7 +19073,17 @@
       "resolutionMethod": "unmapped_advisory_notice",
       "confidence": 0,
       "resolvedSubstation": null,
-      "resolvedSection": null
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-08-26_10-54-25_3972021355151504651_30",
+        "substation_name": "PULIANTHOPU SS",
+        "feeder_name": null,
+        "section_name": "Pulianthoppu Section",
+        "component_type": "Potential Transformer (PT)",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A LV- 2 Potential Transformer (PT) failure occurred at Pulianthoppu SS within the Pulianthoppu Section."
+      }
     },
     {
       "outage_id": "2026-08-26_10-54-25_3972021355151504651_37",
@@ -21655,6 +21835,16 @@
         "circle": "WEST",
         "lat": 13.09594,
         "lng": 80.16495
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-05_10-28-42_3979256170552629363_22",
+        "substation_name": "KITS SS",
+        "feeder_name": null,
+        "section_name": null,
+        "component_type": "Transmission Source Grid",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "CRITICAL_GRID_COLLAPSE",
+        "explanation": "Incoming supply failure at the 230 kV KITS SS affected 9 Nos. of 11 kV Feeders and 2 Nos. of 33 kV Feeders, indicating a critical grid collapse."
       }
     },
     {
@@ -24751,6 +24941,16 @@
         "circle": "NORTH",
         "lat": 13.17217,
         "lng": 80.30574
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-12_14-39-43_3984455943450709410_17",
+        "substation_name": "TOLAGET SS",
+        "feeder_name": "CBH Feeder",
+        "section_name": null,
+        "component_type": "Feeder Breaker",
+        "failure_mode": "Overload Trip",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A feeder trip occurred on the 11kV CBH Feeder of 33/11 kV Tolaget SS, likely due to an overload condition."
       }
     },
     {
@@ -27798,7 +27998,17 @@
       "resolutionMethod": "unmapped_advisory_notice",
       "confidence": 0,
       "resolvedSubstation": null,
-      "resolvedSection": null
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-09-17_12-49-41_2100847209705349298_53",
+        "substation_name": "VEERAPURAM SS",
+        "feeder_name": null,
+        "section_name": null,
+        "component_type": "Transmission Source Grid",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MAJOR_SUBSTATION_CORE",
+        "explanation": "Failure of the 110 kV incoming supply from 230 kV Veerapuram SS indicates a major issue at the transmission source."
+      }
     },
     {
       "outage_id": "2026-09-19_13-54-22_3989506541439094420_4",
@@ -27963,6 +28173,16 @@
         "circle": "CENTRAL",
         "lat": 13.08555,
         "lng": 80.25011
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-19_13-54-22_3989506541439094420_12",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Nammalwarpet Section",
+        "component_type": "Underground Cable",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A 4*120 sq.mm LT Cable Fault occurred in the Nammalwarpet Section, indicating an underground cable failure."
       }
     },
     {
@@ -28331,7 +28551,17 @@
       "resolutionMethod": "unmapped_advisory_notice",
       "confidence": 0,
       "resolvedSubstation": null,
-      "resolvedSection": null
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-09-19_13-54-22_3989506541439094420_44",
+        "substation_name": "THIRUPORUR SS",
+        "feeder_name": null,
+        "section_name": null,
+        "component_type": "Transmission Source Grid",
+        "failure_mode": "Supply Interruption",
+        "grid_severity": "MAJOR_SUBSTATION_CORE",
+        "explanation": "Incoming source failure at the 110 kV Thiruporur SS, originating from 230 kV Veerapuram SS, points to a transmission source issue."
+      }
     },
     {
       "outage_id": "2026-09-19_13-54-22_3989506541439094420_45",
@@ -28355,13 +28585,28 @@
         "detected_feeder": "33 kV Bypass Feeder",
         "detected_section": null
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
-      "resolvedSection": null
+      "latitude": 13.06936071,
+      "longitude": 80.11512007,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_reasoned_asset_recovery",
+      "confidence": 0.95,
+      "resolvedSubstation": {
+        "name": "110/33-11 KV THIRUVERKADU SS",
+        "code": "9334",
+        "lat": 13.06936071,
+        "lng": 80.11512007
+      },
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-09-19_13-54-22_3989506541439094420_45",
+        "substation_name": "THIRUVERKADU SS",
+        "feeder_name": "Thiruverkaadu Feeder",
+        "section_name": null,
+        "component_type": "Other",
+        "failure_mode": "Cable Joint / Insulation Fault",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A 33 kV Bypass Feeder Fault occurred in the Thiruverkaadu Feeder of Thiruverkaadu SS, indicating a cable fault on a bypass line."
+      }
     },
     {
       "outage_id": "2026-09-20_11-49-42_3990168574199323316_11",
@@ -28735,6 +28980,16 @@
         "circle": "CHENNAI SOUTH 1",
         "lat": 12.9963,
         "lng": 80.08679
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-20_11-49-42_3990168574199323316_53",
+        "substation_name": null,
+        "feeder_name": "Vazhuthalambedu Feeder",
+        "section_name": null,
+        "component_type": "Other",
+        "failure_mode": "Overload Trip",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "An RYB O/L Indication on the 11 kV Vazhuthalambedu Feeder suggests an overload condition."
       }
     },
     {
@@ -28888,13 +29143,28 @@
         "detected_feeder": "11 kV Ayyapillai Feeder",
         "detected_section": null
       },
-      "latitude": null,
-      "longitude": null,
-      "mappingStatus": "UNMAPPED_ADVISORY",
-      "resolutionMethod": "unmapped_advisory_notice",
-      "confidence": 0,
-      "resolvedSubstation": null,
-      "resolvedSection": null
+      "latitude": 13.08789525,
+      "longitude": 80.28183105,
+      "mappingStatus": "VERIFIED_ASSET",
+      "resolutionMethod": "gemini_reasoned_asset_recovery",
+      "confidence": 0.95,
+      "resolvedSubstation": {
+        "name": "33/11 KV FLOWER BAZAAR SS",
+        "code": "2209",
+        "lat": 13.08789525,
+        "lng": 80.28183105
+      },
+      "resolvedSection": null,
+      "gemini_enrichment": {
+        "outage_id": "2026-09-21_13-55-17_3990956558997778515_27",
+        "substation_name": "FLOWER BAZAAR SS",
+        "feeder_name": "Ayyapillai Feeder",
+        "section_name": null,
+        "component_type": "Overhead Jumper",
+        "failure_mode": "Mechanical Jumper Cut",
+        "grid_severity": "MODERATE_FEEDER_TRIP",
+        "explanation": "A jumper cut occurred on the 11 kV Ayyapillai Feeder of 33/11 kV Flower Bazar SS, indicating a mechanical failure of an overhead jumper."
+      }
     },
     {
       "outage_id": "2026-09-21_13-55-17_3990956558997778515_52",
@@ -31720,6 +31990,16 @@
         "circle": "CENTRAL",
         "lat": 13.08555,
         "lng": 80.25011
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-26_17-36-56_3994691995805375898_6",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Nammalwarpet Section",
+        "component_type": "Underground Cable",
+        "failure_mode": "Fire / Explosion",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "A 4 Core Cable Fire occurred in SS Puram A Block of Nammalwarpet Section, indicating a fire incident in an underground cable."
       }
     },
     {
@@ -32389,6 +32669,16 @@
         "circle": "CHENNAI SOUTH 1",
         "lat": 13.05272,
         "lng": 80.20338
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-27_09-38-20_3995175881895289222_6",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Saligramam Section",
+        "component_type": "Other",
+        "failure_mode": "Component Replacement / Maintenance",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "Pillar Heightening Work was conducted in Saligramam Section, indicating planned maintenance on a pillar."
       }
     },
     {
@@ -32941,6 +33231,16 @@
         "circle": "CHENNAI SOUTH 2",
         "lat": 12.91271,
         "lng": 80.18895
+      },
+      "gemini_enrichment": {
+        "outage_id": "2026-09-28_12-17-58_3995981002531126369_1",
+        "substation_name": null,
+        "feeder_name": null,
+        "section_name": "Nammalwarpet Section",
+        "component_type": "Ring Main Unit (RMU)",
+        "failure_mode": "Overload Trip",
+        "grid_severity": "MINOR_STREET_FAULT",
+        "explanation": "An RMU Trip occurred in Medavakkam 2nd Street, within the Nammalwarpet Section, suggesting an overload or fault within the Ring Main Unit."
       }
     },
     {

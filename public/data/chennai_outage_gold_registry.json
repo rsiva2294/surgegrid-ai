@@ -1,10 +1,10 @@
 {
   "version": "2.0.0",
-  "updatedAt": "2026-09-28T20:10:00.000Z",
+  "updatedAt": "2026-09-28T22:30:00.000Z",
   "description": "Master Gold Standard Outage Registry v2.0: Canonical switchyard, section, and feeder mapping signatures for Chennai and CMA",
   "counts": {
     "verifiedInstances": 2298,
-    "uniqueSignatures": 2776,
+    "uniqueSignatures": 2785,
     "gazetteerLocalities": 10
   },
   "localities": {
@@ -31783,6 +31783,114 @@
       "secLng": 80.22091,
       "verifiedAt": "2026-09-28",
       "source": "abstract_breakdown_audit"
+    },
+    "11011puduthangalss|mudichoorfeeder": {
+      "ssName": "110/11 PUDUTHANGAL SS",
+      "ssCode": "9404",
+      "ssLat": 12.92904242,
+      "ssLng": 80.1016689,
+      "secName": "AE/O&M/TAMBARAM",
+      "secCode": "250",
+      "secLat": 12.92904242,
+      "secLng": 80.1016689,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "mudichoor|aeomtambaram|11011puduthangalss|mudichoorfeeder": {
+      "ssName": "110/11 PUDUTHANGAL SS",
+      "ssCode": "9404",
+      "ssLat": 12.92904242,
+      "ssLng": 80.1016689,
+      "secName": "AE/O&M/TAMBARAM",
+      "secCode": "250",
+      "secLat": 12.92904242,
+      "secLng": 80.1016689,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "3311kvkovoorss|ayanarfeeder": {
+      "ssName": "33/11 KV KOVOOR SS",
+      "ssCode": "9238",
+      "ssLat": 13.01039429,
+      "ssLng": 80.11422644,
+      "secName": "AE/VEERAPURAM",
+      "secCode": "461",
+      "secLat": 13.01039429,
+      "secLng": 80.11422644,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "kovur|aeveerapuram|3311kvkovoorss|ayanarfeeder": {
+      "ssName": "33/11 KV KOVOOR SS",
+      "ssCode": "9238",
+      "ssLat": 13.01039429,
+      "ssLng": 80.11422644,
+      "secName": "AE/VEERAPURAM",
+      "secCode": "461",
+      "secLat": 13.01039429,
+      "secLng": 80.11422644,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "3311kvpulianthopess|hvi33kvsidefeeder": {
+      "ssName": "33/11 KV PULIANTHOPE SS",
+      "ssCode": "2214",
+      "ssLat": 13.099108,
+      "ssLng": 80.26867827,
+      "secName": "AEE/O&M/EGMORE",
+      "secCode": "142",
+      "secLat": 13.099108,
+      "secLng": 80.26867827,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "pulianthoppu|aeeomegmore|3311kvpulianthopess|hvi33kvsidefeeder": {
+      "ssName": "33/11 KV PULIANTHOPE SS",
+      "ssCode": "2214",
+      "ssLat": 13.099108,
+      "ssLng": 80.26867827,
+      "secName": "AEE/O&M/EGMORE",
+      "secCode": "142",
+      "secLat": 13.099108,
+      "secLng": 80.26867827,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "1103311kvthiruverkaduss|thiruverkaadufeeder": {
+      "ssName": "110/33-11 KV THIRUVERKADU SS",
+      "ssCode": "9334",
+      "ssLat": 13.06936071,
+      "ssLng": 80.11512007,
+      "secName": "AE/O&M",
+      "secCode": "000",
+      "secLat": 13.06936071,
+      "secLng": 80.11512007,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "3311kvflowerbazaarss|ayyapillaifeeder": {
+      "ssName": "33/11 KV FLOWER BAZAAR SS",
+      "ssCode": "2209",
+      "ssLat": 13.08789525,
+      "ssLng": 80.28183105,
+      "secName": "AE/O&M/MR NAGAR",
+      "secCode": "019",
+      "secLat": 13.08789525,
+      "secLng": 80.28183105,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
+    },
+    "flowerbazar|aeommrnagar|3311kvflowerbazaarss|ayyapillaifeeder": {
+      "ssName": "33/11 KV FLOWER BAZAAR SS",
+      "ssCode": "2209",
+      "ssLat": 13.08789525,
+      "ssLng": 80.28183105,
+      "secName": "AE/O&M/MR NAGAR",
+      "secCode": "019",
+      "secLat": 13.08789525,
+      "secLng": 80.28183105,
+      "verifiedAt": "2026-09-28",
+      "source": "gemini_abstract_enrichment"
     }
   }
 }
