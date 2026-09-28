@@ -37,6 +37,9 @@ interface TnebGridMapProps {
   onSelectSubstation: (ss: TnebSubstation | null) => void;
   onSelectSection: (sec: TnebSection | null) => void;
   liveWeather?: LiveWeatherConditions | null;
+  onRequestDirective?: (ss: TnebSubstation) => void;
+  disasterScenario?: DisasterScenario;
+  onDisasterScenarioChange?: (scenario: DisasterScenario) => void;
 }
 
 export interface ConnectedGridNode {
@@ -66,7 +69,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   selectedSection,
   onSelectSubstation,
   onSelectSection,
-  liveWeather
+  liveWeather,
+  onRequestDirective,
+  disasterScenario: controlledDisasterScenario,
+  onDisasterScenarioChange
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -96,10 +102,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [showConnections, setShowConnections] = useState(false);
   const [selectedFeeder, setSelectedFeeder] = useState<FeederDetail | null>(null);
-  const [isLayersExpanded, setIsLayersExpanded] = useState(() => {
-    return typeof window !== 'undefined' ? window.innerWidth >= 768 : true;
-  });
-  const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
+  const [isLayersExpanded, setIsLayersExpanded] = useState(false);
+  const [internalDisasterScenario, setInternalDisasterScenario] = useState<DisasterScenario>('NORMAL');
+  const disasterScenario = controlledDisasterScenario ?? internalDisasterScenario;
+  const setDisasterScenario = onDisasterScenarioChange ?? setInternalDisasterScenario;
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
@@ -1067,6 +1073,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         disasterScenario={disasterScenario}
         liveOutages={liveOutages}
         isLight={isLight}
+        onRequestDirective={onRequestDirective}
       />
     </div>
   );

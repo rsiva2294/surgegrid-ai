@@ -2,13 +2,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
-import { RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
+import { RefreshCw, Cpu, Sun, Moon, Sparkles } from 'lucide-react';
 import {
   fetchLiveWeatherConditions,
   type LiveWeatherConditions,
   DEFAULT_CHENNAI_LAT,
   DEFAULT_CHENNAI_LNG
 } from './services/liveWeatherService';
+import { Button } from './components/ui/button';
+import { TacticalCommandModal } from './components/Map/TacticalCommandModal';
+import {
+  generateGeminiStatutoryDirective,
+  type TacticalDirectivePlan
+} from './services/geminiDirectiveService';
+import type { DisasterScenario } from './components/Map/DisasterCockpitBar';
 
 export default function App() {
   const [gridData, setGridData] = useState<ChennaiGridData | null>(null);
@@ -16,6 +23,11 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [liveWeather, setLiveWeather] = useState<LiveWeatherConditions | null>(null);
   const [isLoadingWeather, setIsLoadingWeather] = useState(false);
+
+  const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
+  const [isDirectiveModalOpen, setIsDirectiveModalOpen] = useState(false);
+  const [activeDirective, setActiveDirective] = useState<TacticalDirectivePlan | null>(null);
+  const [isLoadingDirective, setIsLoadingDirective] = useState(false);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('sg_theme') as 'light' | 'dark') || 'light';
@@ -67,6 +79,32 @@ export default function App() {
     localStorage.setItem('sg_theme', next);
   };
 
+  const handleOpenCityDirective = async () => {
+    setIsDirectiveModalOpen(true);
+    setIsLoadingDirective(true);
+    try {
+      const plan = await generateGeminiStatutoryDirective(null, disasterScenario, liveWeather);
+      setActiveDirective(plan);
+    } catch (e) {
+      console.error('Failed to generate city directive:', e);
+    } finally {
+      setIsLoadingDirective(false);
+    }
+  };
+
+  const handleOpenSubstationDirective = async (ss: TnebSubstation) => {
+    setIsDirectiveModalOpen(true);
+    setIsLoadingDirective(true);
+    try {
+      const plan = await generateGeminiStatutoryDirective(ss, disasterScenario, liveWeather);
+      setActiveDirective(plan);
+    } catch (e) {
+      console.error('Failed to generate substation directive:', e);
+    } finally {
+      setIsLoadingDirective(false);
+    }
+  };
+
   const isLight = theme === 'light';
 
   return (
@@ -113,6 +151,19 @@ export default function App() {
 
         {/* Telemetry Controls & Live Weather */}
         <div className="flex items-center gap-2 sm:gap-3 text-xs">
+          {/* Statutory Incident Action Plan (IAP) Trigger */}
+          <Button
+            variant="directive"
+            size="sm"
+            onClick={handleOpenCityDirective}
+            className="flex items-center gap-1.5 shadow-sm font-bold text-xs px-2.5 sm:px-3 py-1.5 h-auto cursor-pointer"
+            title="Generate Statutory Incident Action Plan quoting TNSDMA 2023 & TANGEDCO 2017"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse shrink-0" />
+            <span className="hidden sm:inline">Statutory Action Plan</span>
+            <span className="sm:hidden">Action Plan</span>
+          </Button>
+
           {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
           {liveWeather && (
             <div className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border transition-all ${
@@ -229,9 +280,21 @@ export default function App() {
             onSelectSubstation={setSelectedSubstation}
             onSelectSection={setSelectedSection}
             liveWeather={liveWeather}
+            disasterScenario={disasterScenario}
+            onDisasterScenarioChange={setDisasterScenario}
+            onRequestDirective={handleOpenSubstationDirective}
           />
         )}
       </main>
+
+      {/* Statutory Incident Action Plan Modal */}
+      <TacticalCommandModal
+        isOpen={isDirectiveModalOpen}
+        onClose={() => setIsDirectiveModalOpen(false)}
+        directive={activeDirective}
+        isLoading={isLoadingDirective}
+        isLight={isLight}
+      />
     </div>
   );
 }
