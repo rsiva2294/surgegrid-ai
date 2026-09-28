@@ -66,18 +66,70 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
           <span className={`font-bold text-xs truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-            Asset Health & 90-Day Log
+            Operational Resiliency & 90-Day Log
           </span>
         </div>
 
-        <span
-          className={`px-2 py-0.5 rounded-md font-mono font-bold text-xs border whitespace-nowrap shrink-0 ${
-            gradeColors[profile.healthGrade]
+        <div className="flex items-center gap-1 shrink-0">
+          <span
+            className={`px-2 py-0.5 rounded-md font-mono font-bold text-xs border whitespace-nowrap ${
+              gradeColors[profile.healthGrade]
+            }`}
+          >
+            GRADE {profile.healthGrade} • {profile.healthScore}/100 {gradeLabels[profile.healthGrade]}
+          </span>
+        </div>
+      </div>
+
+      {/* Real-time Dispatch Status Alert Banner */}
+      {profile.dispatchStatus && profile.dispatchStatus !== 'NORMAL' && (
+        <div
+          className={`py-1.5 px-2.5 rounded-lg border text-[11px] font-medium flex items-center justify-between gap-1.5 transition-all ${
+            profile.dispatchStatus === 'ACTIVE_TRIP'
+              ? isLight
+                ? 'bg-rose-50 border-rose-200 text-rose-900 ring-1 ring-rose-300/40'
+                : 'bg-rose-950/40 border-rose-800/60 text-rose-300 ring-1 ring-rose-500/20'
+              : profile.dispatchStatus === 'EMERGENCY_REPAIR'
+              ? isLight
+                ? 'bg-amber-50 border-amber-200 text-amber-900'
+                : 'bg-amber-950/40 border-amber-800/60 text-amber-300'
+              : profile.dispatchStatus === 'PLANNED_MAINTENANCE'
+              ? isLight
+                ? 'bg-sky-50 border-sky-200 text-sky-900'
+                : 'bg-sky-950/40 border-sky-800/60 text-sky-300'
+              : isLight
+              ? 'bg-slate-100 border-slate-300 text-slate-700'
+              : 'bg-slate-900 border-slate-700 text-slate-300'
           }`}
         >
-          GRADE {profile.healthGrade} • {profile.healthScore}/100 {gradeLabels[profile.healthGrade]}
-        </span>
-      </div>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span
+              className={`w-2 h-2 rounded-full shrink-0 ${
+                profile.dispatchStatus === 'ACTIVE_TRIP'
+                  ? 'bg-rose-500 animate-ping'
+                  : profile.dispatchStatus === 'EMERGENCY_REPAIR'
+                  ? 'bg-amber-500 animate-pulse'
+                  : 'bg-sky-500'
+              }`}
+            />
+            <span className="font-bold truncate">
+              {profile.dispatchStatus === 'ACTIVE_TRIP'
+                ? `🔴 Active Interruption (${profile.activeLiveTripCount} Live Breakdown${(profile.activeLiveTripCount || 0) > 1 ? 's' : ''})`
+                : profile.dispatchStatus === 'EMERGENCY_REPAIR'
+                ? '🟡 Emergency Repair in Progress'
+                : profile.dispatchStatus === 'PLANNED_MAINTENANCE'
+                ? '🔵 Scheduled Maintenance Active'
+                : '⚪ Civic Safety De-energization'}
+            </span>
+          </div>
+
+          {profile.assetDurabilityScore !== undefined && profile.assetDurabilityScore !== profile.healthScore && (
+            <span className="text-[10px] opacity-80 shrink-0 font-mono">
+              90d Durability: {profile.assetDurabilityScore}/100
+            </span>
+          )}
+        </div>
+      )}
 
       {/* 3-Month Breakdown Metric Badges */}
       <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
@@ -138,7 +190,11 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
           </strong>
           {profile.cleanStreakDays !== undefined && (
             <span className={`text-[9px] block mt-0.5 opacity-80 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-              {profile.cleanStreakDays}d clean run
+              {profile.cleanStreakDays === 0 && (profile.activeLiveTripCount || 0) > 0 ? (
+                <span className="text-rose-500 font-bold">⚠️ Broken today</span>
+              ) : (
+                `${profile.cleanStreakDays}d clean run`
+              )}
             </span>
           )}
         </div>

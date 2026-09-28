@@ -1,0 +1,521 @@
+{
+  "generatedAt": "2026-09-28T13:06:45.042Z",
+  "totalEvaluated": 792,
+  "withoutGoldRegistry": {
+    "total": 792,
+    "verifiedAsset": 765,
+    "verifiedAssetPct": "96.6%",
+    "localizedArea": 16,
+    "localizedAreaPct": "2.0%",
+    "unmapped": 11,
+    "unmappedPct": "1.4%",
+    "totalMapped": 781,
+    "totalMappedPct": "98.6%",
+    "avgConfidence": "0.836",
+    "methods": {
+      "guarded_section_match": 38,
+      "guarded_substation_match": 717,
+      "unmapped_advisory_notice": 11,
+      "locality_gazetteer": 14,
+      "guarded_feeder_match": 12
+    }
+  },
+  "withGoldRegistry": {
+    "total": 792,
+    "verifiedAsset": 765,
+    "verifiedAssetPct": "96.6%",
+    "localizedArea": 16,
+    "localizedAreaPct": "2.0%",
+    "unmapped": 11,
+    "unmappedPct": "1.4%",
+    "totalMapped": 781,
+    "totalMappedPct": "98.6%",
+    "avgConfidence": "0.855",
+    "methods": {
+      "guarded_section_match": 36,
+      "guarded_substation_match": 619,
+      "gold_registry_verified": 100,
+      "unmapped_advisory_notice": 11,
+      "locality_gazetteer": 14,
+      "guarded_feeder_match": 12
+    }
+  },
+  "rescuedCount": 100,
+  "rescuedSamples": [
+    {
+      "outage_id": "2026-07-05_10-03-41_3934307478465120487_2",
+      "area": "Mudichur",
+      "cause": "Damaged Pole Replacement in 11 KV Varatharajapuram Feeder of 110/33-11KV Mudichur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV MUDICHUR SS",
+        "section": "AE/O&M/MUDICHUR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV MUDICHUR SS",
+        "section": "AE/O&M/MUDICHUR"
+      }
+    },
+    {
+      "outage_id": "2026-07-05_10-03-41_3934307478465120487_5",
+      "area": "Mudichur",
+      "cause": "Feeder Fault in 33KV Varadarajapuram Feeder of 110/33-11KV Mudichur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV MUDICHUR SS",
+        "section": "AE/O&M/MUDICHUR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV MUDICHUR SS",
+        "section": "AE/O&M/MUDICHUR"
+      }
+    },
+    {
+      "outage_id": "2026-07-06_11-26-22_3935073871380812638_13",
+      "area": "Kilpauk",
+      "cause": "Feeder Triped in NCTPS Line of 230 KV Kilpauk SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV KILPAUK SS",
+        "section": "AE/O&M/KILPAUK"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV KILPAUK SS",
+        "section": "AE/O&M/KILPAUK"
+      }
+    },
+    {
+      "outage_id": "2026-07-06_11-26-22_3935073871380812638_22",
+      "area": "Kilpauk",
+      "cause": "Due to 110 KV Kilpauk Water Works Incoming Supply Failure, 33 KV Kilpauk SS Incoming Supply Failed in 33 KV Kilpauk SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV KILPAUK SS",
+        "section": "AE/O&M/KILPAUK"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV KILPAUK SS",
+        "section": "AE/O&M/KILPAUK"
+      }
+    },
+    {
+      "outage_id": "2026-07-10_11-13-58_3937966738910728822_30",
+      "area": "Tondiarpet",
+      "cause": "Jumper Cut in 11 kV Ayyappan Kovil Feeder of 110/33–11 kV Manali SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "400KV MANALI GIS SS",
+        "section": "AE/O&M/TONDIARPET O&M"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "400KV MANALI GIS SS",
+        "section": "AE/O&M/MANALI"
+      }
+    },
+    {
+      "outage_id": "2026-07-11_09-48-16_3938648377970102125_6",
+      "area": "Kumaraguru Avenue",
+      "cause": "Cable Fault in 11kV Neelankarai Feeder of 110/33/11 Perungudi SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33/11 KV PERUNGUDI SS",
+        "section": null
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "110/33/11 KV PERUNGUDI SS",
+        "section": "AE/O&M/NEELANKARAI"
+      }
+    },
+    {
+      "outage_id": "2026-07-11_09-48-16_3938648377970102125_7",
+      "area": "Thiruvanmiyur",
+      "cause": "240 sq mm Cable Fault in 11 kV Pallavakkam Feeder of 33/11 kV Thiruvanmiyur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV THIRUVANMIYUR SS",
+        "section": "AE/O&M/THIRUVANMIYUR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV THIRUVANMIYUR SS",
+        "section": "AE/O&M/THIRUVANMIYUR"
+      }
+    },
+    {
+      "outage_id": "2026-07-12_10-20-33_3939389401302455832_1",
+      "area": "Thiruvanmiyur",
+      "cause": "Pillar Cable Fire in the 11 kV Samy Nathan Feeder of the 33/11 kV Thiruvanmiyur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV THIRUVANMIYUR SS",
+        "section": "AE/O&M/THIRUVANMIYUR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV THIRUVANMIYUR SS",
+        "section": "AE/O&M/THIRUVANMIYUR"
+      }
+    },
+    {
+      "outage_id": "2026-07-13_10-36-47_3940122351497372738_18",
+      "area": "Velachery",
+      "cause": "110 kV R-Phase Current Transformer (CT) Fire Causing Feeder Trip in the 110 kV Taramani–Velachery Feeder of 110 kV Velachery SS",
+      "without_gold": {
+        "status": "LOCALIZED_AREA",
+        "method": "guarded_section_match",
+        "confidence": 0.8,
+        "substation": null,
+        "section": "AE/O&M/VELACHERY CENTRAL"
+      },
+      "with_gold": {
+        "status": "LOCALIZED_AREA",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": null,
+        "section": "AE/O&M/VELACHERY CENTRAL"
+      }
+    },
+    {
+      "outage_id": "2026-07-17_11-27-14_3943046838903573037_2",
+      "area": "Palavakkam",
+      "cause": "Cable Fault in 11kV Sangam Colony Feeder of 33/11kV Kottivakkam SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV KOTTIVAKKAM  SS",
+        "section": "AE/O&M/PALAVAKKAM"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV KOTTIVAKKAM  SS",
+        "section": "AE/O&M/PALAVAKKAM"
+      }
+    },
+    {
+      "outage_id": "2026-07-14_11-26-37_3940872205911668559_20",
+      "area": "Anna Salai",
+      "cause": "Disc Failure in 11 kV Krishnankoil Feeder of 33/11 kV East GT SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV EAST GEORGE TOWN SS",
+        "section": "AE/O&M/ANNA SALAI"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV EAST GEORGE TOWN SS",
+        "section": "AE/O&M/ANNA SALAI"
+      }
+    },
+    {
+      "outage_id": "2026-07-18_10-34-06_3943744879184799783_3",
+      "area": "Kanathur",
+      "cause": "First Point Jumper Fault in 11kV Kanathur Feeder of 33/11kV Hiranandani SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV HIRANANDANI SS",
+        "section": null
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV HIRANANDANI SS",
+        "section": null
+      }
+    },
+    {
+      "outage_id": "2026-07-18_10-34-06_3943744879184799783_8",
+      "area": "Anna Nagar",
+      "cause": "Feeder Fault in 11kV Poombuhar Feeder of 110/33/11kV Anna Nagar SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33/11 KV ANNA NAGAR SS",
+        "section": "AE/O&M/MR NAGAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV 6TH AVENUE SS",
+        "section": "AE/O&M/MR NAGAR"
+      }
+    },
+    {
+      "outage_id": "2026-07-22_11-24-52_3946669530470886885_4",
+      "area": "Poombughar Nagar",
+      "cause": "240 LT Cable Punch in 11 kV Kolathur Feeder (Shanthi Nagar) of 33/11 kV New Kolathur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV NEW KOLATHUR SS",
+        "section": "AE/O&M/MR NAGAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV NEW KOLATHUR SS",
+        "section": "AE/O&M/MR NAGAR"
+      }
+    },
+    {
+      "outage_id": "2026-07-22_11-24-52_3946669530470886885_5",
+      "area": "Poombukar Nagar",
+      "cause": "120 sq. mm. Cable Punch in 11kV Kolathur Feeder (Bharathi Street) of 33/11kV New Kolathur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV NEW KOLATHUR SS",
+        "section": "AE/O&M/MR NAGAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV NEW KOLATHUR SS",
+        "section": "AE/O&M/MR NAGAR"
+      }
+    },
+    {
+      "outage_id": "2026-07-22_11-24-52_3946669530470886885_29",
+      "area": "Porur",
+      "cause": "Jumper Cut in 11kV Ramapuram Feeder of 110/33-11kV Porur SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33-11 KV PORUR SS",
+        "section": "AE/O&M/PORUR RURAL"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV KOVOOR SS",
+        "section": "AE/O&M/PORUR RURAL"
+      }
+    },
+    {
+      "outage_id": "2026-07-23_12-58-37_3947441492365309200_10",
+      "area": "Adyar",
+      "cause": "Feeder Failure in Rangarajapuram Feeder of 110 kV Anna Centenary Library SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110 KV ANNA CENTENARY LIBRARY",
+        "section": "AE/O&M/ADYAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "110 KV ANNA CENTENARY LIBRARY",
+        "section": "AE/O&M/CHINNAMALAI"
+      }
+    },
+    {
+      "outage_id": "2026-07-25_10-11-30_3948806933654438230_1",
+      "area": "Anna Nagar",
+      "cause": "DT Failure in Vanagaram Feeder of 110/33-11 kV Maduravoyal SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV MADURAVOYAL SS",
+        "section": "AE/O&M/MR NAGAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV MADURAVOYAL SS",
+        "section": "AE/ALAPAKKAM"
+      }
+    },
+    {
+      "outage_id": "2026-07-25_10-11-30_3948806933654438230_10",
+      "area": "Adyar",
+      "cause": "Feeder Trip in 11 kV JR Nagar Feeder of 11/33 kV Besant Nagar SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33-11 KV KK NAGAR SS",
+        "section": "AE/O&M/ADYAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "110/33-11 KV KK NAGAR SS",
+        "section": "AE/O&M/ADYAR"
+      }
+    },
+    {
+      "outage_id": "2026-07-25_10-11-30_3948806933654438230_18",
+      "area": "KK Nagar",
+      "cause": "Feeder Failure in KK Salai Feeder of 110/33/11 kV KK Nagar SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33-11 KV KK NAGAR SS",
+        "section": "AE/ANNAI NAGAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV RAMASAMY SALAI SS",
+        "section": "AE/ANNAI NAGAR"
+      }
+    },
+    {
+      "outage_id": "2026-07-26_11-28-37_3949570520060677054_1",
+      "area": "Kandanchavadi",
+      "cause": "Cable Fault in 11kV Kandanchavadi Feeder of 110/33-11kV Perungudi SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33/11 KV PERUNGUDI SS",
+        "section": null
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "110/33/11 KV PERUNGUDI SS",
+        "section": null
+      }
+    },
+    {
+      "outage_id": "2026-07-27_11-33-22_3950297682904486622_16",
+      "area": "Adyar",
+      "cause": "Feeder Failure in 11 kV Kamarajar Avenue Feeder of 33/11 kV Gandhi Nagar SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33-11 KV KK NAGAR SS",
+        "section": "AE/O&M/ADYAR"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11KV GANDHI NAGAR SS",
+        "section": "AE/O&M/MR NAGAR"
+      }
+    },
+    {
+      "outage_id": "2026-07-29_11-07-37_3951734281550862186_11",
+      "area": "Perambur",
+      "cause": "Jumper Cut in 11 kV Mettu Street Feeder of 110/33/11 kV Kilpauk Water Works SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV KILPAUK SS",
+        "section": "AE/O&M/PERAMBUR WEST"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV KILPAUK SS",
+        "section": "AE/O&M/AYANAVARAM"
+      }
+    },
+    {
+      "outage_id": "2026-08-02_09-47-14_3954592921681057856_23",
+      "area": "Tondiarpet",
+      "cause": "Feeder Fault in VOC Feeder of 33 kV Tondiarpet SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "33/11 KV TONDIARPET SS",
+        "section": "AE/O&M/TONDIARPET O&M"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "230/110 KV AMBATTUR IIIRD MAIN ROAD",
+        "section": "AE/O&M/TONDIARPET O&M"
+      }
+    },
+    {
+      "outage_id": "2026-08-04_09-36-17_3956036962717182812_14",
+      "area": "Annanagar",
+      "cause": "Disc Failure in 11 kV Shenoy Nagar Feeder of 110/33/11 kV Annanagar SS",
+      "without_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "guarded_substation_match",
+        "confidence": 0.85,
+        "substation": "110/33/11 KV ANNA NAGAR SS",
+        "section": "AE/ANNANAGAR CENTRAL"
+      },
+      "with_gold": {
+        "status": "VERIFIED_ASSET",
+        "method": "gold_registry_verified",
+        "confidence": 1,
+        "substation": "33/11 KV 6TH AVENUE SS",
+        "section": "AE/O&M/MR NAGAR"
+      }
+    }
+  ]
+}

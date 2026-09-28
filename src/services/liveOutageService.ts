@@ -3,6 +3,7 @@ import type { TnebSubstation, TnebSection } from '../types/tneb';
 
 export interface LiveOutage {
   id?: string;
+  fingerprint?: string;
   outageFingerprint?: string;
   date: string;
   town?: string;
@@ -23,7 +24,12 @@ export interface LiveOutage {
   confidence?: number;
   resolutionMethod?: string;
   resolvedSubstationName?: string;
+  resolvedSubstationCode?: string;
   resolvedSectionName?: string;
+  resolvedSectionCode?: string;
+  mappingStatus?: 'VERIFIED_ASSET' | 'LOCALIZED_AREA' | 'UNMAPPED_ADVISORY';
+  upstreamLatitude?: number | null;
+  upstreamLongitude?: number | null;
   raw_extraction?: {
     substation_english?: string;
     section_english?: string;
@@ -56,15 +62,37 @@ export interface LiveOutageResponse {
 
 const IDB_LIVE_OUTAGES_KEY = 'sg_live_chennai_outages_v1';
 
-// Live endpoint with same-origin routing (proxied in dev via Vite, routed in prod via Firebase Hosting function rewrite)
-// Direct Cloud Storage CDN endpoints for raw notices (zero proxy, zero rate limits, sub-100ms)
-const GCS_TWITTER_NOTICES_URL = 'https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/outages/twitter_notices_resolved.json';
-const GCS_STATEWIDE_NOTICES_URL = 'https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/outages/statewide.json';
-const API_URL = '/api/v2/outages';
+// Bounding box for Greater Chennai Metropolitan Grid
+export const CHENNAI_BBOX = {
+  minLat: 12.70,
+  maxLat: 13.40,
+  minLng: 79.90,
+  maxLng: 80.40
+};
+
+export function isInsideChennaiBbox(lat?: number | null, lng?: number | null): boolean {
+  if (lat == null || lng == null || isNaN(lat) || isNaN(lng)) return false;
+  return lat >= CHENNAI_BBOX.minLat && lat <= CHENNAI_BBOX.maxLat &&
+         lng >= CHENNAI_BBOX.minLng && lng <= CHENNAI_BBOX.maxLng;
+}
+
+export function getDistanceMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+const PRIMARY_API_URL = 'https://outage.nammamap.in/api/v2/outages';
+const RELATIVE_API_URL = '/api/v2/outages';
 
 /**
- * Fetch raw live notices in Chennai directly from GCS / Firestore feeds with Stale-While-Revalidate.
- * Strips any upstream resolution to guarantee 100% sovereign SurgeGrid grid topology mapping.
+ * Fetch raw live notices in Chennai directly from the CDN-cached REST API with Stale-While-Revalidate.
+ * Stores raw entities and upstream hints, preparing them for SurgeGrid's Sovereign Resolution Gate.
  */
 export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
   // 1. Try local cache first for instant offline/low-bandwidth resilience
@@ -75,47 +103,81 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
     console.warn('[LiveOutageService] IndexedDB read failed:', err);
   }
 
-  // 2. Fetch fresh raw telemetry directly from GCS
+  // 2. Fetch fresh raw telemetry directly from REST API (CDN edge-cached, zero Firestore quota)
   try {
-    let rawItems: LiveOutage[] = [];
-    try {
-      const [twRes, swRes] = await Promise.all([
-        fetch(GCS_TWITTER_NOTICES_URL).then(r => (r.ok ? r.json() : [])),
-        fetch(GCS_STATEWIDE_NOTICES_URL).then(r => (r.ok ? r.json() : []))
-      ]);
-      const twList = Array.isArray(twRes) ? twRes : [];
-      const swList = Array.isArray(swRes) ? swRes : [];
-      rawItems = [...twList, ...swList];
-    } catch (gcsErr) {
-      console.warn('[LiveOutageService] Direct GCS fetch failed, attempting API fallback:', gcsErr);
-      const res = await fetch(API_URL, { headers: { Accept: 'application/json' } });
-      if (res.ok) {
-        const json = await res.json();
-        rawItems = json.data || [];
+    let rawItems: any[] = [];
+    const endpoints = [
+      // If dev, prefer Vite proxy to avoid localhost CORS nuances; in prod, direct apex CDN
+      import.meta.env.DEV ? RELATIVE_API_URL : PRIMARY_API_URL,
+      PRIMARY_API_URL,
+      RELATIVE_API_URL
+    ];
+    const uniqueEndpoints = Array.from(new Set(endpoints));
+
+    for (const url of uniqueEndpoints) {
+      try {
+        const res = await fetch(url, { headers: { Accept: 'application/json' } });
+        if (res.ok) {
+          const json = await res.json();
+          if (json && Array.isArray(json.data)) {
+            rawItems = json.data;
+            break;
+          }
+        }
+      } catch (err) {
+        console.warn(`[LiveOutageService] Failed to fetch from ${url}:`, err);
       }
     }
 
     if (rawItems.length > 0) {
-      // Filter for Chennai metropolitan area
+      // Gate 1: Geographic & Circle Guardrail for Greater Chennai
       const chennaiRaw = rawItems.filter(o => {
         const d = (o.district || '').toLowerCase();
         const c = (o.circle || '').toLowerCase();
         const t = (o.town || '').toLowerCase();
         const sub = (o.substation || '').toLowerCase();
-        return d === 'chennai' || c.includes('chennai') || t.includes('chennai') || sub.includes('anna nagar') || sub.includes('chennai');
+        const sec = (o.section || '').toLowerCase();
+        const areas = (o.raw_extraction?.affected_areas_english || []).join(' ').toLowerCase();
+
+        // 1. Upstream coordinate check within Chennai metropolitan bbox
+        if (isInsideChennaiBbox(o.latitude, o.longitude)) return true;
+
+        // 2. District & Circle Administrative check
+        if (d.includes('chennai') || c.includes('chennai')) return true;
+        if (d.includes('kanchipuram') || c.includes('kanchipuram')) return true;
+        if (d.includes('chengalpattu') || c.includes('chengalpattu')) return true;
+        if (d.includes('tiruvallur') || c.includes('tiruvallur') || d.includes('thiruvallur')) return true;
+
+        // 3. Known Chennai urban core and suburban localities
+        const CHENNAI_KEYWORDS = [
+          'anna nagar', 'adyar', 'mylapore', 't.nagar', 'tnagar', 'guindy', 'velachery',
+          'tambaram', 'chromepet', 'porur', 'ambattur', 'avadi', 'madhavaram', 'royapuram',
+          'perambur', 'kilpauk', 'egmore', 'triplicane', 'saidapet', 'thiruvanmiyur',
+          'sholinganallur', 'pallavaram', 'medavakkam', 'alandur', 'ennore', 'ennoor',
+          'tondiarpet', 'kolathur', 'kodambakkam', 'vadapalani', 'nungambakkam', 'teynampet'
+        ];
+        return CHENNAI_KEYWORDS.some(k => 
+          t.includes(k) || sub.includes(k) || sec.includes(k) || areas.includes(k)
+        );
       });
 
-      // Strip upstream resolution so SurgeGrid autonomously resolves physical assets from ground truth
+      // Prepare raw extraction and preserve upstream coordinates as hints
       const autonomousOutages: LiveOutage[] = chennaiRaw.map(raw => {
         const ext = raw.raw_extraction || {};
         return {
           ...raw,
-          // Strip upstream resolution and approximate coordinates
+          // Preserve upstream suggestion as reference hints
+          upstreamLatitude: raw.latitude ?? null,
+          upstreamLongitude: raw.longitude ?? null,
+          // Strip raw lat/lng so SurgeGrid's sovereign gate is the authoritative mapper
           latitude: null,
           longitude: null,
           resolvedSubstationName: undefined,
+          resolvedSubstationCode: undefined,
           resolvedSectionName: undefined,
+          resolvedSectionCode: undefined,
           resolutionMethod: undefined,
+          mappingStatus: undefined,
           // Feed pristine raw extraction strings
           substation: ext.substation_english || raw.substation || '',
           section: ext.section_english || raw.section || raw.town || '',
@@ -184,11 +246,28 @@ export interface GoldRegistry {
 
 let cachedGoldRegistry: GoldRegistry | null = null;
 
+const CLOUD_GOLD_REGISTRY_URL = 'https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/registry/chennai_outage_gold_registry.json';
+
 /**
- * Loads the Gold Standard Outage Registry (1,100+ verified historical mappings)
+ * Loads the Gold Standard Outage Registry (2,770+ verified historical mappings)
+ * Fetches the live, self-enriching registry from Cloud Storage with local bundled fallback.
  */
 export async function getGoldRegistry(): Promise<GoldRegistry | null> {
   if (cachedGoldRegistry) return cachedGoldRegistry;
+  
+  // 1. Try Cloud-hosted self-enriching registry
+  try {
+    const res = await fetch(CLOUD_GOLD_REGISTRY_URL);
+    if (res.ok) {
+      cachedGoldRegistry = await res.json();
+      console.log(`[liveOutageService] Loaded Cloud Gold Registry v${cachedGoldRegistry?.version} (${cachedGoldRegistry?.counts?.uniqueSignatures} signatures)`);
+      return cachedGoldRegistry;
+    }
+  } catch (cloudErr) {
+    console.warn('[liveOutageService] Cloud registry fetch failed, falling back to local bundle:', cloudErr);
+  }
+
+  // 2. Fallback to local bundled registry
   try {
     const res = await fetch('/data/chennai_outage_gold_registry.json');
     if (res.ok) {
@@ -196,7 +275,7 @@ export async function getGoldRegistry(): Promise<GoldRegistry | null> {
       return cachedGoldRegistry;
     }
   } catch (err) {
-    console.warn('[liveOutageService] Failed to load gold registry:', err);
+    console.warn('[liveOutageService] Failed to load local gold registry:', err);
   }
   return null;
 }
@@ -313,6 +392,11 @@ export function getOutagesForSubstation(
   const ssCleanName = substation.cleanName;
 
   return allOutages.filter(outage => {
+    // 0. Direct resolved substation code match (instant O(1))
+    if (outage.resolvedSubstationCode && String(outage.resolvedSubstationCode) === ssCode) {
+      return true;
+    }
+
     // If the outage has already been resolved to this specific substation
     if (outage.resolvedSubstationName && squash(outage.resolvedSubstationName) === ssSquash) {
       return true;
@@ -416,11 +500,16 @@ export function getOutagesForSection(
 }
 
 /**
+ * Sovereign Resolution & Mapping Gate
  * Enriches raw outages with physical coordinates and verified TNEB grid entity references.
  * Executes:
  * - Tier 0: Gold Standard Registry (1,100+ verified historical signatures)
  * - Tier 1: Canonical Locality Gazetteer
- * - Tier 2: Guarded Substation & Section Token Resolution (stopping substring collisions)
+ * - Tier 2: Guarded Substation Token Resolution (against 286 authentic switchyards)
+ * - Tier 3: Guarded Section Token Resolution (against authentic AE Section Offices)
+ * - Tier 4: Guarded Feeder Token Resolution
+ * - Tier 5: Upstream Coordinate Sanity Check (strict Chennai bbox + nearest substation snap <= 2.5km)
+ * Assigns mappingStatus: VERIFIED_ASSET | LOCALIZED_AREA | UNMAPPED_ADVISORY
  */
 export function enrichLiveOutagesWithGrid(
   outages: LiveOutage[],
@@ -432,7 +521,7 @@ export function enrichLiveOutagesWithGrid(
 
   const registry = goldRegistry || cachedGoldRegistry;
 
-  return outages.map(outage => {
+  return outages.map((outage, idx) => {
     const oSub = squash(outage.substation);
     const oFdr = squash(outage.feeder);
     const oTown = squash(outage.town);
@@ -441,6 +530,7 @@ export function enrichLiveOutagesWithGrid(
     let matchedSS: TnebSubstation | undefined;
     let matchedSec: TnebSection | undefined;
     let resolutionMethod = outage.resolutionMethod;
+    let confidence = outage.confidence || 0;
 
     // 0. TIER 0: GOLD STANDARD SIGNATURE LOOKUP (100% verified historical ground truth)
     if (registry?.signatures) {
@@ -453,10 +543,11 @@ export function enrichLiveOutagesWithGrid(
                       (oSub && oFdr ? registry.signatures[subFdrKey] : undefined);
 
       if (goldHit) {
-        if (goldHit.ssCode) matchedSS = substations.find(s => s.code === goldHit.ssCode);
-        if (goldHit.secCode) matchedSec = sections.find(s => s.code === goldHit.secCode);
+        if (goldHit.ssCode) matchedSS = substations.find(s => String(s.code) === String(goldHit.ssCode));
+        if (goldHit.secCode) matchedSec = sections.find(s => String(s.code) === String(goldHit.secCode));
         if (matchedSS || matchedSec) {
           resolutionMethod = 'gold_registry_verified';
+          confidence = 1.0;
         }
       }
     }
@@ -468,10 +559,11 @@ export function enrichLiveOutagesWithGrid(
       const locKey = Object.keys(locMap).find(k => fullLocText.includes(k));
       if (locKey) {
         const entry = locMap[locKey];
-        if (!matchedSS && entry.ssCode) matchedSS = substations.find(s => s.code === entry.ssCode);
-        if (!matchedSec && entry.secCode) matchedSec = sections.find(s => s.code === entry.secCode);
+        if (!matchedSS && entry.ssCode) matchedSS = substations.find(s => String(s.code) === String(entry.ssCode));
+        if (!matchedSec && entry.secCode) matchedSec = sections.find(s => String(s.code) === String(entry.secCode));
         if (matchedSS || matchedSec) {
           resolutionMethod = resolutionMethod || 'locality_gazetteer';
+          confidence = Math.max(confidence, 0.9);
         }
       }
     }
@@ -497,6 +589,7 @@ export function enrichLiveOutagesWithGrid(
 
       if (matchedSS) {
         resolutionMethod = resolutionMethod || 'guarded_substation_match';
+        confidence = Math.max(confidence, 0.85);
       }
     }
 
@@ -510,6 +603,7 @@ export function enrichLiveOutagesWithGrid(
         );
         if (matchedSec) {
           resolutionMethod = resolutionMethod || 'guarded_section_match';
+          confidence = Math.max(confidence, 0.8);
         }
       }
     }
@@ -524,39 +618,91 @@ export function enrichLiveOutagesWithGrid(
         });
         if (matchedSS) {
           resolutionMethod = resolutionMethod || 'guarded_feeder_match';
+          confidence = Math.max(confidence, 0.8);
         }
       }
     }
 
-    // Derive physical coordinates: prioritize section office for LT faults, or substation
+    // 5. TIER 5: UPSTREAM COORDINATE SANITY CHECK & SPATIAL SNAP GATE
+    const upLat = outage.upstreamLatitude ?? outage.latitude;
+    const upLng = outage.upstreamLongitude ?? outage.longitude;
+    let validatedUpstreamCoords: { lat: number; lng: number } | null = null;
+
+    if (upLat != null && upLng != null && isInsideChennaiBbox(upLat, upLng)) {
+      validatedUpstreamCoords = { lat: upLat, lng: upLng };
+
+      // If text matching failed to find a physical substation, test nearest substation proximity
+      if (!matchedSS) {
+        let nearestSS: TnebSubstation | undefined;
+        let minDistanceM = Infinity;
+
+        for (const ss of substations) {
+          if (ss.lat != null && ss.lng != null) {
+            const dist = getDistanceMeters(upLat, upLng, ss.lat, ss.lng);
+            if (dist < minDistanceM) {
+              minDistanceM = dist;
+              nearestSS = ss;
+            }
+          }
+        }
+
+        // Snap to substation if within 2.5 km
+        if (nearestSS && minDistanceM <= 2500) {
+          matchedSS = nearestSS;
+          resolutionMethod = resolutionMethod || 'upstream_spatial_nearest_snap';
+          confidence = Math.max(confidence, 0.75);
+        }
+      }
+    }
+
+    // Derive physical coordinates: prioritize substation or section office
     const isLtFault = outage.workType?.toLowerCase().includes('lt') ||
                       outage.raw_extraction?.reason?.full_english?.toLowerCase().includes('lt');
-    let lat = outage.latitude;
-    let lng = outage.longitude;
+    let lat: number | null = null;
+    let lng: number | null = null;
 
-    if (lat == null || lng == null) {
-      if (isLtFault && matchedSec?.lat != null && matchedSec?.lng != null) {
-        lat = matchedSec.lat;
-        lng = matchedSec.lng;
-      } else if (matchedSS?.lat != null && matchedSS?.lng != null) {
-        lat = matchedSS.lat;
-        lng = matchedSS.lng;
-      } else if (matchedSec?.lat != null && matchedSec?.lng != null) {
-        lat = matchedSec.lat;
-        lng = matchedSec.lng;
-      }
+    if (isLtFault && matchedSec?.lat != null && matchedSec?.lng != null) {
+      lat = matchedSec.lat;
+      lng = matchedSec.lng;
+    } else if (matchedSS?.lat != null && matchedSS?.lng != null) {
+      lat = matchedSS.lat;
+      lng = matchedSS.lng;
+    } else if (matchedSec?.lat != null && matchedSec?.lng != null) {
+      lat = matchedSec.lat;
+      lng = matchedSec.lng;
+    } else if (validatedUpstreamCoords) {
+      lat = validatedUpstreamCoords.lat;
+      lng = validatedUpstreamCoords.lng;
+      resolutionMethod = resolutionMethod || 'upstream_spatial_area_validated';
+      confidence = Math.max(confidence, 0.6);
+    }
+
+    // Classification & Tagging
+    let mappingStatus: 'VERIFIED_ASSET' | 'LOCALIZED_AREA' | 'UNMAPPED_ADVISORY';
+    if (matchedSS) {
+      mappingStatus = 'VERIFIED_ASSET';
+    } else if (matchedSec || (lat != null && lng != null)) {
+      mappingStatus = 'LOCALIZED_AREA';
+    } else {
+      mappingStatus = 'UNMAPPED_ADVISORY';
+      resolutionMethod = resolutionMethod || 'unmapped_advisory_notice';
     }
 
     return {
       ...outage,
-      latitude: lat ?? null,
-      longitude: lng ?? null,
+      latitude: lat,
+      longitude: lng,
       substation: outage.substation || matchedSS?.name || '',
       section: outage.section || matchedSec?.name || '',
       sectionCode: outage.sectionCode || (matchedSec?.code ? String(matchedSec.code) : undefined),
+      outageFingerprint: (outage.outageFingerprint || outage.fingerprint || outage.id) ? `${outage.outageFingerprint || outage.fingerprint || outage.id}-${idx}` : `outage-${idx}`,
       resolvedSubstationName: matchedSS?.name,
+      resolvedSubstationCode: matchedSS?.code ? String(matchedSS.code) : undefined,
       resolvedSectionName: matchedSec?.name,
-      resolutionMethod: (matchedSS || matchedSec) ? (resolutionMethod || 'grid_consensus_mapped') : outage.resolutionMethod
+      resolvedSectionCode: matchedSec?.code ? String(matchedSec.code) : undefined,
+      resolutionMethod: (matchedSS || matchedSec) ? (resolutionMethod || 'grid_consensus_mapped') : (resolutionMethod || 'unmapped_advisory_notice'),
+      confidence,
+      mappingStatus
     };
   });
 }

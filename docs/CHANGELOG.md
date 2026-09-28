@@ -4,6 +4,29 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [2.0.0-cloud-gold-registry-and-automated-self-enrichment] - 2026-09-28
+
+### Added & Consolidated (Master Gold Registry v2.0 & Continuous Cloud Self-Enrichment Pipeline)
+- **Master Gold Registry v2.0 Consolidation**:
+  - Expanded signature coverage from 1,585 to **2,776 unique verified signatures (+75.1% growth)**.
+  - Sourced and verified +157 scheduled maintenance signatures from the statewide historical ledger (recovering Core City Adyar Gandhi Nagar 33/11kV SS, Kadaperi MEPZ, Anakaputhur GIS SS, Pammal, Sembakkam).
+  - Sourced and verified +1,034 breakdown signatures from TNEB division abstract reports covering core city zones (KK Nagar, Kodambakkam, Kilpauk, Egmore, Anna Nagar, Mylapore, Valasaravakkam).
+  - Enforced zero-duplicate screening across 201 candidate signatures; verified outage instances incremented to 2,298 (+107.6%).
+- **Cloud Storage Hosting (GCS)**:
+  - Hosted at `https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/registry/chennai_outage_gold_registry.json`.
+  - Configured public read access and cache-control headers (`public, max-age=3600, s-maxage=86400`).
+- **Continuous Self-Enrichment Pipeline (`nammamap-outage-aggregator`)**:
+  - Implemented `goldRegistry.ts`: Asynchronous GCS hydration, 15-minute TTL caching, atomic cloud save, and dynamic circle/district metadata resolution.
+  - Implemented `goldRegistryEnricher.ts`: 4-stage anti-poisoning filter (Chennai/CMA boundary check, physical feeder verification against `feeder_to_ss.compact.json`, $6.5\text{ km}$ spatial drift gate, and zero duplicate padding).
+  - Hooked background self-enrichment into the 15-minute scheduled portal scrape in `outageProcessor.ts`.
+  - Created 2nd Gen Firestore triggers: `onStatewideCacheGoldRegistry` and `onIncidentNoticeGoldRegistry`.
+  - Added REST endpoints in `v2/routes.ts`: `GET /api/v2/registry` and `POST /api/v2/registry/enrich`.
+- **Client Frontend Direct Ingestion (`surgegrid-ai`)**:
+  - Updated `liveOutageService.ts` to dynamically fetch from GCS with zero-latency in-memory caching and bundled local fallback.
+  - Verified with live statewide outage runs (83 active outages evaluated, zero duplicate pollution).
+
+---
+
 ## [1.8.0-direct-storage-ingestion-and-autonomous-resolution] - 2026-09-28
 
 ### Added & Modernized (Direct Storage Ingestion & 100% Autonomous Resolution Engine)

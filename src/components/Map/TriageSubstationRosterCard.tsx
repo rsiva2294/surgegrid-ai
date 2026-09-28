@@ -85,6 +85,14 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
     });
   }, [substations, crisisTriageFilter, liveOutages, substationsWithOutages]);
 
+  const verifiedOutagesCount = useMemo(() => {
+    return liveOutages.filter(o => o.mappingStatus === 'VERIFIED_ASSET').length;
+  }, [liveOutages]);
+
+  const unmappedAdvisoryCount = useMemo(() => {
+    return liveOutages.filter(o => o.mappingStatus === 'UNMAPPED_ADVISORY').length;
+  }, [liveOutages]);
+
   // 2. Local search query filtering (optional text filter within triage list)
   const displayedSubstations = useMemo(() => {
     if (!filterQuery.trim()) return matchingSubstations;
@@ -173,7 +181,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
               </span>
               <span className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold ${triageMeta.badgeBg}`}>
                 {crisisTriageFilter === 'outages'
-                  ? `${matchingSubstations.length} SS · ${liveOutages.length} Outages`
+                  ? `${matchingSubstations.length} SS · ${verifiedOutagesCount} Mapped${unmappedAdvisoryCount > 0 ? ` (+${unmappedAdvisoryCount} Adv)` : ''}`
                   : `${matchingSubstations.length} SS`}
               </span>
             </div>
@@ -229,6 +237,27 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
                 : 'bg-slate-950/90 border border-slate-700/80 focus:border-cyan-500 text-slate-200'
             }`}
           />
+        </div>
+      )}
+
+      {/* 2.5 Unmapped Advisory Banner if present */}
+      {crisisTriageFilter === 'outages' && unmappedAdvisoryCount > 0 && (
+        <div className={`p-2 rounded-lg text-[11px] flex items-center justify-between border shrink-0 ${
+          isLight 
+            ? 'bg-amber-50/80 border-amber-200 text-amber-900' 
+            : 'bg-amber-950/40 border-amber-800/40 text-amber-300'
+        }`}>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="shrink-0">⚠️</span>
+            <span className="truncate">
+              {unmappedAdvisoryCount} advisory notice{unmappedAdvisoryCount > 1 ? 's' : ''} active
+            </span>
+          </div>
+          <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold shrink-0 ${
+            isLight ? 'bg-amber-100 text-amber-800' : 'bg-amber-900/60 text-amber-200'
+          }`}>
+            Quarantined
+          </span>
         </div>
       )}
 

@@ -113,17 +113,46 @@ export interface TnebSubstation {
   outageHistory?: OutageHistoryEvent[];
 }
 
+export type OutageCategory =
+  | 'periodic_maintenance'
+  | 'forced_trip'
+  | 'emergency_repair'
+  | 'grid_hardening'
+  | 'vegetation_pruning'
+  | 'civic_clearance'
+  | 'environmental_event';
+
+export type OutageArchetype =
+  | 'SEVERE_FAULT'
+  | 'EMERGENCY_REPAIR'
+  | 'GRID_HARDENING'
+  | 'PERIODIC_MAINTENANCE'
+  | 'VEGETATION_ROW'
+  | 'CIVIC_CLEARANCE'
+  | 'ENVIRONMENTAL_EVENT';
+
+export type DispatchStatus =
+  | 'NORMAL'
+  | 'ACTIVE_TRIP'
+  | 'EMERGENCY_REPAIR'
+  | 'PLANNED_MAINTENANCE'
+  | 'CIVIC_CLEARANCE'
+  | 'WEATHER_ALERT';
+
 export interface OutageHistoryEvent {
   id?: string;
   date: string; // ISO date YYYY-MM-DD or DD-MM-YYYY
   workType: string;
-  category: 'periodic_maintenance' | 'forced_trip' | 'emergency_repair';
+  category: OutageCategory;
+  archetype?: OutageArchetype;
   scope?: 'yard_core' | 'feeder_corridor' | 'lt_street'; // Switchyard Core (parent plant), Feeder Line, or Street-Level LT distribution
   timing?: string;
   location?: string;
   feeder?: string;
   durationHours?: number;
   isLiveActive?: boolean;
+  rawReason?: string;
+  noticeCategory?: string;
 }
 
 export interface SubstationHealthProfile {
@@ -133,8 +162,15 @@ export interface SubstationHealthProfile {
   yardCoreMaintenanceCount?: number;
   feederMaintenanceCount?: number;
   ltStreetMaintenanceCount?: number;
+  gridHardeningCount?: number;
   cleanStreakDays?: number;
-  healthScore: number; // 0 - 100
+  healthScore: number; // 0 - 100 (Effective live operational health score with live caps)
+  assetDurabilityScore?: number; // 0 - 100 (90-day physical equipment durability baseline)
+  liveDispatchScore?: number; // 0 - 100 (Real-time dispatch availability)
+  dispatchStatus?: DispatchStatus;
+  activeLiveOutagesCount?: number;
+  activeLiveTripCount?: number;
+  activeLiveTripScope?: 'yard_core' | 'feeder_corridor' | 'lt_street';
   healthGrade: 'A' | 'B' | 'C' | 'D'; // A: >=85, B: 75-84, C: 55-74, D: <55
   disasterRiskMultiplier: number; // 1.0x to 1.5x
   lastMaintenanceDate?: string;
