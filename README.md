@@ -30,6 +30,10 @@
 - [05 - Disaster Management & Statutory SOP Linkage](./docs/05-disaster-management-and-statutory-sop-linkage.md)
 - [06 - GCC Municipal & Satellite Vulnerability Integration](./docs/06-gcc-municipal-and-satellite-vulnerability-integration.md)
 - [07 - Crisis Resilience & Google Maps Platform Optimization](./docs/07-crisis-resilience-and-maps-optimization.md)
+- [08 - Grid Resiliency & Asset Health Scoring Architecture](./docs/08-grid-resiliency-scoring-architecture-and-recalibration-plan.md)
+- [09 - TNEB Outage Reason Taxonomy & Scoring Word Dictionary](./docs/09-outage-reason-taxonomy-and-scoring-dictionary.md)
+- [10 - Cloud-Hosted Gold Standard Registry & Automated Self-Enrichment Pipeline](./docs/10-cloud-hosted-gold-registry-and-self-enrichment-pipeline.md)
+- [11 - System State, Data Architecture, Resiliency Grading & Simulation Master Document](./docs/11-system-state-data-grading-and-simulation-master.md)
 - [Changelog](./docs/CHANGELOG.md)
 
 ---
