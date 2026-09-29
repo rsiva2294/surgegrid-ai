@@ -29,9 +29,12 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **Scripts README**: added the registry/Gemini and grid-builder scripts and a credentials warning.
 - **`public/llms.txt`, `public/llms-full.txt`**: corrected feeder/DTR counts and substation count.
 
+### Also changed
+- `index.html`: meta, Open Graph and Twitter descriptions now say 286 TNEB substations (were "75+").
+
 ### Known documentation-relevant issues found (not fixed here)
+- The GCS gold registry (2,785 signatures) and the aggregator's bundled copy (2,776) lag the local bundle (2,789); see doc 10.
 - Credentials are committed as string literals in `scripts/` (Instagram session cookies, X/Twitter auth token, Gemini keys). Rotate and move to environment variables.
-- `index.html` meta descriptions still say "75+ TNEB substations" (the grid has 286).
 - `computeHealthProfile()` fabricates placeholder events for substations with only a historical count; 119 shipped events are synthetic.
 - The Weather API key is sent in the request URL from the browser.
 
