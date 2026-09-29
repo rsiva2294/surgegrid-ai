@@ -110,7 +110,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [isLayersExpanded, setIsLayersExpanded] = useState(() => {
     return typeof window !== 'undefined' ? window.innerWidth >= 768 : true;
   });
-  const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>('NORMAL');
+  const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>(() => {
+    if (typeof window !== 'undefined') {
+      const q = new URLSearchParams(window.location.search).get('scenario');
+      if (q === 'MICHAUNG_CAT3' || q === 'FLOODS_2015') return q;
+    }
+    return 'NORMAL';
+  });
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);

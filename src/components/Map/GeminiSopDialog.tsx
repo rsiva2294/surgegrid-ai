@@ -34,7 +34,6 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
   isLight,
   onSelectSubstation
 }) => {
-  const [lang, setLang] = useState<'EN' | 'TA'>('EN');
   const [completedItems, setCompletedItems] = useState<Record<string, boolean>>({});
   const [isMinimized, setIsMinimized] = useState(false);
 
@@ -110,7 +109,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
     return (
       <div
         onClick={() => setIsMinimized(false)}
-        className={`fixed z-40 bottom-6 right-6 pointer-events-auto cursor-pointer select-none group transition-all duration-300 rounded-full pl-3.5 pr-2.5 py-2 border shadow-2xl backdrop-blur-xl flex items-center gap-3 ${
+        className={`fixed z-40 bottom-6 right-6 pointer-events-auto cursor-pointer select-none group transition-transform hover:scale-[1.02] active:scale-[0.98] duration-150 rounded-full pl-3.5 pr-2.5 py-2 border shadow-2xl backdrop-blur-xl flex items-center gap-3 ${
           isLight
             ? 'bg-white/95 border-slate-300 hover:border-indigo-400 text-slate-800 shadow-slate-900/15 ring-1 ring-slate-900/5'
             : 'bg-slate-900/95 border-slate-700/80 hover:border-indigo-500/60 text-slate-100 shadow-black/80 ring-1 ring-white/10'
@@ -136,9 +135,9 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
 
   // Full Mission-Control Centered Briefing Modal
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-5 bg-slate-950/60 backdrop-blur-sm pointer-events-auto transition-opacity animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-40 flex items-center justify-center p-3 sm:p-5 bg-slate-950/60 backdrop-blur-sm pointer-events-auto animate-backdrop-in">
       <div
-        className={`relative w-full max-w-xl max-h-[88vh] flex flex-col rounded-2xl shadow-2xl border transition-all duration-300 overflow-hidden ring-1 ring-white/10 ${
+        className={`relative w-full max-w-xl max-h-[88vh] flex flex-col rounded-2xl shadow-2xl border overflow-hidden ring-1 ring-white/10 animate-modal-in ${
           isLight
             ? 'bg-white border-slate-200 text-slate-900 shadow-slate-900/25'
             : 'bg-slate-900/95 border-slate-700/80 text-slate-100 backdrop-blur-2xl shadow-black/90'
@@ -146,61 +145,33 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
         style={{ pointerEvents: 'auto' }}
       >
         {/* Header Bar */}
-        <div className={`px-5 py-4 border-b flex items-start justify-between shrink-0 ${
+        <div className={`px-5 py-3 border-b flex items-center justify-between shrink-0 ${
           isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/70 border-slate-800'
         }`}>
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-indigo-500/25">
-              <Sparkles className="w-5 h-5" />
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-indigo-500/25">
+              <Sparkles className="w-4 h-4" />
             </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-bold tracking-tight">Gemini Grid Commander</span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1.5 ${urgencyTheme.badgeBg}`}>
+            <div className="min-w-0 flex flex-col justify-center">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
+                  Gemini Grid Commander
+                </span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1.5 whitespace-nowrap ${urgencyTheme.badgeBg}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${urgencyTheme.badgeDot}`}></span>
                   {directive.label}
                 </span>
               </div>
-              <div className="text-[11px] text-slate-400 mt-1 flex items-center gap-2 flex-wrap font-sans">
-                <span className="font-medium">{directive.geminiModelTag}</span>
-                <span>•</span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300">
-                  {directive.statutoryReference}
-                </span>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-sans flex items-center gap-1.5 truncate mt-0.5">
+                <span className="font-medium text-indigo-400 shrink-0">Gemini 2.5 Flash</span>
+                <span className="text-slate-400 shrink-0">•</span>
+                <span className="font-mono text-[10px] truncate text-slate-400">{directive.statutoryReference}</span>
               </div>
             </div>
           </div>
 
           {/* Header Action Controls */}
-          <div className="flex items-center gap-1.5 shrink-0 ml-2">
-            {/* Language Switch */}
-            <div className={`p-0.5 rounded-lg border flex items-center ${
-              isLight ? 'bg-slate-100 border-slate-300' : 'bg-slate-800/80 border-slate-700'
-            }`}>
-              <button
-                type="button"
-                onClick={() => setLang('EN')}
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
-                  lang === 'EN'
-                    ? (isLight ? 'bg-white text-indigo-700 shadow-xs' : 'bg-indigo-600 text-white shadow-xs')
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                EN
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang('TA')}
-                className={`text-[10px] font-bold px-2 py-0.5 rounded-md transition-all ${
-                  lang === 'TA'
-                    ? (isLight ? 'bg-white text-indigo-700 shadow-xs' : 'bg-indigo-600 text-white shadow-xs')
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                தமிழ்
-              </button>
-            </div>
-
+          <div className="flex items-center gap-1 shrink-0 ml-3">
             {/* Minimize */}
             <button
               type="button"
@@ -274,7 +245,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               {directive.title}
             </h3>
             <p className={`leading-relaxed text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
-              {lang === 'EN' ? directive.summaryEn : directive.summaryTa}
+              {directive.summaryEn}
             </p>
           </div>
 

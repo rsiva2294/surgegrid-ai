@@ -53,7 +53,7 @@ const MILESTONE_DIRECTIVES: Record<string, GeminiSopDirective> = {
     urgency: 'WATCH',
     summaryEn: 'Cyclone Michaung approaching at 285 km SE. Winds reaching 68 km/h. Mandatory inspection of coastal tree canopies along 33kV overhead corridors. Diesel gensets locked at all Tier-1 hospital lifelines.',
     summaryTa: 'புயல் எச்சரிக்கை: 33kV மின் வழித்தடங்களில் மரக்கிளைகளை அகற்றும் பணி முடுக்கிவிடப்பட்டுள்ளது. அவசர மருத்துவமனைகளுக்கு மாற்று டீசல் ஜெனரேட்டர் தயார்நிலையில் உள்ளது.',
-    statutoryReference: 'TNSDMA Disaster Response Manual §5.2 · CEA (Grid Standards) Reg. 14',
+    statutoryReference: 'TNSDMA §5.2 · CEA Reg. 14',
     weatherSnapshot: {
       windKmh: 68.4,
       rainMm: 12.5,
@@ -111,7 +111,7 @@ const MILESTONE_DIRECTIVES: Record<string, GeminiSopDirective> = {
     urgency: 'CRITICAL',
     summaryEn: 'Cyclone Eye Wall making landfall. Winds peaking at 112 km/h; storm surge 3.2m MSL. Mandatory trip of all coastal overhead lines to prevent electrocution. Island underground ring feeders to preserve critical city core.',
     summaryTa: 'தீவிர எச்சரிக்கை: புயல் கரையை கடக்கிறது (காற்று 112 கி.மீ/மணி). மின் கசிவு விபத்துகளை தவிர்க்க கடற்கரையோர மின் இணைப்புகள் துண்டிக்கப்பட்டுள்ளன. நிலத்தடி கேபிள்கள் மூலம் மருத்துவமனைகளுக்கு மட்டும் மின்சாரம்.',
-    statutoryReference: 'TNSDMA Statutory Mandate §5.6 · Central Electricity Authority Safety Reg. 33',
+    statutoryReference: 'TNSDMA §5.6 · CEA Safety Reg. 33',
     weatherSnapshot: {
       windKmh: 112.0,
       rainMm: 58.2,
@@ -169,7 +169,7 @@ const MILESTONE_DIRECTIVES: Record<string, GeminiSopDirective> = {
     urgency: 'RESTORATION',
     summaryEn: 'Cyclone core moved inland; winds subsided to 38 km/h. Floodwaters receding in elevated zones. Begin statutory 3-stage re-energization: 1. Transmission Backbones; 2. Hospitals & CMWSSB Water Pumping; 3. Residential Distribution.',
     summaryTa: 'மறுசீரமைப்பு பணி: புயல் வலுவிழந்தது. கட்டம்-1: பெருநகர குடிநீர் நிலையங்கள் மற்றும் அவசர மருத்துவமனைகளுக்கு முதலில் மின் விநியோகம் சீரமைக்கப்படுகிறது.',
-    statutoryReference: 'TANGEDCO Emergency Restoration Manual (SOP-401) · TNSDMA Post-Disaster Protocol',
+    statutoryReference: 'TANGEDCO SOP-401 · TNSDMA §8.2',
     weatherSnapshot: {
       windKmh: 38.5,
       rainMm: 4.2,
@@ -226,7 +226,7 @@ const MILESTONE_DIRECTIVES: Record<string, GeminiSopDirective> = {
     urgency: 'CRITICAL',
     summaryEn: 'Chembarambakkam reservoir release exceeds 29,000 cusecs. Adyar and Cooum rivers in catastrophic spate. 230kV Taramani and 110kV Koyambedu switchyards partially submerged. Emergency bypass isolating vulnerable ground-mounted switchgear.',
     summaryTa: 'செம்பரம்பாக்கம் ஏரி உபரி நீர் திறப்பு: அடையாறு ஆற்றில் வெள்ளப்பெருக்கு காரணமாக 230kV தரமணி மற்றும் கோயம்பேடு துணை மின் நிலையங்கள் பாதுகாப்புடன் தனிமைப்படுத்தப்படுகின்றன.',
-    statutoryReference: 'Tamil Nadu State Disaster Management Plan §8.4 (Flood Protocol)',
+    statutoryReference: 'TNSDMA §8.4 · CMWSSB Flood SOP',
     weatherSnapshot: {
       windKmh: 42.0,
       rainMm: 345.0,
