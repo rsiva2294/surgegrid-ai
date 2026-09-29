@@ -12,6 +12,7 @@ import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
+import { generateJson } from './geminiClient';
 import {
   CHENNAI_AVERAGE_ELEVATION_M,
   OFFICIAL_SOURCES,
@@ -165,18 +166,18 @@ export function extractTopCompromisedInfra(
 // Official-quote SOP
 // ---------------------------------------------------------------------------
 
-type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
+export type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
 type TargetGroup = 'flood' | 'overhead' | 'lifeline' | 'none';
 type ScenarioKey = 'MICHAUNG_2023' | 'FLOODS_2015' | 'MONSOON_2020';
 
-interface RuleMeta {
+export interface RuleMeta {
   title: string;
   category: SopCategory;
   group: TargetGroup;
 }
 
 // Short labels are ours; the quote and citation shown beneath each one are official.
-const RULE_META: Record<string, RuleMeta> = {
+export const RULE_META: Record<string, RuleMeta> = {
   'mop-diesel-7-days': { title: 'Keep diesel for substation generators', category: 'FIELD', group: 'flood' },
   'mop-check-inventories': { title: 'Check and top up inventories near the likely area', category: 'FIELD', group: 'none' },
   'mop-move-ers-towers': { title: 'Move ERS towers to the nearest substation', category: 'FIELD', group: 'flood' },
@@ -288,7 +289,7 @@ const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
  */
 const RAIN_STOPPED_MM = 0.1;
 
-function resolvePhase(timestep: ScenarioTimestep): SopPhase {
+export function resolvePhase(timestep: ScenarioTimestep): SopPhase {
   const hour = timestep.timestep_hour;
   if (hour < 0) return 'WATCH';
   return hour > 0 && timestep.total_precipitation_1hr_mm < RAIN_STOPPED_MM ? 'RESTORATION' : 'CRITICAL';
@@ -305,7 +306,7 @@ interface SopTargets {
 
 const MAX_TARGETS = 4;
 
-function isOverheadFeeder(f: FeederDetail): boolean {
+export function isOverheadFeeder(f: FeederDetail): boolean {
   const cfg = (f.config || '').toUpperCase();
   return cfg.includes('OH') || cfg.includes('OVERHEAD') || cfg.includes('MIXED');
 }
@@ -474,6 +475,11 @@ const SCENARIO_LABELS: Record<ScenarioKey, string> = {
   MONSOON_2020: 'Northeast monsoon rain spell, mid-November 2020 (hindcast)',
 };
 
+/** Human-readable scenario name for prompts. */
+export function scenarioLabel(id: ScenarioId): string {
+  return SCENARIO_LABELS[id as ScenarioKey] ?? id;
+}
+
 const geminiSopCache = new Map<string, GeminiSopDirective>();
 const MAX_NOTE_CHARS = 220;
 const MAX_SUMMARY_CHARS = 420;
@@ -484,7 +490,8 @@ const SOP_SYSTEM_INSTRUCTION =
   'For each action, choose which of the listed substations it applies to and write one short note that ties the action to the data provided. ' +
   'Also write a two-sentence summary of the situation. ' +
   'Rules: use only substation names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
-  'never restate, reword or cite the quotes; if an action has no list, return an empty applyTo.';
+  'never restate, reword or cite the quotes; if an action has no list, return an empty applyTo. ' +
+  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so.';
 
 function numbersIn(text: string): string[] {
   return text.match(/\d+(?:\.\d+)?/g) || [];
@@ -511,10 +518,7 @@ export async function fetchLiveGeminiDirective(
   if (!built) return null;
   const { directive: fallback, targets, ruleIds } = built;
 
-  const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
-  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '' || ruleIds.length === 0) {
-    return fallback;
-  }
+  if (ruleIds.length === 0) return fallback;
 
   const cacheKey = `${scenarioId}_${timestep.timestep_hour}_${targets.flood.join('-')}_${targets.overhead.join('-')}_${targets.lifeline.join('-')}`;
   const cached = geminiSopCache.get(cacheKey);
@@ -538,51 +542,31 @@ ${actionLines}`;
   const promptNumbers = new Set(numbersIn(prompt));
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SOP_SYSTEM_INSTRUCTION }] },
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            responseSchema: {
+    const parsed = (await generateJson({
+      systemInstruction: SOP_SYSTEM_INSTRUCTION,
+      prompt,
+      responseSchema: {
+        type: 'OBJECT',
+        properties: {
+          summaryEn: { type: 'STRING' },
+          actions: {
+            type: 'ARRAY',
+            items: {
               type: 'OBJECT',
               properties: {
-                summaryEn: { type: 'STRING' },
-                actions: {
-                  type: 'ARRAY',
-                  items: {
-                    type: 'OBJECT',
-                    properties: {
-                      ruleId: { type: 'STRING', enum: ruleIds },
-                      applyTo: { type: 'ARRAY', items: { type: 'STRING' } },
-                      note: { type: 'STRING' },
-                    },
-                    required: ['ruleId', 'applyTo', 'note'],
-                  },
-                },
+                ruleId: { type: 'STRING', enum: ruleIds },
+                applyTo: { type: 'ARRAY', items: { type: 'STRING' } },
+                note: { type: 'STRING' },
               },
-              required: ['summaryEn', 'actions'],
+              required: ['ruleId', 'applyTo', 'note'],
             },
-            temperature: 0.2,
           },
-        }),
-      }
-    );
+        },
+        required: ['summaryEn', 'actions'],
+      },
+    })) as { summaryEn?: unknown; actions?: unknown } | null;
+    if (!parsed) return fallback;
 
-    if (!res.ok) {
-      console.warn('Gemini API returned status:', res.status);
-      return fallback;
-    }
-
-    const data = await res.json();
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) return fallback;
-
-    const parsed = JSON.parse(rawText);
     const byRule = new Map<string, { applyTo?: unknown; note?: unknown }>();
     if (Array.isArray(parsed.actions)) {
       for (const a of parsed.actions) {

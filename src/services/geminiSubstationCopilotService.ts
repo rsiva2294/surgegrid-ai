@@ -1,299 +1,328 @@
 /**
  * geminiSubstationCopilotService.ts
  *
- * Tier-2 Asset-Level Tactical Copilot powered by Google Gemini.
- * Generates immediate, 3-point tactical switchyard directives tailored to
- * a specific substation's live health grade, elevation, connected circuits,
- * and the active disaster physics at the current timestep hour.
+ * Substation Copilot: what to do at ONE substation during a scenario hour.
+ * Same rule as the city-wide SOP: every action is a word-for-word quote from an official disaster
+ * management plan (src/data/officialSources.ts, docs/SOURCES.md). Our grid data only decides which
+ * flags apply to the substation. Gemini may pick feeders from lists we give it and word one short
+ * note; it never chooses flags, writes actions or cites the plans.
  */
 
-import type { TnebSubstation } from '../types/tneb';
+import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
+import { generateJson } from './geminiClient';
+import {
+  CHENNAI_AVERAGE_ELEVATION_M,
+  formatCitation,
+  getImdCycloneClass,
+  getOfficialRule,
+  type OfficialRule,
+} from '../data/officialSources';
+import {
+  RULE_META,
+  isOverheadFeeder,
+  resolvePhase,
+  scenarioLabel,
+  type SopCategory,
+  type SopPhase,
+} from './geminiSopService';
 
-export type SubstationPosture =
-  | 'SAFE_MONITOR'
-  | 'DEWATERING_PUMP'
-  | 'LOAD_SHED_SELECTIVE'
-  | 'PRE_EMPTIVE_ISOLATE';
+export type SubstationFlagId = 'LOW_LYING' | 'OVERHEAD' | 'LIFELINE';
+
+export interface SubstationFlag {
+  id: SubstationFlagId;
+  label: string;
+  /** Fact from our grid data behind the flag. */
+  detail: string;
+}
 
 export interface SubstationTacticalAction {
+  /** Id of the official rule in officialSources.ts. */
   id: string;
-  category: 'EQUIPMENT_PLINTH' | 'FEEDER_ISOLATION' | 'LIFELINE_LOOP' | 'GROUND_PATROL';
-  action: string;
-  urgency: 'IMMEDIATE' | 'WATCH' | 'STANDBY';
+  category: SopCategory;
+  /** Short label (ours). The quote and citation beneath it are official. */
+  title: string;
+  quote: string;
+  citation: string;
+  /** Feeder names from our data that this action applies to, when relevant. */
+  feeders?: string[];
 }
 
 export interface SubstationCopilotAdvisory {
   substationCode: string;
   substationName: string;
-  posture: SubstationPosture;
-  postureRationale: string;
+  phase: SopPhase;
+  flags: SubstationFlag[];
   actions: SubstationTacticalAction[];
+  /** One sentence tying the actions to this substation's data. */
+  note?: string;
   modelTag: string;
   cached: boolean;
   timestamp: string;
 }
 
-// In-memory LRU-style cache
+// Official actions used for each flag and phase. Every id exists in officialSources.ts.
+type FlagKey = SubstationFlagId | 'BASE';
+const FLAG_ACTIONS: Record<FlagKey, Record<SopPhase, string[]>> = {
+  LOW_LYING: {
+    WATCH: ['mop-dewatering-pump-arranged', 'tangedco-sandbags'],
+    CRITICAL: ['tangedco-pump-out-flood', 'mop-mobile-dg-sets'],
+    RESTORATION: ['tangedco-pump-out-flood'],
+  },
+  OVERHEAD: {
+    WATCH: ['gcc-check-transformers-pillar-boxes'],
+    CRITICAL: ['tangedco-oh-lines-out-of-service', 'mop-switch-off-if-required'],
+    RESTORATION: ['tangedco-no-recharge-before-patrol'],
+  },
+  LIFELINE: {
+    WATCH: ['mop-diesel-7-days'],
+    CRITICAL: ['gcc-run-dg-set-relief-campus'],
+    RESTORATION: ['mop-restore-priority'],
+  },
+  BASE: {
+    WATCH: ['gcc-check-transformers-pillar-boxes'],
+    CRITICAL: ['mop-switch-off-if-required'],
+    RESTORATION: ['tangedco-no-recharge-before-patrol'],
+  },
+};
+
+const MAX_ACTIONS = 4;
+const MAX_FEEDER_NAMES = 3;
+const MAX_NOTE_CHARS = 240;
+
 const copilotCache = new Map<string, SubstationCopilotAdvisory>();
 
-/**
- * Deterministic tactical heuristic engine (0ms offline fallback).
- * Evaluates the asset's active telemetry against environmental flood & wind physics.
- */
-export function generateDeterministicTacticalAdvisory(
-  substation: TnebSubstation,
-  scenarioId: ScenarioId | string,
-  timestep?: ScenarioTimestep | null,
-  liveOutages: LiveOutage[] = []
-): SubstationCopilotAdvisory {
-  const profile = getEnrichedHealthProfile(substation, liveOutages);
-  const elevation = substation.elevationM !== undefined ? substation.elevationM : 6.0;
-  const surgeM = timestep ? timestep.simulated_storm_surge_msl_m : 0;
-  const windKmh = timestep ? Math.abs(timestep.wind_speed_10m_kmh) : 25;
+function isLifelineFeeder(f: FeederDetail): boolean {
+  return f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water';
+}
 
+interface SubstationFacts {
+  elevation: number | undefined;
+  total: number;
+  overhead: FeederDetail[];
+  underground: number;
+  lifeline: FeederDetail[];
+}
+
+function gatherFacts(substation: TnebSubstation): SubstationFacts {
   const feeders = substation.feeders || [];
-  const ohCount = feeders.filter(f => f.config?.toLowerCase().includes('overhead') || f.config?.toLowerCase().includes('mixed')).length;
-  const hospitalLifelines = feeders.filter(f => f.lifelineCategory === 'hospital' || f.isDedicated);
-
-  let posture: SubstationPosture = 'SAFE_MONITOR';
-  let postureRationale = `Yard elevation (${elevation.toFixed(1)}m MSL) and Grade ${profile.healthGrade} health provide stable margin under nominal baseline conditions.`;
-  const actions: SubstationTacticalAction[] = [];
-
-  const isSubmerged = elevation <= surgeM + 0.3 || (substation.hydroRisk?.cycloneIsolateRecommended && scenarioId !== 'NORMAL');
-  const isFloodThreat = elevation <= surgeM + 0.9 || substation.riskCategory === 'CRITICAL_SURGE_RISK';
-  const isHighWind = windKmh >= 75;
-
-  if (isSubmerged) {
-    posture = 'PRE_EMPTIVE_ISOLATE';
-    postureRationale = `Critical yard submersion danger: elevation ${elevation.toFixed(1)}m MSL breached by ${surgeM.toFixed(1)}m surge. Pre-emptive de-energization required to prevent bus flashover.`;
-    actions.push({
-      id: 'act-1',
-      category: 'FEEDER_ISOLATION',
-      action: `De-energize all ${feeders.length} outgoing feeders and open bus coupler breakers before yard plinth submerges.`,
-      urgency: 'IMMEDIATE'
-    });
-    actions.push({
-      id: 'act-2',
-      category: 'EQUIPMENT_PLINTH',
-      action: 'Lock out Automatic Circuit Reclosers (ACR) to stop repeated reclosing into waterlogged yard bus.',
-      urgency: 'IMMEDIATE'
-    });
-    actions.push({
-      id: 'act-3',
-      category: 'LIFELINE_LOOP',
-      action: hospitalLifelines.length > 0
-        ? `Signal ${hospitalLifelines.map(h => h.name).slice(0, 2).join(' & ')} to transfer to secondary diesel generation immediately.`
-        : 'Lock control room battery bank and seal cable trench sump entries.',
-      urgency: 'IMMEDIATE'
-    });
-  } else if (isFloodThreat) {
-    posture = 'DEWATERING_PUMP';
-    postureRationale = `Substation plinth margin is under 0.9m against active storm surge (${surgeM.toFixed(1)}m MSL). Cable trench dewatering is critical.`;
-    actions.push({
-      id: 'act-1',
-      category: 'EQUIPMENT_PLINTH',
-      action: 'Position and activate 50HP mobile diesel dewatering pumps at the 33kV switchyard cable trenches.',
-      urgency: 'IMMEDIATE'
-    });
-    actions.push({
-      id: 'act-2',
-      category: 'EQUIPMENT_PLINTH',
-      action: 'Conduct hourly physical water gauge readings at transformer plinth base; alarm threshold set at +15cm.',
-      urgency: 'WATCH'
-    });
-    actions.push({
-      id: 'act-3',
-      category: 'LIFELINE_LOOP',
-      action: hospitalLifelines.length > 0
-        ? `Verify underground ring feeds to ${hospitalLifelines[0].name} to ensure uninterrupted supply during surface pooling.`
-        : 'Prepare feeder isolation sequence if runoff water breaches yard plinth level.',
-      urgency: 'WATCH'
-    });
-  } else if (isHighWind && ohCount > 0) {
-    posture = 'LOAD_SHED_SELECTIVE';
-    postureRationale = `Sustained winds at ${windKmh.toFixed(0)} km/h hazard ${ohCount} overhead spans. Selective radial shedding advised to preserve station bus.`;
-    actions.push({
-      id: 'act-1',
-      category: 'FEEDER_ISOLATION',
-      action: `Pre-emptively trip ${ohCount} tree-exposed overhead radial circuits to prevent phase-to-ground conductor snaps.`,
-      urgency: 'IMMEDIATE'
-    });
-    actions.push({
-      id: 'act-2',
-      category: 'GROUND_PATROL',
-      action: 'Dispatch emergency lineman patrol to monitor incoming line tension and stay-wire integrity.',
-      urgency: 'WATCH'
-    });
-    actions.push({
-      id: 'act-3',
-      category: 'LIFELINE_LOOP',
-      action: 'Maintain underground feeder circuits in service to ensure continuous power to essential urban loads.',
-      urgency: 'WATCH'
-    });
-  } else {
-    posture = 'SAFE_MONITOR';
-    postureRationale = `Grid asset operating within stable safety thresholds. Equipment plinth has ${Math.max(0, elevation - surgeM).toFixed(1)}m clearance above active flood level.`;
-    actions.push({
-      id: 'act-1',
-      category: 'EQUIPMENT_PLINTH',
-      action: 'Maintain nominal supervisory SCADA monitoring; verify station auxiliary supply and DC battery bank.',
-      urgency: 'STANDBY'
-    });
-    actions.push({
-      id: 'act-2',
-      category: 'GROUND_PATROL',
-      action: 'Confirm switchyard flood gate closure and check sump pump auto-start float switches.',
-      urgency: 'STANDBY'
-    });
-    actions.push({
-      id: 'act-3',
-      category: 'LIFELINE_LOOP',
-      action: 'Keep downstream feeder relay health telemetry unmuted and linked to Central SLDC.',
-      urgency: 'STANDBY'
-    });
-  }
-
+  const overhead = feeders.filter(isOverheadFeeder);
   return {
-    substationCode: substation.code,
-    substationName: substation.cleanName || substation.name,
-    posture,
-    postureRationale,
-    actions,
-    modelTag: 'Deterministic Grid Safety Model',
-    cached: false,
-    timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    elevation: substation.elevationM,
+    total: feeders.length,
+    overhead,
+    underground: feeders.length - overhead.length,
+    lifeline: feeders.filter(isLifelineFeeder),
   };
 }
 
+function buildFlags(facts: SubstationFacts): SubstationFlag[] {
+  const flags: SubstationFlag[] = [];
+  if (facts.elevation !== undefined && facts.elevation <= CHENNAI_AVERAGE_ELEVATION_M) {
+    flags.push({
+      id: 'LOW_LYING',
+      label: 'Low-lying yard',
+      detail: `Yard elevation ${facts.elevation} m MSL, at or below Chennai's average of ${CHENNAI_AVERAGE_ELEVATION_M} m.`,
+    });
+  }
+  if (facts.overhead.length > 0) {
+    flags.push({
+      id: 'OVERHEAD',
+      label: `Overhead feeders (${facts.overhead.length})`,
+      detail: `${facts.overhead.length} of ${facts.total} feeders are overhead or mixed.`,
+    });
+  }
+  if (facts.lifeline.length > 0) {
+    flags.push({
+      id: 'LIFELINE',
+      label: `Hospital/water feeders (${facts.lifeline.length})`,
+      detail: `${facts.lifeline.length} hospital or water feeders: ${facts.lifeline
+        .slice(0, MAX_FEEDER_NAMES)
+        .map(f => f.name)
+        .join(', ')}.`,
+    });
+  }
+  return flags;
+}
+
+function feederNamesFor(flag: FlagKey, facts: SubstationFacts): string[] {
+  if (flag === 'OVERHEAD') return facts.overhead.slice(0, MAX_FEEDER_NAMES).map(f => f.name);
+  if (flag === 'LIFELINE') return facts.lifeline.slice(0, MAX_FEEDER_NAMES).map(f => f.name);
+  return [];
+}
+
+interface BuiltAdvisory {
+  advisory: SubstationCopilotAdvisory;
+  facts: SubstationFacts;
+  /** Which feeder names each action may use (empty for actions without feeders). */
+  allowedFeeders: Record<string, string[]>;
+}
+
+function buildAdvisory(
+  substation: TnebSubstation,
+  timestep: ScenarioTimestep | null | undefined,
+  liveOutages: LiveOutage[]
+): BuiltAdvisory {
+  const profile = getEnrichedHealthProfile(substation, liveOutages);
+  const phase: SopPhase = timestep ? resolvePhase(timestep) : 'WATCH';
+  const facts = gatherFacts(substation);
+  const flags = buildFlags(facts);
+
+  const flagKeys: FlagKey[] = flags.length > 0 ? flags.map(f => f.id) : ['BASE'];
+  const actions: SubstationTacticalAction[] = [];
+  const allowedFeeders: Record<string, string[]> = {};
+  const seen = new Set<string>();
+
+  for (const key of flagKeys) {
+    for (const id of FLAG_ACTIONS[key][phase]) {
+      const rule = getOfficialRule(id);
+      const meta = RULE_META[id];
+      if (!rule || !meta || seen.has(id) || actions.length >= MAX_ACTIONS) continue;
+      seen.add(id);
+      const feeders = feederNamesFor(key, facts);
+      allowedFeeders[id] = feeders;
+      actions.push({
+        id,
+        category: meta.category,
+        title: meta.title,
+        quote: rule.quote,
+        citation: formatCitation(rule),
+        feeders: feeders.length > 0 ? feeders : undefined,
+      });
+    }
+  }
+
+  const advisory: SubstationCopilotAdvisory = {
+    substationCode: substation.code,
+    substationName: substation.cleanName || substation.name,
+    phase,
+    flags,
+    actions,
+    note: `Health grade ${profile.healthGrade} (${profile.healthScore}/100), ${profile.unscheduledTripsCount} unscheduled trips in the last 90 days.`,
+    modelTag: 'Official quotes · rule-based',
+    cached: false,
+    timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+  };
+  return { advisory, facts, allowedFeeders };
+}
+
+/** Rule-based advisory: flags from our data, actions quoted from the official plans. Always available. */
+export function generateDeterministicTacticalAdvisory(
+  substation: TnebSubstation,
+  _scenarioId: ScenarioId | string,
+  timestep?: ScenarioTimestep | null,
+  liveOutages: LiveOutage[] = []
+): SubstationCopilotAdvisory {
+  return buildAdvisory(substation, timestep, liveOutages).advisory;
+}
+
+const COPILOT_SYSTEM_INSTRUCTION =
+  'You help a substation engineer in Chennai during a cyclone or flood. You are given facts about one substation from our grid data ' +
+  'and a fixed list of official actions (each with an id and an exact quote). ' +
+  'For each action, choose which of the listed feeder names it applies to, and write one short note (one sentence) that ties the actions to the facts provided. ' +
+  'Rules: use only feeder names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
+  'never restate, reword or cite the quotes; if an action has no feeder list, return an empty feeders array. ' +
+  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so.';
+
+function numbersIn(text: string): string[] {
+  return text.match(/\d+(?:\.\d+)?/g) || [];
+}
+
 /**
- * Calls live Gemini 2.5 Flash API for asset-specific tactical advice.
- * Uses ultra-compact prompt (< 60 tokens) and JSON response schema.
- * Caches responses by substation + scenario + timestep.
+ * Asks Gemini to choose feeders and word a note for the rule-based actions. Invalid or ungrounded output
+ * is discarded. Failures are NOT cached, and `force` skips the cache, so Re-evaluate can retry.
  */
 export async function fetchSubstationTacticalAdvisory(
   substation: TnebSubstation,
   scenarioId: ScenarioId | string,
   timestep?: ScenarioTimestep | null,
-  liveOutages: LiveOutage[] = []
+  liveOutages: LiveOutage[] = [],
+  options: { force?: boolean } = {}
 ): Promise<SubstationCopilotAdvisory> {
-  const fallback = generateDeterministicTacticalAdvisory(substation, scenarioId, timestep, liveOutages);
+  const built = buildAdvisory(substation, timestep, liveOutages);
+  const { advisory: fallback, facts, allowedFeeders } = built;
+  if (!timestep || scenarioId === 'LIVE' || scenarioId === 'NORMAL' || fallback.actions.length === 0) return fallback;
 
-  const hour = timestep ? timestep.timestep_hour : 0;
-  const cacheKey = `${substation.code}_${scenarioId}_${hour}`;
-
-  if (copilotCache.has(cacheKey)) {
-    const cachedItem = copilotCache.get(cacheKey)!;
-    return { ...cachedItem, cached: true };
-  }
-
-  const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
-  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
-    copilotCache.set(cacheKey, fallback);
-    return fallback;
+  const cacheKey = `${substation.code}_${scenarioId}_${timestep.timestep_hour}`;
+  if (!options.force) {
+    const cached = copilotCache.get(cacheKey);
+    if (cached) return { ...cached, cached: true };
   }
 
   const profile = getEnrichedHealthProfile(substation, liveOutages);
-  const elevation = substation.elevationM !== undefined ? substation.elevationM : 6.0;
-  const surgeM = timestep ? timestep.simulated_storm_surge_msl_m : 0;
-  const windKmh = timestep ? Math.abs(timestep.wind_speed_10m_kmh) : 25;
-  const rainMm = timestep ? timestep.total_precipitation_1hr_mm : 0;
-  const feeders = substation.feeders || [];
-  const ohCount = feeders.filter(f => f.config?.toLowerCase().includes('overhead') || f.config?.toLowerCase().includes('mixed')).length;
-  const ugCount = feeders.length - ohCount;
-  const lifelineCount = feeders.filter(f => f.lifelineCategory || f.isDedicated).length;
-
-  const compactPrompt = `ASSET: ${substation.cleanName || substation.name} (${substation.voltage}) | ELEV: ${elevation.toFixed(1)}m MSL (${substation.riskCategory || 'NORMAL'})
-TODAY_HEALTH: Grade ${profile.healthGrade} (${profile.healthScore}/100) | TRIPS_30D: ${profile.unscheduledTripsCount} | CLEAN_STREAK: ${profile.cleanStreakDays ?? 90}d
-DISASTER: ${scenarioId} @ T${hour >= 0 ? '+' : ''}${hour}h | SURGE: ${surgeM.toFixed(1)}m MSL | WIND: ${windKmh.toFixed(0)} km/h | RAIN: ${rainMm.toFixed(0)} mm/h
-CIRCUITS: ${feeders.length} Feeders (${ugCount} UG, ${ohCount} OH) | LIFELINES: ${lifelineCount}
-TASK: Output posture & 3 precise switchyard directives.`;
+  const imd = getImdCycloneClass(timestep.wind_speed_10m_kmh);
+  const actionLines = fallback.actions
+    .map(a => `${a.id}|${(a.feeders || []).join('; ') || 'none'}|${(getOfficialRule(a.id) as OfficialRule).quote}`)
+    .join('\n');
+  const prompt = `SCENARIO: ${scenarioLabel(scenarioId as ScenarioId)}
+TIME: T${timestep.timestep_hour >= 0 ? '+' : ''}${timestep.timestep_hour}h (T-0 is the peak-rain hour) | PHASE: ${fallback.phase}
+WEATHER (area mean): wind ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(0)} km/h${imd ? ` (IMD class ${imd.name})` : ''} | rain ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h
+SUBSTATION: ${fallback.substationName} (${substation.voltage}) | yard elevation ${facts.elevation !== undefined ? `${facts.elevation} m MSL` : 'unknown'} | health grade ${profile.healthGrade} (${profile.healthScore}/100) | ${profile.unscheduledTripsCount} unscheduled trips in 90 days
+FEEDERS: ${facts.total} total | ${facts.overhead.length} overhead or mixed | ${facts.underground} underground | ${facts.lifeline.length} hospital or water
+FLAGS: ${fallback.flags.map(f => f.label).join(', ') || 'none'}
+ACTIONS (id|feeder names to use|exact quote):
+${actionLines}`;
+  const promptNumbers = new Set(numbersIn(prompt));
+  const ruleIds = fallback.actions.map(a => a.id);
 
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [
-              {
-                text: 'You are the TNEB Senior Grid Protection Engineer in Chennai. Strictly follow TNSDMA §5.6 electrical safety rules. Determine the operational posture and provide exactly 3 concise, highly actionable switchyard directives (equipment plinth dewatering, breaker tripping, or hospital lifeline loop protection). Return strictly JSON.'
-              }
-            ]
-          },
-          contents: [{ parts: [{ text: compactPrompt }] }],
-          generationConfig: {
-            responseMimeType: 'application/json',
-            responseSchema: {
+    const parsed = (await generateJson({
+      systemInstruction: COPILOT_SYSTEM_INSTRUCTION,
+      prompt,
+      responseSchema: {
+        type: 'OBJECT',
+        properties: {
+          note: { type: 'STRING' },
+          actions: {
+            type: 'ARRAY',
+            items: {
               type: 'OBJECT',
               properties: {
-                posture: {
-                  type: 'STRING',
-                  enum: ['SAFE_MONITOR', 'DEWATERING_PUMP', 'LOAD_SHED_SELECTIVE', 'PRE_EMPTIVE_ISOLATE']
-                },
-                postureRationale: { type: 'STRING' },
-                actions: {
-                  type: 'ARRAY',
-                  items: {
-                    type: 'OBJECT',
-                    properties: {
-                      id: { type: 'STRING' },
-                      category: {
-                        type: 'STRING',
-                        enum: ['EQUIPMENT_PLINTH', 'FEEDER_ISOLATION', 'LIFELINE_LOOP', 'GROUND_PATROL']
-                      },
-                      action: { type: 'STRING' },
-                      urgency: {
-                        type: 'STRING',
-                        enum: ['IMMEDIATE', 'WATCH', 'STANDBY']
-                      }
-                    },
-                    required: ['id', 'category', 'action', 'urgency']
-                  }
-                }
+                ruleId: { type: 'STRING', enum: ruleIds },
+                feeders: { type: 'ARRAY', items: { type: 'STRING' } },
               },
-              required: ['posture', 'postureRationale', 'actions']
+              required: ['ruleId', 'feeders'],
             },
-            temperature: 0.2
-          }
-        })
+          },
+        },
+        required: ['note', 'actions'],
+      },
+    })) as { note?: unknown; actions?: unknown } | null;
+    if (!parsed) return fallback;
+
+    const byRule = new Map<string, { feeders?: unknown }>();
+    if (Array.isArray(parsed.actions)) {
+      for (const a of parsed.actions) {
+        if (a && typeof a.ruleId === 'string' && ruleIds.includes(a.ruleId)) byRule.set(a.ruleId, a);
       }
-    );
-
-    if (!res.ok) {
-      console.warn('Gemini Substation Copilot returned non-200:', res.status);
-      copilotCache.set(cacheKey, fallback);
-      return fallback;
     }
 
-    const data = await res.json();
-    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!rawText) {
-      copilotCache.set(cacheKey, fallback);
-      return fallback;
-    }
+    const actions = fallback.actions.map(act => {
+      const g = byRule.get(act.id);
+      if (!g || !Array.isArray(g.feeders)) return act;
+      const allowed = new Set(allowedFeeders[act.id] || []);
+      const chosen = (g.feeders as unknown[]).filter((n): n is string => typeof n === 'string' && allowed.has(n));
+      return chosen.length > 0 ? { ...act, feeders: chosen } : act;
+    });
 
-    const parsed = JSON.parse(rawText);
+    const noteOk =
+      typeof parsed.note === 'string' &&
+      parsed.note.trim() !== '' &&
+      parsed.note.length <= MAX_NOTE_CHARS &&
+      numbersIn(parsed.note).every(n => promptNumbers.has(n));
+
     const enriched: SubstationCopilotAdvisory = {
-      substationCode: substation.code,
-      substationName: substation.cleanName || substation.name,
-      posture: parsed.posture || fallback.posture,
-      postureRationale: parsed.postureRationale || fallback.postureRationale,
-      actions: Array.isArray(parsed.actions) && parsed.actions.length > 0 ? parsed.actions : fallback.actions,
-      modelTag: 'Gemini 2.5 Flash · Tactical Copilot',
-      cached: false,
-      timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+      ...fallback,
+      actions,
+      note: noteOk ? (parsed.note as string) : fallback.note,
+      modelTag: 'Gemini 2.5 Flash · wording only, quotes are official',
     };
-
     copilotCache.set(cacheKey, enriched);
     return enriched;
   } catch (err) {
-    console.warn('Gemini Substation Copilot fetch error, using deterministic fallback:', err);
-    copilotCache.set(cacheKey, fallback);
+    console.warn('Gemini Substation Copilot error, using rule-based text:', err);
     return fallback;
   }
 }

@@ -11,6 +11,12 @@ export default defineConfig({
         target: 'https://outage.nammamap.in',
         changeOrigin: true
       },
+      // Gemini proxy (Cloud Function). No API key in the browser; the function calls Gemini with its own identity.
+      '/api/gemini': {
+        target: 'https://asia-south1-namma-map-407ca.cloudfunctions.net',
+        changeOrigin: true,
+        rewrite: () => '/surgegridGemini'
+      },
       '/api/outage-live': {
         target: 'https://outage.nammamap.in',
         changeOrigin: true,

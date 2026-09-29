@@ -96,8 +96,10 @@ Copy `.env.example` to `.env` and set:
 | :--- | :--- | :--- |
 | `VITE_GOOGLE_MAPS_API_KEY` | Map + Weather API | Required. Restrict by HTTP referrer, since it ships in the browser bundle. |
 | `VITE_GOOGLE_MAPS_MAP_ID` | Map | Optional. Enables vector map rendering; without it the embedded JSON styles are used. |
-| `VITE_GEMINI_API_KEY` | Gemini SOP + Substation Copilot | Optional. Without it the app uses the built-in rule engine. The key ships in the browser bundle, so restrict it. |
+| `VITE_GEMINI_PROXY_URL` | Gemini SOP + Substation Copilot | Optional. Defaults to `/api/gemini` (Vite proxy in development, Firebase Hosting rewrite in production). There is **no Gemini API key in the app**: see [gemini-proxy/](./gemini-proxy/README.md). If the proxy is unreachable the app falls back to its built-in quoted-action text. |
 | `VITE_PROJECT_ID` | none in `src/` | Listed in `.env.example` but not read by the app. |
+
+**Gemini proxy**: a Cloud Function (`gemini-proxy/`) calls Gemini on Google Cloud with its own service account, so the browser never holds a key. Deploy it with the command in [gemini-proxy/README.md](./gemini-proxy/README.md).
 
 **Deploy**: `npm run build`, then Firebase Hosting (site target `surgegrid`, project `namma-map-407ca`). `/api/v2/**` is rewritten to the `outageApi` Cloud Function (source lives in a separate repo, `nammamap-outage-aggregator`).
 

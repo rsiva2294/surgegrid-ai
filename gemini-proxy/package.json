@@ -1,0 +1,15 @@
+{
+  "name": "surgegrid-gemini-proxy",
+  "version": "1.0.0",
+  "description": "Proxy from the SurgeGrid AI browser app to Gemini on Google Cloud (no API key)",
+  "main": "index.js",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "functions-framework --target=surgegridGemini --port=8090"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.0",
+    "google-auth-library": "^9.14.0"
+  }
+}

@@ -203,23 +203,38 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       return;
     }
 
+    // No Gemini call while the timeline is playing, and wait briefly after the hour stops changing,
+    // so scrubbing or fast playback does not fire a request per step.
+    if (isPlaying) return;
+
     let isSubscribed = true;
-    fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages)
-      .then((res) => {
-        if (isSubscribed && res) {
-          setLiveGeminiDirective(res);
-        }
-      })
-      .catch((err) => {
-        console.warn('Live Gemini SOP fetch ignored:', err);
-      });
+    const timer = setTimeout(() => {
+      fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages)
+        .then((res) => {
+          if (isSubscribed && res) {
+            setLiveGeminiDirective(res);
+          }
+        })
+        .catch((err) => {
+          console.warn('Live Gemini SOP fetch ignored:', err);
+        });
+    }, 700);
 
     return () => {
       isSubscribed = false;
+      clearTimeout(timer);
     };
-  }, [currentTimestep, disasterScenario, substations, liveOutages]);
+  }, [currentTimestep, disasterScenario, substations, liveOutages, isPlaying]);
 
-  const activeDirective = liveGeminiDirective || baseDirective;
+  // Use the Gemini-worded directive only if it belongs to the hour on screen.
+  const matchingLiveDirective =
+    liveGeminiDirective &&
+    currentTimestep &&
+    liveGeminiDirective.scenarioId === disasterScenario &&
+    liveGeminiDirective.hour === currentTimestep.timestep_hour
+      ? liveGeminiDirective
+      : null;
+  const activeDirective = matchingLiveDirective || baseDirective;
 
   const availableHours = useMemo(() => {
     if (!scenarioData) return [-48, -24, -12, 0, 6, 12];

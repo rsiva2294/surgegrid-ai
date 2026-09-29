@@ -13,6 +13,13 @@
         "function": "outageApi"
       },
       {
+        "source": "/api/gemini",
+        "function": {
+          "functionId": "surgegridGemini",
+          "region": "asia-south1"
+        }
+      },
+      {
         "source": "!@(*.json|ai-catalog.json)",
         "destination": "/index.html"
       }
