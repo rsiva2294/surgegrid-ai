@@ -23,9 +23,10 @@ export function getFeederDisasterStatus(
   f: FeederDetail,
   ss: TnebSubstation | null,
   scenario: DisasterScenario,
-  isLight: boolean
+  isLight: boolean,
+  simulatedWeather?: { windKmh: number; surgeM: number; rainMm?: number } | null
 ): FeederDisasterStatus {
-  if (scenario === 'NORMAL') {
+  if (scenario === 'NORMAL' || scenario === 'LIVE') {
     return {
       state: 'LIVE',
       isTripped: false,
@@ -38,13 +39,19 @@ export function getFeederDisasterStatus(
     };
   }
 
-  // Extreme Surge (3.2m MSL): Substation yard flooded if ground elevation <= 3.2m (TNSDMA 2023 3.0m threshold)
-  const isYardFlooded = scenario === 'EXTREME_SURGE' && (ss?.elevationM !== undefined && ss.elevationM <= 3.2);
+  // Simulation Weather or Static Scenario Defaults
+  const currentSurgeM = simulatedWeather ? simulatedWeather.surgeM : (scenario === 'EXTREME_SURGE' ? 3.2 : 0.8);
+  const currentWindKmh = simulatedWeather ? simulatedWeather.windKmh : (scenario === 'SEVERE_CYCLONE' ? 92 : scenario === 'CYCLONE_ALERT' ? 65 : 40);
+
+  // Extreme Surge / Inundation: Substation yard flooded if ground elevation <= surge depth (TNSDMA 2023 threshold)
+  const isYardFlooded = (scenario === 'EXTREME_SURGE' || scenario === 'MICHAUNG_CAT3' || scenario === 'FLOODS_2015') && 
+    (ss?.elevationM !== undefined && ss.elevationM <= (scenario === 'FLOODS_2015' ? 4.0 : currentSurgeM));
+
   if (isYardFlooded) {
     return {
       state: 'PRE_EMPTIVE_SAFETY_ISOLATION',
       isTripped: true,
-      reason: 'Substation Yard Inundated (> 3.0m TNSDMA Threshold) • Statutory De-energization to Prevent Lethal Water Conduction • Mobile Dewatering Mandated',
+      reason: `Substation Yard Inundated (Elevation ${ss?.elevationM}m <= Flood/Surge ${currentSurgeM}m) • Statutory De-energization to Prevent Lethal Water Conduction • Mobile Dewatering Mandated`,
       badgeText: 'YARD FLOOD TRIP',
       badgeBg: isLight ? 'bg-rose-100' : 'bg-rose-950/70',
       badgeTextCol: isLight ? 'text-rose-900 font-bold' : 'text-rose-200 font-bold',
@@ -57,11 +64,11 @@ export function getFeederDisasterStatus(
   const isOverhead = cfg.includes('OH') || cfg.includes('OVERHEAD') || cfg.includes('MIXED');
 
   // Severe cyclone (> 80 km/h) mandates statutory pre-emptive shutdown of overhead & mixed radial lines
-  if ((scenario === 'SEVERE_CYCLONE' || scenario === 'EXTREME_SURGE') && isOverhead) {
+  if ((scenario === 'SEVERE_CYCLONE' || scenario === 'EXTREME_SURGE' || currentWindKmh > 80) && isOverhead) {
     return {
       state: 'PRE_EMPTIVE_SAFETY_ISOLATION',
       isTripped: true,
-      reason: 'TNSDMA Statutory Mandate (§5.6): Wind > 80 km/h • Pre-Emptive De-energization to Prevent Public Electrocution from Fallen Lines',
+      reason: `TNSDMA Statutory Mandate (§5.6): Wind ${currentWindKmh.toFixed(0)} km/h > 80 km/h • Pre-Emptive De-energization to Prevent Public Electrocution from Fallen Lines`,
       badgeText: 'PRE-EMPTIVE TRIP (WIND)',
       badgeBg: isLight ? 'bg-amber-100' : 'bg-amber-950/70',
       badgeTextCol: isLight ? 'text-amber-900 font-bold' : 'text-amber-200 font-bold',
@@ -70,7 +77,7 @@ export function getFeederDisasterStatus(
     };
   }
 
-  if (scenario === 'CYCLONE_ALERT' && isOverhead) {
+  if ((scenario === 'CYCLONE_ALERT' || currentWindKmh > 60) && isOverhead) {
     return {
       state: 'AWAITING_PATROL_CLEARANCE',
       isTripped: false,

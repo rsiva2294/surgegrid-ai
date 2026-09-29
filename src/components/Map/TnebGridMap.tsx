@@ -32,6 +32,9 @@ import {
   getFeederDisasterStatus
 } from './disasterUtils';
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
+import { fetchScenarioData, type ScenarioData, type ScenarioId } from '../../services/scenarioService';
+import { getDirectiveForTimestep } from '../../services/geminiSopService';
+import { GeminiSopDialog } from './GeminiSopDialog';
 
 export type { DisasterScenario, FeederDisasterStatus };
 export { getFeederDisasterStatus, CHENNAI_METRO_BOUNDS };
@@ -111,6 +114,80 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
+
+  // Disaster Simulation & Timeline State
+  const [simulationHour, setSimulationHour] = useState<number>(-24);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [scenarioData, setScenarioData] = useState<ScenarioData | null>(null);
+  const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
+  const seenMilestonesRef = useRef<Set<number>>(new Set());
+
+  // Scenario Loader
+  useEffect(() => {
+    if (disasterScenario === 'MICHAUNG_CAT3') {
+      fetchScenarioData('MICHAUNG_CAT3').then(data => {
+        setScenarioData(data);
+        setSimulationHour(-24);
+        seenMilestonesRef.current.clear();
+      });
+    } else if (disasterScenario === 'FLOODS_2015') {
+      fetchScenarioData('FLOODS_2015').then(data => {
+        setScenarioData(data);
+        setSimulationHour(-48);
+        seenMilestonesRef.current.clear();
+      });
+    } else {
+      setScenarioData(null);
+      setIsPlaying(false);
+      setIsGeminiSopOpen(false);
+    }
+  }, [disasterScenario]);
+
+  // Scenario Playback Loop (Auto-advances through timesteps when playing)
+  useEffect(() => {
+    if (!isPlaying || !scenarioData || scenarioData.timesteps.length === 0) return;
+
+    const interval = setInterval(() => {
+      setSimulationHour(current => {
+        const hours = scenarioData.timesteps.map(t => t.timestep_hour);
+        const currentIndex = hours.indexOf(current);
+        if (currentIndex === -1 || currentIndex >= hours.length - 1) {
+          setIsPlaying(false);
+          return current;
+        }
+        return hours[currentIndex + 1];
+      });
+    }, 2200);
+
+    return () => clearInterval(interval);
+  }, [isPlaying, scenarioData]);
+
+  // Autonomous Gemini Directive Pop-up at crucial milestone hours
+  useEffect(() => {
+    if (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015') return;
+    
+    const milestoneHours = disasterScenario === 'MICHAUNG_CAT3' ? [-24, 0, 12] : [-48, 0, 12];
+    if (milestoneHours.includes(simulationHour) && !seenMilestonesRef.current.has(simulationHour)) {
+      seenMilestonesRef.current.add(simulationHour);
+      setIsGeminiSopOpen(true);
+      setIsPlaying(false); // Proactively pause so the user can inspect the directive checklist
+    }
+  }, [simulationHour, disasterScenario]);
+
+  const currentTimestep = useMemo(() => {
+    if (!scenarioData || disasterScenario === 'NORMAL' || disasterScenario === 'LIVE') return null;
+    return scenarioData.timesteps.find(t => t.timestep_hour === simulationHour) || scenarioData.timesteps[0] || null;
+  }, [scenarioData, simulationHour, disasterScenario]);
+
+  const activeDirective = useMemo(() => {
+    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015')) return null;
+    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep);
+  }, [currentTimestep, disasterScenario]);
+
+  const availableHours = useMemo(() => {
+    if (!scenarioData) return [-48, -24, -12, 0, 6, 12];
+    return scenarioData.timesteps.map(t => t.timestep_hour);
+  }, [scenarioData]);
 
   // Left control panel (Search + Layers + Triage) width state & persistence (default 360px, min 280px, max 580px / 45vw)
   const DEFAULT_LEFT_PANEL_WIDTH = 360;
@@ -1157,6 +1234,31 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         liveOutagesCount={liveOutages.length}
         isLight={isLight}
         liveWeather={liveWeather}
+        simulationHour={simulationHour}
+        setSimulationHour={setSimulationHour}
+        isPlaying={isPlaying}
+        onTogglePlay={() => setIsPlaying(p => !p)}
+        currentTimestep={currentTimestep}
+        activeDirective={activeDirective}
+        onOpenGeminiSop={() => setIsGeminiSopOpen(prev => !prev)}
+        availableHours={availableHours}
+      />
+
+      {/* Autonomous Floating Gemini AI Statutory Directive Dialog */}
+      <GeminiSopDialog
+        directive={activeDirective}
+        isOpen={isGeminiSopOpen}
+        onClose={() => setIsGeminiSopOpen(false)}
+        isPlaying={isPlaying}
+        onTogglePlay={() => setIsPlaying(p => !p)}
+        isLight={isLight}
+        onSelectSubstation={(name) => {
+          const match = substations.find(s => 
+            s.name.toUpperCase().includes(name.toUpperCase()) || 
+            name.toUpperCase().includes(s.name.toUpperCase())
+          );
+          if (match) onSelectSubstation(match);
+        }}
       />
 
       {/* Top Left Floating Search & Quick Filters */}
