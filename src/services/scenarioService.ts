@@ -1,11 +1,31 @@
 /**
  * scenarioService.ts
  * 
- * Engine for driving disaster simulations (Cyclone Michaung Dec 2023, 2015 Megafloods)
+ * Engine for driving disaster simulations (Cyclone Michaung Dec 2023, 2015 floods, monsoon spell Nov 2020)
  * across hourly timesteps. Both scenarios are real hindcasts built from NASA GPM IMERG rain and ERA5-Land wind (no storm surge is modelled).
  */
 
-export type ScenarioId = 'LIVE' | 'MICHAUNG_2023' | 'FLOODS_2015';
+export type ScenarioId = 'LIVE' | 'MICHAUNG_2023' | 'FLOODS_2015' | 'MONSOON_2020';
+
+export type SimulationScenarioId = Exclude<ScenarioId, 'LIVE'>;
+
+/** Data file for each hindcast scenario (all built from NASA IMERG rain + ERA5-Land wind). */
+export const SCENARIO_FILES: Record<SimulationScenarioId, string> = {
+  MICHAUNG_2023: 'michaung2023.json',
+  FLOODS_2015: 'floods2015.json',
+  MONSOON_2020: 'monsoon2020.json',
+};
+
+/** Hour the timeline starts at when a scenario is opened. */
+export const SCENARIO_START_HOUR: Record<SimulationScenarioId, number> = {
+  MICHAUNG_2023: -24,
+  FLOODS_2015: -48,
+  MONSOON_2020: -24,
+};
+
+export function isSimulationScenario(id: string): id is SimulationScenarioId {
+  return Object.prototype.hasOwnProperty.call(SCENARIO_FILES, id);
+}
 
 export interface ScenarioTimestep {
   timestep_hour: number;
@@ -48,6 +68,11 @@ export const SCENARIO_MILESTONES: Record<ScenarioId, MilestoneInfo[]> = {
     { hour: 0, label: 'T-0h Peak rain', phase: 'LANDFALL_PEAK', description: 'Peak-rain hour of the hindcast' },
     { hour: 12, label: 'T+12h', phase: 'RESTORATION', description: '12 hours after the peak-rain hour' },
   ],
+  MONSOON_2020: [
+    { hour: -24, label: 'T-24h', phase: 'WATCH', description: '24 hours before the peak-rain hour' },
+    { hour: 0, label: 'T-0h Peak rain', phase: 'LANDFALL_PEAK', description: 'Peak-rain hour of the hindcast' },
+    { hour: 12, label: 'T+12h', phase: 'RESTORATION', description: '12 hours after the peak-rain hour' },
+  ],
 };
 
 // In-memory cache of scenario datasets
@@ -59,7 +84,7 @@ export async function fetchScenarioData(id: ScenarioId): Promise<ScenarioData | 
     return scenarioCache.get(id)!;
   }
 
-  const filename = id === 'MICHAUNG_2023' ? 'michaung2023.json' : 'floods2015.json';
+  const filename = SCENARIO_FILES[id];
   try {
     const res = await fetch(`/data/scenarios/${filename}`);
     if (!res.ok) {

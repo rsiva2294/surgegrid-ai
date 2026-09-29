@@ -32,7 +32,14 @@ import {
   getFeederDisasterStatus
 } from './disasterUtils';
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
-import { fetchScenarioData, type ScenarioData, type ScenarioId } from '../../services/scenarioService';
+import {
+  fetchScenarioData,
+  isSimulationScenario,
+  SCENARIO_MILESTONES,
+  SCENARIO_START_HOUR,
+  type ScenarioData,
+  type ScenarioId
+} from '../../services/scenarioService';
 import { getDirectiveForTimestep, fetchLiveGeminiDirective, type GeminiSopDirective } from '../../services/geminiSopService';
 import { GeminiSopDialog } from './GeminiSopDialog';
 
@@ -113,7 +120,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>(() => {
     if (typeof window !== 'undefined') {
       const q = new URLSearchParams(window.location.search).get('scenario');
-      if (q === 'MICHAUNG_2023' || q === 'FLOODS_2015') return q;
+      if (q && isSimulationScenario(q)) return q;
     }
     return 'NORMAL';
   });
@@ -124,22 +131,20 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   // Disaster Simulation & Timeline State
   const [simulationHour, setSimulationHour] = useState<number>(-24);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  // Playback speed multiplier: the hindcasts have 120-144 hourly steps, so faster speeds keep a demo short.
+  const [playbackSpeed, setPlaybackSpeed] = useState<number>(4);
+  const cyclePlaybackSpeed = () => setPlaybackSpeed(sp => (sp >= 8 ? 1 : sp * 2));
   const [scenarioData, setScenarioData] = useState<ScenarioData | null>(null);
   const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
   const seenMilestonesRef = useRef<Set<number>>(new Set());
 
   // Scenario Loader
   useEffect(() => {
-    if (disasterScenario === 'MICHAUNG_2023') {
-      fetchScenarioData('MICHAUNG_2023').then(data => {
+    if (isSimulationScenario(disasterScenario)) {
+      const id = disasterScenario;
+      fetchScenarioData(id).then(data => {
         setScenarioData(data);
-        setSimulationHour(-24);
-        seenMilestonesRef.current.clear();
-      });
-    } else if (disasterScenario === 'FLOODS_2015') {
-      fetchScenarioData('FLOODS_2015').then(data => {
-        setScenarioData(data);
-        setSimulationHour(-48);
+        setSimulationHour(SCENARIO_START_HOUR[id]);
         seenMilestonesRef.current.clear();
       });
     } else {
@@ -163,16 +168,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         }
         return hours[currentIndex + 1];
       });
-    }, 2200);
+    }, 2200 / playbackSpeed);
 
     return () => clearInterval(interval);
-  }, [isPlaying, scenarioData]);
+  }, [isPlaying, scenarioData, playbackSpeed]);
 
   // Autonomous Gemini Directive Pop-up at crucial milestone hours
   useEffect(() => {
-    if (disasterScenario !== 'MICHAUNG_2023' && disasterScenario !== 'FLOODS_2015') return;
-    
-    const milestoneHours = disasterScenario === 'MICHAUNG_2023' ? [-24, 0, 12] : [-48, 0, 12];
+    if (!isSimulationScenario(disasterScenario)) return;
+
+    const milestoneHours = SCENARIO_MILESTONES[disasterScenario].map(m => m.hour);
     if (milestoneHours.includes(simulationHour) && !seenMilestonesRef.current.has(simulationHour)) {
       seenMilestonesRef.current.add(simulationHour);
       setIsGeminiSopOpen(true);
@@ -188,12 +193,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [liveGeminiDirective, setLiveGeminiDirective] = useState<GeminiSopDirective | null>(null);
 
   const baseDirective = useMemo(() => {
-    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_2023' && disasterScenario !== 'FLOODS_2015')) return null;
+    if (!currentTimestep || !isSimulationScenario(disasterScenario)) return null;
     return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages);
   }, [currentTimestep, disasterScenario, substations, liveOutages]);
 
   useEffect(() => {
-    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_2023' && disasterScenario !== 'FLOODS_2015')) {
+    if (!currentTimestep || !isSimulationScenario(disasterScenario)) {
       setLiveGeminiDirective(null);
       return;
     }
@@ -1274,6 +1279,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         activeDirective={activeDirective}
         onOpenGeminiSop={() => setIsGeminiSopOpen(prev => !prev)}
         availableHours={availableHours}
+        playbackSpeed={playbackSpeed}
+        onCyclePlaybackSpeed={cyclePlaybackSpeed}
       />
 
       {/* Autonomous Floating Gemini AI Statutory Directive Dialog */}

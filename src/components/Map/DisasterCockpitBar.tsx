@@ -12,7 +12,7 @@ import {
   Clock
 } from 'lucide-react';
 import type { LiveWeatherConditions } from '../../services/liveWeatherService';
-import type { ScenarioTimestep } from '../../services/scenarioService';
+import { SCENARIO_MILESTONES, isSimulationScenario, type ScenarioTimestep } from '../../services/scenarioService';
 import type { GeminiSopDirective } from '../../services/geminiSopService';
 
 export type DisasterScenario = 
@@ -20,6 +20,7 @@ export type DisasterScenario =
   | 'LIVE' 
   | 'MICHAUNG_2023' 
   | 'FLOODS_2015' 
+  | 'MONSOON_2020'
   | 'CYCLONE_ALERT' 
   | 'SEVERE_CYCLONE' 
   | 'EXTREME_SURGE';
@@ -46,6 +47,8 @@ export interface DisasterCockpitBarProps {
   activeDirective?: GeminiSopDirective | null;
   onOpenGeminiSop?: () => void;
   availableHours?: number[];
+  playbackSpeed?: number;
+  onCyclePlaybackSpeed?: () => void;
 }
 
 export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
@@ -65,7 +68,9 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
   currentTimestep,
   activeDirective,
   onOpenGeminiSop,
-  availableHours = [-48, -24, -12, 0, 6, 12]
+  availableHours = [-48, -24, -12, 0, 6, 12],
+  playbackSpeed = 1,
+  onCyclePlaybackSpeed
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(() => {
@@ -280,7 +285,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 ? (isLight ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'bg-cyan-500 text-slate-950 font-bold shadow-sm')
                 : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
             }`}
-            title="Simulate 2015 Chennai Megafloods & Chembarambakkam Reservoir Spill Benchmark"
+            title="2015 Chennai floods: real hindcast (NASA IMERG rain + ERA5-Land wind), 120 hourly steps"
           >
             <span>🌊</span>
             <span>2015 Megaflood</span>
@@ -290,6 +295,28 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
             }`}>
               NASA GPM
+            </span>
+          </button>
+
+          {/* 4. Northeast monsoon rain spell, Nov 2020 hindcast */}
+          <button
+            type="button"
+            onClick={() => setDisasterScenario('MONSOON_2020')}
+            className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
+              disasterScenario === 'MONSOON_2020'
+                ? (isLight ? 'bg-teal-600 text-white font-bold shadow-sm' : 'bg-teal-500 text-slate-950 font-bold shadow-sm')
+                : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
+            }`}
+            title="Northeast monsoon rain spell, 12-18 November 2020: real hindcast (NASA IMERG rain + ERA5-Land wind), 144 hourly steps"
+          >
+            <span>🌧️</span>
+            <span>Monsoon Spell</span>
+            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
+              disasterScenario === 'MONSOON_2020'
+                ? (isLight ? 'bg-teal-800 text-white' : 'bg-slate-950 text-teal-300 font-bold')
+                : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
+            }`}>
+              Nov 2020
             </span>
           </button>
 
@@ -342,7 +369,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
       )}
 
       {/* Secondary Bar: If Simulation is Active, render TIMELINE OF EVENTS. If Normal, render TRIAGE Quick Filters */}
-      {disasterScenario === 'MICHAUNG_2023' || disasterScenario === 'FLOODS_2015' ? (
+      {isSimulationScenario(disasterScenario) ? (
         <div className={`pointer-events-auto rounded-xl p-1.5 border flex items-center gap-2 transition-all text-xs max-w-full overflow-x-auto no-scrollbar whitespace-nowrap ${
           isLight
             ? 'bg-white/98 border-slate-300/90 text-slate-800 shadow-[0_8px_25px_-4px_rgba(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
@@ -376,6 +403,18 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             title={isPlaying ? 'Pause Simulation' : 'Play / Auto-advance Simulation'}
           >
             {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+          </button>
+
+          {/* Playback speed */}
+          <button
+            type="button"
+            onClick={onCyclePlaybackSpeed}
+            className={`px-1.5 py-0.5 rounded-lg font-mono font-bold text-[11px] transition-colors ${
+              isLight ? 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300' : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border border-slate-600'
+            }`}
+            title="Playback speed (click to change)"
+          >
+            {playbackSpeed}×
           </button>
 
           {/* Step Controls */}
@@ -417,77 +456,33 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           </div>
 
           {/* Milestone Quick Jumps */}
-          {disasterScenario === 'MICHAUNG_2023' ? (
+          {isSimulationScenario(disasterScenario) && (
             <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setSimulationHour?.(-24)}
-                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${
-                  simulationHour === -24
-                    ? (isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-500 text-slate-950 font-bold')
-                    : (isLight ? 'bg-amber-50 text-amber-900 border border-amber-300' : 'bg-amber-950/40 text-amber-300 border border-amber-600/40')
-                }`}
-              >
-                T-24h
-              </button>
-              <button
-                type="button"
-                onClick={() => setSimulationHour?.(0)}
-                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${
-                  simulationHour === 0
-                    ? (isLight ? 'bg-rose-600 text-white font-bold' : 'bg-rose-500 text-slate-950 font-bold')
-                    : (isLight ? 'bg-rose-50 text-rose-900 border border-rose-300' : 'bg-rose-950/40 text-rose-300 border border-rose-600/40')
-                }`}
-              >
-                T-0h Peak rain
-              </button>
-              <button
-                type="button"
-                onClick={() => setSimulationHour?.(12)}
-                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${
-                  simulationHour === 12
-                    ? (isLight ? 'bg-emerald-600 text-white font-bold' : 'bg-emerald-500 text-slate-950 font-bold')
-                    : (isLight ? 'bg-emerald-50 text-emerald-900 border border-emerald-300' : 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/40')
-                }`}
-              >
-                T+12h
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setSimulationHour?.(-48)}
-                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${
-                  simulationHour === -48
-                    ? (isLight ? 'bg-blue-600 text-white font-bold' : 'bg-blue-500 text-slate-950 font-bold')
-                    : (isLight ? 'bg-blue-50 text-blue-900 border border-blue-300' : 'bg-blue-950/40 text-blue-300 border border-blue-600/40')
-                }`}
-              >
-                T-48h
-              </button>
-              <button
-                type="button"
-                onClick={() => setSimulationHour?.(0)}
-                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${
-                  simulationHour === 0
-                    ? (isLight ? 'bg-rose-600 text-white font-bold' : 'bg-rose-500 text-slate-950 font-bold')
-                    : (isLight ? 'bg-rose-50 text-rose-900 border border-rose-300' : 'bg-rose-950/40 text-rose-300 border border-rose-600/40')
-                }`}
-              >
-                T-0h Peak rain
-              </button>
-              <button
-                type="button"
-                onClick={() => setSimulationHour?.(12)}
-                className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${
-                  simulationHour === 12
-                    ? (isLight ? 'bg-emerald-600 text-white font-bold' : 'bg-emerald-500 text-slate-950 font-bold')
-                    : (isLight ? 'bg-emerald-50 text-emerald-900 border border-emerald-300' : 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/40')
-                }`}
-              >
-                T+12h
-              </button>
+              {SCENARIO_MILESTONES[disasterScenario].map(m => {
+                const tone = m.phase === 'WATCH' ? 'amber' : m.phase === 'LANDFALL_PEAK' ? 'rose' : 'emerald';
+                const active = simulationHour === m.hour;
+                const activeCls = {
+                  amber: isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-500 text-slate-950 font-bold',
+                  rose: isLight ? 'bg-rose-600 text-white font-bold' : 'bg-rose-500 text-slate-950 font-bold',
+                  emerald: isLight ? 'bg-emerald-600 text-white font-bold' : 'bg-emerald-500 text-slate-950 font-bold',
+                }[tone];
+                const idleCls = {
+                  amber: isLight ? 'bg-amber-50 text-amber-900 border border-amber-300' : 'bg-amber-950/40 text-amber-300 border border-amber-600/40',
+                  rose: isLight ? 'bg-rose-50 text-rose-900 border border-rose-300' : 'bg-rose-950/40 text-rose-300 border border-rose-600/40',
+                  emerald: isLight ? 'bg-emerald-50 text-emerald-900 border border-emerald-300' : 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/40',
+                }[tone];
+                return (
+                  <button
+                    key={m.hour}
+                    type="button"
+                    onClick={() => setSimulationHour?.(m.hour)}
+                    className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-all ${active ? activeCls : idleCls}`}
+                    title={m.description}
+                  >
+                    {m.label}
+                  </button>
+                );
+              })}
             </div>
           )}
 

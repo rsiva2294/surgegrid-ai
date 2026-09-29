@@ -44,7 +44,7 @@ export function getFeederDisasterStatus(
   const currentWindKmh = simulatedWeather ? simulatedWeather.windKmh : (scenario === 'SEVERE_CYCLONE' ? 92 : scenario === 'CYCLONE_ALERT' ? 65 : 40);
 
   // Extreme Surge / Inundation: Substation yard flooded if ground elevation <= surge depth (TNSDMA 2023 threshold)
-  const isYardFlooded = (scenario === 'EXTREME_SURGE' || scenario === 'MICHAUNG_2023' || scenario === 'FLOODS_2015') && 
+  const isYardFlooded = (scenario === 'EXTREME_SURGE' || scenario === 'MICHAUNG_2023' || scenario === 'FLOODS_2015' || scenario === 'MONSOON_2020') && 
     (ss?.elevationM !== undefined && ss.elevationM <= (scenario === 'FLOODS_2015' ? 4.0 : currentSurgeM));
 
   if (isYardFlooded) {

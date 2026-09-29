@@ -11,13 +11,14 @@
 ## What the app does today
 
 ### 1. Disaster simulation (the core of the Track 5 story)
-- **Two scenarios**, chosen from the floating *Disaster Cockpit* bar (top of the map): **Cyclone Michaung** and **2015 Megaflood**. The default view is **Live** (no simulation).
-  - *Cyclone Michaung (Dec 2023)*: a **real hindcast**, 144 hourly steps (T-69h to T+74h, where T-0 is the peak-rain hour). Rain is NASA GPM IMERG and wind is ERA5-Land, both averaged over the Chennai area through Earth Engine. Wind is an area average, not gusts, so it stays below the lowest IMD cyclone class. No storm surge is modelled. File: `public/data/scenarios/michaung2023.json`.
-  - *2015 Megaflood*: a **real hindcast**, 120 hourly steps built the same way. No storm surge is modelled. File: `public/data/scenarios/floods2015.json`.
-- **Timeline controls**: play / pause, step back / forward, and an hour-by-hour scrubber, with live wind, rain and surge readouts.
+- **Three real hindcast scenarios**, chosen from the floating *Disaster Cockpit* bar (top of the map): **Cyclone Michaung (Dec 2023)**, **2015 Megaflood** and **Monsoon Spell (Nov 2020)**. The default view is **Live** (no simulation). Each scenario is built from NASA GPM IMERG rain and ERA5-Land wind, averaged over the Chennai area through Earth Engine. Wind is an area average, not gusts. No storm surge is modelled. T-0 is the peak-rain hour.
+  - *Cyclone Michaung (Dec 2023)*: 144 hourly steps, T-69h to T+74h. Peak 14.0 mm/h, total 273 mm. File: `public/data/scenarios/michaung2023.json`.
+  - *2015 Megaflood*: 120 hourly steps, T-85h to T+34h. File: `public/data/scenarios/floods2015.json`.
+  - *Monsoon Spell (Nov 2020)*: an ordinary heavy northeast-monsoon spell, 12-18 Nov 2020, 144 hourly steps. Peak 16.8 mm/h, total 198 mm, worst 24 h 101 mm. File: `public/data/scenarios/monsoon2020.json`.
+- **Timeline controls**: play / pause, playback speed (1x, 2x, 4x, 8x; default 4x), step back / forward, milestone jumps, and an hour-by-hour scrubber, with live wind and rain readouts.
 - **Per-feeder status** at the chosen hour: yard-flood trip, pre-emptive wind trip (overhead and mixed lines), cyclone watch, or underground line still live. Rules are in `src/components/Map/disasterUtils.ts`.
-- The timeline auto-pauses and opens the AI Directive at milestone hours (Michaung: -24, 0, 12; Megaflood: -48, 0, 12).
-- `?scenario=MICHAUNG_2023` or `?scenario=FLOODS_2015` in the URL opens a scenario directly.
+- The timeline auto-pauses and opens the AI Directive at milestone hours (Michaung and Monsoon: -24, 0, 12; Megaflood: -48, 0, 12).
+- `?scenario=MICHAUNG_2023`, `?scenario=FLOODS_2015` or `?scenario=MONSOON_2020` in the URL opens a scenario directly.
 
 ### 2. Gemini AI (two tiers)
 - **Tier 1 — Grid Commander SOP** (city-wide). Ranks the 6 most vulnerable substations at the current hour and asks Gemini for a prioritised checklist (P0 critical / P1 lifeline / P2 field) with a statutory reference. Shown in the *AI Directive* window.

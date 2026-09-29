@@ -179,7 +179,7 @@ export function extractTopCompromisedInfra(
 
 type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
 type TargetGroup = 'flood' | 'overhead' | 'lifeline' | 'none';
-type ScenarioKey = 'MICHAUNG_2023' | 'FLOODS_2015';
+type ScenarioKey = 'MICHAUNG_2023' | 'FLOODS_2015' | 'MONSOON_2020';
 
 interface RuleMeta {
   title: string;
@@ -215,6 +215,33 @@ const RULE_META: Record<string, RuleMeta> = {
 };
 
 // Which official actions appear in which phase. Every id exists in officialSources.ts.
+// Rain-flood actions, used for the 2015 floods and the 2020 monsoon spell.
+const FLOOD_PHASE_RULES: Partial<Record<SopPhase, string[]>> = {
+    WATCH: [
+      'mop-identify-flood-prone',
+      'mop-trigger-mechanism',
+      'mop-dewatering-pump-arranged',
+      'tangedco-sandbags',
+      'tangedco-retaining-wall',
+      'gcc-check-transformers-pillar-boxes',
+    ],
+    CRITICAL: [
+      'mop-switch-off-if-required',
+      'gcc-cut-off-during-flooding',
+      'tangedco-oh-lines-out-of-service',
+      'tangedco-pump-out-flood',
+      'mop-mobile-dg-sets',
+      'tangedco-diesel-pumps-low-lying',
+    ],
+    RESTORATION: [
+      'tangedco-no-recharge-before-patrol',
+      'mop-restore-priority',
+      'mop-mobile-substation-12-24h',
+      'mop-emergency-operation-centre',
+      'gcc-generators-sewage-pumping',
+    ],
+};
+
 const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
   MICHAUNG_2023: {
     WATCH: [
@@ -241,31 +268,8 @@ const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
       'gcc-generators-sewage-pumping',
     ],
   },
-  FLOODS_2015: {
-    WATCH: [
-      'mop-identify-flood-prone',
-      'mop-trigger-mechanism',
-      'mop-dewatering-pump-arranged',
-      'tangedco-sandbags',
-      'tangedco-retaining-wall',
-      'gcc-check-transformers-pillar-boxes',
-    ],
-    CRITICAL: [
-      'mop-switch-off-if-required',
-      'gcc-cut-off-during-flooding',
-      'tangedco-oh-lines-out-of-service',
-      'tangedco-pump-out-flood',
-      'mop-mobile-dg-sets',
-      'tangedco-diesel-pumps-low-lying',
-    ],
-    RESTORATION: [
-      'tangedco-no-recharge-before-patrol',
-      'mop-restore-priority',
-      'mop-mobile-substation-12-24h',
-      'mop-emergency-operation-centre',
-      'gcc-generators-sewage-pumping',
-    ],
-  },
+  FLOODS_2015: FLOOD_PHASE_RULES,
+  MONSOON_2020: FLOOD_PHASE_RULES,
 };
 
 const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
@@ -278,6 +282,11 @@ const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
     WATCH: 'Flood watch: substation flood preparation from the official plans',
     CRITICAL: 'Flood response: switch-off and dewatering actions from the official plans',
     RESTORATION: 'After the flood: safe recharge and restoration priority',
+  },
+  MONSOON_2020: {
+    WATCH: 'Heavy monsoon rain expected: substation flood preparation from the official plans',
+    CRITICAL: 'Heavy monsoon rain: switch-off and dewatering actions from the official plans',
+    RESTORATION: 'After the rain: safe recharge and restoration priority',
   },
 };
 
@@ -379,7 +388,7 @@ interface BuiltDirective {
 }
 
 function scenarioKeyOf(scenarioId: ScenarioId): ScenarioKey | null {
-  return scenarioId === 'MICHAUNG_2023' || scenarioId === 'FLOODS_2015' ? scenarioId : null;
+  return scenarioId === 'LIVE' ? null : scenarioId;
 }
 
 function hourLabel(hour: number): string {
@@ -472,6 +481,12 @@ export function getDirectiveForTimestep(
 
 // ---- Gemini wording layer --------------------------------------------------------
 
+const SCENARIO_LABELS: Record<ScenarioKey, string> = {
+  MICHAUNG_2023: 'Cyclone Michaung, December 2023 (hindcast)',
+  FLOODS_2015: '2015 Chennai floods (hindcast)',
+  MONSOON_2020: 'Northeast monsoon rain spell, mid-November 2020 (hindcast)',
+};
+
 const geminiSopCache = new Map<string, GeminiSopDirective>();
 const MAX_NOTE_CHARS = 220;
 const MAX_SUMMARY_CHARS = 420;
@@ -522,7 +537,7 @@ export async function fetchLiveGeminiDirective(
   const actionLines = ruleIds
     .map(id => `${id}|${RULE_META[id].group}|${(getOfficialRule(id) as OfficialRule).quote}`)
     .join('\n');
-  const prompt = `SCENARIO: ${scenarioId === 'MICHAUNG_2023' ? 'Cyclone Michaung, December 2023 (hindcast)' : '2015 Chennai flood (hindcast)'}
+  const prompt = `SCENARIO: ${SCENARIO_LABELS[scenarioId as ScenarioKey]}
 TIME: ${hourLabel(timestep.timestep_hour)} (T-0 is the peak-rain hour)
 WEATHER (area mean): wind ${w.windKmh.toFixed(0)} km/h${w.imdClass ? ` (IMD class ${w.imdClass})` : ''} | rain ${w.rainMm.toFixed(1)} mm/h
 SUBSTATION LISTS (names from our grid data):
