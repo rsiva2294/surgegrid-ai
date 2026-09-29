@@ -284,7 +284,7 @@ export function getDirectiveForTimestep(
     return {
       ...base,
       weatherSnapshot: {
-        windKmh: timestep.wind_speed_10m_kmh,
+        windKmh: Math.abs(timestep.wind_speed_10m_kmh),
         rainMm: timestep.total_precipitation_1hr_mm,
         surgeM: timestep.simulated_storm_surge_msl_m,
         distanceKm: timestep.cyclone_distance_to_chennai_km,
@@ -306,7 +306,7 @@ export function getDirectiveForTimestep(
       hour: timestep.timestep_hour,
       label: timestep.label,
       weatherSnapshot: {
-        windKmh: timestep.wind_speed_10m_kmh,
+        windKmh: Math.abs(timestep.wind_speed_10m_kmh),
         rainMm: timestep.total_precipitation_1hr_mm,
         surgeM: timestep.simulated_storm_surge_msl_m,
         distanceKm: timestep.cyclone_distance_to_chennai_km,
@@ -321,7 +321,7 @@ export function getDirectiveForTimestep(
       hour: timestep.timestep_hour,
       label: timestep.label,
       weatherSnapshot: {
-        windKmh: timestep.wind_speed_10m_kmh,
+        windKmh: Math.abs(timestep.wind_speed_10m_kmh),
         rainMm: timestep.total_precipitation_1hr_mm,
         surgeM: timestep.simulated_storm_surge_msl_m,
       },

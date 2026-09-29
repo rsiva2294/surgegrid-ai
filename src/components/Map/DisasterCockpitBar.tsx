@@ -512,7 +512,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 isLight ? 'bg-sky-50 text-sky-800 border-sky-300' : 'bg-sky-950/50 text-sky-300 border-sky-600/40'
               }`} title="Simulated surface wind speed">
                 <Wind className="w-3 h-3 text-sky-400" />
-                {currentTimestep.wind_speed_10m_kmh.toFixed(0)}k
+                {Math.abs(currentTimestep.wind_speed_10m_kmh).toFixed(0)}k
               </span>
               <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 font-semibold ${
                 isLight ? 'bg-blue-50 text-blue-800 border-blue-300' : 'bg-blue-950/50 text-blue-300 border-blue-600/40'
