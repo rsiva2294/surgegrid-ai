@@ -12,12 +12,12 @@
 
 ### 1. Disaster simulation (the core of the Track 5 story)
 - **Two scenarios**, chosen from the floating *Disaster Cockpit* bar (top of the map): **Cyclone Michaung** and **2015 Megaflood**. The default view is **Live** (no simulation).
-  - *Michaung*: 61 hourly steps from T-48h to T+12h (wind up to ~134 km/h, rain up to 46 mm/h, surge up to ~4 m). File: `public/data/scenarios/michaung_class_cat3.json`. This is a modelled benchmark dataset, not a live forecast.
-  - *2015 Megaflood*: 120 hourly steps, a **hindcast** built from NASA GPM IMERG rain and ERA5-Land wind (via Earth Engine). It has no storm surge (sea level held at 0.4 m). File: `public/data/scenarios/floods2015.json`.
+  - *Cyclone Michaung (Dec 2023)*: a **real hindcast**, 144 hourly steps (T-69h to T+74h, where T-0 is the peak-rain hour). Rain is NASA GPM IMERG and wind is ERA5-Land, both averaged over the Chennai area through Earth Engine. Wind is an area average, not gusts, so it stays below the lowest IMD cyclone class. No storm surge is modelled. File: `public/data/scenarios/michaung2023.json`.
+  - *2015 Megaflood*: a **real hindcast**, 120 hourly steps built the same way. No storm surge is modelled. File: `public/data/scenarios/floods2015.json`.
 - **Timeline controls**: play / pause, step back / forward, and an hour-by-hour scrubber, with live wind, rain and surge readouts.
 - **Per-feeder status** at the chosen hour: yard-flood trip, pre-emptive wind trip (overhead and mixed lines), cyclone watch, or underground line still live. Rules are in `src/components/Map/disasterUtils.ts`.
 - The timeline auto-pauses and opens the AI Directive at milestone hours (Michaung: -24, 0, 12; Megaflood: -48, 0, 12).
-- `?scenario=MICHAUNG_CAT3` or `?scenario=FLOODS_2015` in the URL opens a scenario directly.
+- `?scenario=MICHAUNG_2023` or `?scenario=FLOODS_2015` in the URL opens a scenario directly.
 
 ### 2. Gemini AI (two tiers)
 - **Tier 1 — Grid Commander SOP** (city-wide). Ranks the 6 most vulnerable substations at the current hour and asks Gemini for a prioritised checklist (P0 critical / P1 lifeline / P2 field) with a statutory reference. Shown in the *AI Directive* window.

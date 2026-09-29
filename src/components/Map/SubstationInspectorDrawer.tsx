@@ -505,7 +505,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
             <div className="flex items-center gap-2 min-w-0">
               <span className="text-sm shrink-0">🌀</span>
               <span className="truncate font-semibold text-xs">
-                Cyclone Michaung Stress Model (Cat 3)
+                What-if severe cyclone model (hypothetical, not Michaung)
               </span>
               <span
                 className={`text-[10px] font-medium whitespace-nowrap px-1.5 py-0.5 rounded border shrink-0 ${
@@ -514,7 +514,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     : 'bg-blue-950 text-cyan-300 border-blue-800'
                 }`}
               >
-                CWC • IMERG
+                Hypothetical • GEE terrain
               </span>
             </div>
             <span className={`shrink-0 p-0.5 rounded ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
@@ -551,7 +551,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   <span className={`text-xs font-semibold truncate ${
                     isLight ? 'text-slate-900' : 'text-slate-100'
                   }`}>
-                    Michaung Cat-3 Hydro Model
+                    What-if severe cyclone hydro model (hypothetical)
                   </span>
                 </div>
                 <span className={`text-[10px] font-medium whitespace-nowrap px-1.5 py-0.5 rounded border shrink-0 ${
@@ -559,7 +559,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     ? 'bg-blue-50 text-blue-800 border-blue-200'
                     : 'bg-blue-950 text-cyan-300 border-blue-800'
                 }`}>
-                  IMERG • CWC • GEE
+                  Hypothetical scenario • GEE terrain
                 </span>
               </div>
 

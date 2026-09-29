@@ -8,7 +8,6 @@ import {
   SkipBack,
   SkipForward,
   Sparkles,
-  Waves,
   Droplets,
   Clock
 } from 'lucide-react';
@@ -19,7 +18,7 @@ import type { GeminiSopDirective } from '../../services/geminiSopService';
 export type DisasterScenario = 
   | 'NORMAL' 
   | 'LIVE' 
-  | 'MICHAUNG_CAT3' 
+  | 'MICHAUNG_2023' 
   | 'FLOODS_2015' 
   | 'CYCLONE_ALERT' 
   | 'SEVERE_CYCLONE' 
@@ -250,25 +249,25 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             </span>
           </button>
 
-          {/* 2. Cyclone Michaung (Cat-3) Scenario Simulation */}
+          {/* 2. Cyclone Michaung (Dec 2023) hindcast */}
           <button
             type="button"
-            onClick={() => setDisasterScenario('MICHAUNG_CAT3')}
+            onClick={() => setDisasterScenario('MICHAUNG_2023')}
             className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
-              disasterScenario === 'MICHAUNG_CAT3' || disasterScenario === 'SEVERE_CYCLONE' || disasterScenario === 'CYCLONE_ALERT'
+              disasterScenario === 'MICHAUNG_2023' || disasterScenario === 'SEVERE_CYCLONE' || disasterScenario === 'CYCLONE_ALERT'
                 ? (isLight ? 'bg-amber-600 text-white font-bold shadow-sm' : 'bg-amber-500 text-slate-950 font-bold shadow-sm')
                 : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
             }`}
-            title="Simulate Category-3 Cyclone Michaung (61 timesteps from T-48h to T+12h)"
+            title="Cyclone Michaung, December 2023: real hindcast (NASA IMERG rain + ERA5-Land wind), 144 hourly steps"
           >
             <span>🌀</span>
             <span>Cyclone Michaung</span>
             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
-              disasterScenario === 'MICHAUNG_CAT3'
+              disasterScenario === 'MICHAUNG_2023'
                 ? (isLight ? 'bg-amber-800 text-white' : 'bg-slate-950 text-amber-300 font-bold')
                 : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
             }`}>
-              Cat 3
+              Dec 2023
             </span>
           </button>
 
@@ -343,7 +342,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
       )}
 
       {/* Secondary Bar: If Simulation is Active, render TIMELINE OF EVENTS. If Normal, render TRIAGE Quick Filters */}
-      {disasterScenario === 'MICHAUNG_CAT3' || disasterScenario === 'FLOODS_2015' ? (
+      {disasterScenario === 'MICHAUNG_2023' || disasterScenario === 'FLOODS_2015' ? (
         <div className={`pointer-events-auto rounded-xl p-1.5 border flex items-center gap-2 transition-all text-xs max-w-full overflow-x-auto no-scrollbar whitespace-nowrap ${
           isLight
             ? 'bg-white/98 border-slate-300/90 text-slate-800 shadow-[0_8px_25px_-4px_rgba(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
@@ -418,7 +417,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           </div>
 
           {/* Milestone Quick Jumps */}
-          {disasterScenario === 'MICHAUNG_CAT3' ? (
+          {disasterScenario === 'MICHAUNG_2023' ? (
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -429,7 +428,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     : (isLight ? 'bg-amber-50 text-amber-900 border border-amber-300' : 'bg-amber-950/40 text-amber-300 border border-amber-600/40')
                 }`}
               >
-                T-24h Watch
+                T-24h
               </button>
               <button
                 type="button"
@@ -440,7 +439,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     : (isLight ? 'bg-rose-50 text-rose-900 border border-rose-300' : 'bg-rose-950/40 text-rose-300 border border-rose-600/40')
                 }`}
               >
-                T-0h Landfall
+                T-0h Peak rain
               </button>
               <button
                 type="button"
@@ -451,7 +450,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     : (isLight ? 'bg-emerald-50 text-emerald-900 border border-emerald-300' : 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/40')
                 }`}
               >
-                T+12h Restore
+                T+12h
               </button>
             </div>
           ) : (
@@ -465,7 +464,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     : (isLight ? 'bg-blue-50 text-blue-900 border border-blue-300' : 'bg-blue-950/40 text-blue-300 border border-blue-600/40')
                 }`}
               >
-                T-48h Inflow
+                T-48h
               </button>
               <button
                 type="button"
@@ -476,7 +475,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     : (isLight ? 'bg-rose-50 text-rose-900 border border-rose-300' : 'bg-rose-950/40 text-rose-300 border border-rose-600/40')
                 }`}
               >
-                T-0h Breach
+                T-0h Peak rain
               </button>
               <button
                 type="button"
@@ -487,7 +486,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     : (isLight ? 'bg-emerald-50 text-emerald-900 border border-emerald-300' : 'bg-emerald-950/40 text-emerald-300 border border-emerald-600/40')
                 }`}
               >
-                T+12h Receding
+                T+12h
               </button>
             </div>
           )}
@@ -510,7 +509,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             <div className="flex items-center gap-1.5 pl-1.5 border-l border-current/20">
               <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 font-semibold ${
                 isLight ? 'bg-sky-50 text-sky-800 border-sky-300' : 'bg-sky-950/50 text-sky-300 border-sky-600/40'
-              }`} title="Simulated surface wind speed">
+              }`} title="Area-mean 10 m wind over Chennai (ERA5-Land hourly average, not gusts)">
                 <Wind className="w-3 h-3 text-sky-400" />
                 {Math.abs(currentTimestep.wind_speed_10m_kmh).toFixed(0)}k
               </span>
@@ -519,12 +518,6 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
               }`} title="Hourly precipitation (NASA GPM IMERG)">
                 <Droplets className="w-3 h-3 text-blue-400" />
                 {currentTimestep.total_precipitation_1hr_mm.toFixed(0)}mm
-              </span>
-              <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 font-semibold ${
-                isLight ? 'bg-teal-50 text-teal-800 border-teal-300' : 'bg-teal-950/50 text-teal-300 border-teal-600/40'
-              }`} title="Simulated coastal storm surge">
-                <Waves className="w-3 h-3 text-teal-400" />
-                {currentTimestep.simulated_storm_surge_msl_m.toFixed(1)}m
               </span>
             </div>
           )}

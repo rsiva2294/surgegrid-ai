@@ -14,7 +14,6 @@ import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
 import {
   OFFICIAL_SOURCES,
-  IMD_WARNING_STAGES,
   formatCitation,
   getImdCycloneClass,
   getOfficialRule,
@@ -69,18 +68,15 @@ export interface GeminiSopDirective {
   summaryEn: string;
   /** Short names of the official plans quoted in this directive. */
   sources: string[];
-  /** Latest IMD warning stage already issued at this hour (cyclone scenario only). */
-  warningStage: string | null;
   weatherSnapshot: {
     windKmh: number;
     rainMm: number;
-    /** null when the scenario does not model storm surge. */
-    surgeM: number | null;
-    distanceKm?: number;
+    /** Surface pressure in hPa (ERA5-Land), when the scenario file has it. */
+    pressureHpa: number | null;
     /** IMD cyclone class for the wind speed, or null below the lowest class (88 km/h). */
     imdClass: string | null;
   };
-  /** Counts taken from our grid and scenario data, not estimates. */
+  /** Counts taken from our grid data, not estimates. `flood` = substations at or below Chennai's average elevation. */
   exposure: {
     flood: number;
     overhead: number;
@@ -183,7 +179,7 @@ export function extractTopCompromisedInfra(
 
 type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
 type TargetGroup = 'flood' | 'overhead' | 'lifeline' | 'none';
-type ScenarioKey = 'MICHAUNG_CAT3' | 'FLOODS_2015';
+type ScenarioKey = 'MICHAUNG_2023' | 'FLOODS_2015';
 
 interface RuleMeta {
   title: string;
@@ -220,7 +216,7 @@ const RULE_META: Record<string, RuleMeta> = {
 
 // Which official actions appear in which phase. Every id exists in officialSources.ts.
 const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
-  MICHAUNG_CAT3: {
+  MICHAUNG_2023: {
     WATCH: [
       'mop-diesel-7-days',
       'mop-check-inventories',
@@ -262,11 +258,18 @@ const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
       'mop-mobile-dg-sets',
       'tangedco-diesel-pumps-low-lying',
     ],
+    RESTORATION: [
+      'tangedco-no-recharge-before-patrol',
+      'mop-restore-priority',
+      'mop-mobile-substation-12-24h',
+      'mop-emergency-operation-centre',
+      'gcc-generators-sewage-pumping',
+    ],
   },
 };
 
 const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
-  MICHAUNG_CAT3: {
+  MICHAUNG_2023: {
     WATCH: 'Cyclone approaching: standby actions from the official plans',
     CRITICAL: 'Cyclone impact: safety and switch-off actions from the official plans',
     RESTORATION: 'After the storm: safe recharge and restoration priority',
@@ -279,30 +282,19 @@ const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
 };
 
 /**
- * Phase rules use only facts we can point to:
- * - Cyclone: while wind is at or above the lowest IMD cyclone class (88 km/h) the phase is CRITICAL;
- *   after landfall (hour > 0) with wind below that class it is RESTORATION; otherwise WATCH.
- * - Flood: before the scenario's peak-rain hour (T-0) it is WATCH, from T-0 on it is CRITICAL.
- *   The flood data ends 34 h after the peak and recovery is not modelled.
+ * Phase rules use only what the scenario data shows. T-0 is the peak-rain hour of the hindcast.
+ * - Before T-0: WATCH.
+ * - From T-0 while rain continues (hourly rain of 0.1 mm or more): CRITICAL.
+ * - After T-0 once hourly rain drops below 0.1 mm: RESTORATION (the rain has effectively stopped).
+ * Wind is shown with its IMD cyclone class but does not drive the phase, because the hindcast wind is an
+ * area average and sits below the lowest IMD class.
  */
-function resolvePhase(scenarioKey: ScenarioKey, timestep: ScenarioTimestep): SopPhase {
-  const hour = timestep.timestep_hour;
-  if (scenarioKey === 'MICHAUNG_CAT3') {
-    if (getImdCycloneClass(timestep.wind_speed_10m_kmh)) return 'CRITICAL';
-    return hour > 0 ? 'RESTORATION' : 'WATCH';
-  }
-  return hour >= 0 ? 'CRITICAL' : 'WATCH';
-}
+const RAIN_STOPPED_MM = 0.1;
 
-/** Latest IMD warning stage that would already have been issued at this many hours before landfall. */
-function resolveWarningStage(hour: number): string | null {
-  if (hour >= 0) return null;
-  const hoursBefore = -hour;
-  let stage: string | null = null;
-  for (const st of IMD_WARNING_STAGES) {
-    if (st.hoursBefore >= hoursBefore) stage = st.name;
-  }
-  return stage;
+function resolvePhase(timestep: ScenarioTimestep): SopPhase {
+  const hour = timestep.timestep_hour;
+  if (hour < 0) return 'WATCH';
+  return hour > 0 && timestep.total_precipitation_1hr_mm < RAIN_STOPPED_MM ? 'RESTORATION' : 'CRITICAL';
 }
 
 // ---- Targets from our own data ------------------------------------------------
@@ -321,28 +313,20 @@ function isOverheadFeeder(f: FeederDetail): boolean {
   return cfg.includes('OH') || cfg.includes('OVERHEAD') || cfg.includes('MIXED');
 }
 
-function buildTargets(
-  substations: TnebSubstation[],
-  scenarioKey: ScenarioKey,
-  timestep: ScenarioTimestep,
-  phase: SopPhase
-): SopTargets {
+/**
+ * Chennai's average elevation, from the GCC City DMP 2023 Preface ("barely 2.0 meters above mean sea level").
+ * The scenarios model no storm surge, so "flood" targets are the lowest-lying substations by the
+ * elevation stored in the grid data (Earth Engine terrain data).
+ */
+const AVERAGE_ELEVATION_M = 2.0;
+
+function buildTargets(substations: TnebSubstation[]): SopTargets {
   const nameOf = (ss: TnebSubstation) => ss.cleanName || ss.name;
-  const surgeM = timestep.simulated_storm_surge_msl_m;
 
-  // Modelled flooding per substation (grid-file hydroRisk, derived from Earth Engine terrain data).
-  const depthOf = (ss: TnebSubstation) =>
-    (scenarioKey === 'FLOODS_2015' ? ss.hydroRisk?.flood2015DepthM : ss.hydroRisk?.cycloneMaxDepthM) ?? 0;
-  const modelled = substations.filter(ss => depthOf(ss) > 0).sort((a, b) => depthOf(b) - depthOf(a));
-
-  // While the cyclone is at impact, prefer substations whose yard elevation is at or below the current surge.
-  let floodNames = modelled.map(nameOf);
-  if (scenarioKey === 'MICHAUNG_CAT3' && phase === 'CRITICAL' && surgeM > 0) {
-    const underWater = substations
-      .filter(ss => ss.elevationM !== undefined && ss.elevationM <= surgeM)
-      .sort((a, b) => (a.elevationM as number) - (b.elevationM as number));
-    if (underWater.length > 0) floodNames = underWater.map(nameOf);
-  }
+  const withElevation = substations
+    .filter(ss => ss.elevationM !== undefined)
+    .sort((a, b) => (a.elevationM as number) - (b.elevationM as number));
+  const lowLying = withElevation.filter(ss => (ss.elevationM as number) <= AVERAGE_ELEVATION_M);
 
   const overheadRanked = substations
     .map(ss => ({ ss, n: (ss.feeders || []).filter(isOverheadFeeder).length }))
@@ -358,11 +342,11 @@ function buildTargets(
     .sort((a, b) => b.n - a.n);
 
   return {
-    flood: floodNames.slice(0, MAX_TARGETS),
+    flood: withElevation.slice(0, MAX_TARGETS).map(nameOf),
     overhead: overheadRanked.slice(0, MAX_TARGETS).map(x => nameOf(x.ss)),
     lifeline: lifelineRanked.slice(0, MAX_TARGETS).map(x => nameOf(x.ss)),
     counts: {
-      flood: modelled.length,
+      flood: lowLying.length,
       overhead: overheadRanked.length,
       lifeline: lifelineRanked.reduce((sum, x) => sum + x.n, 0),
     },
@@ -376,7 +360,7 @@ function targetsFor(group: TargetGroup, targets: SopTargets): string[] {
 function fallbackNote(group: TargetGroup, targets: SopTargets): string | undefined {
   switch (group) {
     case 'flood':
-      return `${targets.counts.flood} substations show modelled flooding in this scenario's data.`;
+      return `${targets.counts.flood} substations sit at or below ${AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai; the lowest-lying are listed.`;
     case 'overhead':
       return `${targets.counts.overhead} substations have overhead or mixed feeders in the grid data.`;
     case 'lifeline':
@@ -395,7 +379,7 @@ interface BuiltDirective {
 }
 
 function scenarioKeyOf(scenarioId: ScenarioId): ScenarioKey | null {
-  return scenarioId === 'MICHAUNG_CAT3' || scenarioId === 'FLOODS_2015' ? scenarioId : null;
+  return scenarioId === 'MICHAUNG_2023' || scenarioId === 'FLOODS_2015' ? scenarioId : null;
 }
 
 function hourLabel(hour: number): string {
@@ -414,13 +398,9 @@ function buildDirective(
   const hour = timestep.timestep_hour;
   const windKmh = Math.abs(timestep.wind_speed_10m_kmh);
   const rainMm = timestep.total_precipitation_1hr_mm;
-  const isCyclone = scenarioKey === 'MICHAUNG_CAT3';
-  const surgeM = isCyclone ? timestep.simulated_storm_surge_msl_m : null;
-
-  const phase = resolvePhase(scenarioKey, timestep);
-  const warningStage = isCyclone ? resolveWarningStage(hour) : null;
+  const phase = resolvePhase(timestep);
   const imdClass = getImdCycloneClass(windKmh);
-  const targets = buildTargets(substations, scenarioKey, timestep, phase);
+  const targets = buildTargets(substations);
 
   const ruleIds = (PHASE_RULES[scenarioKey][phase] || []).filter(id => getOfficialRule(id) && RULE_META[id]);
   // The data note is shown once per target group, on the first action that uses it, to avoid repeating it.
@@ -446,28 +426,23 @@ function buildDirective(
   ruleIds.forEach(id => sourceIds.add((getOfficialRule(id) as OfficialRule).sourceId));
   const sources = Array.from(sourceIds).map(sid => OFFICIAL_SOURCES[sid].shortName);
 
-  const weatherText = isCyclone
-    ? `wind ${windKmh.toFixed(0)} km/h${imdClass ? ` (IMD class: ${imdClass.name})` : ''}, rain ${rainMm.toFixed(0)} mm/h, surge ${(surgeM as number).toFixed(1)} m`
-    : `rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h`;
   const summaryEn =
-    `${hourLabel(hour)}${warningStage ? ` (${warningStage})` : ''}: ${weatherText}. ` +
-    `${targets.counts.flood} substations show modelled flooding in this scenario's data. ` +
+    `${hourLabel(hour)}: area-mean rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h${imdClass ? ` (IMD class: ${imdClass.name})` : ''}. ` +
+    `${targets.counts.flood} substations sit at or below ${AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai. ` +
     `The actions below are quoted from official disaster management plans.`;
 
   const directive: GeminiSopDirective = {
     scenarioId,
     hour,
-    label: `${hourLabel(hour)}${warningStage ? ` · ${warningStage}` : ''}`,
+    label: hourLabel(hour),
     title: PHASE_TITLES[scenarioKey][phase],
     urgency: phase,
     summaryEn,
     sources,
-    warningStage,
     weatherSnapshot: {
       windKmh,
       rainMm,
-      surgeM,
-      distanceKm: timestep.cyclone_distance_to_chennai_km,
+      pressureHpa: timestep.surface_pressure_hpa ?? null,
       imdClass: imdClass
         ? `${imdClass.name} (${imdClass.minKmh}${imdClass.maxKmh ? `-${imdClass.maxKmh}` : '+'} km/h)`
         : null,
@@ -547,14 +522,14 @@ export async function fetchLiveGeminiDirective(
   const actionLines = ruleIds
     .map(id => `${id}|${RULE_META[id].group}|${(getOfficialRule(id) as OfficialRule).quote}`)
     .join('\n');
-  const prompt = `SCENARIO: ${scenarioId === 'MICHAUNG_CAT3' ? 'Cyclone Michaung (Category-3 benchmark)' : '2015 Chennai flood hindcast'}
-TIME: ${hourLabel(timestep.timestep_hour)}${fallback.warningStage ? ` | IMD warning stage: ${fallback.warningStage}` : ''}
-WEATHER: wind ${w.windKmh.toFixed(0)} km/h${w.imdClass ? ` (IMD class ${w.imdClass})` : ''} | rain ${w.rainMm.toFixed(1)} mm/h${w.surgeM !== null ? ` | surge ${w.surgeM.toFixed(1)} m` : ''}
+  const prompt = `SCENARIO: ${scenarioId === 'MICHAUNG_2023' ? 'Cyclone Michaung, December 2023 (hindcast)' : '2015 Chennai flood (hindcast)'}
+TIME: ${hourLabel(timestep.timestep_hour)} (T-0 is the peak-rain hour)
+WEATHER (area mean): wind ${w.windKmh.toFixed(0)} km/h${w.imdClass ? ` (IMD class ${w.imdClass})` : ''} | rain ${w.rainMm.toFixed(1)} mm/h
 SUBSTATION LISTS (names from our grid data):
-flood: ${targets.flood.join(', ') || 'none'}
+flood (lowest-lying): ${targets.flood.join(', ') || 'none'}
 overhead: ${targets.overhead.join(', ') || 'none'}
 lifeline: ${targets.lifeline.join(', ') || 'none'}
-COUNTS: ${targets.counts.flood} substations with modelled flooding; ${targets.counts.overhead} substations with overhead or mixed feeders; ${targets.counts.lifeline} hospital and water feeders
+COUNTS: ${targets.counts.flood} substations at or below 2.0 m MSL; ${targets.counts.overhead} substations with overhead or mixed feeders; ${targets.counts.lifeline} hospital and water feeders
 ACTIONS (id|list to use|exact quote):
 ${actionLines}`;
 

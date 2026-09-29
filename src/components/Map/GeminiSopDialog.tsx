@@ -196,7 +196,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Wind className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Surface Wind</div>
+              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Wind (area mean)</div>
               <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{Math.abs(directive.weatherSnapshot.windKmh).toFixed(1)} km/h</div>
               <div className={`text-[10px] font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`} title="IMD cyclone class (MoP Power-Sector DMP 2021, Table-4)">
                 {directive.weatherSnapshot.imdClass ? `IMD: ${directive.weatherSnapshot.imdClass}` : 'Below IMD Severe class (88 km/h)'}
@@ -211,7 +211,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Droplets className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Precipitation</div>
+              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Rain (area mean)</div>
               <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.rainMm.toFixed(1)} mm/h</div>
             </div>
           </div>
@@ -223,8 +223,8 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Waves className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Storm Surge</div>
-              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.surgeM === null ? 'Not modelled' : `${directive.weatherSnapshot.surgeM.toFixed(1)}m MSL`}</div>
+              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Surface Pressure</div>
+              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.pressureHpa === null ? 'n/a' : `${directive.weatherSnapshot.pressureHpa.toFixed(0)} hPa`}</div>
             </div>
           </div>
         </div>
@@ -314,7 +314,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                   {directive.exposure.flood}
                 </div>
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-rose-800' : 'text-rose-400'}`}>
-                  Modelled Flooding
+                  At/Below 2.0 m MSL
                 </div>
               </div>
             </div>

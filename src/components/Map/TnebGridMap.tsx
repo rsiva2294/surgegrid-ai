@@ -113,7 +113,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [disasterScenario, setDisasterScenario] = useState<DisasterScenario>(() => {
     if (typeof window !== 'undefined') {
       const q = new URLSearchParams(window.location.search).get('scenario');
-      if (q === 'MICHAUNG_CAT3' || q === 'FLOODS_2015') return q;
+      if (q === 'MICHAUNG_2023' || q === 'FLOODS_2015') return q;
     }
     return 'NORMAL';
   });
@@ -130,8 +130,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
   // Scenario Loader
   useEffect(() => {
-    if (disasterScenario === 'MICHAUNG_CAT3') {
-      fetchScenarioData('MICHAUNG_CAT3').then(data => {
+    if (disasterScenario === 'MICHAUNG_2023') {
+      fetchScenarioData('MICHAUNG_2023').then(data => {
         setScenarioData(data);
         setSimulationHour(-24);
         seenMilestonesRef.current.clear();
@@ -170,9 +170,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
   // Autonomous Gemini Directive Pop-up at crucial milestone hours
   useEffect(() => {
-    if (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015') return;
+    if (disasterScenario !== 'MICHAUNG_2023' && disasterScenario !== 'FLOODS_2015') return;
     
-    const milestoneHours = disasterScenario === 'MICHAUNG_CAT3' ? [-24, 0, 12] : [-48, 0, 12];
+    const milestoneHours = disasterScenario === 'MICHAUNG_2023' ? [-24, 0, 12] : [-48, 0, 12];
     if (milestoneHours.includes(simulationHour) && !seenMilestonesRef.current.has(simulationHour)) {
       seenMilestonesRef.current.add(simulationHour);
       setIsGeminiSopOpen(true);
@@ -188,12 +188,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [liveGeminiDirective, setLiveGeminiDirective] = useState<GeminiSopDirective | null>(null);
 
   const baseDirective = useMemo(() => {
-    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015')) return null;
+    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_2023' && disasterScenario !== 'FLOODS_2015')) return null;
     return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages);
   }, [currentTimestep, disasterScenario, substations, liveOutages]);
 
   useEffect(() => {
-    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015')) {
+    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_2023' && disasterScenario !== 'FLOODS_2015')) {
       setLiveGeminiDirective(null);
       return;
     }
