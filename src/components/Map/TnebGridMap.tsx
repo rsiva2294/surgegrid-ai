@@ -103,6 +103,97 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
+
+  // Left control panel (Search + Layers + Triage) width state & persistence (default 360px, min 280px, max 580px / 45vw)
+  const DEFAULT_LEFT_PANEL_WIDTH = 360;
+  const MIN_LEFT_PANEL_WIDTH = 280;
+  const MAX_LEFT_PANEL_WIDTH = 580;
+
+  const [leftPanelWidth, setLeftPanelWidth] = useState<number>(() => {
+    if (typeof window === 'undefined') return DEFAULT_LEFT_PANEL_WIDTH;
+    try {
+      const saved = localStorage.getItem('sg_left_panel_width');
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= MIN_LEFT_PANEL_WIDTH && parsed <= MAX_LEFT_PANEL_WIDTH) {
+          return parsed;
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return DEFAULT_LEFT_PANEL_WIDTH;
+  });
+
+  const [isResizingLeftPanel, setIsResizingLeftPanel] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleLeftPanelResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingLeftPanel(true);
+    const startX = e.clientX;
+    const startWidth = leftPanelWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      // Anchored to the left side, so moving right increases width
+      const deltaX = moveEvent.clientX - startX;
+      const maxAllowed = Math.min(MAX_LEFT_PANEL_WIDTH, Math.round(window.innerWidth * 0.45));
+      const nextWidth = Math.max(MIN_LEFT_PANEL_WIDTH, Math.min(maxAllowed, startWidth + deltaX));
+      setLeftPanelWidth(nextWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingLeftPanel(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      setLeftPanelWidth((current) => {
+        try {
+          localStorage.setItem('sg_left_panel_width', String(current));
+        } catch {
+          // ignore
+        }
+        return current;
+      });
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleResetLeftPanelWidth = () => {
+    setLeftPanelWidth(DEFAULT_LEFT_PANEL_WIDTH);
+    try {
+      localStorage.setItem('sg_left_panel_width', String(DEFAULT_LEFT_PANEL_WIDTH));
+    } catch {
+      // ignore
+    }
+  };
+
+  const toggleLeftPanelPreset = () => {
+    const targetWidth = leftPanelWidth > 400 ? DEFAULT_LEFT_PANEL_WIDTH : 480;
+    setLeftPanelWidth(targetWidth);
+    try {
+      localStorage.setItem('sg_left_panel_width', String(targetWidth));
+    } catch {
+      // ignore
+    }
+  };
+
   // Reset showLayersDuringTriage when triage filter changes
   useEffect(() => {
     setShowLayersDuringTriage(false);
@@ -982,7 +1073,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       />
 
       {/* Top Left Floating Search & Quick Filters */}
-      <div className="absolute top-[5.25rem] md:top-4 left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] md:max-w-sm pointer-events-none">
+      <div
+        className={`absolute top-[5.25rem] md:top-4 left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] ${
+          isResizingLeftPanel ? 'transition-none select-none' : 'transition-[width] duration-200'
+        } pointer-events-none`}
+        style={{
+          width: isDesktop ? `${leftPanelWidth}px` : undefined,
+          maxWidth: isDesktop ? 'min(580px, calc(100vw - 32px))' : 'calc(100vw - 1rem)'
+        }}
+      >
         <MapSearchBox
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -990,6 +1089,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           onSelectSubstation={onSelectSubstation}
           onSelectSection={onSelectSection}
           isLight={isLight}
+          onResizeStart={handleLeftPanelResizeStart}
+          onResetWidth={handleResetLeftPanelWidth}
+          isResizing={isResizingLeftPanel}
         />
 
         {crisisTriageFilter !== 'all' && !showLayersDuringTriage ? (
@@ -1009,6 +1111,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             substationsWithOutages={substationsWithOutages}
             isLight={isLight}
             onShowLayers={() => setShowLayersDuringTriage(true)}
+            panelWidth={leftPanelWidth}
+            onResizeStart={handleLeftPanelResizeStart}
+            onResetWidth={handleResetLeftPanelWidth}
+            onTogglePreset={toggleLeftPanelPreset}
+            isResizing={isResizingLeftPanel}
           />
         ) : (
           <>
@@ -1047,6 +1154,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               substations={substations}
               sections={sections}
               isLight={isLight}
+              panelWidth={leftPanelWidth}
+              onResizeStart={handleLeftPanelResizeStart}
+              onResetWidth={handleResetLeftPanelWidth}
+              onTogglePreset={toggleLeftPanelPreset}
+              isResizing={isResizingLeftPanel}
             />
           </>
         )}

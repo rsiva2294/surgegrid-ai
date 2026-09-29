@@ -1,5 +1,5 @@
-import React from 'react';
-import { Wind, AlertTriangle } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Wind, AlertTriangle, GripVertical, RotateCcw } from 'lucide-react';
 import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 
 export type DisasterScenario = 'NORMAL' | 'CYCLONE_ALERT' | 'SEVERE_CYCLONE' | 'EXTREME_SURGE';
@@ -30,14 +30,143 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
   isLight,
   liveWeather
 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 768) return null;
+    try {
+      const saved = localStorage.getItem('sg_cockpit_position');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed?.x === 'number' && typeof parsed?.y === 'number') {
+          const safeX = Math.max(12, Math.min(window.innerWidth - 320, parsed.x));
+          const safeY = Math.max(8, Math.min(window.innerHeight - 80, parsed.y));
+          return { x: safeX, y: safeY };
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  });
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth >= 768;
+      setIsDesktop(desktop);
+      if (!desktop) return;
+      setPosition((prev) => {
+        if (!prev) return null;
+        const safeX = Math.max(12, Math.min(window.innerWidth - 320, prev.x));
+        const safeY = Math.max(8, Math.min(window.innerHeight - 80, prev.y));
+        return { x: safeX, y: safeY };
+      });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleDragStart = (e: React.MouseEvent) => {
+    if (!isDesktop || !containerRef.current) return;
+    e.preventDefault();
+    setIsDragging(true);
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const currentX = position ? position.x : rect.left;
+    const currentY = position ? position.y : rect.top;
+
+    const startClientX = e.clientX;
+    const startClientY = e.clientY;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startClientX;
+      const deltaY = moveEvent.clientY - startClientY;
+
+      const containerWidth = containerRef.current?.offsetWidth || 400;
+      const containerHeight = containerRef.current?.offsetHeight || 80;
+
+      const maxX = Math.max(12, window.innerWidth - containerWidth - 12);
+      const maxY = Math.max(8, window.innerHeight - containerHeight - 12);
+
+      const clampedX = Math.max(12, Math.min(maxX, currentX + deltaX));
+      const clampedY = Math.max(8, Math.min(maxY, currentY + deltaY));
+
+      setPosition({ x: clampedX, y: clampedY });
+    };
+
+    const onMouseUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+
+      setPosition((cur) => {
+        if (cur) {
+          try {
+            localStorage.setItem('sg_cockpit_position', JSON.stringify(cur));
+          } catch {
+            // ignore
+          }
+        }
+        return cur;
+      });
+    };
+
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const handleResetPosition = () => {
+    setPosition(null);
+    try {
+      localStorage.removeItem('sg_cockpit_position');
+    } catch {
+      // ignore
+    }
+  };
+
   return (
-    <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-1.5 w-auto max-w-[calc(100vw-1rem)] md:max-w-none">
+    <div
+      ref={containerRef}
+      style={
+        isDesktop && position
+          ? {
+              top: `${position.y}px`,
+              left: `${position.x}px`,
+              transform: 'none',
+            }
+          : undefined
+      }
+      className={`absolute z-20 pointer-events-none flex flex-col items-center gap-1.5 w-auto max-w-[calc(100vw-1rem)] md:max-w-none ${
+        !isDesktop || !position ? 'top-2 md:top-4 left-1/2 -translate-x-1/2' : ''
+      } ${isDragging ? 'transition-none select-none' : 'transition-transform duration-100'}`}
+    >
       <div className={`pointer-events-auto rounded-2xl p-1 border flex items-center gap-1 transition-all max-w-full overflow-x-auto no-scrollbar ${
         isLight
           ? 'bg-white/98 border-slate-300/90 text-slate-900 shadow-[0_10px_35px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/95 border-slate-700/80 text-white shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
-      }`}>
-        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 border-r shrink-0 border-current/10">
+      } ${isDragging ? (isLight ? 'ring-2 ring-indigo-500 shadow-2xl' : 'ring-2 ring-cyan-400 shadow-2xl shadow-cyan-500/30') : ''}`}>
+        {/* Desktop Drag Handle */}
+        <div
+          onMouseDown={handleDragStart}
+          onDoubleClick={handleResetPosition}
+          className={`hidden md:flex items-center justify-center pl-1.5 pr-1 py-1 rounded-lg cursor-grab active:cursor-grabbing select-none transition-colors group ${
+            isLight ? 'hover:bg-slate-100 text-slate-400 hover:text-slate-700' : 'hover:bg-slate-800 text-slate-500 hover:text-slate-300'
+          }`}
+          title="Drag to reposition cockpit bar anywhere on the screen • Double-click to reset to center"
+        >
+          <GripVertical className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+        </div>
+
+        <div className="hidden md:flex items-center gap-1.5 px-2 py-1 border-r shrink-0 border-current/10">
           <Wind className={`w-3.5 h-3.5 ${
             disasterScenario === 'NORMAL' ? (isLight ? 'text-emerald-600' : 'text-emerald-400') :
             disasterScenario === 'CYCLONE_ALERT' ? (isLight ? 'text-yellow-600' : 'text-yellow-400') :
@@ -138,6 +267,22 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
               3.2m
             </span>
           </button>
+
+          {/* Reset position button when moved from center (Desktop) */}
+          {position !== null && (
+            <button
+              type="button"
+              onClick={handleResetPosition}
+              className={`hidden md:flex items-center justify-center p-1 rounded-lg transition-colors ml-0.5 ${
+                isLight
+                  ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+              title="Reset cockpit position to default (top center)"
+            >
+              <RotateCcw className="w-3 h-3" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -165,7 +310,18 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           ? 'bg-white/98 border-slate-300/90 text-slate-800 shadow-[0_8px_25px_-4px_rgba(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/95 border-slate-700/80 text-white shadow-[0_8px_30px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
       }`}>
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ${isLight ? 'text-slate-600 font-bold' : 'text-slate-400 font-bold'}`}>
+        {/* Desktop Drag Handle on Triage row too */}
+        <div
+          onMouseDown={handleDragStart}
+          onDoubleClick={handleResetPosition}
+          className={`hidden md:flex items-center justify-center pl-1 pr-0.5 py-0.5 rounded cursor-grab active:cursor-grabbing select-none transition-colors group ${
+            isLight ? 'hover:bg-slate-100 text-slate-400 hover:text-slate-700' : 'hover:bg-slate-800 text-slate-500 hover:text-slate-300'
+          }`}
+          title="Drag to reposition cockpit bar anywhere • Double-click to reset"
+        >
+          <GripVertical className="w-3 h-3 group-hover:scale-110 transition-transform" />
+        </div>
+        <span className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 ${isLight ? 'text-slate-600 font-bold' : 'text-slate-400 font-bold'}`}>
           Triage:
         </span>
 

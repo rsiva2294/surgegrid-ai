@@ -67,6 +67,14 @@ export default function App() {
     localStorage.setItem('sg_theme', next);
   };
 
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   const isLight = theme === 'light';
 
   return (

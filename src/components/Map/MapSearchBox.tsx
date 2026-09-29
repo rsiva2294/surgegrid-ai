@@ -12,6 +12,9 @@ interface MapSearchBoxProps {
   onSelectSubstation: (ss: TnebSubstation | null) => void;
   onSelectSection: (sec: TnebSection | null) => void;
   isLight: boolean;
+  onResizeStart?: (e: React.MouseEvent) => void;
+  onResetWidth?: () => void;
+  isResizing?: boolean;
 }
 
 export const MapSearchBox: React.FC<MapSearchBoxProps> = ({
@@ -20,16 +23,40 @@ export const MapSearchBox: React.FC<MapSearchBoxProps> = ({
   searchResults,
   onSelectSubstation,
   onSelectSection,
-  isLight
+  isLight,
+  onResizeStart,
+  onResetWidth,
+  isResizing
 }) => {
   return (
     <div
-      className={`pointer-events-auto rounded-xl p-2.5 transition-colors ${
+      className={`relative pointer-events-auto rounded-xl p-2.5 transition-colors ${
         isLight
           ? 'bg-white/98 border border-slate-300/90 shadow-[0_8px_30px_rgb(15,23,42,0.14)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/95 border border-slate-700/80 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
       }`}
     >
+      {/* Desktop Right-edge Drag-to-Resize Handle */}
+      {onResizeStart && (
+        <div
+          onMouseDown={onResizeStart}
+          onDoubleClick={onResetWidth}
+          className="hidden md:flex absolute -right-2 top-0 bottom-0 w-4 cursor-col-resize z-40 items-center justify-center group select-none"
+          title="Drag to resize width • Double-click to reset (360px)"
+        >
+          <div
+            className={`w-1 h-6 rounded-full transition-all duration-150 ${
+              isResizing
+                ? isLight
+                  ? 'bg-indigo-600 scale-y-125'
+                  : 'bg-cyan-400 scale-y-125'
+                : isLight
+                ? 'bg-slate-300 group-hover:bg-indigo-500'
+                : 'bg-slate-700 group-hover:bg-cyan-400'
+            }`}
+          />
+        </div>
+      )}
       <div
         className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-all ${
           isLight

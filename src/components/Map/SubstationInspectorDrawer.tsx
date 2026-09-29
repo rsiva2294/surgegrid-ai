@@ -14,7 +14,9 @@ import {
   ChevronUp,
   Info,
   Building2,
-  AlertTriangle
+  AlertTriangle,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import type { DisasterScenario } from './DisasterCockpitBar';
@@ -61,6 +63,99 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   const [showJargonGuide, setShowJargonGuide] = useState(false);
   const [feederFilter, setFeederFilter] = useState('');
   const [feederCategoryFilter, setFeederCategoryFilter] = useState<'all' | 'lifelines'>('all');
+  const [showStressTestModel, setShowStressTestModel] = useState(false);
+
+  // Resizable drawer width state & persistence (default 460px, min 380px, max 840px / 65vw)
+  const DEFAULT_DRAWER_WIDTH = 460;
+  const MIN_DRAWER_WIDTH = 380;
+
+  const [drawerWidth, setDrawerWidth] = useState<number>(() => {
+    if (typeof window === 'undefined') return DEFAULT_DRAWER_WIDTH;
+    try {
+      const saved = localStorage.getItem('sg_inspector_drawer_width');
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed >= MIN_DRAWER_WIDTH && parsed <= 1200) {
+          return Math.min(parsed, Math.round(window.innerWidth * 0.7));
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return DEFAULT_DRAWER_WIDTH;
+  });
+
+  const [isResizing, setIsResizing] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 768;
+  });
+
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleWindowResize);
+    return () => window.removeEventListener('resize', handleWindowResize);
+  }, []);
+
+  const handleResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    const startX = e.clientX;
+    const startWidth = drawerWidth;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      // Drawer is anchored to the right, so moving left increases drawer width
+      const deltaX = startX - moveEvent.clientX;
+      const maxAllowed = Math.min(840, Math.round(window.innerWidth * 0.65));
+      const nextWidth = Math.max(MIN_DRAWER_WIDTH, Math.min(maxAllowed, startWidth + deltaX));
+      setDrawerWidth(nextWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      setDrawerWidth((current) => {
+        try {
+          localStorage.setItem('sg_inspector_drawer_width', String(current));
+        } catch {
+          // ignore
+        }
+        return current;
+      });
+    };
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleResetWidth = () => {
+    setDrawerWidth(DEFAULT_DRAWER_WIDTH);
+    try {
+      localStorage.setItem('sg_inspector_drawer_width', String(DEFAULT_DRAWER_WIDTH));
+    } catch {
+      // ignore
+    }
+  };
+
+  const toggleWidthPreset = () => {
+    const targetWidth =
+      drawerWidth > 550
+        ? DEFAULT_DRAWER_WIDTH
+        : Math.min(680, Math.round(window.innerWidth * 0.6));
+    setDrawerWidth(targetWidth);
+    try {
+      localStorage.setItem('sg_inspector_drawer_width', String(targetWidth));
+    } catch {
+      // ignore
+    }
+  };
 
   // Reset internal tab and filters on substation change
   useEffect(() => {
@@ -69,6 +164,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
     setIsLinksListExpanded(false);
     setShowJargonGuide(false);
     setFeederFilter('');
+    setShowStressTestModel(false);
   }, [selectedSubstation]);
 
   const activeSubstationOutages = useMemo(() => {
@@ -135,15 +231,55 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 
   return (
     <div
-      className={`absolute inset-x-0 bottom-0 md:inset-auto md:top-4 md:bottom-4 md:right-4 z-30 pointer-events-none flex flex-col items-end transition-all duration-200 w-full md:w-[460px] max-h-[75vh] md:max-h-none`}
+      className={`absolute inset-x-0 bottom-0 md:inset-auto md:top-4 md:bottom-4 md:right-4 z-30 pointer-events-none flex flex-col items-end ${
+        isResizing ? 'transition-none select-none' : 'transition-[width] duration-200'
+      } w-full max-h-[75vh] md:max-h-none`}
+      style={{
+        width: isDesktop ? `${drawerWidth}px` : undefined,
+        maxWidth: isDesktop ? 'min(840px, calc(100vw - 32px))' : '100%',
+      }}
     >
       <div
-        className={`pointer-events-auto rounded-t-2xl md:rounded-2xl p-3.5 sm:p-4 flex flex-col h-full w-full border transition-colors ${
+        className={`relative pointer-events-auto rounded-t-2xl md:rounded-2xl p-3.5 sm:p-4 flex flex-col h-full w-full border transition-colors ${
           isLight
             ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[0_-10px_35px_rgba(15,23,42,0.18)] md:shadow-[-16px_0_45px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
             : 'bg-slate-900/95 border-t-2 md:border-t-0 md:border-l-2 border-slate-700/90 text-slate-200 shadow-[0_-12px_40px_rgba(0,0,0,0.9)] md:shadow-[-16px_0_45px_rgba(0,0,0,0.9)] ring-1 ring-white/10 backdrop-blur-xl'
         }`}
       >
+        {/* Desktop Left-edge Drag-to-Resize Handle */}
+        <div
+          onMouseDown={handleResizeStart}
+          onDoubleClick={handleResetWidth}
+          className="hidden md:flex absolute -left-2.5 top-0 bottom-0 w-5 cursor-col-resize z-40 items-center justify-center group select-none"
+          title="Drag to resize drawer width • Double-click to reset (460px)"
+        >
+          {/* Visual Grip Bar */}
+          <div
+            className={`w-1.5 h-14 rounded-full transition-all duration-150 ${
+              isResizing
+                ? isLight
+                  ? 'bg-indigo-600 scale-y-125 shadow-md'
+                  : 'bg-cyan-400 scale-y-125 shadow-lg shadow-cyan-500/50'
+                : isLight
+                ? 'bg-slate-300 group-hover:bg-indigo-500 group-hover:scale-y-110'
+                : 'bg-slate-700 group-hover:bg-cyan-400 group-hover:scale-y-110'
+            }`}
+          />
+
+          {/* Width tooltip while actively dragging */}
+          {isResizing && (
+            <div
+              className={`absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-[11px] font-mono font-bold pointer-events-none whitespace-nowrap shadow-xl border ${
+                isLight
+                  ? 'bg-slate-900 text-white border-slate-700'
+                  : 'bg-slate-950 text-cyan-300 border-cyan-500/50'
+              }`}
+            >
+              {drawerWidth}px
+            </div>
+          )}
+        </div>
+
         {/* Mobile Sheet Drag Indicator */}
         <div className="w-12 h-1 bg-slate-400/40 dark:bg-slate-500/40 rounded-full mx-auto -mt-1 mb-2.5 md:hidden shrink-0" />
 
@@ -246,6 +382,23 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
+            {/* Quick Width Toggle (Desktop Only) */}
+            <button
+              onClick={toggleWidthPreset}
+              className={`hidden md:flex p-1.5 rounded-lg transition-colors items-center justify-center ${
+                isLight
+                  ? 'text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200'
+                  : 'text-slate-300 hover:text-white bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80'
+              }`}
+              title={
+                drawerWidth > 550
+                  ? 'Switch to compact view (460px)'
+                  : 'Expand drawer view (680px)'
+              }
+            >
+              {drawerWidth > 550 ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+
             <button
               onClick={() => {
                 onSelectSubstation(null);
@@ -867,7 +1020,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     {/* Terrain & Flood Risk Profile */}
                     {selectedSubstation.elevationM !== undefined && (
                       <div
-                        className={`p-3 rounded-xl border space-y-2 shrink-0 ${
+                        className={`p-3 rounded-xl border space-y-2.5 shrink-0 ${
                           selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
                             ? isLight
                               ? 'bg-rose-50/70 border-rose-200 text-rose-950'
@@ -881,126 +1034,457 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                             : 'bg-slate-950/60 border-slate-800/80 text-slate-200'
                         }`}
                       >
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold text-xs flex items-center gap-1.5">
-                            <span>🌊</span>
-                            <span>Climate & Flood Risk</span>
-                          </span>
-                          <span
-                            className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md ${
-                              selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                                ? isLight
-                                  ? 'bg-rose-600 text-white'
-                                  : 'bg-rose-500 text-slate-950 font-black'
+                        <div className="flex items-center justify-between text-xs gap-2">
+                          <div className="min-w-0">
+                            <span className="font-semibold text-xs flex items-center gap-1.5">
+                              <span>🌊</span>
+                              <span className="truncate">Climate & Flood Hydro-Risk</span>
+                            </span>
+                            <span className={`text-[10px] block mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                              Multi-Hazard: 2015 Riverine • Dec 2023 Michaung • GEE '26
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {disasterScenario !== 'NORMAL' && selectedSubstation.hydroRisk?.cycloneIsolateRecommended && (
+                              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-rose-600 text-white animate-pulse whitespace-nowrap">
+                                ⚠️ ISOLATION MANDATE
+                              </span>
+                            )}
+                            <span
+                              className={`text-[10px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap ${
+                                selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                                  ? isLight
+                                    ? 'bg-rose-600 text-white'
+                                    : 'bg-rose-500 text-slate-950 font-bold'
+                                  : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
+                                  ? isLight
+                                    ? 'bg-amber-600 text-white'
+                                    : 'bg-amber-400 text-slate-950 font-bold'
+                                  : isLight
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-emerald-500/20 text-emerald-300'
+                              }`}
+                            >
+                              {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
+                                ? 'CRITICAL SURGE'
                                 : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                                ? isLight
-                                  ? 'bg-amber-600 text-white'
-                                  : 'bg-amber-400 text-slate-950 font-black'
-                                : isLight
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : 'bg-emerald-500/20 text-emerald-300'
-                            }`}
-                          >
-                            {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                              ? 'CRITICAL SURGE'
-                              : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                              ? 'WATERLOGGING RISK'
-                              : 'SAFE ELEVATION'}
-                          </span>
+                                ? 'WATERLOGGING RISK'
+                                : 'SAFE ELEVATION'}
+                            </span>
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
+                        <div className="grid grid-cols-3 gap-2 text-center">
                           <div
-                            className={`py-1.5 px-1 rounded-lg ${
-                              isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'
+                            className={`py-2 px-1 rounded-xl border ${
+                              isLight ? 'bg-white border-slate-200 shadow-2xs' : 'bg-slate-900 border-slate-800'
                             }`}
                           >
                             <span
-                              className={`text-xs uppercase font-medium block leading-tight ${
+                              className={`text-[10px] uppercase font-semibold tracking-wider block ${
                                 isLight ? 'text-slate-500' : 'text-slate-400'
                               }`}
                             >
                               Elevation
                             </span>
-                            <strong className="text-xs font-bold block mt-0.5">
-                              {selectedSubstation.elevationM} m
+                            <strong className={`text-sm font-bold block mt-0.5 tabular-nums ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              {selectedSubstation.elevationM} m MSL
                             </strong>
+                            <span className={`text-[10px] block mt-0.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                              SRTM / DEM
+                            </span>
                           </div>
                           <div
-                            className={`py-1.5 px-1 rounded-lg ${
-                              isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'
+                            className={`py-2 px-1 rounded-xl border ${
+                              isLight ? 'bg-white border-slate-200 shadow-2xs' : 'bg-slate-900 border-slate-800'
                             }`}
                           >
                             <span
-                              className={`text-xs uppercase font-medium block leading-tight ${
+                              className={`text-[10px] uppercase font-semibold tracking-wider block ${
                                 isLight ? 'text-slate-500' : 'text-slate-400'
                               }`}
                             >
                               Coast Dist
                             </span>
-                            <strong className="text-xs font-bold block mt-0.5">
+                            <strong className={`text-sm font-bold block mt-0.5 tabular-nums ${isLight ? 'text-slate-900' : 'text-white'}`}>
                               {selectedSubstation.distanceToCoastKm || 0} km
                             </strong>
+                            <span className={`text-[10px] block mt-0.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Surge Exposure
+                            </span>
                           </div>
                           <div
-                            className={`py-1.5 px-1 rounded-lg ${
-                              isLight ? 'bg-white/80 border border-black/5' : 'bg-black/30 border border-white/5'
+                            className={`py-2 px-1 rounded-xl border ${
+                              isLight ? 'bg-white border-slate-200 shadow-2xs' : 'bg-slate-900 border-slate-800'
                             }`}
                           >
                             <span
-                              className={`text-xs uppercase font-medium block leading-tight ${
+                              className={`text-[10px] uppercase font-semibold tracking-wider block ${
                                 isLight ? 'text-slate-500' : 'text-slate-400'
                               }`}
                             >
                               Risk Score
                             </span>
-                            <strong className="text-xs font-bold block mt-0.5">
+                            <strong className={`text-sm font-bold block mt-0.5 tabular-nums ${isLight ? 'text-slate-900' : 'text-white'}`}>
                               {selectedSubstation.compositeRiskScore || 0}/100
                             </strong>
+                            <span className={`text-[10px] block mt-0.5 ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Multi-Hazard
+                            </span>
                           </div>
                         </div>
 
-                        <div
-                          className={`p-2.5 rounded-xl border text-xs space-y-1.5 ${
-                            isLight
-                              ? 'bg-white/90 border-slate-200 text-slate-800'
-                              : 'bg-slate-900/90 border-slate-700/80 text-slate-200'
-                          }`}
-                        >
-                          <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 font-mono text-xs">
-                            <div>
-                              <span className="opacity-75 block text-xs font-sans">2015 Flood Depth:</span>
-                              <strong>{selectedSubstation.benchmarked2015FloodDepthM || 0.9}m</strong>
-                            </div>
-                            <div>
-                              <span className="opacity-75 block text-xs font-sans">Plinth Height:</span>
-                              <strong>{selectedSubstation.plinthElevationM || 1.5}m GL</strong>
-                            </div>
-                            <div>
-                              <span className="opacity-75 block text-xs font-sans">TNSDMA Limit:</span>
-                              <strong className="text-sky-600 dark:text-cyan-400">3.0m MSL Standard</strong>
-                            </div>
-                            <div>
-                              <span className="opacity-75 block text-xs font-sans">Dewatering SOP:</span>
-                              <span className="font-bold">
-                                {selectedSubstation.yardDewateringRequired
-                                  ? '⚠️ Mobile Diesel Pumps'
-                                  : '✅ Gravity Drainage'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
+                        {/* Baseline Historic Benchmark & Engineering Plinth Defense (Always Visible) */}
+                        {(() => {
+                          const flood2015 = selectedSubstation.hydroRisk
+                            ? selectedSubstation.hydroRisk.flood2015DepthM
+                            : (selectedSubstation.benchmarked2015FloodDepthM || 0);
+                          const plinthM = selectedSubstation.plinthElevationM || 1.5;
+                          const isDry = flood2015 <= 0;
+                          const isPlinthSafe = isDry || flood2015 < plinthM;
 
-                        {selectedSubstation.anticipatorySop && (
-                          <div
-                            className={`p-2.5 rounded-xl text-xs leading-relaxed ${
+                          return (
+                            <div
+                              className={`p-3 rounded-xl border text-xs space-y-2.5 ${
+                                isLight
+                                  ? 'bg-white border-slate-200 text-slate-900 shadow-2xs'
+                                  : 'bg-slate-900 border-slate-800 text-slate-100'
+                              }`}
+                            >
+                              {/* 2015 Historic Flood Benchmark Status Banner */}
+                              <div>
+                                <div className="text-[10px] uppercase tracking-wider font-semibold mb-1.5 flex items-center justify-between gap-2">
+                                  <span className={isLight ? 'text-slate-600' : 'text-slate-400'}>
+                                    2015 Historic Flood Benchmark
+                                  </span>
+                                  <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded border whitespace-nowrap ${
+                                    isLight
+                                      ? 'bg-slate-100 text-slate-700 border-slate-300'
+                                      : 'bg-slate-800 text-slate-300 border-slate-700'
+                                  }`}>
+                                    Adyar/Cooum 100-Yr Crest
+                                  </span>
+                                </div>
+
+                                {isDry ? (
+                                  <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+                                    isLight
+                                      ? 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                                      : 'bg-emerald-950/50 border-emerald-800 text-emerald-100'
+                                  }`}>
+                                    <span className="text-sm leading-none shrink-0 mt-0.5">✅</span>
+                                    <div className="min-w-0 flex-1">
+                                      <span className={`font-semibold text-xs block ${isLight ? 'text-emerald-950' : 'text-emerald-200'}`}>
+                                        0.0m — Switchyard Remained Completely Dry
+                                      </span>
+                                      <p className={`text-[11px] mt-0.5 leading-relaxed ${isLight ? 'text-emerald-800' : 'text-emerald-300'}`}>
+                                        High elevation prevented standing water from entering switchyard during peak 2015 deluge.
+                                      </p>
+                                    </div>
+                                  </div>
+                                ) : isPlinthSafe ? (
+                                  <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+                                    isLight
+                                      ? 'bg-amber-50 border-amber-300 text-amber-950'
+                                      : 'bg-amber-950/50 border-amber-800 text-amber-100'
+                                  }`}>
+                                    <span className="text-sm leading-none shrink-0 mt-0.5">🛡️</span>
+                                    <div className="min-w-0 flex-1">
+                                      <span className={`font-semibold text-xs block ${isLight ? 'text-amber-950' : 'text-amber-200'}`}>
+                                        {flood2015.toFixed(2)}m Yard Floor Waterlogging — Protected by Plinth
+                                      </span>
+                                      <p className={`text-[11px] mt-0.5 leading-relaxed ${isLight ? 'text-amber-900' : 'text-amber-300'}`}>
+                                        Yard floor accumulated water, but stayed {(plinthM - flood2015).toFixed(2)}m below equipment plinth (+{plinthM}m GL). Switchgear stayed energized.
+                                      </p>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className={`p-2.5 rounded-lg border flex items-start gap-2.5 ${
+                                    isLight
+                                      ? 'bg-rose-50 border-rose-300 text-rose-950'
+                                      : 'bg-rose-950/50 border-rose-800 text-rose-100'
+                                  }`}>
+                                    <span className="text-sm leading-none shrink-0 mt-0.5">🚨</span>
+                                    <div className="min-w-0 flex-1">
+                                      <span className={`font-semibold text-xs block ${isLight ? 'text-rose-950' : 'text-rose-200'}`}>
+                                        {flood2015.toFixed(2)}m Inundation — Exceeded Equipment Plinth
+                                      </span>
+                                      <p className={`text-[11px] mt-0.5 leading-relaxed ${isLight ? 'text-rose-900' : 'text-rose-300'}`}>
+                                        2015 riverine floodwaters reached plinth level; required emergency de-energization.
+                                      </p>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Plinth Clearance & Engineering Defenses */}
+                              <div className={`grid grid-cols-3 gap-2 pt-2.5 border-t text-xs ${
+                                isLight ? 'border-slate-200' : 'border-slate-800'
+                              }`}>
+                                <div>
+                                  <span className={`text-[10px] uppercase font-semibold block ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    Equipment Plinth
+                                  </span>
+                                  <strong className={`text-xs font-bold block mt-0.5 ${
+                                    isLight ? 'text-slate-900' : 'text-white'
+                                  }`}>
+                                    +{plinthM}m GL
+                                  </strong>
+                                  <span className={`text-[10px] block mt-0.5 ${
+                                    isLight ? 'text-slate-400' : 'text-slate-500'
+                                  }`}>
+                                    Ground Clearance
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span className={`text-[10px] uppercase font-semibold block ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    TNSDMA Mandate
+                                  </span>
+                                  <strong className={`text-xs font-bold block mt-0.5 ${
+                                    isLight ? 'text-blue-700' : 'text-cyan-300'
+                                  }`}>
+                                    3.0m MSL Standard
+                                  </strong>
+                                  <span className={`text-[10px] block mt-0.5 ${
+                                    isLight ? 'text-slate-400' : 'text-slate-500'
+                                  }`}>
+                                    Statutory Datum
+                                  </span>
+                                </div>
+
+                                <div>
+                                  <span className={`text-[10px] uppercase font-semibold block ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    Yard Dewatering
+                                  </span>
+                                  <strong className={`text-xs font-bold block mt-0.5 truncate ${
+                                    isLight ? 'text-slate-900' : 'text-white'
+                                  }`}>
+                                    {selectedSubstation.yardDewateringRequired ? '⚠️ Mobile Pumps' : '✅ Gravity Drain'}
+                                  </strong>
+                                  <span className={`text-[10px] block mt-0.5 ${
+                                    isLight ? 'text-slate-400' : 'text-slate-500'
+                                  }`}>
+                                    {selectedSubstation.yardDewateringRequired ? 'Pre-staged diesel DG' : 'Natural run-off'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {/* Collapsible Trigger when Live Weather is Normal */}
+                        {disasterScenario === 'NORMAL' && (
+                          <button
+                            type="button"
+                            onClick={() => setShowStressTestModel(prev => !prev)}
+                            className={`w-full py-2.5 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-colors gap-2 ${
                               isLight
-                                ? 'bg-white/90 text-slate-700 border border-black/5'
-                                : 'bg-slate-900/80 text-slate-300 border border-white/10'
+                                ? 'bg-white hover:bg-slate-50 border-slate-200 text-slate-800 shadow-2xs'
+                                : 'bg-slate-900 hover:bg-slate-800 border-slate-800 text-slate-200'
                             }`}
                           >
-                            <strong className="font-semibold mr-1">Field SOP:</strong>
-                            <span>{selectedSubstation.anticipatorySop}</span>
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="text-sm shrink-0">🌀</span>
+                              <span className="truncate font-semibold text-xs">
+                                Cyclone Michaung Stress Model (Cat 3)
+                              </span>
+                              <span
+                                className={`text-[10px] font-medium whitespace-nowrap px-1.5 py-0.5 rounded border shrink-0 ${
+                                  isLight
+                                    ? 'bg-blue-50 text-blue-800 border-blue-200'
+                                    : 'bg-blue-950 text-cyan-300 border-blue-800'
+                                }`}
+                              >
+                                CWC • IMERG
+                              </span>
+                            </div>
+                            <span className={`shrink-0 p-0.5 rounded ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                              {showStressTestModel ? (
+                                <ChevronUp className="w-4 h-4" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4" />
+                              )}
+                            </span>
+                          </button>
+                        )}
+
+                        {/* Hydrodynamic Simulation Box (Shown when Disaster Scenario Active OR user clicks Inspect) */}
+                        {(disasterScenario !== 'NORMAL' || showStressTestModel) && (
+                          <div className="space-y-2 pt-0.5">
+                            <div
+                              className={`p-3 rounded-xl border text-xs space-y-2.5 ${
+                                isLight
+                                  ? 'bg-white border-slate-200 text-slate-900 shadow-2xs'
+                                  : 'bg-slate-900 border-slate-800 text-slate-100'
+                              }`}
+                            >
+                              <div className={`flex items-center justify-between border-b pb-2 gap-2 ${
+                                isLight ? 'border-slate-100' : 'border-slate-800'
+                              }`}>
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span
+                                    className={`w-2 h-2 rounded-full shrink-0 ${
+                                      disasterScenario !== 'NORMAL'
+                                        ? 'bg-rose-500 animate-ping'
+                                        : 'bg-blue-600'
+                                    }`}
+                                  />
+                                  <span className={`text-xs font-semibold truncate ${
+                                    isLight ? 'text-slate-900' : 'text-slate-100'
+                                  }`}>
+                                    Michaung Cat-3 Hydro Model
+                                  </span>
+                                </div>
+                                <span className={`text-[10px] font-medium whitespace-nowrap px-1.5 py-0.5 rounded border shrink-0 ${
+                                  isLight
+                                    ? 'bg-blue-50 text-blue-800 border-blue-200'
+                                    : 'bg-blue-950 text-cyan-300 border-blue-800'
+                                }`}>
+                                  IMERG • CWC • GEE
+                                </span>
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs">
+                                <div>
+                                  <span className={`block text-[11px] font-medium ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    Peak Water Depth
+                                  </span>
+                                  <strong
+                                    className={`text-xs block mt-0.5 font-bold tabular-nums ${
+                                      (selectedSubstation.hydroRisk?.cycloneMaxDepthM ?? 0) > 0.3
+                                        ? isLight ? 'text-rose-600' : 'text-rose-400'
+                                        : isLight ? 'text-slate-900' : 'text-white'
+                                    }`}
+                                  >
+                                    {selectedSubstation.hydroRisk
+                                      ? selectedSubstation.hydroRisk.cycloneMaxDepthM > 0
+                                        ? `${selectedSubstation.hydroRisk.cycloneMaxDepthM}m Inundation`
+                                        : '0.0m (Yard Dry)'
+                                      : `${selectedSubstation.benchmarked2015FloodDepthM || 0}m`}
+                                  </strong>
+                                </div>
+
+                                <div>
+                                  <span className={`block text-[11px] font-medium ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    Downstream Consumers
+                                  </span>
+                                  <strong className={`text-xs font-bold block mt-0.5 tabular-nums ${
+                                    isLight ? 'text-slate-900' : 'text-white'
+                                  }`}>
+                                    {selectedSubstation.hydroRisk
+                                      ? selectedSubstation.hydroRisk.cycloneConsAtRisk > 0
+                                        ? `${selectedSubstation.hydroRisk.cycloneConsAtRisk.toLocaleString()} homes`
+                                        : '0 in flood pockets'
+                                      : 'Not modeled'}
+                                  </strong>
+                                </div>
+
+                                <div>
+                                  <span className={`block text-[11px] font-medium ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    Low-Plinth DTRs Exposed
+                                  </span>
+                                  <strong className={`text-xs font-bold block mt-0.5 tabular-nums ${
+                                    isLight ? 'text-slate-900' : 'text-white'
+                                  }`}>
+                                    {selectedSubstation.hydroRisk
+                                      ? selectedSubstation.hydroRisk.cycloneDtrsAtRisk > 0
+                                        ? `${selectedSubstation.hydroRisk.cycloneDtrsAtRisk} transformers`
+                                        : '0 low transformers'
+                                      : 'Not modeled'}
+                                  </strong>
+                                </div>
+
+                                <div>
+                                  <span className={`block text-[11px] font-medium ${
+                                    isLight ? 'text-slate-500' : 'text-slate-400'
+                                  }`}>
+                                    Failure Timeline
+                                  </span>
+                                  <strong
+                                    className={`text-xs font-bold block mt-0.5 tabular-nums ${
+                                      selectedSubstation.hydroRisk?.cycloneFirstFailHour !== null &&
+                                      selectedSubstation.hydroRisk?.cycloneFirstFailHour !== undefined
+                                        ? isLight ? 'text-amber-700' : 'text-amber-400'
+                                        : isLight ? 'text-emerald-700' : 'text-emerald-400'
+                                    }`}
+                                  >
+                                    {selectedSubstation.hydroRisk?.cycloneFirstFailHour !== null &&
+                                    selectedSubstation.hydroRisk?.cycloneFirstFailHour !== undefined
+                                      ? `T${selectedSubstation.hydroRisk.cycloneFirstFailHour > 0 ? '+' : ''}${selectedSubstation.hydroRisk.cycloneFirstFailHour}h Landfall`
+                                      : 'Stable / No Breach'}
+                                  </strong>
+                                </div>
+
+                                <div className={`col-span-2 pt-2 border-t flex items-center justify-between text-xs ${
+                                  isLight ? 'border-slate-100' : 'border-slate-800'
+                                }`}>
+                                  <span className={`font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                                    Grid Protocol Action
+                                  </span>
+                                  <span
+                                    className={`font-semibold text-xs flex items-center gap-1 ${
+                                      selectedSubstation.hydroRisk?.cycloneIsolateRecommended
+                                        ? isLight ? 'text-rose-700' : 'text-rose-400'
+                                        : isLight ? 'text-emerald-700' : 'text-emerald-400'
+                                    }`}
+                                  >
+                                    {selectedSubstation.hydroRisk?.cycloneIsolateRecommended
+                                      ? '⚠️ Mandatory Pre-emptive Trip'
+                                      : '✅ Retain Grid Energized'}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Operational SOP Advisory (ONLY during active disaster scenario, NEVER during normal live weather!) */}
+                            {disasterScenario !== 'NORMAL' && (selectedSubstation.hydroRisk?.advisoryEn || selectedSubstation.anticipatorySop) && (
+                              <div
+                                className={`p-3 rounded-xl text-xs space-y-2 border ${
+                                  isLight
+                                    ? 'bg-amber-100 border-amber-400 text-amber-950 shadow-xs'
+                                    : 'bg-amber-950/60 border-amber-800 text-amber-100 shadow-xs'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <span className={`font-bold text-xs flex items-center gap-1.5 ${
+                                    isLight ? 'text-amber-950' : 'text-amber-100'
+                                  }`}>
+                                    <span>📋</span>
+                                    <span>Operational Field Advisory (Post-Michaung TNSDMA SOP)</span>
+                                  </span>
+                                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded font-bold uppercase border ${
+                                    isLight
+                                      ? 'bg-amber-200 text-amber-950 border-amber-300'
+                                      : 'bg-amber-900/60 text-amber-200 border-amber-700'
+                                  }`}>
+                                    Active Disaster SOP
+                                  </span>
+                                </div>
+                                <div className={`text-xs leading-relaxed whitespace-pre-line font-sans font-semibold ${
+                                  isLight ? 'text-slate-900' : 'text-slate-100'
+                                }`}>
+                                  {selectedSubstation.hydroRisk?.advisoryEn || selectedSubstation.anticipatorySop}
+                                </div>
+                                <div className={`text-[10px] border-t pt-1.5 font-sans font-medium ${
+                                  isLight ? 'border-amber-300 text-amber-950' : 'border-amber-800 text-amber-300'
+                                }`}>
+                                  Synthesis: 2015 Adyar Crest • Dec 2023 Michaung Rainfall • NASA GPM • GEE '26 • TNSDMA 3.0m MSL Mandate
+                                </div>
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>

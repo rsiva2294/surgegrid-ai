@@ -111,6 +111,22 @@ export interface TnebSubstation {
   // Asset Health & 90-Day Operational Risk Profile
   healthProfile?: SubstationHealthProfile;
   outageHistory?: OutageHistoryEvent[];
+  // High-Fidelity Hydrodynamic Simulation & Real Disaster Risk (NRSC / CWC / GEE)
+  hydroRisk?: SubstationHydroRisk;
+}
+
+export interface SubstationHydroRisk {
+  cycloneMaxDepthM: number;
+  cycloneConsAtRisk: number;
+  cycloneDtrsAtRisk: number;
+  cycloneFirstFailHour: number | null;
+  cycloneIsolateRecommended: boolean;
+  surgeInundationM: number;
+  flood2015DepthM: number;
+  flood2015ConsAtRisk: number;
+  flood2015DtrsAtRisk: number;
+  advisoryEn?: string;
+  advisoryTa?: string;
 }
 
 export type OutageCategory =

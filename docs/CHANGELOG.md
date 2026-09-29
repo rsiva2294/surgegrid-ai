@@ -2,6 +2,92 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [2.3.4-typography-standardization-and-layout-harmonization] - 2026-09-29
+
+### Fixed
+- **Typography & Font Weight Harmonization Across Drawer**:
+  - Eliminated chaotic mixing of `font-mono`, `font-black` (900 weight), and random `text-[9px]/[10px]/[11px]` sizes that caused line wrapping and ugly vertical misalignments.
+  - Standardized font family to native UI sans-serif (`font-sans`) with `tabular-nums` for clean, professional digit alignments.
+  - Reduced exaggerated `font-black` weights to balanced, readable `font-semibold` and `font-bold` for values, and `font-medium text-[11px]` for field labels.
+- **Line Wrapping & Badge Layout Fixes**:
+  - Refactored long labels (`Cyclone Peak Depth (Michaung Class):` -> `Peak Water Depth`, `Vulnerable Consumers (Downstream):` -> `Downstream Consumers`, `Low-Plinth DTRs Exposed:` -> `Low-Plinth DTRs Exposed`, `Landfall Failure Clock:` -> `Failure Timeline`) so they never wrap in narrow 2-column drawer containers.
+  - Added `whitespace-nowrap shrink-0` to all source attribution badges (`CWC • IMERG`, `IMERG • CWC • GEE`, `Adyar/Cooum 100-Yr Crest`) so they stay crisp and single-line.
+  - Optimized the accordion trigger button title (`Cyclone Michaung Stress Model (Cat 3)`) with `truncate` and `min-w-0` to prevent ugly 2-line header breakage.
+
+---
+
+## [2.3.3-tailwind-dark-variant-isolation-and-accordion-clean] - 2026-09-29
+
+### Fixed
+- **Root Cause of Poor Contrast Resolved (Tailwind v4 OS Media Collision)**:
+  - In Tailwind v4, `@import "tailwindcss"` defaults the `dark:` variant to `@media (prefers-color-scheme: dark)`. Because the host OS was set to dark mode, all `dark:...` classes were overriding the UI with white/pale text on top of white backgrounds (`isLight === true`), making text invisible.
+  - Added `@custom-variant dark (&:where(.dark, .dark *));` in `src/index.css` to bind Tailwind dark variants strictly to the `.dark` class rather than OS preference.
+  - Added root `.dark` class synchronization in `src/App.tsx`.
+  - Converted the entire Climate & Flood Hydro-Risk inspector card to explicit `isLight ? ... : ...` expressions, eliminating all conflicting `dark:` text styles.
+- **Accordion Button Simplification**:
+  - Removed "Hide Model" / "Inspect Model" text labels from the cyclone stress-test button as requested, leaving the clean, minimalist `<ChevronUp />` / `<ChevronDown />` controls.
+
+---
+
+## [2.3.2-high-contrast-historic-redesign-and-normal-weather-guard] - 2026-09-29
+
+### Fixed & Enhanced
+- **High-Contrast Typography Overhaul (Light & Dark Theme)**:
+  - Fixed washed-out grey text in `90-Day Incident & Maintenance Log` header by setting dark slate / pure white fonts and prominent clock icons.
+  - Replaced low-contrast cyan (`text-cyan-400`) on white with deep rich blue (`text-blue-800`, AAA 7.5:1 contrast) for statutory standards.
+  - Hardened font weights and contrasts across all metric headers, labels, and sub-labels in the inspector drawer (`text-slate-700 font-bold`, `text-slate-900 font-black`).
+- **Historic Flood & Defense Box Redesign**:
+  - Replaced raw, hard-to-read float numbers (`0.038m Submerged`) with contextual flood status banners:
+    - `✅ 0.0m — Switchyard Remained Completely Dry`
+    - `🛡️ {depth}m Yard Floor Waterlogging — Protected by Plinth (+{plinth}m GL)`
+    - `🚨 {depth}m Inundation — Exceeded Equipment Plinth`
+  - Added clean 3-column engineering defense cards showing Equipment Plinth ground clearance, TNSDMA 3.0m MSL statutory datum, and switchyard dewatering readiness.
+- **Normal Live Weather Field Advisory SOP Guard**:
+  - Emergency Operational Field Advisory SOPs are now strictly guarded by `disasterScenario !== 'NORMAL'`.
+  - When live weather is normal, emergency cyclone action orders ("Action by 23 hours before peak rain: place sandbags...") are completely hidden, keeping the inspector calm and focused on live operational health.
+  - During simulated stress-testing, only the hydrodynamic parameters (peak depth, consumers at risk, DTR exposure, landfall failure clock) are displayed.
+
+---
+
+## [2.3.1-comprehensive-multi-hazard-model-labeling] - 2026-09-29
+
+### Added
+- **Multi-Hazard Model Transparency & Labeling**:
+  - **Explicit Source Attribution**: Updated the Climate & Flood Hydro-Risk header to state: `Multi-Hazard: 2015 Riverine • Dec 2023 Michaung • GEE '26`.
+  - **Elevation & Exposure Standards**: Labeled elevation as `SRTM / DEM` MSL, distance to coastline as `Surge Exposure`, and overall risk as `Multi-Hazard Index`.
+  - **Ground Truth Riverine vs Cyclone Distinctions**:
+    - Labeled baseline riverine flood benchmark as `2015 Historic Flood (100-Yr)`.
+    - Labeled equipment height as `Equipment Plinth (GL)`.
+    - Labeled statutory reference as `TNSDMA Statutory Standard: 3.0m MSL Mandate`.
+  - **Cyclone Michaung Simulation Benchmark**:
+    - Stress-test model trigger explicitly labeled: `🌀 Cyclone Michaung Stress Model (Dec 2023 Cat 3)` with badge `CWC • IMERG`.
+    - Hydrodynamic drawer labeled `Michaung-Class Cat 3 Hydro Model` with badge `NASA IMERG • CWC • GEE '26`.
+    - Peak inundation labeled `Cyclone Peak Depth (Michaung Class)`.
+    - Failure countdown labeled `Landfall Failure Clock` (simulated breach timeline).
+  - **Post-Michaung TNSDMA Standard Operating Procedure (SOP)**:
+    - Advisory labeled `Operational Field Advisory (Post-Michaung TNSDMA SOP)` under `TNEB SOP`.
+    - Added explicit model synthesis attribution footnote: `Synthesis: 2015 Adyar Crest • Dec 2023 Michaung Rainfall • NASA GPM • GEE '26 • TNSDMA 3.0m MSL Mandate`.
+
+---
+
+## [2.3.0-hydrodynamic-risk-and-context-aware-sop] - 2026-09-29
+
+### Added
+- **Hydrodynamic Simulation Model Data Integration**:
+  - Replaced heuristic elevation-derived flood depths with authentic hydrodynamic simulation data from `C:\projects\surgegrid-ai-v2\data\processed\` (`substation_risk.csv` and `substation_risk_2015.csv`).
+  - Enriched all 286 substations with modeled cyclone storm surge inundation (`cycloneMaxDepthM`), consumers in vulnerable flood pockets (`cycloneConsAtRisk`), critical distribution transformers exposed (`cycloneDtrsAtRisk`), landfall failure clock (`cycloneFirstFailHour`), and isolation recommendations (`cycloneIsolateRecommended`).
+  - Embedded ground-truth 2015 historic flood depths (`flood2015DepthM`) and 2015 consumer impacts.
+  - Bumped IndexedDB cache key to `surgegrid_chennai_grid_v14_real_hydrorisk_advisories` to invalidate stale caches.
+- **Context-Aware Display & English-Only Operational Advisories**:
+  - **Live Weather Calm Baseline**: When live weather is normal (`disasterScenario === 'NORMAL'`), the card shows only the calm baseline (Elevation, 2015 historic flood, equipment plinth, standard drainage) without alarming landfall failure countdowns or pulsating emergency banners.
+  - **Collapsible Stress Test Drawer**: Added a clean `[🌀 Cyclone Stress-Test Model]` accordion button that allows engineers to inspect the hydrodynamic simulation model on demand during normal weather.
+  - **Automatic Disaster Protocol Activation**: When an active disaster protocol is selected (`Alert`, `Severe >80k`, `Surge 3.2m`), the simulation model and `⚠️ ISOLATION MANDATE` alerts automatically open in full prominence.
+  - **English-Only Advisory**: Standardized field operational SOPs in clear English.
+- **90-Day Incident & Maintenance Log Progressive Disclosure**:
+  - **Closed by default when 0 logs**: Substations with clean records (0 notices) now display a single compact, closed row (`Clean Record ▼`), eliminating the tall empty placeholder box.
+  - **Most Recent Notice Preview**: When a substation has logs, only the single most recent notice is displayed by default, with a `+ View N earlier records ▼` button to expand the full history and scope filters on demand.
+  - **Automatic Reset**: Switching substations automatically collapses earlier expansions to keep the view clean and compact.
+
 ---
 
 ## [2.2.0-authentic-grid-and-strict-mapping] - 2026-09-29

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, ChevronUp, ChevronDown } from 'lucide-react';
+import { Layers, ChevronUp, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
 import type { TnebSubstation, TnebSection } from '../../types/tneb';
 
 interface MapLayerControlsProps {
@@ -18,6 +18,11 @@ interface MapLayerControlsProps {
   substations: TnebSubstation[];
   sections: TnebSection[];
   isLight: boolean;
+  panelWidth?: number;
+  onResizeStart?: (e: React.MouseEvent) => void;
+  onResetWidth?: () => void;
+  onTogglePreset?: () => void;
+  isResizing?: boolean;
 }
 
 export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
@@ -35,16 +40,57 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
   setShowSections,
   substations,
   sections,
-  isLight
+  isLight,
+  panelWidth,
+  onResizeStart,
+  onResetWidth,
+  onTogglePreset,
+  isResizing
 }) => {
   return (
     <div
-      className={`pointer-events-auto rounded-xl p-3 text-xs space-y-2.5 transition-colors ${
+      className={`relative pointer-events-auto rounded-xl p-3 text-xs space-y-2.5 transition-colors ${
         isLight
           ? 'bg-white/98 border border-slate-300/90 text-slate-800 shadow-[0_10px_35px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10 backdrop-blur-md'
           : 'bg-slate-900/95 border border-slate-700/80 text-slate-200 shadow-[0_12px_40px_rgba(0,0,0,0.85)] ring-1 ring-white/10 backdrop-blur-xl'
       }`}
     >
+      {/* Desktop Right-edge Drag-to-Resize Handle */}
+      {onResizeStart && (
+        <div
+          onMouseDown={onResizeStart}
+          onDoubleClick={onResetWidth}
+          className="hidden md:flex absolute -right-2.5 top-0 bottom-0 w-5 cursor-col-resize z-40 items-center justify-center group select-none"
+          title="Drag to resize card width • Double-click to reset (360px)"
+        >
+          {/* Visual Grip Bar */}
+          <div
+            className={`w-1.5 h-12 rounded-full transition-all duration-150 ${
+              isResizing
+                ? isLight
+                  ? 'bg-indigo-600 scale-y-125 shadow-md'
+                  : 'bg-cyan-400 scale-y-125 shadow-lg shadow-cyan-500/50'
+                : isLight
+                ? 'bg-slate-300 group-hover:bg-indigo-500 group-hover:scale-y-110'
+                : 'bg-slate-700 group-hover:bg-cyan-400 group-hover:scale-y-110'
+            }`}
+          />
+
+          {/* Width tooltip while actively dragging */}
+          {isResizing && panelWidth && (
+            <div
+              className={`absolute left-4 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-[11px] font-mono font-bold pointer-events-none whitespace-nowrap shadow-xl border ${
+                isLight
+                  ? 'bg-slate-900 text-white border-slate-700'
+                  : 'bg-slate-950 text-cyan-300 border-cyan-500/50'
+              }`}
+            >
+              {panelWidth}px
+            </div>
+          )}
+        </div>
+      )}
+
       <div
         className={`flex items-center justify-between ${isLayersExpanded ? 'border-b pb-2' : ''} ${
           isLight ? 'border-slate-300/70' : 'border-slate-700/80'
@@ -62,20 +108,46 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
             <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           )}
         </button>
-        <button
-          onClick={() => setIsSatellite(!isSatellite)}
-          className={`px-2 py-0.5 rounded font-medium text-xs transition-colors ${
-            isSatellite
-              ? isLight
-                ? 'bg-sky-600 text-white font-bold'
-                : 'bg-cyan-500 text-slate-950 font-bold'
-              : isLight
-              ? 'bg-slate-100 text-slate-700 border border-slate-300/70 hover:text-slate-900'
-              : 'bg-slate-800/90 text-slate-300 border border-slate-700/80 hover:text-white hover:border-slate-600'
-          }`}
-        >
-          {isSatellite ? 'Satellite' : 'Vector Map'}
-        </button>
+
+        <div className="flex items-center gap-1.5">
+          {/* Quick Width Toggle (Desktop Only) */}
+          {onTogglePreset && (
+            <button
+              onClick={onTogglePreset}
+              className={`hidden md:flex p-1 rounded font-medium text-xs transition-colors items-center justify-center ${
+                isLight
+                  ? 'text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-300/70'
+                  : 'text-slate-400 hover:text-white bg-slate-800/90 hover:bg-slate-700 border border-slate-700/80'
+              }`}
+              title={
+                panelWidth && panelWidth > 400
+                  ? 'Restore standard width (360px)'
+                  : 'Expand card width (480px)'
+              }
+            >
+              {panelWidth && panelWidth > 400 ? (
+                <Minimize2 className="w-3.5 h-3.5" />
+              ) : (
+                <Maximize2 className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
+
+          <button
+            onClick={() => setIsSatellite(!isSatellite)}
+            className={`px-2 py-0.5 rounded font-medium text-xs transition-colors ${
+              isSatellite
+                ? isLight
+                  ? 'bg-sky-600 text-white font-bold'
+                  : 'bg-cyan-500 text-slate-950 font-bold'
+                : isLight
+                ? 'bg-slate-100 text-slate-700 border border-slate-300/70 hover:text-slate-900'
+                : 'bg-slate-800/90 text-slate-300 border border-slate-700/80 hover:text-white hover:border-slate-600'
+            }`}
+          >
+            {isSatellite ? 'Satellite' : 'Vector Map'}
+          </button>
+        </div>
       </div>
 
       {isLayersExpanded && (
