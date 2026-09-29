@@ -8,12 +8,15 @@ interface MunicipalDisasterCardProps {
   node: TnebSubstation | TnebSection;
   isLight: boolean;
   isDedicatedTab?: boolean;
+  /** Extra plan notes shown first inside the collapsed "Plan notes" section (Respond tab). */
+  planNotesExtra?: React.ReactNode;
 }
 
 export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
   node,
   isLight,
-  isDedicatedTab = false
+  isDedicatedTab = false,
+  planNotesExtra
 }) => {
   if (!node.gccZone) {
     return (
@@ -113,8 +116,9 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
         <details className={`rounded-xl border text-xs ${
           isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-300'
         }`}>
-          <summary className="cursor-pointer p-3 font-semibold">Plan notes (zone role, before re-energizing)</summary>
+          <summary className="cursor-pointer p-3 font-semibold">Plan notes (flood actions, zone role, before re-energizing)</summary>
           <div className="px-3 pb-3 space-y-2.5">
+            {planNotesExtra}
         <div className={`p-3 rounded-xl border text-xs space-y-1 ${
           isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
         }`}>

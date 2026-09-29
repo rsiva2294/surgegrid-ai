@@ -31,6 +31,7 @@ import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
+import { FloodPlanNotes } from './FloodPlanNotes';
 import { useSectionBoundary } from '../../services/sectionBoundaries';
 import { ReliefCentresCard } from './ReliefCentresCard';
 import { useOfficialFlood } from '../../services/officialFloodLayers';
@@ -880,17 +881,17 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       </div>
                     )}
-                    {/* Flood exposure: facts and official map checks */}
-                    {selectedSubstation.elevationM !== undefined && (
-                      <FloodExposureCard substation={selectedSubstation} isLight={isLight} />
-                    )}
-
                     {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
                     <SubstationHealthCard
                       substation={selectedSubstation}
                       isLight={isLight}
                       liveOutages={activeSubstationOutages}
                     />
+
+                    {/* Flood exposure: facts and official map checks */}
+                    {selectedSubstation.elevationM !== undefined && (
+                      <FloodExposureCard substation={selectedSubstation} isLight={isLight} />
+                    )}
 
                     {/* Consolidated Administrative & Switchyard Capacity Overview */}
                     {(() => {
@@ -1095,7 +1096,12 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       </div>
                     )}
 
-                    <MunicipalDisasterCard node={selectedSubstation} isLight={isLight} isDedicatedTab={true} />
+                    <MunicipalDisasterCard
+                      node={selectedSubstation}
+                      isLight={isLight}
+                      isDedicatedTab={true}
+                      planNotesExtra={<FloodPlanNotes substation={selectedSubstation} isLight={isLight} />}
+                    />
                   </div>
                 )}
               </div>
