@@ -923,12 +923,26 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             });
 
             marker.addListener('click', () => {
+              const headerEl = document.createElement('div');
+              headerEl.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:24px;width:100%;font-family:system-ui,-apple-system,sans-serif;';
+              
+              const titleSpan = document.createElement('span');
+              titleSpan.style.cssText = `font-weight:700;font-size:12px;color:${isNonCut ? '#e11d48' : '#b45309'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
+              titleSpan.textContent = `⚡ ${dtr.name}`;
+              
+              const kvaSpan = document.createElement('span');
+              kvaSpan.style.cssText = 'font-size:10px;font-family:monospace;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:4px;font-weight:600;flex-shrink:0;';
+              kvaSpan.textContent = dtr.kva ? `${dtr.kva} kVA` : 'DTR';
+              
+              headerEl.appendChild(titleSpan);
+              headerEl.appendChild(kvaSpan);
+
+              if (typeof dtrInfoWindowRef.current?.setHeaderContent === 'function') {
+                dtrInfoWindowRef.current.setHeaderContent(headerEl);
+              }
+
               dtrInfoWindowRef.current?.setContent(`
-                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 6px; color: #0f172a; max-width: 240px; line-height: 1.35;">
-                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-                    <span style="font-weight: 800; font-size: 13px; color: ${isNonCut ? '#e11d48' : '#b45309'};">⚡ ${dtr.name}</span>
-                    <span style="font-size: 10px; font-family: monospace; background: #fef3c7; color: #92400e; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${dtr.kva ? dtr.kva + ' kVA' : 'DTR'}</span>
-                  </div>
+                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 0; color: #0f172a; max-width: 240px; line-height: 1.35;">
                   ${lifelineBadge ? `
                     <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: ${selectedFeeder.lifelineCategory === 'hospital' ? '#ffe4e6; color: #9f1239' : selectedFeeder.lifelineCategory === 'water' ? '#e0f2fe; color: #0369a1' : selectedFeeder.lifelineCategory === 'transit' ? '#f3e8ff; color: #6b21a8' : '#fef3c7; color: #92400e'};">
                       <span>${lifelineBadge.icon}</span>
