@@ -94,14 +94,13 @@ The SurgeGrid AI application reflects these operational realities across three s
 1. **Top Center Disaster Protocol Cockpit Bar:**
    - Scenario selector (`DisasterCockpitBar.tsx`) designed for instant access:
      - `🟢 Live` (internal scenario `NORMAL`): pulsing beacon plus the current temperature from the Weather API; no simulated trips.
-     - `🟡 Alert`: Standby alert at $65\text{ km/h}$ with lineman foot-patrol mobilization.
-     - `🌀 Severe >80k`: Executes TNSDMA §5.6 statutory pre-emptive trip on overhead lines ($>80\text{ km/h}$); underground cables remain live.
-     - `🌊 Surge 3.2m`: Triggers coastal storm surge flooding sentinel exceeding the $3.0\text{ m MSL}$ regulatory threshold.
+     - `🌀 Cyclone Michaung` and `🌊 2015 Megaflood` (updated 2026-09-29): hour-by-hour simulations driven by scenario files, with a timeline scrubber, and the *AI Directive* (Gemini SOP) button. At each hour, feeders trip under the rules below: yard flood when elevation ≤ surge; pre-emptive trip of overhead and mixed lines above $80\text{ km/h}$ (TNSDMA §5.6); watch above $60\text{ km/h}$; underground cables remain live. See [DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md](./DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md).
+     - The earlier fixed `Alert`, `Severe` and `Surge 3.2m` buttons were removed from the UI; their logic still exists in `disasterUtils.ts`.
    - **Layout:** Buttons use `whitespace-nowrap`; on narrow screens the bar scrolls horizontally (`overflow-x-auto`). A second row holds the triage filters: `⚠️ Poor Stability (<75)`, `🌊 Waterlogging Risk` and `⚡ Live Outages`, each with a count.
    - **Unified Statutory Readout Banner:** Dynamic centered pill banner displaying regulatory mandates without ragged multi-line breaking (e.g. `⚠️ TNSDMA 3.0m Surge Mandate: Substation Inundation & Mobile Dewatering Active`).
 
 2. **Substation Info Card & Emergency Sentinel:**
-   - **Inundation banner:** In the `Surge` scenario, substations with elevation ≤ 3.2 m MSL show a `CRITICAL: Switchyard Inundation Event` banner near the top of the `Plant & Specs` tab (below the live-outage banner and switchyard identity card).
+   - **Inundation banner:** During a simulation scenario, substations with elevation ≤ 3.2 m MSL show a `CRITICAL: Switchyard Inundation Event` banner near the top of the `Plant & Specs` tab (below the live-outage banner and switchyard identity card).
    - **Consolidated Switchyard Specs:** Unifies administrative circle, region code, MVA capacity, transformer units, incoming feeders, and Google Maps GPS navigation into a compact, single-card header.
    - **Climate & Flood Risk Matrix:** Displays terrain elevation (m MSL), distance to coast, composite risk score, the 2015 flood benchmark, switchgear plinth clearance (1.5 m GL, a fixed constant) and the dewatering requirement. The 2015 depth and dewatering flag are derived from elevation, not surveyed per yard (see doc 02).
    - **Jurisdictional AE Depot:** Compact single-row contact strip with direct phone dialer and map locator.

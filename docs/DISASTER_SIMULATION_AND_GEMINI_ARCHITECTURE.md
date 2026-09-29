@@ -1,265 +1,101 @@
-# SurgeGrid AI: Disaster Simulation Mechanics & Gemini AI Architecture
+# Disaster Simulation & Gemini AI Architecture
 
-> **Chennai Grid & Climate Resiliency System**  
-> *Autonomous Standard Operating Procedures (SOP) & Switchyard Tactical Advisory Engine*
+> Describes what the code does today (audited against `src/` on 2026-09-29).
+> Files: `scenarioService.ts`, `disasterUtils.ts`, `geminiSopService.ts`, `geminiSubstationCopilotService.ts`, `GeminiSopDialog.tsx`, `SubstationHealthCard.tsx`.
 
----
+## 1. Overview
 
-## 1. Executive Overview
-
-During extreme meteorological events—such as Category-3 tropical cyclones (**Michaung 2023**) or catastrophic 500-year urban floods (**2015 Megaflood**)—power grid control room operators face high-velocity telemetry overload. Cascading feeder faults, coastal switchyard submersion, conductor snaps, and equipment explosions occur faster than humans can consult printed SOP binders.
-
-**SurgeGrid AI** bridges this gap by unifying:
-1. **High-Fidelity Physical Simulation**: Dynamic geospatial overlays combining Google Earth Engine (GEE) Digital Elevation Models (DEM), storm surge hydrodynamics, and ERA5/IMD wind vectors.
-2. **Real-World Infrastructure Baselines**: "Today's" live electrical state, including chronic health grading ($A/B/C/D$), 90-day unscheduled trip frequencies, and underground vs. overhead feeder configurations.
-3. **Two-Tier Gemini 2.5 Flash Intelligence**:
-   - **Tier 1 — Macro Grid Commander**: Autonomous city-wide SOPs, statutory civil defence mandates (TNSDMA §5.6 / CEA Safety Regs), and feeder group trip sequencing.
-   - **Tier 2 — Micro Substation Copilot**: Asset-specific tactical checklists generated on-demand for individual switchyards (dewatering pump staging, plinth clearance margins, breaker lockout, and hospital lifeline isolation).
+The app replays a storm hour by hour. At each hour it works out which substations are most at risk, then uses Gemini to write the plan for the control room. If Gemini is unavailable, a built-in rule engine writes a plan instead, so the screen always shows guidance.
 
 ```mermaid
 flowchart TB
-    subgraph GeoPhysics ["1. Environmental Hazard Physics (GEE & IMD)"]
-        DEM["High-Res DEM Elevation (m MSL)"]
-        SURGE["Coastal Storm Surge & Water Depth"]
-        WIND["Sustained & Gust Wind Vectors (km/h)"]
-        RAIN["1-Hour Precipitation Intensity (mm/h)"]
-    end
-
-    subgraph GridState ["2. Chennai Grid Asset State (TNEB Ground Truth)"]
-        INFRA["Substation Plinth & Yard Elevations"]
-        CIRCUITS["Feeder Types (Underground vs Overhead Radial)"]
-        HEALTH["Today's Health Grade (A/B/C/D) & 30d Unscheduled Trips"]
-        LIFELINES["Downstream Hospitals, GCC Shelters, CMWSSB Pumps"]
-    end
-
-    subgraph SimEngine ["3. Temporal Simulation Engine (T-48h to T+12h)"]
-        HOURS["Timestep Scrubbing (Hour -48, -24, -12, 0, +6, +12)"]
-        STRESS["Dynamic Multiplier & Asset Vulnerability Scoring"]
-        TOP6["extractTopCompromisedInfra() Scorer"]
-    end
-
-    subgraph GeminiTier1 ["4. Tier-1: Macro Grid Commander (City-Wide SOP)"]
-        G1_PROMPT["Compact Pipe-Delimited Table Prompt (<140 tokens)"]
-        G1_API["Gemini 2.5 Flash (responseSchema: GeminiSopDirective)"]
-        G1_UI["Floating SOP Modal & Statutory Directives"]
-    end
-
-    subgraph GeminiTier2 ["5. Tier-2: Micro Substation Copilot (Asset Drawer)"]
-        G2_PROMPT["Individual Asset Telemetry Prompt (<55 tokens)"]
-        G2_API["Gemini 2.5 Flash (responseSchema: SubstationCopilotAdvisory)"]
-        G2_UI["Inspector Drawer Tactical Advisory & Posture Badge"]
-    end
-
-    GeoPhysics --> SimEngine
-    GridState --> SimEngine
-    SimEngine --> TOP6
-    TOP6 --> G1_PROMPT --> G1_API --> G1_UI
-    SimEngine -.-> G2_PROMPT
-    GridState -.-> G2_PROMPT
-    G2_PROMPT --> G2_API --> G2_UI
+    SC["Scenario file (hourly wind / rain / surge)"] --> HOUR["Selected hour (timeline)"]
+    GRID["Grid file: elevation, risk, hydroRisk, feeders"] --> HOUR
+    HEALTH["Health grade + live outages"] --> HOUR
+    HOUR --> FEED["Feeder status (disasterUtils)"]
+    HOUR --> TOP6["extractTopCompromisedInfra: top 6 substations"]
+    TOP6 --> T1["Tier 1: Grid Commander SOP (city-wide)"]
+    HOUR --> T2["Tier 2: Substation Copilot (one substation)"]
+    T1 --> G["Gemini 2.5 Flash, or rule-engine fallback"]
+    T2 --> G
+    G --> UI1["AI Directive window"]
+    G --> UI2["Advisory card in inspector drawer"]
 ```
 
----
+## 2. Simulation
 
-## 2. Disaster Simulation Mechanics: Step-by-Step
+### 2.1 Scenarios and timeline
+| Scenario | Data file | Steps | What it is |
+|---|---|---|---|
+| Cyclone Michaung | `public/data/scenarios/michaung_class_cat3.json` | 61 hourly, T-48h to T+12h | Modelled Category-3 benchmark. Peak ~134 km/h wind, ~46 mm/h rain, ~4 m surge at landfall (T-0h). Not a live forecast. |
+| 2015 Megaflood | `public/data/scenarios/floods2015.json` | 120 hourly, -85h to +34h | Hindcast from NASA IMERG rain and ERA5-Land wind (Earth Engine). No surge (sea level held at 0.4 m). |
 
-SurgeGrid AI's simulation does not replay static animations. It calculates physics-driven grid failure probabilities across a discrete timeline from pre-landfall staging to post-storm restoration.
+The user plays, pauses, steps or scrubs hour by hour in the cockpit bar. Playback advances one step every 2.2 s. The AI Directive window opens by itself (and playback pauses) at milestone hours: **Michaung -24, 0, 12; Megaflood -48, 0, 12** (see `SCENARIO_MILESTONES`, `TnebGridMap.tsx`).
 
-### 2.1 Timeline Discrete Steps
+### 2.2 Feeder status rules (`disasterUtils.ts`)
+Checked in order for each feeder at the current hour:
+1. **Yard flood trip**: substation elevation is at or below the surge (in the Megaflood, at or below a fixed 4.0 m).
+2. **Pre-emptive wind trip**: wind above 80 km/h on an overhead or mixed feeder (TNSDMA §5.6).
+3. **Cyclone watch**: wind above 60 km/h on an overhead or mixed feeder.
+4. **Live (underground)**: everything else.
 
-| Timestep | Phase | Simulation Focus | Typical Wind | Typical Surge |
-|---|---|---|---|---|
-| **$T - 48\text{h}$** | Early Warning | GEE watershed saturation, reservoir inflows, preventive tree canopy trimming | $35 - 45\text{ km/h}$ | $0.2\text{m MSL}$ |
-| **$T - 24\text{h}$** | Pre-Landfall Watch | Hospital diesel backup verification, mobile dewatering staging, overhead circuit patrol | $60 - 75\text{ km/h}$ | $0.8\text{m MSL}$ |
-| **$T - 12\text{h}$** | Outer Rain Bands | Radial overhead lines experience gale gusts; high-risk plinths face surface runoff pooling | $80 - 95\text{ km/h}$ | $1.4\text{m MSL}$ |
-| **$T - 0\text{h}$** | Eye Wall Landfall | Peak mechanical & hydro stress; statutory safety de-energization; flashover prevention | $110 - 130\text{ km/h}$ | $3.2\text{m MSL}$ |
-| **$T + 6\text{h}$** | Tail Water Surge | Runoff drains toward Adyar/Cooum river mouths; switchyard backwater flooding risks | $65 - 80\text{ km/h}$ | $2.6\text{m MSL}$ |
-| **$T + 12\text{h}$** | Controlled Recovery | Sequential 5-stage energization: EHV Ring $\rightarrow$ 33kV GIS $\rightarrow$ Hospital Lifelines $\rightarrow$ LT | $< 40\text{ km/h}$ | $< 0.8\text{m MSL}$ |
+There is no water-depth calculation. Flood depth per substation comes pre-computed in the grid file (`hydroRisk`).
 
-### 2.2 Physical Hazard Calculations
+### 2.3 Disaster score (`extractTopCompromisedInfra`)
+Used to pick the 6 substations sent to Gemini. Points are added up:
+- Health grade: D +70, C +45, B +15
+- Health score: +1.2 for each point below 100
+- Unscheduled trips: +5 each, capped at +50
+- Elevation at or below surge + 0.3 m: +65; otherwise at or below 3.2 m: +30
+- Risk category: `CRITICAL_SURGE_RISK` +35, `HIGH_WATERLOGGING_RISK` +25
+- If wind is 75 km/h or more: within 6 km of the coast +30, has overhead feeders +20
 
-For each substation $i$ at simulation timestep $t$, the simulation calculates two compounding risks:
+## 3. Tier 1 — Grid Commander SOP (city-wide)
 
-#### A. Inundation & Plinth Submersion
-$$\text{Water Depth}_i(t) = \max\Big(0,\; \text{SurgeMSL}(t) + \text{LocalRunoff}(t) - \text{ElevationMSL}_i\Big)$$
-- If $\text{Water Depth}_i(t) > 0.3\text{m}$: Substation yard plinths are breached. Equipment must be pre-emptively de-energized to avoid transformer bushing flashover and oil tank contamination.
-- If $0 < \text{Water Depth}_i(t) \le 0.3\text{m}$: Cable trench waterlogging threatens 11kV/33kV control wiring; dewatering pumps must be energized.
+**Rule engine (always runs first)**: `getDirectiveForTimestep` picks a phase and fills a template with the top substations' names.
+- Michaung: hour ≥ 6 → Restoration, hour ≥ -12 → Critical, otherwise Watch.
+- Megaflood: hour ≥ 12 → Restoration, otherwise Critical (there is no Watch phase, and the title and statutory reference always come from the flood template).
+- The impact numbers (at-risk, tripped feeders, protected lifelines) are **rough estimates from a formula**, not counted data. The fixed templates also contain sample figures (for example patrol-gang counts).
+- The Tamil summary is left empty in the dynamic output.
 
-#### B. Overhead Line Wind Stress & Conductor Snapping
-$$\text{Wind Force} \propto \big(\text{WindSpeed}_{10\text{m}}(t)\big)^2$$
-- If sustained wind exceeds $80\text{ km/h}$, overhead radial lines face acute snap hazards from flying debris and falling branches. Statutory orders mandate de-energization under **TNSDMA Section 5.6** to prevent pedestrian electrocution.
-- Underground (UG) cables remain protected from wind and are prioritized for critical ring feeds.
+**Gemini call (only if `VITE_GEMINI_API_KEY` is set)**: `fetchLiveGeminiDirective`
+- Runs whenever the hour changes, not just at milestones, and is cached by `scenario_hour_assetCodes`. Only successful Gemini replies are cached.
+- Prompt is a compact pipe-delimited table of the top 6 substations (name, grade, score, elevation, trips, risk) plus the weather line. It does not include hospitals, feeder types or lifelines.
+- Uses a system instruction (Senior Grid Commander persona) and a response schema (title, summary, statutory reference, action items with priority and category).
+- Only title, summary, statutory reference and action items are taken from Gemini. Urgency, impact numbers and weather come from the rule engine.
+- The schema fixes the *shape* of the reply. It does not check that the content is correct, so names Gemini writes may not match real substations.
 
-### 2.3 Compounding Asset Health ("Today's" Condition)
+**UI**: `GeminiSopDialog.tsx` shows the summary, targeted-asset badges, and a checklist with priority badges and tick-off. It can be minimized to a floating pill.
 
-A well-maintained GIS substation with Grade $A$ health withstands minor flooding with zero issues. A degraded Grade $D$ switchyard with multiple unscheduled trips in the past 30 days will fail at the first lightning surge or moisture ingress.
+## 4. Tier 2 — Substation Copilot (one substation)
 
-SurgeGrid AI computes an active **Disaster Score**:
-$$\text{DisasterScore}_i = \text{BaseVulnerability} + \text{HealthDegradation} + \text{TerrainHazard}$$
-Where:
-- **Grade $D$ Asset**: $+70$ points
-- **Grade $C$ Asset**: $+45$ points
-- **Unscheduled Trips**: $+5$ points per trip (capped at $+50$)
-- **Plinth Inundation ($\le \text{Surge} + 0.3\text{m}$)**: $+65$ points
-- **Low-Lying Bowl ($\le 3.2\text{m MSL}$)**: $+30$ points
+Shown in `SubstationHealthCard.tsx` while a scenario is running (not in Live mode).
 
-The function `extractTopCompromisedInfra()` dynamically ranks all substations and extracts the **Top 6 most vulnerable assets** at that exact simulation hour.
+**Rule engine (`generateDeterministicTacticalAdvisory`)**, first match wins:
+1. **PRE_EMPTIVE_ISOLATE**: elevation ≤ surge + 0.3 m, or the grid file says `cycloneIsolateRecommended` (any scenario other than normal).
+2. **DEWATERING_PUMP**: elevation ≤ surge + 0.9 m, or risk category is `CRITICAL_SURGE_RISK`.
+3. **LOAD_SHED_SELECTIVE**: wind ≥ 75 km/h and the substation has overhead or mixed feeders.
+4. **SAFE_MONITOR**: otherwise.
 
----
+Each posture returns three fixed-style actions (plinth, feeder isolation, lifeline loop; some use real feeder names such as hospital feeders).
 
-## 3. Tier 1: Macro Grid Commander (City-Wide SOP)
+**Gemini call**: `fetchSubstationTacticalAdvisory` sends a short asset summary (name, elevation, health grade, trips, disaster telemetry, feeder counts) and asks for a posture plus three actions in a fixed JSON schema. Gemini's posture is used as returned; it is not checked against the rule engine.
 
-The **Macro Grid Commander** provides strategic, city-wide command decisions. It automatically pops up at pivotal milestone hours ($T-24\text{h}$, $T-0\text{h}$, $T+12\text{h}$) or can be opened manually via the floating SOP pill.
+**Cache**: keyed by `substationCode_scenario_hour`, in memory. The fallback answer is also cached when there is no key or the call fails, so the *Re-evaluate* button re-reads the cache rather than calling Gemini again.
 
-### 3.1 Token Optimization & Prompt Architecture
+## 5. Fallback and resilience
+- No API key, offline, or API error → rule-engine output, no error banner.
+- Model tag on screen tells you the source: *Gemini 2.5 Flash · Live Copilot / Tactical Copilot* or the deterministic label.
+- The API key is read from the browser bundle (`VITE_GEMINI_API_KEY`) and sent in the request URL, so it is visible to users. Restrict it in Google Cloud, or move the call behind a server.
 
-Traditional AI prompts send lengthy JSON payloads that consume thousands of tokens and cause slow generation ($3 - 6\text{s}$). SurgeGrid AI converts live telemetry into an ultra-compact **pipe-delimited table**:
-
-```text
-SCENARIO: Cyclone Michaung (Cat-3)
-TIMESTEP: T-0h Landfall Peak (Hour: 0)
-WEATHER: Wind 112.0 km/h | Rain 58.2 mm/h | Surge 3.2m MSL
-
-COMPROMISED ASSETS:
-SUBSTATION|GRADE|SCORE|ELEV_M|UNSCHEDULED_TRIPS|RISK_CAT
-110KV VELACHERY|D|42|1.8|5|CRITICAL_SURGE
-230KV TARAMANI|C|64|2.4|3|CRITICAL_SURGE
-33KV ENNORE|D|38|0.9|6|CRITICAL_SURGE
-110KV KOYAMBEDU|C|59|4.2|4|HIGH_WATERLOGGING
-110KV BESANT NAGAR|B|78|3.1|1|MODERATE
-230KV PERAMBUR|B|82|5.8|0|SAFE
-
-Formulate statutory directives specifically targeting these compromised substations.
-```
-
-### 3.2 Native System Instruction & Response Schema
-
-SurgeGrid AI leverages Gemini 2.5 Flash's native features:
-1. **`systemInstruction`**: Defines the persona as the *TANGEDCO Senior Grid Commander & SLDC Operations Director* bound by TNSDMA and CEA safety regulations.
-2. **`responseSchema`**: Enforces strict JSON decoding at the inference engine level. Hallucinations or malformed JSON keys are mathematically impossible:
-
-```typescript
-responseSchema: {
-  type: 'OBJECT',
-  properties: {
-    title: { type: 'STRING' },
-    summaryEn: { type: 'STRING' },
-    statutoryReference: { type: 'STRING' },
-    actionItems: {
-      type: 'ARRAY',
-      items: {
-        type: 'OBJECT',
-        properties: {
-          id: { type: 'STRING' },
-          priority: { type: 'STRING', enum: ['P0_CRITICAL', 'P1_LIFELINE', 'P2_FIELD'] },
-          category: {
-            type: 'STRING',
-            enum: ['DE_ENERGIZE', 'LIFELINE_PROTECT', 'DEWATERING', 'SAFETY_LOCKOUT', 'RESTORATION', 'FIELD']
-          },
-          title: { type: 'STRING' },
-          description: { type: 'STRING' },
-          targetFeedersOrSubstations: {
-            type: 'ARRAY',
-            items: { type: 'STRING' }
-          }
-        },
-        required: ['id', 'priority', 'category', 'title', 'description', 'targetFeedersOrSubstations']
-      }
-    }
-  },
-  required: ['title', 'summaryEn', 'statutoryReference', 'actionItems']
-}
-```
-
-### 3.3 Output Rendering in UI
-
-The resulting directives appear in the [`GeminiSopDialog.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/GeminiSopDialog.tsx):
-- **Executive Directive Summary**: High-level civil defense orders and statutory backing (e.g., *TNSDMA §5.6 · CEA Safety Reg. 33*).
-- **Targeted Assets Tray**: Direct clickable badges of the degraded substations identified by Gemini.
-- **Categorized Checklist**: Priority items ($P0$ Critical Isolation, $P1$ Lifeline Islanding, $P2$ Dewatering Field Action) with interactive completion toggles.
-
----
-
-## 4. Tier 2: Micro Substation Copilot (Asset-Specific Advisory)
-
-While Tier 1 guides city-wide SLDC coordinators, field engineers and substation operators need asset-level tactical actions. 
-
-When an operator selects any substation on the map, the **Substation Inspector Drawer** displays the **Gemini Asset Copilot (Tier-2)** widget inside [`SubstationHealthCard.tsx`](file:///c:/projects/surgegrid-ai/src/components/Map/SubstationHealthCard.tsx).
-
-### 4.1 Asset Telemetry Encoding (< 55 Tokens)
-
-The prompt payload is constructed dynamically from the asset's active state:
-
-```text
-ASSET: 110KV VELACHERY (110 kV) | ELEV: 1.8m MSL (CRITICAL_SURGE_RISK)
-TODAY_HEALTH: Grade D (42/100) | TRIPS_30D: 5 | CLEAN_STREAK: 8d
-DISASTER: MICHAUNG_CAT3 @ T+0h | SURGE: 3.2m MSL | WIND: 112 km/h | RAIN: 58 mm/h
-CIRCUITS: 8 Feeders (2 UG, 6 OH) | LIFELINES: 2
-TASK: Output posture & 3 precise switchyard directives.
-```
-
-### 4.2 Tactical Posture Classification
-
-Gemini evaluates the asset against active physics and assigns one of four standardized operational postures:
-
-```mermaid
-stateDiagram-v2
-    [*] --> Evaluation
-    Evaluation --> PRE_EMPTIVE_ISOLATE: Yard Elevation breached by surge / plinth submersed
-    Evaluation --> DEWATERING_PUMP: Margin < 0.9m to water level / cable trench wet
-    Evaluation --> LOAD_SHED_SELECTIVE: High wind (>75 km/h) & exposed overhead feeders
-    Evaluation --> SAFE_MONITOR: High plinth clearance & stable health grade
-```
-
-| Posture | Color Badge | Typical Operational Meaning |
+## 6. Tier 1 vs Tier 2
+| | Tier 1 | Tier 2 |
 |---|---|---|
-| `PRE_EMPTIVE_ISOLATE` | **Rose (Pulsing)** | Immediate bus de-energization to prevent catastrophic flashover and arc explosion. |
-| `DEWATERING_PUMP` | **Cyan** | Plinth clearance safe but water accumulating in cable trench sump; mobilize diesel pumps. |
-| `LOAD_SHED_SELECTIVE` | **Amber** | Trip tree-exposed overhead radials while preserving underground hospital feeds. |
-| `SAFE_MONITOR` | **Emerald** | Adequate freeboard clearance; keep SCADA alarms unmuted and monitor battery bank. |
+| Where | AI Directive window | Substation inspector, health card |
+| Scope | Top 6 substations, city-wide | One substation |
+| Trigger | Every hour change (call), auto-open at milestones | Substation selected or hour changed |
+| Output | Title, summary, statutory reference, action checklist | Posture badge, rationale, three actions |
+| Fallback | Templates filled with real substation names | Rule engine |
 
-### 4.3 Structure of Tactical Directives
-
-Gemini delivers exactly three actionable switchyard directives categorized by:
-1. **Equipment Plinth / Yard Core**: Substation yard transformers, switchgear, bus couplers, and dewatering pumps.
-2. **Feeder Isolation**: Circuit breakers (VCB/SF6), automatic reclosers (ACR), and radial de-energization.
-3. **Lifeline Ring / Downstream Continuity**: Transferring critical hospitals, GCC relief shelters, and water pumping stations to hardened underground loops.
-
----
-
-## 5. Resiliency, Latency & Offline Fallback Mechanics
-
-To guarantee zero latency and high availability during actual emergencies, the architecture implements two critical safety nets:
-
-### 5.1 Hierarchical In-Memory Caching
-
-Every request is cached using an exact key:
-- **Tier 1 Cache Key**: `${scenarioId}_${timestepHour}_${assetCodes.join('-')}`
-- **Tier 2 Cache Key**: `${substationCode}_${scenarioId}_${timestepHour}`
-
-When an operator scrubs back and forth across the timeline, previously evaluated substations load in **$0\text{ms}$** with a green `Cached` tag, incurring zero Gemini API billing or rate limit usage.
-
-### 5.2 Deterministic Heuristic Engine (Offline Fallback)
-
-If the system is offline, running in an air-gapped field control room, or `VITE_GEMINI_API_KEY` is not supplied:
-- The system automatically engages [`generateDeterministicTacticalAdvisory()`](file:///c:/projects/surgegrid-ai/src/services/geminiSubstationCopilotService.ts).
-- This deterministic engine implements the same electrical engineering rules codified in the TNEB Grid Disaster Manual:
-  $$\text{If } \text{Elevation} \le \text{Surge} + 0.3\text{m} \implies \text{PRE\_EMPTIVE\_ISOLATE}$$
-  $$\text{Else If } \text{Elevation} \le \text{Surge} + 0.9\text{m} \implies \text{DEWATERING\_PUMP}$$
-  $$\text{Else If } \text{Wind} \ge 75\text{ km/h} \text{ and } \text{OverheadCount} > 0 \implies \text{LOAD\_SHED\_SELECTIVE}$$
-  $$\text{Else} \implies \text{SAFE\_MONITOR}$$
-- The UI renders seamlessly without any error banners, ensuring the operator always has actionable guidance.
-
----
-
-## 6. Summary Comparison: Tier 1 vs. Tier 2
-
-| Feature | Tier 1: Macro Grid Commander | Tier 2: Micro Substation Copilot |
-|---|---|---|
-| **Location** | Floating Header Dialog (`GeminiSopDialog.tsx`) | Substation Drawer Health Card (`SubstationHealthCard.tsx`) |
-| **User Role** | SLDC Chief Grid Director / TNSDMA Coordinator | Substation Executive Engineer / Field Operator |
-| **Input Data** | Top 6 compromised substations across Chennai | Single inspected substation telemetry & circuit inventory |
-| **Token Budget** | $\sim 140\text{ tokens}$ prompt $\rightarrow 350\text{ tokens}$ output | $\sim 50\text{ tokens}$ prompt $\rightarrow 80\text{ tokens}$ output |
-| **Primary Output** | City-wide statutory de-energization and restoration orders | 1 Posture badge + 3 switchyard electrical actions |
-| **Trigger Method** | Automatic on critical storm hours or manual button | Automatic on substation selection / drawer inspection |
-| **Offline Mode** | Pre-computed deterministic SOP milestones | Algorithmic plinth & wind heuristic rules engine |
+## 7. Known issues (as of 2026-09-29)
+See [PROJECT_LOG.md](./PROJECT_LOG.md), session 1, item 2 for the full list and the proposed fix plan.

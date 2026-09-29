@@ -2,6 +2,17 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [2.4.0-docs-refresh] - 2026-09-29
+
+### Added (summary of simulation and Gemini work shipped earlier the same day)
+- **Disaster simulation engine**: Cyclone Michaung (61 hourly steps) and 2015 Megaflood hindcast (120 hourly steps) with timeline scrubber, playback, and milestone auto-pause (`scenarioService.ts`, `DisasterCockpitBar.tsx`, `TnebGridMap.tsx`).
+- **Tier-1 Gemini Grid Commander SOP** (`geminiSopService.ts`, `GeminiSopDialog.tsx`) and **Tier-2 Gemini Substation Copilot** (`geminiSubstationCopilotService.ts`, `SubstationHealthCard.tsx`), both on `gemini-2.5-flash` with a rule-engine fallback.
+
+### Changed (documentation only)
+- Rewrote `README.md` to match the current feature set, added `docs/00-feature-map.md` (feature → file locator) and `docs/PROJECT_LOG.md` (running decision log).
+- Rewrote `docs/DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md` to match the code (scoring formula, phase rules, caching, fallback rules, known issues).
+- Updated status note in docs 01 and scenario descriptions in docs 05 and 07.
+
 ## [2.3.6-weather-pill-redesign-and-data-optimization] - 2026-09-29
 
 ### Added

@@ -166,7 +166,7 @@ When `VITE_GOOGLE_MAPS_MAP_ID` is present, the map utilizes hardware-accelerated
 ### 3.7 P3: Disaster Operations Cockpit Triage & Offline 2G SMS Copy
 
 #### Triage Quick Filters
-Positioned directly below the scenario buttons (`Live`, `Alert`, `Severe`, `Surge`), the triage bar provides instant emergency views over the 286 substations:
+Positioned directly below the scenario buttons (`Live`, `Cyclone Michaung`, `2015 Megaflood`), the triage bar provides instant emergency views over the 286 substations:
 - **`⚠️ Poor Stability (<75)`**: substations whose effective health score (asset durability capped by any active live trip) is below `RESILIENCY_CUTOFF_SCORE = 75`; roster sorted worst score first.
 - **`🌊 Waterlogging Risk`**: `HIGH_WATERLOGGING_RISK` / `CRITICAL_SURGE_RISK` category or elevation ≤ 3.2 m MSL; roster sorted lowest elevation first.
 - **`⚡ Live Outages`**: substations with at least one live notice resolved to them; roster sorted by outage count, with a banner for quarantined *advisory* notices that could not be mapped to a substation.
@@ -212,7 +212,7 @@ graph TD
 1. **`src/components/Map/mapStyles.ts`**: Zero-POI cartography styles (`NO_POI_DARK_STYLE`, `NO_POI_LIGHT_STYLE`) and strict Chennai metro coordinates bounds (`CHENNAI_METRO_BOUNDS`).
 2. **`src/components/Map/mapIcons.ts`**: Marker symbol generators (`getSubstationMarkerIcon`, `getSectionMarkerIcon`, `getDtrMarkerIcon`), tier and lifeline color themes, and lifeline badge helpers. The selection halo itself is created in `TnebGridMap.tsx`.
 3. **`src/components/Map/disasterUtils.ts`**: `getFeederDisasterStatus()`, which maps scenario + elevation + feeder config to LIVE / pre-emptive isolation / awaiting patrol clearance / yard-flood trip states.
-4. **`src/components/Map/DisasterCockpitBar.tsx`**: Top-center floating operations bar with scenario pills (`Live`, `Alert`, `Severe`, `Surge`) and triage filters (`Poor Stability`, `Waterlogging Risk`, `Live Outages`).
+4. **`src/components/Map/DisasterCockpitBar.tsx`**: Top-center floating operations bar with scenario pills (`Live`, `Cyclone Michaung`, `2015 Megaflood`), timeline scrubber and AI Directive button and triage filters (`Poor Stability`, `Waterlogging Risk`, `Live Outages`).
 5. **`src/components/Map/MapSearchBox.tsx`**: Top-left search bar with fast O(1) pre-indexed string tokens and early-exit matching.
 6. **`src/components/Map/MapLayerControls.tsx`**: Collapsible grid layer toggles (`Bulk EHV`, `Sub-Transmission`, `Distribution`, `AE Section Offices`, `Satellite/Hybrid`).
 7. **`src/components/Map/MunicipalDisasterCard.tsx`**: Greater Chennai Corporation (GCC) ward coordination, ward councillor CUG contacts, water/civil AE numbers, and Ripon Building emergency hotlines.
