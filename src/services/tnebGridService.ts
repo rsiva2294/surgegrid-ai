@@ -134,7 +134,7 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
 
 import { get, set } from 'idb-keyval';
 
-const IDB_GRID_KEY = 'surgegrid_chennai_grid_v12_all_authentic_outages_mapped';
+const IDB_GRID_KEY = 'surgegrid_chennai_grid_v13_authentic_only_no_synthetic';
 let cachedGrid: ChennaiGridData | null = null;
 
 function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
@@ -186,7 +186,7 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
         fetch('/data/chennai_tneb_grid.json')
           .then(res => (res.ok ? res.json() : null))
           .then(fresh => {
-            if (fresh && fresh.version === idbData.version) {
+            if (fresh) {
               const sanitized = sanitizeGridData(fresh);
               cachedGrid = sanitized;
               set(IDB_GRID_KEY, sanitized);

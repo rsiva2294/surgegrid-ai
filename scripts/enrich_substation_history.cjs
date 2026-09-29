@@ -427,20 +427,8 @@ gridData.substations.forEach((ss, idx) => {
     populatedSubstationsCount++;
   } else {
     // Substation with 0 logged historical failures in Q3:
-    // Give 1 routine pre-monsoon switchyard inspection in August
-    const pmDay = String(5 + (idx % 20)).padStart(2, '0');
-    events = [
-      {
-        id: `pm-routine-2026-08-${pmDay}-${ss.code}`,
-        date: `2026-08-${pmDay}`,
-        workType: 'Scheduled SS Maintenance & Busbar Inspection',
-        category: 'periodic_maintenance',
-        scope: 'yard_core',
-        timing: '09:00 - 14:00',
-        durationHours: 5,
-        location: ss.name
-      }
-    ];
+    // Authentic records only: leave events empty, no synthetic template events
+    events = [];
     cleanSubstationsCount++;
   }
 
@@ -452,7 +440,7 @@ gridData.substations.forEach((ss, idx) => {
 
 console.log(`Grid enrichment complete:`);
 console.log(` - Substations with real historical TNEB logs: ${populatedSubstationsCount}`);
-console.log(` - Substations with clean operating run (1 routine PM): ${cleanSubstationsCount}`);
+console.log(` - Substations with clean operating run (0 events logged): ${cleanSubstationsCount}`);
 
 // Save to public/data/chennai_tneb_grid.json
 fs.writeFileSync(GRID_PATH, JSON.stringify(gridData), 'utf8');

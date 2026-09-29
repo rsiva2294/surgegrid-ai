@@ -344,8 +344,10 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
             {/* Event List */}
             <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
               {filteredEvents.length === 0 ? (
-                <p className="text-center py-2 text-slate-400 text-xs italic">
-                  No recorded incidents matching this scope filter.
+                <p className="text-center py-2.5 text-slate-400 text-xs italic">
+                  {profile.events.length === 0
+                    ? 'No outage or maintenance notices recorded in the past 90 days (clean operational record).'
+                    : 'No recorded incidents matching this scope filter.'}
                 </p>
               ) : (
                 filteredEvents.map((event, idx) => {

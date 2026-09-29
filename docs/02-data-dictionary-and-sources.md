@@ -27,26 +27,38 @@ Audited against `public/data/`, `data-archive/data/` and `src/` on 2026-09-29. O
 
 `tnebGridService.ts` also contains a fallback that parses `/data/super_index_v2.compact.json`, but that file is not shipped, so the fallback only works if it is added.
 
-### 1.2 Archived in `data-archive/data/` (not loaded by the app)
+### 1.2 Archived in `data-archive/data/` (Provenance & Offline Preprocessing)
 
-Kept for provenance and for the offline enrichment scripts (for example `scripts/enrich_substation_history.cjs` reads `chennai_resolved_outages.json` and `gee_chennai_substations_risk.json`). Record counts are from the archive's own README and were not re-verified.
+A common point of confusion is whether the app reads directly from `data-archive/data/`. **It does not.** 
 
-| Dataset File | Records | Source | Purpose |
-|---|---|---|---|
-| `weathernext3_chennai_cyclone_48h.json` | 61 hourly steps | WeatherNext 3 (simulated 48 h cyclone) | Design input for a forecast slider that is not built |
-| `gee_cyclone_surge_grid_simulation.json` | grid simulation | GEE | Surge simulation input |
-| `gee_chennai_substations_risk.json` | 242 nodes | GEE (SRTM, Dynamic World, GPM, ERA5) | Source of the elevation / risk fields now embedded in the grid file |
-| `gee_chennai_wards_vulnerability.json` | 200 wards | GEE zonal statistics | Source of `geeRunoffMm`, `geeImperviousPct`, `geeFloodCategory` |
-| `gcc_wards_polygons.json`, `gcc_zones.json` | 200 wards, 15 zones | GCC GIS | Used by `scripts/enrich_grid_with_gcc.py` for point-in-polygon joins |
-| `gcc_relief_centers.json`, `chennai_shelters.json`, `chennai_shelter_grid_drain_fusion.json` | 162 shelters / 7 sites | GCC Disaster Management | Shelter counts per ward (embedded as `wardReliefSheltersCount`) |
-| `chennai_drains.json`, `chennai_drains_ward_summary.json` | 5,513 lines / 200 wards | GCC stormwater | Not used at runtime |
-| `chennai_rivers.json` | 4 waterways | Adyar, Cooum, Kosasthalaiyar, Buckingham Canal | Not used at runtime |
-| `gcc_flood_hotspots.json`, `chennai_flood_depth_inches.json` | historical | GCC / field survey | Not used at runtime |
-| `chennai_resolved_outages.json` | 1,252 notices | Super Index V2 resolution | Source of the 90-day `outageHistory` embedded in the grid file |
-| `chennai_substations_vulnerability.json`, `chennai_feeders_vulnerability.json`, `chennai_sections_vulnerability.json` | 242 / – / – | Outage intelligence | Not used at runtime |
-| `circle_boundary.geojson` | 45 circles | TNEB GIS | Section boundary source |
+#### Architectural Rationale
+In earlier prototypes (V1–V4), the project maintained 20+ separate raw GeoJSON and JSON files (e.g. `chennai_drains.json` [3.3 MB], `circle_boundary.geojson` [4.5 MB], `gee_chennai_substations_risk.json` [1.5 MB]). Loading these disjoint files in the browser caused ~30 MB initial load times, coordinate mismatches, and duplicate substation markers across circle boundaries.
 
-**Data-quality notes.** (1) `outageHistory` contains 840 periodic-maintenance, 371 forced-trip and 2 emergency-repair events, of which **119 are synthetic placeholder inspections** (`id` prefix `pm-routine-…`, one per substation with no logged Q3 incidents, created by `enrich_substation_history.cjs`); `computeHealthProfile` can also fabricate placeholder events from `historicalOutagesCount` when a substation has no events. (2) `riskCategory` takes five values in the data (`CRITICAL_SURGE_RISK` 5, `HIGH_WATERLOGGING_RISK` 40, `LOW_ELEVATION_RISK` 81, `MODERATE_RISK` 105, `SAFE` 55), but the `FloodRiskCategory` type in `src/types/tneb.ts` omits `LOW_ELEVATION_RISK`.
+During the **V5 Ground-Truth Rebuild**, offline compilation scripts (in `scripts/`) ingested those raw datasets and pre-fused them into the unified production files in `public/data/`. The raw files were moved to `data-archive/data/` for auditability, provenance, and offline script re-runs.
+
+#### Lineage & Compilation Mapping Table
+
+| Original File in `data-archive/data/` | Compilation Script | Destination in `public/data/` & Active App |
+|---|---|---|
+| `gee_chennai_substations_risk.json` (GEE SRTM elevation, flood risk) | `scripts/enrich_substation_history.cjs` | **Embedded into each substation** in `chennai_tneb_grid.json` (`elevationM`, `riskCategory`, `compositeRiskScore`, `distanceToCoastKm`). |
+| `gee_chennai_wards_vulnerability.json` (GEE runoff, impervious %) | `scripts/enrich_grid_with_gcc.py` | **Embedded into ward attributes** in `chennai_tneb_grid.json` (`geeRunoffMm`, `geeImperviousPct`, `geeFloodCategory`). |
+| `gcc_wards_polygons.json` & `gcc_zones.json` (200 wards, 15 zones) | `scripts/enrich_grid_with_gcc.py` | Point-in-polygon spatial join linking 178 substations and 211 sections to GCC wards/zones in `chennai_tneb_grid.json`. |
+| `gcc_relief_centers.json` & `chennai_shelters.json` (162 shelters) | `scripts/enrich_grid_with_gcc.py` | Aggregated per ward and embedded as `wardReliefSheltersCount` in `chennai_tneb_grid.json`. |
+| `chennai_resolved_outages.json` (1,252 historical notices) | `scripts/enrich_substation_history.cjs` | Embedded as 90-day `outageHistory[]` and `healthProfile` in `chennai_tneb_grid.json`. |
+| `circle_boundary.geojson` (45 circles) | `scripts/build_chennai_grid_v5.cjs` | Extracted and embedded as boundary polygons for all 352 Section Offices in `chennai_tneb_grid.json`. |
+| Raw Feeder Wire Vectors | `scripts/decimate-feeders.js` | RDP-decimated for WebGL performance and partitioned by circle into `public/data/feeders/{circleCode}.json`. |
+| Raw DTR Points | `scripts/build_chennai_grid_v5.cjs` | Partitioned by circle and saved to `public/data/dtr/{circleCode}.json`. |
+
+#### Unrendered / Historical Files in the Archive
+The following datasets were evaluated during research or prototype phases and are **not loaded or rendered at runtime**:
+* `chennai_drains.json` (5,513 stormwater drain lines) & `chennai_drains_ward_summary.json`
+* `chennai_rivers.json` (4 major waterways: Adyar, Cooum, Kosasthalaiyar, Buckingham Canal)
+* `gcc_flood_hotspots.json` & `chennai_flood_depth_inches.json`
+* `weathernext3_chennai_cyclone_48h.json` (superseded by live Google Maps Weather API)
+* `gee_cyclone_surge_grid_simulation.json`
+* `chennai_substations_vulnerability.json`, `chennai_feeders_vulnerability.json`, `chennai_sections_vulnerability.json`
+
+**Data-quality notes.** (1) `outageHistory` contains authentic TNEB periodic-maintenance, forced-trip, and emergency-repair events mapped from `chennai_resolved_outages.json`. All synthetic placeholder inspections (`pm-routine-…` and `pm-gen-…`) have been removed; substations with zero logged incidents maintain clean, authentic empty histories (`outageHistory: []`). (2) `riskCategory` takes five values in the data (`CRITICAL_SURGE_RISK` 5, `HIGH_WATERLOGGING_RISK` 40, `LOW_ELEVATION_RISK` 81, `MODERATE_RISK` 105, `SAFE` 55), but the `FloodRiskCategory` type in `src/types/tneb.ts` omits `LOW_ELEVATION_RISK`.
 
 ---
 

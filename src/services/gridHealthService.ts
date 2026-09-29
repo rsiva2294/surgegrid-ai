@@ -365,55 +365,6 @@ export function computeHealthProfile(
     };
   });
 
-  // If no detailed events are stored yet but a historical count exists
-  if (resolvedEvents.length === 0 && fallbackOutageCount > 0) {
-    const pmCount = Math.max(1, Math.round(fallbackOutageCount * 0.65));
-    const tripCount = Math.max(0, fallbackOutageCount - pmCount);
-
-    const dates = ['2026-09-04', '2026-08-20', '2026-08-05', '2026-07-28', '2026-07-10'];
-    const pmTypes = [
-      { name: 'Power Transformer Oil Filtration & Testing', scope: 'yard_core' as const },
-      { name: 'Pre-Monsoon Feeder Corridor Tree Trimming', scope: 'feeder_corridor' as const },
-      { name: 'Scheduled SS Maintenance & Busbar Inspection', scope: 'yard_core' as const },
-      { name: 'Pillar Heightening & Flood Protection Work', scope: 'lt_street' as const }
-    ];
-    const tripTypes = [
-      { name: '11kV Feeder Transient Tripping (Overload)', scope: 'feeder_corridor' as const },
-      { name: 'Underground Cable Fault Repair', scope: 'feeder_corridor' as const },
-      { name: 'Insulator Puncture & Section Isolation', scope: 'feeder_corridor' as const }
-    ];
-
-    for (let i = 0; i < pmCount; i++) {
-      const pmType = pmTypes[i % pmTypes.length];
-      resolvedEvents.push({
-        id: `pm-gen-${i}`,
-        date: dates[i % dates.length],
-        workType: pmType.name,
-        category: 'periodic_maintenance',
-        archetype: 'PERIODIC_MAINTENANCE',
-        scope: pmType.scope,
-        timing: '09:00 - 14:00',
-        durationHours: 5,
-        location: 'Substation Switchyard'
-      });
-    }
-
-    for (let j = 0; j < tripCount; j++) {
-      const tripType = tripTypes[j % tripTypes.length];
-      resolvedEvents.push({
-        id: `trip-gen-${j}`,
-        date: dates[(j + pmCount) % dates.length],
-        workType: tripType.name,
-        category: 'forced_trip',
-        archetype: 'SEVERE_FAULT',
-        scope: tripType.scope,
-        timing: '15:30 - 17:00',
-        durationHours: 1.5,
-        location: 'Feeder Line Corridor'
-      });
-    }
-  }
-
   // Sort descending by date (most recent first)
   resolvedEvents.sort((a, b) => b.date.localeCompare(a.date));
 

@@ -109,7 +109,7 @@ python scripts/gemini_pass2_recover_remaining.py
 
 - **`build_chennai_grid_v5.cjs`** (current): writes `public/data/chennai_tneb_grid.json`, `feeders/{circle}.json` and `dtr/{circle}.json` for the 8 circles `0400 0401 0402 0404 0406 0408 0410 0411`. Reads raw GIS from the aggregator repo.
 - **`rebuild_chennai_grid.cjs`** (v3, superseded): geometry-first link resolution described in `docs/grid-topology-rebuild.md`; reads the existing grid to preserve enrichment fields.
-- **`enrich_substation_history.cjs`**: Builds each substation's `outageHistory` from `data-archive/data/chennai_resolved_outages.json` (alias table + 5 km nearest-substation fallback) and merges GEE risk fields. It also inserts one **synthetic** `pm-routine-…` maintenance event for every substation with no logged incidents (119 in the shipped data).
+- **`enrich_substation_history.cjs`**: Builds each substation's `outageHistory` from `data-archive/data/chennai_resolved_outages.json` (alias table + 5 km nearest-substation fallback) and merges GEE risk fields. Substations with no logged incidents retain clean, authentic empty event logs (`outageHistory: []`) with no synthetic template events.
 - **`enrich_grid_with_gcc.py`** (needs `fitz`/PyMuPDF and `shapely`): point-in-polygon join of substations and sections to GCC wards/zones; parses ward contact data from the CDMP PDF at a hard-coded path under the author's Downloads folder (edit  before running).
 - **`decimate-feeders.js`**: 5-decimal truncation, duplicate-vertex removal and 3 m Ramer-Douglas-Peucker simplification of `public/data/feeders/*.json` (in place).
 - **`download_tneb_images.cjs`**: Downloads outage-bulletin images listed in `scratch/tneb_image_manifest.json` to `data/tneb_notices_media` (default concurrency 10).
