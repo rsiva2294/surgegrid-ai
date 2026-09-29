@@ -48,26 +48,26 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
       case 'P0_CRITICAL':
         return {
           container: isLight
-            ? 'bg-rose-50 text-rose-700 border-rose-300'
-            : 'bg-rose-950/50 text-rose-300 border-rose-500/40 shadow-xs shadow-rose-900/20',
-          dot: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.9)] animate-pulse',
+            ? 'bg-rose-100 text-rose-900 border-rose-300 font-bold'
+            : 'bg-rose-950/60 text-rose-200 border-rose-600/60 shadow-xs shadow-rose-900/20 font-bold',
+          dot: 'bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.9)] animate-pulse',
           label: 'P0 CRITICAL',
         };
       case 'P1_LIFELINE':
         return {
           container: isLight
-            ? 'bg-teal-50 text-teal-700 border-teal-300'
-            : 'bg-teal-950/50 text-teal-300 border-teal-500/40 shadow-xs shadow-teal-900/20',
-          dot: 'bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.9)]',
+            ? 'bg-teal-100 text-teal-950 border-teal-300 font-bold'
+            : 'bg-teal-950/60 text-teal-200 border-teal-600/60 shadow-xs shadow-teal-900/20 font-bold',
+          dot: 'bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.9)]',
           label: 'P1 LIFELINE',
         };
       case 'P2_FIELD':
       default:
         return {
           container: isLight
-            ? 'bg-blue-50 text-blue-700 border-blue-300'
-            : 'bg-blue-950/50 text-blue-300 border-blue-500/40 shadow-xs shadow-blue-900/20',
-          dot: 'bg-blue-400',
+            ? 'bg-blue-100 text-blue-950 border-blue-300 font-bold'
+            : 'bg-blue-950/60 text-blue-200 border-blue-600/60 shadow-xs shadow-blue-900/20 font-bold',
+          dot: 'bg-blue-500',
           label: 'P2 FIELD',
         };
     }
@@ -77,23 +77,23 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
     switch (urgency) {
       case 'CRITICAL':
         return {
-          badgeBg: isLight ? 'bg-rose-100 text-rose-900 border-rose-300' : 'bg-rose-950/80 text-rose-200 border-rose-600/70',
-          badgeDot: 'bg-rose-500 animate-ping',
+          badgeBg: isLight ? 'bg-rose-100 text-rose-950 border-rose-300 font-bold' : 'bg-rose-950/80 text-rose-200 border-rose-600/70',
+          badgeDot: 'bg-rose-600 animate-ping',
           accentBorder: isLight ? 'border-rose-400' : 'border-rose-500/50',
           glow: 'shadow-rose-500/20',
         };
       case 'RESTORATION':
         return {
-          badgeBg: isLight ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-emerald-950/80 text-emerald-200 border-emerald-600/70',
-          badgeDot: 'bg-emerald-500',
+          badgeBg: isLight ? 'bg-emerald-100 text-emerald-950 border-emerald-300 font-bold' : 'bg-emerald-950/80 text-emerald-200 border-emerald-600/70',
+          badgeDot: 'bg-emerald-600',
           accentBorder: isLight ? 'border-emerald-400' : 'border-emerald-500/50',
           glow: 'shadow-emerald-500/20',
         };
       case 'WATCH':
       default:
         return {
-          badgeBg: isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/80 text-amber-200 border-amber-600/70',
-          badgeDot: 'bg-amber-500',
+          badgeBg: isLight ? 'bg-amber-100 text-amber-950 border-amber-300 font-bold' : 'bg-amber-950/80 text-amber-200 border-amber-600/70',
+          badgeDot: 'bg-amber-600',
           accentBorder: isLight ? 'border-amber-400' : 'border-amber-500/50',
           glow: 'shadow-amber-500/20',
         };
@@ -162,10 +162,10 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                   {directive.label}
                 </span>
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400 font-sans flex items-center gap-1.5 truncate mt-0.5">
-                <span className="font-medium text-indigo-400 shrink-0">Gemini 2.5 Flash</span>
-                <span className="text-slate-400 shrink-0">•</span>
-                <span className="font-mono text-[10px] truncate text-slate-400">{directive.statutoryReference}</span>
+              <div className="text-[11px] font-sans flex items-center gap-1.5 truncate mt-0.5">
+                <span className={`font-semibold shrink-0 ${isLight ? 'text-indigo-700' : 'text-indigo-300'}`}>Gemini 2.5 Flash</span>
+                <span className={isLight ? 'text-slate-400' : 'text-slate-500'}>•</span>
+                <span className={`font-mono text-[10px] font-medium truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{directive.statutoryReference}</span>
               </div>
             </div>
           </div>
@@ -177,7 +177,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               type="button"
               onClick={() => setIsMinimized(true)}
               className={`p-1.5 rounded-lg transition-colors ${
-                isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400 hover:text-slate-200'
+                isLight ? 'hover:bg-slate-200 text-slate-600' : 'hover:bg-slate-800 text-slate-400 hover:text-slate-200'
               }`}
               title="Minimize to floating pill"
             >
@@ -189,7 +189,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               type="button"
               onClick={onClose}
               className={`p-1.5 rounded-lg transition-colors ${
-                isLight ? 'hover:bg-slate-200 text-slate-500' : 'hover:bg-slate-800 text-slate-400 hover:text-slate-200'
+                isLight ? 'hover:bg-slate-200 text-slate-600' : 'hover:bg-slate-800 text-slate-400 hover:text-slate-200'
               }`}
               title="Dismiss directive window"
             >
@@ -200,35 +200,41 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
 
         {/* Live Weather & Telemetry Ribbon */}
         <div className={`px-5 py-2.5 border-b grid grid-cols-3 gap-3 text-xs shrink-0 ${
-          isLight ? 'bg-slate-100/70 border-slate-200 text-slate-800' : 'bg-slate-950/50 border-slate-800 text-slate-200'
+          isLight ? 'bg-slate-100/90 border-slate-200 text-slate-900' : 'bg-slate-950/50 border-slate-800 text-slate-200'
         }`}>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
+            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border ${
+              isLight ? 'bg-sky-50 border-sky-300 text-sky-700' : 'bg-sky-500/15 border-sky-500/30 text-sky-400'
+            }`}>
               <Wind className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-[10px] text-slate-400 uppercase font-semibold">Surface Wind</div>
-              <div className="font-mono font-bold text-xs">{Math.abs(directive.weatherSnapshot.windKmh).toFixed(1)} km/h</div>
+              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Surface Wind</div>
+              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{Math.abs(directive.weatherSnapshot.windKmh).toFixed(1)} km/h</div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0">
+            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border ${
+              isLight ? 'bg-blue-50 border-blue-300 text-blue-700' : 'bg-blue-500/15 border-blue-500/30 text-blue-400'
+            }`}>
               <Droplets className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-[10px] text-slate-400 uppercase font-semibold">Precipitation</div>
-              <div className="font-mono font-bold text-xs">{directive.weatherSnapshot.rainMm.toFixed(1)} mm/h</div>
+              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Precipitation</div>
+              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.rainMm.toFixed(1)} mm/h</div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400 shrink-0">
+            <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 border ${
+              isLight ? 'bg-teal-50 border-teal-300 text-teal-700' : 'bg-teal-500/15 border-teal-500/30 text-teal-400'
+            }`}>
               <Waves className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className="text-[10px] text-slate-400 uppercase font-semibold">Storm Surge</div>
-              <div className="font-mono font-bold text-xs">{directive.weatherSnapshot.surgeM.toFixed(1)}m MSL</div>
+              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Storm Surge</div>
+              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.surgeM.toFixed(1)}m MSL</div>
             </div>
           </div>
         </div>
@@ -238,57 +244,67 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
           {/* Directive Title & Summary Statement */}
           <div className={`p-4 rounded-xl border ${
             isLight
-              ? 'bg-indigo-50/60 border-indigo-200/80 text-slate-900'
+              ? 'bg-indigo-50/80 border-indigo-200 text-slate-900 shadow-xs'
               : 'bg-indigo-950/30 border-indigo-800/40 text-slate-100'
           }`}>
-            <h3 className="font-bold text-sm tracking-tight text-indigo-400 mb-1.5">
+            <h3 className={`font-extrabold text-sm tracking-tight mb-1.5 ${
+              isLight ? 'text-indigo-950' : 'text-indigo-300'
+            }`}>
               {directive.title}
             </h3>
-            <p className={`leading-relaxed text-xs ${isLight ? 'text-slate-700' : 'text-slate-300'}`}>
+            <p className={`leading-relaxed text-xs ${
+              isLight ? 'text-slate-800 font-medium' : 'text-slate-200'
+            }`}>
               {directive.summaryEn}
             </p>
           </div>
 
           {/* Today's Compromised Grid Focus (Real Graded Infrastructure) */}
           {directive.compromisedAssets && directive.compromisedAssets.length > 0 && (
-            <div className={`p-3 rounded-xl border ${
-              isLight ? 'bg-amber-50/60 border-amber-200 text-slate-800' : 'bg-amber-950/20 border-amber-800/40 text-slate-200'
+            <div className={`p-3.5 rounded-xl border ${
+              isLight ? 'bg-amber-50/90 border-amber-300 text-slate-900 shadow-xs' : 'bg-amber-950/20 border-amber-800/40 text-slate-200'
             }`}>
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-500">
-                  <AlertTriangle className="w-3.5 h-3.5" />
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   <span>Today's Vulnerable Grid Focus (Health + Hazard)</span>
                 </div>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold border ${
+                  isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/60 text-amber-300 border-amber-700/60'
+                }`}>
                   Grade C/D & Low Plinth
                 </span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {directive.compromisedAssets.slice(0, 6).map((asset) => (
                   <button
                     key={asset.code}
                     type="button"
                     onClick={() => onSelectSubstation?.(asset.cleanName)}
-                    className={`p-2 rounded-lg border text-left transition-all group ${
+                    className={`p-2.5 rounded-lg border text-left transition-all group ${
                       isLight
-                        ? 'bg-white hover:bg-amber-50 border-slate-200 hover:border-amber-400 shadow-xs'
+                        ? 'bg-white hover:bg-amber-50/80 border-slate-300 hover:border-amber-500 shadow-xs'
                         : 'bg-slate-900/90 hover:bg-amber-950/40 border-slate-700/70 hover:border-amber-500/50 shadow-xs'
                     }`}
                     title={`Focus on ${asset.cleanName} in map`}
                   >
-                    <div className="flex items-center justify-between gap-1 mb-0.5">
-                      <span className="font-bold text-xs truncate group-hover:text-amber-400 transition-colors">
+                    <div className="flex items-center justify-between gap-1 mb-1">
+                      <span className={`font-bold text-xs truncate transition-colors ${
+                        isLight ? 'text-slate-900 group-hover:text-indigo-900' : 'text-white group-hover:text-amber-300'
+                      }`}>
                         {asset.cleanName}
                       </span>
-                      <span className={`text-[9px] font-mono px-1 rounded font-bold shrink-0 ${
+                      <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-extrabold shrink-0 border ${
                         asset.healthGrade === 'D'
-                          ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
-                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          ? (isLight ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-rose-950/80 text-rose-300 border-rose-600/60')
+                          : (isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/80 text-amber-300 border-amber-600/60')
                       }`}>
                         {asset.healthGrade}
                       </span>
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono truncate">
+                    <div className={`text-[10px] font-mono truncate font-medium ${
+                      isLight ? 'text-slate-600' : 'text-slate-400'
+                    }`}>
                       {asset.healthScore}/100 • {asset.elevationM.toFixed(1)}m MSL
                     </div>
                   </button>
@@ -298,34 +314,46 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
           )}
 
           {/* Impact Overview Metrics */}
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2.5">
             <div className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${
-              isLight ? 'bg-rose-50/70 border-rose-200 text-rose-900' : 'bg-rose-950/30 border-rose-800/40 text-rose-200'
+              isLight ? 'bg-rose-50 border-rose-200 text-rose-950' : 'bg-rose-950/30 border-rose-800/40 text-rose-200'
             }`}>
-              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+              <AlertTriangle className={`w-4 h-4 shrink-0 ${isLight ? 'text-rose-600' : 'text-rose-400'}`} />
               <div>
-                <div className="font-mono font-bold text-sm leading-tight">{directive.impactMetrics.atRiskSubstations}</div>
-                <div className="text-[10px] text-rose-400 font-semibold uppercase">Substation Risk</div>
+                <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-rose-950' : 'text-rose-100'}`}>
+                  {directive.impactMetrics.atRiskSubstations}
+                </div>
+                <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-rose-800' : 'text-rose-400'}`}>
+                  Substation Risk
+                </div>
               </div>
             </div>
 
             <div className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${
-              isLight ? 'bg-amber-50/70 border-amber-200 text-amber-900' : 'bg-amber-950/30 border-amber-800/40 text-amber-200'
+              isLight ? 'bg-amber-50 border-amber-200 text-amber-950' : 'bg-amber-950/30 border-amber-800/40 text-amber-200'
             }`}>
-              <Radio className="w-4 h-4 text-amber-400 shrink-0" />
+              <Radio className={`w-4 h-4 shrink-0 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
               <div>
-                <div className="font-mono font-bold text-sm leading-tight">{directive.impactMetrics.trippedFeeders}</div>
-                <div className="text-[10px] text-amber-400 font-semibold uppercase">Feeders Tripped</div>
+                <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-amber-950' : 'text-amber-100'}`}>
+                  {directive.impactMetrics.trippedFeeders}
+                </div>
+                <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
+                  Feeders Tripped
+                </div>
               </div>
             </div>
 
             <div className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${
-              isLight ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-emerald-950/30 border-emerald-800/40 text-emerald-200'
+              isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-950' : 'bg-emerald-950/30 border-emerald-800/40 text-emerald-200'
             }`}>
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+              <ShieldCheck className={`w-4 h-4 shrink-0 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
               <div>
-                <div className="font-mono font-bold text-sm leading-tight">{directive.impactMetrics.protectedLifelines}</div>
-                <div className="text-[10px] text-emerald-400 font-semibold uppercase">Lifelines Ringed</div>
+                <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-emerald-950' : 'text-emerald-100'}`}>
+                  {directive.impactMetrics.protectedLifelines}
+                </div>
+                <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-emerald-800' : 'text-emerald-400'}`}>
+                  Lifelines Ringed
+                </div>
               </div>
             </div>
           </div>
@@ -333,13 +361,15 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
           {/* Actionable SOP Checklist Section */}
           <div className="space-y-2.5 pt-1">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                isLight ? 'text-slate-700' : 'text-slate-300'
+              }`}>
                 Statutory Execution Protocol ({totalCount} Directives)
               </span>
-              <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold ${
+              <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold border ${
                 doneCount === totalCount
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                  : 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
+                  ? (isLight ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-emerald-950/60 text-emerald-300 border-emerald-600/60')
+                  : (isLight ? 'bg-indigo-100 text-indigo-900 border-indigo-300' : 'bg-indigo-950/60 text-indigo-300 border-indigo-600/60')
               }`}>
                 {doneCount}/{totalCount} Completed
               </span>
@@ -358,7 +388,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                       isDone
                         ? (isLight ? 'bg-emerald-50/50 border-emerald-300 opacity-60' : 'bg-emerald-950/20 border-emerald-800/40 opacity-60')
                         : (isLight 
-                            ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 hover:border-indigo-300 shadow-xs' 
+                            ? 'bg-slate-50 hover:bg-slate-100/90 border-slate-200 hover:border-indigo-300 shadow-xs' 
                             : 'bg-slate-800/50 hover:bg-slate-800 border-slate-700/60 hover:border-indigo-500/50 shadow-xs')
                     }`}
                   >
@@ -368,7 +398,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                         <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
                           isDone 
                             ? 'bg-emerald-500 border-emerald-400 text-white' 
-                            : (isLight ? 'border-slate-300 bg-white group-hover:border-indigo-400' : 'border-slate-600 bg-slate-900 group-hover:border-indigo-400')
+                            : (isLight ? 'border-slate-400 bg-white group-hover:border-indigo-500' : 'border-slate-600 bg-slate-900 group-hover:border-indigo-400')
                         }`}>
                           {isDone && <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" />}
                         </div>
@@ -377,7 +407,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                       {/* Content */}
                       <div className="flex-1 space-y-1.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className={`font-bold text-xs tracking-tight ${isDone ? 'line-through text-slate-400' : (isLight ? 'text-slate-900' : 'text-slate-100')}`}>
+                          <span className={`font-bold text-xs tracking-tight ${isDone ? 'line-through text-slate-400' : (isLight ? 'text-slate-950 font-extrabold' : 'text-slate-100')}`}>
                             {item.title}
                           </span>
                           <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border shrink-0 ${prioBadge.container}`}>
@@ -386,14 +416,14 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                           </span>
                         </div>
 
-                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
+                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
                           {item.description}
                         </p>
 
                         {/* Interactive Clickable Target Substation Tags */}
                         {item.targetFeedersOrSubstations && item.targetFeedersOrSubstations.length > 0 && (
                           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Targets:</span>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Targets:</span>
                             {item.targetFeedersOrSubstations.map((name) => (
                               <button
                                 key={name}
@@ -402,10 +432,10 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                                   e.stopPropagation();
                                   onSelectSubstation?.(name);
                                 }}
-                                className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 ${
+                                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 ${
                                   isLight
-                                    ? 'bg-white hover:bg-indigo-50 border-slate-300 hover:border-indigo-400 text-slate-800 hover:text-indigo-900'
-                                    : 'bg-slate-900/80 hover:bg-indigo-950 border-slate-700 hover:border-indigo-500 text-slate-200 hover:text-indigo-200'
+                                    ? 'bg-white hover:bg-indigo-50 border-slate-300 hover:border-indigo-500 text-slate-900 hover:text-indigo-900 shadow-xs'
+                                    : 'bg-slate-900/90 hover:bg-indigo-950 border-slate-700 hover:border-indigo-500 text-slate-200 hover:text-indigo-200 shadow-xs'
                                 }`}
                                 title={`Focus on ${name} in grid map`}
                               >
@@ -445,10 +475,10 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             <button
               type="button"
               onClick={() => setIsMinimized(true)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors ${
                 isLight 
-                  ? 'border-slate-300 hover:bg-slate-200 text-slate-700' 
-                  : 'border-slate-700 hover:bg-slate-800 text-slate-300 hover:text-white'
+                  ? 'border-slate-300 hover:bg-slate-200 text-slate-800' 
+                  : 'border-slate-700 hover:bg-slate-800 text-slate-200 hover:text-white'
               }`}
             >
               Minimize to Dock
@@ -456,9 +486,9 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors ${
                 isLight 
-                  ? 'bg-slate-200 hover:bg-slate-300 text-slate-800' 
+                  ? 'bg-slate-200 hover:bg-slate-300 text-slate-900' 
                   : 'bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white'
               }`}
             >
