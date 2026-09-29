@@ -137,6 +137,64 @@ export const NO_POI_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
   }
 ];
 
+export const HOSPITALS_ONLY_DARK_STYLE: google.maps.MapTypeStyle[] = [
+  ...NO_POI_DARK_STYLE,
+  {
+    featureType: "poi.medical",
+    elementType: "all",
+    stylers: [{ visibility: "on" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "geometry",
+    stylers: [{ color: "#380d19" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "labels.icon",
+    stylers: [{ visibility: "on" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#fb7185" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#060a12" }, { weight: 2 }]
+  }
+];
+
+export const HOSPITALS_ONLY_LIGHT_STYLE: google.maps.MapTypeStyle[] = [
+  ...NO_POI_LIGHT_STYLE,
+  {
+    featureType: "poi.medical",
+    elementType: "all",
+    stylers: [{ visibility: "on" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "geometry",
+    stylers: [{ color: "#ffe4e6" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "labels.icon",
+    stylers: [{ visibility: "on" }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9f1239" }, { weight: 600 }]
+  },
+  {
+    featureType: "poi.medical",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#ffffff" }, { weight: 3 }]
+  }
+];
+
 /**
  * Strict Chennai Metropolitan Area (CMA) District & Peri-Urban EHT Corridor Bounds
  * North: Minjur / Alamathy 400kV (13.40 N)

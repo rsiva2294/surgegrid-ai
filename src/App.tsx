@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
+import { LiveWeatherPill } from './components/Map/LiveWeatherPill';
 import { RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
 import {
   fetchLiveWeatherConditions,
@@ -123,61 +124,13 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 text-xs">
           {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
           {liveWeather && (
-            <div className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border transition-all ${
-              isLight
-                ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-2xs ring-1 ring-emerald-500/10'
-                : 'bg-emerald-950/30 border-emerald-800/80 text-emerald-200 shadow-2xs ring-1 ring-emerald-500/10'
-            }`}>
-              <div className="flex items-center gap-1.5 shrink-0 max-w-[100px] xs:max-w-[140px] sm:max-w-[240px]">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span
-                  className="font-bold text-[11px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400 truncate"
-                  title={
-                    selectedSubstation
-                      ? `Hyperlocal Switchyard Weather for ${selectedSubstation.name} (${selectedSubstation.lat.toFixed(4)}°N, ${selectedSubstation.lng.toFixed(4)}°E)`
-                      : 'City-wide Grid Weather (Chennai Central • 13.0827°N, 80.2707°E)'
-                  }
-                >
-                  {selectedSubstation ? selectedSubstation.name : 'Chennai Central'}
-                </span>
-              </div>
-
-              <span className={isLight ? 'text-emerald-300' : 'text-emerald-800'}>|</span>
-
-              <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-xs">
-                <span className="font-bold whitespace-nowrap" title={`Feels like ${liveWeather.feelsLikeC.toFixed(1)}°C`}>
-                  🌡️ {liveWeather.temperatureC.toFixed(1)}°C
-                </span>
-
-                <span className="hidden sm:inline text-xs" title={`Wind: ${liveWeather.windDirectionCardinal}, Gusts: ${liveWeather.windGustKmh} km/h`}>
-                  💨 {liveWeather.windSpeedKmh} km/h {liveWeather.windDirectionCardinal}
-                </span>
-
-                <span className="hidden md:inline text-xs" title="Relative Humidity">
-                  💧 {liveWeather.humidityPercent}% RH
-                </span>
-
-                <span className={`hidden md:inline text-[11px] font-sans font-medium px-1.5 py-0.5 rounded ${
-                  isLight ? 'bg-emerald-100 text-emerald-900 border border-emerald-200' : 'bg-emerald-900/40 text-emerald-300 border border-emerald-700/40'
-                }`}>
-                  {liveWeather.conditionText}
-                </span>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleRefreshWeather()}
-                className={`p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 transition-colors shrink-0 ${
-                  isLoadingWeather ? 'animate-spin' : ''
-                }`}
-                title="Google Maps Platform Weather API (DeepMind WeatherNext 3) • Click to refresh"
-              >
-                <RefreshCw className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              </button>
-            </div>
+            <LiveWeatherPill
+              liveWeather={liveWeather}
+              selectedSubstation={selectedSubstation}
+              isLoadingWeather={isLoadingWeather}
+              onRefresh={() => handleRefreshWeather()}
+              isLight={isLight}
+            />
           )}
 
           {/* Light / Dark Mode Toggle Button */}

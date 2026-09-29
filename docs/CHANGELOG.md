@@ -2,6 +2,32 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [2.3.6-weather-pill-redesign-and-data-optimization] - 2026-09-29
+
+### Added
+- **Modern Glassmorphic Weather Pill (`LiveWeatherPill.tsx`)**:
+  - Replaced legacy green-bordered banner with a sleek rounded capsule featuring glassmorphism (`backdrop-blur-md`), refined hairline borders, and adaptive theme styling.
+  - Replaced OS system emojis with crisp, color-coded Lucide vector icons (`SunMedium`, `CloudSun`, `CloudRain`, `CloudLightning`, `CloudFog`, `Wind`, `Droplets`).
+  - Added compact wind direction badges (`SE`, `ENE`, `NW`) and hairline dividers (`w-px h-3.5`).
+  - Completely static GPU rendering (zero continuous CSS animations) to prevent GPU fill-rate exhaustion over the full-screen WebGL map.
+- **Selective Hospital POI Map Filtering (`mapStyles.ts`, `TnebGridMap.tsx`)**:
+  - Added `HOSPITALS_ONLY_DARK_STYLE` and `HOSPITALS_ONLY_LIGHT_STYLE` that selectively re-enable `poi.medical` while suppressing commercial and general clutter.
+  - Automatically activates when a Hospital Lifeline feeder (e.g., `33KV APOLLO`, `STANLEY`, `KMC`) is actively chosen and displayed on the map, and reverts to zero-POI on dismissal.
+  - Added active `🏥 HOSPITALS VISIBLE` telemetry badge in `MapLayerControls.tsx`.
+- **Substation-Level On-Demand Feeder Sharding (`feederGeometryService.ts`)**:
+  - Created `scripts/generate_substation_shards.cjs` partitioning monolithic circle files into 357 substation-level shards in `public/data/substation_feeders/`.
+  - Upgraded `getFeederGeometry()` and `getFeederTransformers()` to load the compact substation shard (~69 KB for TIDEL Park SS vs ~4.3 MB circle files), achieving a **98.4% payload reduction** with zero loss of fields or metadata.
+  - Added synchronous in-memory RAM cache (`ssShardCache`) so subsequent feeder selections on the same substation execute in 0ms without network requests.
+  - Verified exact 1:1 data integrity across all 357 substations.
+
+### Optimized
+- **Startup JSON Minification**:
+  - Minified `public/data/chennai_tneb_grid.json` (8.07 MB → 3.48 MB, **-4.59 MB / 57% reduction**).
+  - Minified `public/data/chennai_outage_gold_registry.json` (939 KB → 660 KB, **-279 KB / 30% reduction**).
+  - 100% of all fields, coordinates, health profiles, and flood metadata strictly preserved.
+
+---
+
 ## [2.3.5-disaster-recovery-metadata-and-rmu-fix] - 2026-09-29
 
 ### Added

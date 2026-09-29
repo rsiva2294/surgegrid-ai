@@ -15,6 +15,7 @@ interface MapLayerControlsProps {
   setShowDistribution: (show: boolean) => void;
   showSections: boolean;
   setShowSections: (show: boolean) => void;
+  isHospitalLifelineActive?: boolean;
   substations: TnebSubstation[];
   sections: TnebSection[];
   isLight: boolean;
@@ -38,6 +39,7 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
   setShowDistribution,
   showSections,
   setShowSections,
+  isHospitalLifelineActive,
   substations,
   sections,
   isLight,
@@ -280,11 +282,17 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
               Scope: <strong className={isLight ? 'text-slate-800' : 'text-slate-200'}>Chennai Only</strong>
             </span>
             <span
-              className={`font-mono font-bold px-1.5 py-0.5 rounded ${
-                isLight ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-500/10 text-emerald-400'
+              className={`font-mono font-bold px-1.5 py-0.5 rounded transition-all ${
+                isHospitalLifelineActive
+                  ? isLight
+                    ? 'bg-rose-100 text-rose-700 border border-rose-200'
+                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  : isLight
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-emerald-500/10 text-emerald-400'
               }`}
             >
-              NO POI
+              {isHospitalLifelineActive ? '🏥 HOSPITALS VISIBLE' : 'NO POI'}
             </span>
           </div>
         </>

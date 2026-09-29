@@ -10,7 +10,13 @@ import { TriageSubstationRosterCard } from './TriageSubstationRosterCard';
 import { SubstationInspectorDrawer } from './SubstationInspectorDrawer';
 import { getLiveChennaiOutages, getGoldRegistry, getOutagesForSubstation, enrichLiveOutagesWithGrid, type LiveOutage } from '../../services/liveOutageService';
 import type { LiveWeatherConditions } from '../../services/liveWeatherService';
-import { NO_POI_DARK_STYLE, NO_POI_LIGHT_STYLE, CHENNAI_METRO_BOUNDS } from './mapStyles';
+import {
+  NO_POI_DARK_STYLE,
+  NO_POI_LIGHT_STYLE,
+  HOSPITALS_ONLY_DARK_STYLE,
+  HOSPITALS_ONLY_LIGHT_STYLE,
+  CHENNAI_METRO_BOUNDS
+} from './mapStyles';
 import {
   getNodeColor,
   getFeederThemeColors,
@@ -300,10 +306,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
   const mapId = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || '';
 
+  const isHospitalLifelineActive = Boolean(
+    selectedFeeder && selectedFeeder.lifelineCategory === 'hospital'
+  );
+
   const activeMapStyle = useMemo(() => {
     if (isSatellite) return [];
+    if (isHospitalLifelineActive) {
+      return theme === 'light' ? HOSPITALS_ONLY_LIGHT_STYLE : HOSPITALS_ONLY_DARK_STYLE;
+    }
     return theme === 'light' ? NO_POI_LIGHT_STYLE : NO_POI_DARK_STYLE;
-  }, [isSatellite, theme]);
+  }, [isSatellite, theme, isHospitalLifelineActive]);
 
   // Initialize Google Maps
   useEffect(() => {
@@ -810,8 +823,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     const isNonCut = selectedFeeder.priorityLevel === 'P1_NON_CUT';
     const bounds = new google.maps.LatLngBounds();
 
-    // 1. Fetch real surveyed MultiLineString street routes on-demand
-    getFeederGeometry(selectedSubstation.circleCode, selectedFeeder.code).then(geo => {
+    // 1. Fetch real surveyed MultiLineString street routes on-demand (Fast Substation Shard)
+    getFeederGeometry(selectedSubstation.circleCode, selectedFeeder.code, selectedSubstation.code).then(geo => {
       if (!isMounted || !mapRef.current) return;
 
       if (geo && geo.coords) {
@@ -901,8 +914,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         }
       }
 
-      // 2. Fetch real surveyed Distribution Transformers (DTs) on-demand
-      getFeederTransformers(selectedSubstation.circleCode, selectedFeeder.code).then(dtrs => {
+      // 2. Fetch real surveyed Distribution Transformers (DTs) on-demand (Fast Substation Shard)
+      getFeederTransformers(selectedSubstation.circleCode, selectedFeeder.code, selectedSubstation.code).then(dtrs => {
         if (!isMounted || !mapRef.current) return;
 
         if (!dtrInfoWindowRef.current) {
@@ -1225,6 +1238,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               setShowDistribution={setShowDistribution}
               showSections={showSections}
               setShowSections={setShowSections}
+              isHospitalLifelineActive={isHospitalLifelineActive}
               substations={substations}
               sections={sections}
               isLight={isLight}
