@@ -9,25 +9,21 @@ interface FloodExposureCardProps {
 }
 
 /**
- * Flood exposure for one substation, in three clearly separated parts, all facts:
+ * Flood exposure for one substation. Everything shown is a fact, and only what applies to THIS substation:
  * 1. facts from our grid data (elevation, coast distance),
- * 2. checks against official flood maps (OpenCity, Greater Chennai Corporation),
- * 3. what the official disaster plans say (word-for-word quotes with pages).
- * No model output is shown here.
+ * 2. the official flood maps (OpenCity, Greater Chennai Corporation) that this location falls in,
+ * 3. the official plan's action, quoted word for word, only when one of the flags below applies.
+ * No model output and no region-wide history is shown here.
  */
 export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation, isLight }) => {
   const elevation = substation.elevationM as number;
   const atOrBelowAverage = elevation <= CHENNAI_AVERAGE_ELEVATION_M;
-  const { meta, flood } = useOfficialFlood(substation.code);
+  const { flood } = useOfficialFlood(substation.code);
 
   const box = isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-slate-100';
   const label = isLight ? 'text-slate-500' : 'text-slate-400';
   const sub = isLight ? 'text-slate-400' : 'text-slate-500';
   const value = isLight ? 'text-slate-900' : 'text-white';
-
-  const sixFeet = getQuote('tangedco-2015-six-feet');
-  const keptOff = getQuote('tangedco-2015-substations-kept-off');
-  const dewater = getQuote('mop-dewatering-pump-arranged');
 
   const renderQuote = (q: { quote: string; citation: string } | null) =>
     q ? (
@@ -48,7 +44,25 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
     </div>
   );
 
-  const rating = (r: string | null, none: string) => (r ? r.charAt(0) + r.slice(1).toLowerCase() : none);
+  const title = (r: string) => r.charAt(0) + r.slice(1).toLowerCase();
+
+  // Only the official-map lines that are true for this substation.
+  const mapRows: React.ReactNode[] = [];
+  if (flood) {
+    if (flood.nrsc2015) mapRows.push(renderRow('Inside the 2015 flood extent (NRSC satellite map)', 'Yes'));
+    if (flood.returnPeriod) mapRows.push(renderRow('Flood-hazard map rating (5 to 100-year maps, highest)', title(flood.returnPeriod)));
+    if (flood.inundationZone) mapRows.push(renderRow('GCC flood inundation zone (worst class)', flood.inundationZone));
+    if (flood.stagnation2015Within500m > 0) mapRows.push(renderRow('2015 water-stagnation points within 500 m', String(flood.stagnation2015Within500m)));
+    if (flood.hotspots2020Within500m > 0) mapRows.push(renderRow('2020 monsoon flood hotspots within 500 m', String(flood.hotspots2020Within500m)));
+  }
+
+  // The plan's action applies when this yard is low, inside the 2015 extent, or in a Moderate/High hazard zone.
+  const reasons: string[] = [];
+  if (atOrBelowAverage) reasons.push(`yard at ${elevation} m MSL, at or below Chennai's ${CHENNAI_AVERAGE_ELEVATION_M} m average`);
+  if (flood?.nrsc2015) reasons.push('inside the 2015 flood extent');
+  if (flood?.returnPeriod === 'HIGH' || flood?.returnPeriod === 'MODERATE') {
+    reasons.push(`${title(flood.returnPeriod)} rating on the official flood-hazard maps`);
+  }
 
   return (
     <div className={`p-3 rounded-xl border space-y-3 shrink-0 ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'}`}>
@@ -57,9 +71,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
           <span>🌊</span>
           <span>Flood exposure</span>
         </span>
-        <span className={`text-[10px] block mt-0.5 ${label}`}>
-          Grid data, official flood maps, and what the official plans say. No model output.
-        </span>
+        <span className={`text-[10px] block mt-0.5 ${label}`}>Grid data and official flood maps for this substation. No model output.</span>
       </div>
 
       {/* 1. Facts from our grid data */}
@@ -71,42 +83,31 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
         {renderRow('Distance to coast', substation.distanceToCoastKm !== undefined ? `${substation.distanceToCoastKm} km` : 'n/a')}
       </div>
 
-      {/* 2. Checks against official flood maps */}
+      {/* 2. Official flood maps this location falls in */}
       <div className={`p-3 rounded-xl border space-y-1.5 ${box}`}>
         <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>Official flood maps (OpenCity, GCC)</div>
-        {flood ? (
-          <>
-            {renderRow('Inside the 2015 flood extent (NRSC satellite map)', flood.nrsc2015 ? 'Yes' : 'No')}
-            {renderRow('Flood-hazard map rating (5 to 100-year maps, highest)', rating(flood.returnPeriod, 'In none of the maps'))}
-            {renderRow('GCC flood inundation zone (worst class)', flood.inundationZone ?? 'In no mapped zone')}
-            {renderRow('2015 water-stagnation points within 500 m', String(flood.stagnation2015Within500m))}
-            {renderRow('2020 monsoon flood hotspots within 500 m', String(flood.hotspots2020Within500m))}
-            <span className={`text-[10px] block ${sub}`}>
-              Each line checks this substation&apos;s mapped location against an official map. It is not a prediction, and being outside a
-              map does not mean the site is safe, because a map may not cover the area. Source: {meta?.source}.
-            </span>
-          </>
-        ) : (
-          <span className={`text-[11px] ${label}`}>Official flood-map data not available.</span>
+        {!flood && <span className={`text-[11px] ${label}`}>Official flood-map data not available.</span>}
+        {flood && mapRows.length === 0 && (
+          <span className={`text-[11px] ${label}`}>This location is not inside any of the official flood layers checked.</span>
+        )}
+        {mapRows}
+        {flood && (
+          <span className={`text-[10px] block ${sub}`}>
+            A map check of this substation&apos;s location, not a prediction. A location outside a map is not proven safe, because a map may
+            not cover the area.
+          </span>
         )}
       </div>
 
-      {/* 3. What the official plans say */}
-      <div className={`p-3 rounded-xl border space-y-2 ${box}`}>
-        <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>What the official plans say</div>
-        {atOrBelowAverage && (
-          <div className="space-y-1">
-            <p className="text-[11px]">This yard is at or below Chennai&apos;s average elevation. The national power-sector plan says:</p>
-            {renderQuote(dewater)}
-          </div>
-        )}
-        <div className="space-y-1">
-          <p className="text-[11px]">In the 2015 floods, TANGEDCO recorded:</p>
-          {renderQuote(sixFeet)}
-          {renderQuote(keptOff)}
-          <span className={`text-[10px] block ${sub}`}>These are region-wide facts, not a record for this substation.</span>
+      {/* 3. The plan's action, only when it applies to this substation */}
+      {reasons.length > 0 && (
+        <div className={`p-3 rounded-xl border space-y-2 ${box}`}>
+          <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>What the official plans say</div>
+          <p className="text-[11px]">Applies here: {reasons.join('; ')}.</p>
+          {renderQuote(getQuote('mop-identify-flood-prone'))}
+          {renderQuote(getQuote('mop-dewatering-pump-arranged'))}
         </div>
-      </div>
+      )}
     </div>
   );
 };
