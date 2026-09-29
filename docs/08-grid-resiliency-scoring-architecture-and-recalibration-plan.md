@@ -74,7 +74,7 @@ Scope: `yard_core` (transformer, busbar, breaker, switchgear, substation, batter
 
 ### 2.3 How live notices enter the profile
 
-`getEnrichedHealthProfile()` calls `getOutagesForSubstation()` (resolved substation code/name, gazetteer, guarded name/feeder/section matching) and converts **every** matching notice in the fetched feed into an event with `isLiveActive: true`, whatever its date. "Live" therefore means "present in the current feed", not "occurring today". Live events replace stored events with the same date and `workType`.
+`getEnrichedHealthProfile()` calls `getOutagesForSubstation()` (enforcing authoritative resolution guards, gazetteer, and guarded name/feeder/section matching) and converts matching notices in the fetched feed into events with `isLiveActive: true`. An outage resolved to a specific substation code binds strictly to that asset and cannot bleed across collocated or similarly named substations. Live events replace stored events with the same date and `workType`.
 
 ---
 

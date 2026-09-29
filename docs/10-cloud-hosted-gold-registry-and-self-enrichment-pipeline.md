@@ -135,3 +135,11 @@ In [`src/services/liveOutageService.ts`](file:///c:/projects/surgegrid-ai/src/se
 - Tier 1 of the resolution gate uses `registry.localities` (10 entries) when the registry is loaded, otherwise the hard-coded `CHENNAI_LOCALITY_GAZETTEER`.
 - **Live feed source:** the *notices* themselves come from `https://outage.nammamap.in/api/v2/outages` (Vite proxy `/api/v2` in development), not directly from the GCS `outages/*.json` files described in changelog v1.8.0. Verified in the aggregator: `GET /api/v2/outages` (edge-cached 5 s / 15 s) reads `outages/statewide_v2.json` (falling back to `statewide.json`) and the active resolved Twitter notices (`outages/twitter_notices_resolved.json`) from GCS, de-duplicates and merges them, and returns `{ success, engine: 'super_index_v2', count, data }`. The GCS files are the aggregator's storage layer; this client reads them only through that API.
 - If network connectivity is restricted, it seamlessly falls back to the bundled `/data/chennai_outage_gold_registry.json` v2.0 file.
+
+### 5.1 Strict 1-to-1 Infrastructure Resolution & Disambiguation Gate
+
+To prevent live notices from leaking across multiple collocated substations or dozens of section offices:
+1. **Fingerprint Ingestion Deduplication:** Raw live items are deduplicated by outage fingerprint prior to boundary filtering in `getLiveChennaiOutages()`.
+2. **Authoritative Resolution Guards:** `getOutagesForSubstation()` and `getOutagesForSection()` strictly enforce single-asset equality (`String(outage.resolvedSubstationCode) === ssCode`). Once an outage has been bound to a verified substation or section code during `enrichLiveOutagesWithGrid()`, it immediately exits and never falls through to fuzzy string matching.
+3. **Generic Locality Stoplist:** `matchesLocality()` rejects single generic tokens (`GENERIC_LOCALITY_TOKENS`: *nagar, north, south, road, street, bazaar, colony, extn, etc.*) from subset containment, preventing notices mentioning `"Nagar"` from matching dozens of AE Section Offices.
+4. **Voltage-Tier Disambiguation:** In Tier 2, if multiple co-located substations share a name (e.g., Guindy 33kV / 110kV / 230kV / 400kV GIS), the resolver inspects voltage cues in the notice/feeder and defaults to urban distribution step-downs (`33/11 kV`) for routine feeder/maintenance notices rather than bulk transmission grids.

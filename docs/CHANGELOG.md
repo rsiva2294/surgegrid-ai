@@ -4,6 +4,22 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [2.2.0-authentic-grid-and-strict-mapping] - 2026-09-29
+
+### Fixed
+- **Purged 119 Synthetic Maintenance Placeholders**:
+  - Removed synthetic `pm-routine-…` switchyard inspection placeholders from `scripts/enrich_substation_history.cjs`.
+  - Removed runtime synthetic event generator (`pm-gen-…`, `trip-gen-…`) from `src/services/gridHealthService.ts`.
+  - Regenerated `public/data/chennai_tneb_grid.json` and `data-archive/data/gee_chennai_substations_risk.json`, preserving 1,094 authentic raw TNEB events across 167 substations while keeping the 119 clean substations strictly empty (`outageHistory: []`).
+  - Bumped IndexedDB key to `surgegrid_chennai_grid_v13_authentic_only_no_synthetic` to immediately invalidate legacy caches in user browsers.
+- **Fixed 1-to-Many Outage-to-Infrastructure Multi-Mapping**:
+  - **Authoritative Resolution Guards**: Added strict equality guards in `getOutagesForSubstation()` and `getOutagesForSection()`. Once an outage is enriched and bound to a specific asset code, it immediately exits rather than falling through to fuzzy string matching.
+  - **Generic Locality Stoplist**: Introduced `GENERIC_LOCALITY_TOKENS` (`nagar`, `north`, `south`, `road`, `street`, etc.) in `matchesLocality()`, barring single generic words from subset matching. Eliminated the flaw where an outage mentioning `"Nagar"` matched 45 AE Section Offices.
+  - **Multi-Voltage Substation Disambiguation**: Added voltage cues and feeder-ownership matching in Tier 2 of `enrichLiveOutagesWithGrid()`. For collocated substations (e.g., Guindy 33kV / 110kV / 230kV / 400kV GIS), notices now bind to the correct voltage tier rather than broadcasting across all 4 substations.
+  - **Upstream Ingestion Deduplication**: Deduplicated incoming raw notices by fingerprint before boundary filtering in `getLiveChennaiOutages()`.
+
+---
+
 ## [2.1.0-gemini-enrichment-and-documentation-audit] - 2026-09-29
 
 ### Security

@@ -130,8 +130,17 @@ export async function getLiveChennaiOutages(): Promise<LiveOutageResponse> {
     }
 
     if (rawItems.length > 0) {
+      // Deduplicate raw notices by fingerprint before processing
+      const seenFingerprints = new Set<string>();
+      const dedupedRawItems = rawItems.filter(o => {
+        const fp = o.outageFingerprint || o.fingerprint || o.id || `${o.substation}_${o.feeder}_${o.date}_${o.fromTime}`;
+        if (seenFingerprints.has(fp)) return false;
+        seenFingerprints.add(fp);
+        return true;
+      });
+
       // Gate 1: Geographic & Circle Guardrail for Greater Chennai
-      const chennaiRaw = rawItems.filter(o => {
+      const chennaiRaw = dedupedRawItems.filter(o => {
         const d = (o.district || '').toLowerCase();
         const c = (o.circle || '').toLowerCase();
         const t = (o.town || '').toLowerCase();
@@ -342,6 +351,12 @@ export function squash(str?: string | null): string {
   return clean(str).replace(/\s+/g, '');
 }
 
+const GENERIC_LOCALITY_TOKENS = new Set([
+  'nagar', 'north', 'south', 'east', 'west', 'central', 'road', 'street',
+  'lane', 'bazaar', 'colony', 'town', 'village', 'junction', 'high', 'main',
+  'extn', 'extension', 'phase', 'stage', 'block', 'sector', 'old', 'new', 'area'
+]);
+
 /**
  * Guarded token-level and boundary-aware matcher that prevents substring traps
  * (e.g. stops "madambakkam" from matching "adambakkam" or "paraniputhur" from matching "arani")
@@ -371,6 +386,13 @@ export function matchesLocality(candidate?: string | null, target?: string | nul
   const tWords = tClean.split(' ').filter(w => w.length >= 3);
   if (cWords.length === 0 || tWords.length === 0) return false;
 
+  // Generic token trap: if one side is purely composed of generic words (e.g. "nagar", "north", "main road"),
+  // do not match via subset containment to prevent single notices matching dozens of entities
+  const isPurelyGeneric = (words: string[]) => words.every(w => GENERIC_LOCALITY_TOKENS.has(w));
+  if (isPurelyGeneric(cWords) || isPurelyGeneric(tWords)) {
+    return false;
+  }
+
   const tInC = tWords.every(tw => cWords.includes(tw));
   const cInT = cWords.every(cw => tWords.includes(cw));
 
@@ -392,14 +414,18 @@ export function getOutagesForSubstation(
   const ssCleanName = substation.cleanName;
 
   return allOutages.filter(outage => {
-    // 0. Direct resolved substation code match (instant O(1))
-    if (outage.resolvedSubstationCode && String(outage.resolvedSubstationCode) === ssCode) {
-      return true;
+    // 0. Authoritative Resolution Guard:
+    // If the outage has been enriched with an authoritative substation binding, strictly match it!
+    if (outage.resolvedSubstationCode) {
+      return String(outage.resolvedSubstationCode) === ssCode;
     }
-
-    // If the outage has already been resolved to this specific substation
-    if (outage.resolvedSubstationName && squash(outage.resolvedSubstationName) === ssSquash) {
-      return true;
+    if (outage.resolvedSubstationName) {
+      return squash(outage.resolvedSubstationName) === ssSquash;
+    }
+    // If outage was explicitly resolved to a section office only (localized area) or is an unmapped advisory,
+    // do not bleed into unrelated substations!
+    if (outage.resolvedSectionCode || outage.mappingStatus === 'LOCALIZED_AREA' || outage.mappingStatus === 'UNMAPPED_ADVISORY') {
+      return false;
     }
 
     const oSub = outage.substation;
@@ -461,14 +487,18 @@ export function getOutagesForSection(
   const secCleanName = section.cleanName;
 
   return allOutages.filter(outage => {
-    // If resolved to this section directly
-    if (outage.resolvedSectionName && squash(outage.resolvedSectionName) === secSquash) {
-      return true;
+    // 0. Authoritative Resolution Guard:
+    // If the outage has been enriched with an authoritative section binding, strictly match it!
+    if (outage.resolvedSectionCode) {
+      return String(outage.resolvedSectionCode) === secCode;
     }
-
-    // Direct sectionCode match
-    if (outage.sectionCode && secCode && outage.sectionCode === secCode) {
-      return true;
+    if (outage.resolvedSectionName) {
+      return squash(outage.resolvedSectionName) === secSquash;
+    }
+    // If outage was explicitly resolved to a Substation only or is an unmapped advisory,
+    // do not bleed into arbitrary sections!
+    if (outage.resolvedSubstationCode || outage.mappingStatus === 'UNMAPPED_ADVISORY') {
+      return false;
     }
 
     const oSec = outage.section;
@@ -578,13 +608,45 @@ export function enrichLiveOutagesWithGrid(
       if (candidates.length === 1) {
         matchedSS = candidates[0];
       } else if (candidates.length > 1) {
-        // Disambiguate duplicate substation names (e.g. Gandhi Nagar SS in Adyar vs North Chennai)
-        const targetArea = (outage.town || outage.section || '').toLowerCase();
-        if (targetArea.includes('adyar')) {
-          matchedSS = candidates.find(s => (s.circle || '').toLowerCase().includes('south')) || candidates[0];
-        } else {
-          matchedSS = candidates[0];
+        // Disambiguate duplicate substation names and multi-voltage collocated substations
+        const fullNoticeText = `${outage.substation || ''} ${outage.feeder || ''} ${outage.workType || ''} ${outage.town || ''} ${outage.location || ''}`.toLowerCase();
+
+        // 1. Explicit voltage cues in notice (400kV, 230kV, 110kV, 33kV)
+        let bestCandidate = candidates.find(s => {
+          const v = (s.voltage || '').toLowerCase();
+          if (v.includes('400') && fullNoticeText.includes('400')) return true;
+          if (v.includes('230') && fullNoticeText.includes('230')) return true;
+          if (v.includes('110') && fullNoticeText.includes('110')) return true;
+          if (v.includes('33') && (fullNoticeText.includes('33kv') || fullNoticeText.includes('33 kv'))) return true;
+          return false;
+        });
+
+        // 2. Feeder match: check if one candidate substation owns this specific feeder
+        if (!bestCandidate && outage.feeder) {
+          bestCandidate = candidates.find(s =>
+            (s.feeders || []).some(f => matchesLocality(f.name, outage.feeder))
+          );
         }
+
+        // 3. Geographic / Circle disambiguation (e.g. Gandhi Nagar SS in South vs North)
+        if (!bestCandidate) {
+          const targetArea = (outage.town || outage.section || outage.circle || '').toLowerCase();
+          if (targetArea.includes('adyar') || targetArea.includes('south')) {
+            bestCandidate = candidates.find(s => (s.circle || '').toLowerCase().includes('south'));
+          } else if (targetArea.includes('north')) {
+            bestCandidate = candidates.find(s => (s.circle || '').toLowerCase().includes('north'));
+          }
+        }
+
+        // 4. Default hierarchy for urban distribution maintenance:
+        // Routine maintenance/feeder work affects distribution step-downs (33/11 or 110/33), not 400kV bulk transmission nodes
+        if (!bestCandidate) {
+          bestCandidate = candidates.find(s => s.tier === 'distribution') ||
+                          candidates.find(s => s.tier === 'subtransmission') ||
+                          candidates[0];
+        }
+
+        matchedSS = bestCandidate || candidates[0];
       }
 
       if (matchedSS) {

@@ -347,7 +347,7 @@ export function getEventAgeInDays(dateStr: string, referenceDateStr?: string): n
  */
 export function computeHealthProfile(
   events: OutageHistoryEvent[] = [],
-  fallbackOutageCount = 0,
+  _fallbackOutageCount = 0,
   feederCount = 10
 ): SubstationHealthProfile {
   const resolvedEvents: OutageHistoryEvent[] = events.map(e => {
