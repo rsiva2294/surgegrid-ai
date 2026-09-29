@@ -44,77 +44,6 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
   if (isDedicatedTab) {
     return (
       <div className="space-y-2.5">
-        {/* GCC Municipal Command Card */}
-        <div className={`p-3 rounded-xl border text-xs shadow-xs space-y-2 ${
-          isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
-        }`}>
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                isLight ? 'bg-indigo-200/80 text-indigo-800' : 'bg-indigo-500/20 text-indigo-300'
-              }`}>
-                <Building2 className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="font-bold text-sm block leading-tight">
-                  GCC Zone {node.gccZone} ({node.gccZoneName})
-                </span>
-                <span className={`text-xs block mt-0.5 font-mono ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>
-                  Greater Chennai Corporation • Ward {node.gccWard}
-                </span>
-              </div>
-            </div>
-
-            <span className={`px-2 py-0.5 rounded-md font-mono text-xs font-bold ${
-              isLight ? 'bg-indigo-600 text-white' : 'bg-indigo-500 text-slate-950 font-black'
-            }`}>
-              Z{node.gccZone}:W{node.gccWard}
-            </span>
-          </div>
-
-          <p className="text-xs leading-relaxed opacity-90 pt-1 border-t border-current/10">
-            Zone and ward come from GCC data. The GCC City Disaster Management Perspective Plan 2023 gives TANGEDCO this role: “{getQuote('gcc-tangedco-role')?.quote}” ({getQuote('gcc-tangedco-role')?.citation}).
-          </p>
-        </div>
-
-        {/* GEE Satellite Hydrology & Inundation Matrix */}
-        {node.geeRunoffMm !== undefined && (
-          <div className={`p-3 rounded-xl border space-y-2 ${
-            isLight ? 'bg-slate-50 border-slate-200 text-slate-800' : 'bg-slate-950/60 border-slate-800 text-slate-200'
-          }`}>
-            <div>
-              <span className="font-bold text-xs flex items-center gap-1.5">
-                <span>🛰️</span>
-                <span>Google Earth Engine (GEE) Satellite Stack</span>
-              </span>
-              <div className="mt-1 flex items-center">
-                <span className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md ${
-                  node.geeFloodCategory === 'CRITICAL_SURGE_RISK' || node.geeFloodCategory === 'SEVERE_INUNDATION_ZONE'
-                    ? (isLight ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40')
-                    : (isLight ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40')
-                }`}>
-                  {node.geeFloodCategory?.replace(/_/g, ' ') || 'SATELLITE VERIFIED'}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 text-center font-mono">
-              <div className={`p-2 rounded-lg ${isLight ? 'bg-white border border-slate-200' : 'bg-black/30 border border-white/5'}`}>
-                <span className={`text-xs uppercase font-semibold block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Simulated Runoff</span>
-                <strong className="text-xs font-bold block mt-0.5">🌧️ {node.geeRunoffMm} mm</strong>
-              </div>
-              <div className={`p-2 rounded-lg ${isLight ? 'bg-white border border-slate-200' : 'bg-black/30 border border-white/5'}`}>
-                <span className={`text-xs uppercase font-semibold block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Impervious Built</span>
-                <strong className="text-xs font-bold block mt-0.5">🧱 {node.geeImperviousPct}%</strong>
-              </div>
-              <div className={`p-2 rounded-lg ${isLight ? 'bg-white border border-slate-200' : 'bg-black/30 border border-white/5'}`}>
-                <span className={`text-xs uppercase font-semibold block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Relief Shelters</span>
-                <strong className="text-xs font-bold block mt-0.5">🏕️ {node.wardReliefSheltersCount || 0} Camps</strong>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Official Ward Disaster Committee Emergency Hotlines */}
         <div className={`p-3 rounded-xl border space-y-2.5 ${
           isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-slate-900 border-slate-800 text-slate-200 shadow-xs'
@@ -193,6 +122,39 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
         {/* 2G SMS / Wireless Incident Dispatch Generator */}
         <CopyIncidentSmsButton node={node} isLight={isLight} />
 
+        {/* GCC Municipal Command Card */}
+        <div className={`p-3 rounded-xl border text-xs shadow-xs space-y-2 ${
+          isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
+        }`}>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                isLight ? 'bg-indigo-200/80 text-indigo-800' : 'bg-indigo-500/20 text-indigo-300'
+              }`}>
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="font-bold text-sm block leading-tight">
+                  GCC Zone {node.gccZone} ({node.gccZoneName})
+                </span>
+                <span className={`text-xs block mt-0.5 font-mono ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>
+                  Greater Chennai Corporation • Ward {node.gccWard}
+                </span>
+              </div>
+            </div>
+
+            <span className={`px-2 py-0.5 rounded-md font-mono text-xs font-bold ${
+              isLight ? 'bg-indigo-600 text-white' : 'bg-indigo-500 text-slate-950 font-black'
+            }`}>
+              Z{node.gccZone}:W{node.gccWard}
+            </span>
+          </div>
+
+          <p className="text-xs leading-relaxed opacity-90 pt-1 border-t border-current/10">
+            Zone and ward come from GCC data. The GCC City Disaster Management Perspective Plan 2023 gives TANGEDCO this role: “{getQuote('gcc-tangedco-role')?.quote}” ({getQuote('gcc-tangedco-role')?.citation}).
+          </p>
+        </div>
+
         {/* Multi-Agency Standing Operating Protocol Guidance */}
         <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
           isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-400'
@@ -222,28 +184,7 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
             Ward {node.gccWard}
           </span>
         </div>
-        {node.wardReliefSheltersCount !== undefined && node.wardReliefSheltersCount > 0 && (
-          <span className={`text-xs font-mono px-2 py-0.5 rounded-md font-bold ${
-            isLight ? 'bg-purple-100 text-purple-900 border border-purple-200' : 'bg-purple-950/60 text-purple-300 border border-purple-500/30'
-          }`}>
-            🏕️ {node.wardReliefSheltersCount} Relief Shelters
-          </span>
-        )}
       </div>
-
-      {/* GEE Satellite Runoff & Impervious Metrics */}
-      {node.geeRunoffMm !== undefined && (
-        <div className="grid grid-cols-2 gap-1.5 font-mono text-xs">
-          <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-indigo-100' : 'bg-black/30 border border-white/5'}`}>
-            <span className="opacity-75 block text-xs font-sans">GEE Runoff:</span>
-            <strong>🌧️ {node.geeRunoffMm} mm</strong>
-          </div>
-          <div className={`p-1.5 rounded-lg ${isLight ? 'bg-white/80 border border-indigo-100' : 'bg-black/30 border border-white/5'}`}>
-            <span className="opacity-75 block text-xs font-sans">Impervious Built:</span>
-            <strong>🧱 {node.geeImperviousPct}%</strong>
-          </div>
-        </div>
-      )}
 
       {/* Direct Ward Emergency Hotlines */}
       <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-current/10 text-xs">

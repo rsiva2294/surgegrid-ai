@@ -1,64 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, ShieldCheck, AlertCircle, Wrench, ChevronDown, ChevronUp, Clock, Zap, Sparkles, RefreshCw } from 'lucide-react';
+import { Activity, AlertCircle, Wrench, ChevronDown, ChevronUp, Clock, Zap } from 'lucide-react';
 import type { TnebSubstation, OutageHistoryEvent } from '../../types/tneb';
-import type { DisasterScenario } from './DisasterCockpitBar';
-import { getEnrichedHealthProfile, calculateDynamicRisk, formatDisplayDate } from '../../services/gridHealthService';
+import { getEnrichedHealthProfile, formatDisplayDate } from '../../services/gridHealthService';
 import type { LiveOutage } from '../../services/liveOutageService';
-import type { ScenarioTimestep } from '../../services/scenarioService';
-import {
-  fetchSubstationTacticalAdvisory,
-  generateDeterministicTacticalAdvisory,
-  type SubstationCopilotAdvisory
-} from '../../services/geminiSubstationCopilotService';
 
 interface SubstationHealthCardProps {
   substation: TnebSubstation;
   isLight: boolean;
-  disasterScenario: DisasterScenario;
   liveOutages?: LiveOutage[];
-  currentTimestep?: ScenarioTimestep | null;
 }
 
 export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
   substation,
   isLight,
-  disasterScenario,
-  liveOutages = [],
-  currentTimestep
+  liveOutages = []
 }) => {
   const [showEmptyLog, setShowEmptyLog] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [scopeFilter, setScopeFilter] = useState<'all' | 'yard_core' | 'feeder_corridor' | 'lt_street'>('all');
-  const [copilotAdvisory, setCopilotAdvisory] = useState<SubstationCopilotAdvisory | null>(null);
-  const [isLoadingCopilot, setIsLoadingCopilot] = useState(false);
-
-  useEffect(() => {
-    if (disasterScenario === 'NORMAL' || disasterScenario === 'LIVE') {
-      setCopilotAdvisory(null);
-      return;
-    }
-    // Show the rule-based advisory immediately, then upgrade it with Gemini once the hour stops changing.
-    setCopilotAdvisory(generateDeterministicTacticalAdvisory(substation, disasterScenario, currentTimestep, liveOutages));
-    setIsLoadingCopilot(true);
-    let isSubscribed = true;
-    const timer = setTimeout(() => {
-      fetchSubstationTacticalAdvisory(substation, disasterScenario, currentTimestep, liveOutages)
-        .then((advisory) => {
-          if (isSubscribed) {
-            setCopilotAdvisory(advisory);
-            setIsLoadingCopilot(false);
-          }
-        })
-        .catch((err) => {
-          console.warn('Failed to load substation copilot:', err);
-          if (isSubscribed) setIsLoadingCopilot(false);
-        });
-    }, 600);
-    return () => {
-      isSubscribed = false;
-      clearTimeout(timer);
-    };
-  }, [substation.code, disasterScenario, currentTimestep?.timestep_hour, liveOutages]);
 
   useEffect(() => {
     setShowEmptyLog(false);
@@ -67,9 +26,6 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
   }, [substation.code]);
 
   const profile = getEnrichedHealthProfile(substation, liveOutages);
-  const baseRisk = substation.compositeRiskScore || 25;
-  const dynamicRisk = calculateDynamicRisk(baseRisk, profile, disasterScenario);
-
   const yardCoreCount = profile.events.filter(e => e.scope === 'yard_core').length;
   const feederCount = profile.events.filter(e => e.scope === 'feeder_corridor').length;
   const ltStreetCount = profile.events.filter(e => e.scope === 'lt_street').length;
@@ -204,7 +160,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
           <span className={`font-bold text-xs truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-            Operational Resiliency & 90-Day Log
+            SurgeGrid health score (our model) and 90-day log
           </span>
         </div>
 
@@ -219,58 +175,8 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
         </div>
       </div>
 
-      {/* Real-time Dispatch Status Alert Banner */}
-      {profile.dispatchStatus && profile.dispatchStatus !== 'NORMAL' && (
-        <div
-          className={`py-1.5 px-2.5 rounded-lg border text-[11px] font-medium flex items-center justify-between gap-1.5 transition-all ${
-            profile.dispatchStatus === 'ACTIVE_TRIP'
-              ? isLight
-                ? 'bg-rose-50 border-rose-200 text-rose-900 ring-1 ring-rose-300/40'
-                : 'bg-rose-950/40 border-rose-800/60 text-rose-300 ring-1 ring-rose-500/20'
-              : profile.dispatchStatus === 'EMERGENCY_REPAIR'
-              ? isLight
-                ? 'bg-amber-50 border-amber-200 text-amber-900'
-                : 'bg-amber-950/40 border-amber-800/60 text-amber-300'
-              : profile.dispatchStatus === 'PLANNED_MAINTENANCE'
-              ? isLight
-                ? 'bg-sky-50 border-sky-200 text-sky-900'
-                : 'bg-sky-950/40 border-sky-800/60 text-sky-300'
-              : isLight
-              ? 'bg-slate-100 border-slate-300 text-slate-700'
-              : 'bg-slate-900 border-slate-700 text-slate-300'
-          }`}
-        >
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span
-              className={`w-2 h-2 rounded-full shrink-0 ${
-                profile.dispatchStatus === 'ACTIVE_TRIP'
-                  ? 'bg-rose-500 animate-ping'
-                  : profile.dispatchStatus === 'EMERGENCY_REPAIR'
-                  ? 'bg-amber-500 animate-pulse'
-                  : 'bg-sky-500'
-              }`}
-            />
-            <span className="font-bold truncate">
-              {profile.dispatchStatus === 'ACTIVE_TRIP'
-                ? `🔴 Active Interruption (${profile.activeLiveTripCount} Live Breakdown${(profile.activeLiveTripCount || 0) > 1 ? 's' : ''})`
-                : profile.dispatchStatus === 'EMERGENCY_REPAIR'
-                ? '🟡 Emergency Repair in Progress'
-                : profile.dispatchStatus === 'PLANNED_MAINTENANCE'
-                ? '🔵 Scheduled Maintenance Active'
-                : '⚪ Civic Safety De-energization'}
-            </span>
-          </div>
-
-          {profile.assetDurabilityScore !== undefined && profile.assetDurabilityScore !== profile.healthScore && (
-            <span className="text-[10px] opacity-80 shrink-0 font-mono">
-              90d Durability: {profile.assetDurabilityScore}/100
-            </span>
-          )}
-        </div>
-      )}
-
       {/* 3-Month Breakdown Metric Badges */}
-      <div className="grid grid-cols-3 gap-2 text-center">
+      <div className="grid grid-cols-2 gap-2 text-center">
         <div
           className={`py-2 px-1.5 rounded-lg border shadow-2xs flex flex-col justify-between ${
             isLight ? 'bg-emerald-100/70 border-emerald-300 text-emerald-950' : 'bg-emerald-950/60 border-emerald-700 text-emerald-100'
@@ -348,190 +254,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
             </span>
           )}
         </div>
-
-        <div
-          className={`py-2 px-1.5 rounded-lg border shadow-2xs flex flex-col justify-between ${
-            profile.disasterRiskMultiplier > 1.0
-              ? isLight
-                ? 'bg-amber-100/70 border-amber-300 text-amber-950'
-                : 'bg-amber-950/60 border-amber-700 text-amber-100'
-              : isLight
-              ? 'bg-slate-100 border-slate-300 text-slate-800'
-              : 'bg-slate-800/80 border-slate-700 text-slate-200'
-          }`}
-        >
-          <span className={`text-[10px] uppercase font-semibold block ${
-            profile.disasterRiskMultiplier > 1.0
-              ? isLight ? 'text-amber-800' : 'text-amber-300'
-              : isLight ? 'text-slate-600' : 'text-slate-400'
-          }`}>
-            Risk Factor
-          </span>
-          <strong
-            className={`text-xs font-bold block my-0.5 tabular-nums ${
-              profile.disasterRiskMultiplier > 1.0
-                ? isLight
-                  ? 'text-amber-900'
-                  : 'text-amber-200'
-                : isLight
-                ? 'text-emerald-800'
-                : 'text-emerald-300'
-            }`}
-          >
-            {profile.disasterRiskMultiplier.toFixed(2)}x Multiplier
-          </strong>
-          <span className={`text-[9px] block opacity-85 leading-tight ${
-            profile.disasterRiskMultiplier > 1.0
-              ? isLight ? 'text-amber-800' : 'text-amber-300'
-              : isLight ? 'text-slate-600' : 'text-slate-400'
-          }`}>
-            {profile.disasterRiskMultiplier > 1.0 ? 'Disaster Impact' : 'Nominal Baseline'}
-          </span>
-        </div>
       </div>
-
-      {/* Disaster Vulnerability Multiplier Impact */}
-      {disasterScenario !== 'NORMAL' && (
-        <div
-          className={`p-2 rounded-lg border text-xs leading-relaxed flex items-start gap-2 ${
-            profile.disasterRiskMultiplier > 1.15
-              ? isLight
-                ? 'bg-rose-50 border-rose-200 text-rose-900'
-                : 'bg-rose-950/30 border-rose-800/60 text-rose-200'
-              : isLight
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-              : 'bg-emerald-950/30 border-emerald-800/60 text-emerald-200'
-          }`}
-        >
-          {profile.disasterRiskMultiplier > 1.15 ? (
-            <AlertCircle className="w-3.5 h-3.5 shrink-0 text-rose-500 mt-0.5" />
-          ) : (
-            <ShieldCheck className="w-3.5 h-3.5 shrink-0 text-emerald-500 mt-0.5" />
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between font-bold">
-              <span title="SurgeGrid's own model: base risk multiplied by a factor from the health grade. Not from the official plans.">SurgeGrid risk multiplier, our model ({disasterScenario.replace('_', ' ')})</span>
-              <span className="font-mono">{baseRisk} → {dynamicRisk.finalRisk} / 100</span>
-            </div>
-            <p className="text-[11px] mt-0.5 opacity-90">{dynamicRisk.rationale}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Tier-2 Gemini Substation Tactical Advisory Card */}
-      {disasterScenario !== 'NORMAL' && copilotAdvisory && (
-        <div
-          className={`rounded-xl border p-3 transition-all shadow-xs ${
-            isLight
-              ? 'bg-gradient-to-br from-indigo-50/80 via-white to-purple-50/60 border-indigo-200 text-slate-900'
-              : 'bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border-indigo-500/40 text-slate-100'
-          }`}
-        >
-          {/* Card Header */}
-          <div className="flex items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <div className="w-5 h-5 rounded-md bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center shrink-0">
-                <Sparkles className="w-3 h-3 text-indigo-400" />
-              </div>
-              <span className="font-bold text-xs tracking-tight text-indigo-950 dark:text-indigo-200 truncate">
-                SUBSTATION COPILOT
-              </span>
-              <span className="text-[9px] px-1 py-0.2 rounded font-mono font-semibold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
-                OFFICIAL QUOTES
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0">
-              {isLoadingCopilot && (
-                <RefreshCw className="w-2.5 h-2.5 text-indigo-400 animate-spin" />
-              )}
-              {copilotAdvisory.cached && (
-                <span className="text-[9px] px-1 py-0.2 rounded font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                  Cached
-                </span>
-              )}
-              <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
-                {currentTimestep ? `T${currentTimestep.timestep_hour >= 0 ? '+' : ''}${currentTimestep.timestep_hour}h` : 'LIVE'}
-              </span>
-            </div>
-          </div>
-
-          {/* Flags from our grid data */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-2">
-            {copilotAdvisory.flags.length === 0 && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full border font-semibold bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-600">
-                No flags in our data
-              </span>
-            )}
-            {copilotAdvisory.flags.map(flag => (
-              <span
-                key={flag.id}
-                title={flag.detail}
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border cursor-help ${
-                  flag.id === 'LOW_LYING'
-                    ? (isLight ? 'bg-cyan-100 text-cyan-950 border-cyan-300' : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40')
-                    : flag.id === 'OVERHEAD'
-                    ? (isLight ? 'bg-amber-100 text-amber-950 border-amber-300' : 'bg-amber-500/20 text-amber-200 border-amber-500/40')
-                    : (isLight ? 'bg-emerald-100 text-emerald-950 border-emerald-300' : 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40')
-                }`}
-              >
-                {flag.label}
-              </span>
-            ))}
-          </div>
-
-          {/* Note tying the actions to this substation's data */}
-          {copilotAdvisory.note && (
-            <p className="text-[11px] leading-relaxed mb-2.5 text-slate-700 dark:text-slate-300 bg-indigo-500/5 dark:bg-indigo-950/20 p-2 rounded border border-indigo-500/10">
-              {copilotAdvisory.note}
-            </p>
-          )}
-
-          {/* Official actions */}
-          <div className="space-y-1.5">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1 flex items-center justify-between">
-              <span>Official actions (quoted)</span>
-              <span>({copilotAdvisory.actions.length})</span>
-            </div>
-            {copilotAdvisory.actions.map((act, idx) => (
-              <div
-                key={act.id || idx}
-                className="p-2 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 shadow-xs"
-              >
-                <div className="text-xs text-slate-900 dark:text-slate-100 font-bold leading-snug">{act.title}</div>
-                <blockquote className="mt-1 text-[11px] italic leading-relaxed text-slate-700 dark:text-slate-300 border-l-2 border-indigo-300 dark:border-indigo-500/60 pl-2">
-                  &ldquo;{act.quote}&rdquo;
-                  <span className="block not-italic text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">{act.citation}</span>
-                </blockquote>
-                {act.feeders && act.feeders.length > 0 && (
-                  <div className="mt-1 text-[10px] text-slate-600 dark:text-slate-400">
-                    <span className="font-bold uppercase tracking-wider">Feeders: </span>
-                    <span className="font-mono">{act.feeders.join(', ')}</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400">
-            <span className="truncate">{copilotAdvisory.modelTag}</span>
-            <button
-              type="button"
-              onClick={() => {
-                setIsLoadingCopilot(true);
-                fetchSubstationTacticalAdvisory(substation, disasterScenario, currentTimestep, liveOutages, { force: true }).then((res) => {
-                  setCopilotAdvisory(res);
-                  setIsLoadingCopilot(false);
-                });
-              }}
-              className="hover:underline flex items-center gap-1 shrink-0 text-indigo-600 dark:text-indigo-400 font-medium cursor-pointer"
-            >
-              <RefreshCw className="w-2.5 h-2.5" /> Re-evaluate
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* 90-Day Incident & Maintenance Log Section */}
       <div>

@@ -60,7 +60,7 @@ Gemini 2.5 Flash on Google Cloud's Gemini Enterprise Agent Platform (formerly Ve
 - **Chennai only.** Nothing has been built for other cities. The scripts and data layout are city-specific.
 - **Relief centres have no exact locations** in the GCC list.
 - **Wind is an area average**, so it stays below the lowest IMD cyclone class in all three scenarios.
-- **Our own labelled items:** the health score, the SurgeGrid ranking panel, the waterlogging filter (yard at or below 2.0 m, or our flood category) and the backup suggestion.
+- **Our own labelled items:** the health score, the SurgeGrid ranking panel and the backup suggestion. The waterlogging filter uses facts and official map checks only: yard at or below 2.0 m, inside the 2015 flood extent, or rated Moderate/High on the official flood-hazard maps (87 of 286 substations).
 - **Not built:** road exposure, Tamil text, image input to Gemini, a trained forecasting model, other cities.
 
 ---

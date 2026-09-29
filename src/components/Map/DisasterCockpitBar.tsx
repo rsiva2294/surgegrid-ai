@@ -568,7 +568,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                     ? 'bg-cyan-50/70 hover:bg-cyan-100 text-cyan-900 border border-cyan-300/70 font-semibold' 
                     : 'bg-cyan-950/40 hover:bg-cyan-900/50 text-cyan-300 border border-cyan-500/40 font-semibold shadow-2xs')
             }`}
-            title="Filter to infrastructure vulnerable to waterlogging because elevation is not high enough"
+            title="Yard at or below 2.0 m, inside the 2015 flood extent, or rated Moderate/High on the official flood maps"
           >
             <span>🌊 Waterlogging Risk</span>
             <span className={`min-w-[18px] inline-flex items-center justify-center font-mono text-[10px] px-1.5 py-0.5 rounded font-bold ${

@@ -12,6 +12,7 @@ import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
+import { getCachedOfficialFlood } from './officialFloodLayers';
 import { generateJson } from './geminiClient';
 import {
   CHENNAI_AVERAGE_ELEVATION_M,
@@ -56,7 +57,6 @@ export interface CompromisedSubstationSummary {
   healthScore: number;
   unscheduledTripsCount: number;
   elevationM: number;
-  riskCategory: string;
   vulnerabilityReason: string;
   disasterScore: number;
 }
@@ -93,8 +93,7 @@ export interface GeminiSopDirective {
 /**
  * SurgeGrid's own ranking of substations that combine poor health with low elevation.
  * The weights below are ours and are NOT taken from any official plan. Inputs are limited to
- * measurable facts: health grade and score, unscheduled trips, yard elevation, our flood-risk
- * category, and whether the substation has overhead or mixed feeders. No wind or surge thresholds.
+ * measurable facts: health grade and score, unscheduled trips, yard elevation, official flood-map checks, and whether the substation has overhead or mixed feeders. No wind or surge thresholds.
  */
 export function extractTopCompromisedInfra(
   substations: TnebSubstation[],
@@ -124,9 +123,12 @@ export function extractTopCompromisedInfra(
     if (elevation <= CHENNAI_AVERAGE_ELEVATION_M) {
       disasterScore += 65;
     }
-    if (ss.riskCategory === 'CRITICAL_SURGE_RISK') {
+    // Official map checks (OpenCity, GCC): inside the 2015 flood extent, or rated Moderate/High
+    const officialFlood = getCachedOfficialFlood(ss.code);
+    if (officialFlood?.nrsc2015) {
       disasterScore += 35;
-    } else if (ss.riskCategory === 'HIGH_WATERLOGGING_RISK') {
+    }
+    if (officialFlood?.returnPeriod === 'HIGH' || officialFlood?.returnPeriod === 'MODERATE') {
       disasterScore += 25;
     }
 
@@ -152,7 +154,6 @@ export function extractTopCompromisedInfra(
       healthScore: profile.healthScore,
       unscheduledTripsCount: profile.unscheduledTripsCount,
       elevationM: elevation,
-      riskCategory: ss.riskCategory || 'MODERATE_RISK',
       vulnerabilityReason,
       disasterScore,
     };

@@ -30,6 +30,7 @@ import {
   getFeederDisasterStatus
 } from './disasterUtils';
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
+import { useOfficialFloodLoaded } from '../../services/officialFloodLayers';
 import { useReliefCentres } from '../../services/reliefCentres';
 import { useSectionBoundary } from '../../services/sectionBoundaries';
 import {
@@ -393,9 +394,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return substations.filter(s => isSubstationAtRisk(s, liveOutages)).length;
   }, [substations, liveOutages]);
 
+  const floodLayersLoaded = useOfficialFloodLoaded();
   const waterloggingRiskCount = useMemo(() => {
     return substations.filter(s => isSubstationWaterloggingRisk(s)).length;
-  }, [substations]);
+  }, [substations, floodLayersLoaded]);
 
   const substationsWithOutages = useMemo(() => {
     if (liveOutages.length === 0) return new Set<string>();
@@ -655,7 +657,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         if (marker.getMap() !== null) marker.setMap(null);
       }
     });
-  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, crisisTriageFilter, substationsWithOutages, mapLoaded, substations, liveOutages]);
+  }, [showBulk, showSubTrans, showDistribution, isolatedNodeIds, crisisTriageFilter, substationsWithOutages, mapLoaded, substations, liveOutages, floodLayersLoaded]);
 
   // Auto-fit camera when triage filter is selected
   useEffect(() => {
@@ -674,7 +676,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     if (!b.isEmpty()) {
       mapRef.current.fitBounds(b, { top: 90, right: 460, bottom: 90, left: 90 });
     }
-  }, [crisisTriageFilter, mapLoaded, substations, liveOutages, substationsWithOutages]);
+  }, [crisisTriageFilter, mapLoaded, substations, liveOutages, substationsWithOutages, floodLayersLoaded]);
 
   // 4. Section Viewport & Layer Optimization (only active when layer toggled or selected)
   useEffect(() => {

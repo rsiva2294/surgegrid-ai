@@ -10,7 +10,6 @@ import {
   Activity,
   GitFork,
   ArrowRight,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
   Info,
@@ -25,11 +24,14 @@ import { MunicipalDisasterCard } from './MunicipalDisasterCard';
 import { FeederCardItem } from './FeederCardItem';
 import { GridJargonCheatSheet } from './GridJargonCheatSheet';
 import { SubstationHealthCard } from './SubstationHealthCard';
+import { SubstationCopilotCard } from './SubstationCopilotCard';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
 import { useSectionBoundary } from '../../services/sectionBoundaries';
 import { ReliefCentresCard } from './ReliefCentresCard';
+import { useOfficialFlood } from '../../services/officialFloodLayers';
+import { getEnrichedHealthProfile } from '../../services/gridHealthService';
 
 interface SubstationInspectorDrawerProps {
   selectedSubstation: TnebSubstation | null;
@@ -66,6 +68,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 }) => {
   const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
   const sectionBoundary = useSectionBoundary(selectedSection?.code);
+  const { flood: officialFlood } = useOfficialFlood(selectedSubstation?.code);
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
   const [showJargonGuide, setShowJargonGuide] = useState(false);
   const [feederFilter, setFeederFilter] = useState('');
@@ -329,9 +332,11 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     : `DISTRIBUTION YARD (${selectedSubstation.voltage} kV)`
                   : 'TNEB AE SECTION OFFICE'}
               </span>
-              <span className={`text-xs font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
-                #{selectedSubstation?.code || selectedSection?.code}
-              </span>
+              {!selectedSubstation && (
+                <span className={`text-xs font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                  #{selectedSection?.code}
+                </span>
+              )}
               {((selectedSubstation?.gccZone && selectedSubstation?.gccWard) ||
                 (selectedSection?.gccZone && selectedSection?.gccWard)) && (
                 <span
@@ -420,7 +425,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
         {selectedSubstation && (
           <div className="flex flex-col flex-1 min-h-0 pt-2">
             {/* Compact Horizontal Quick-Stats Ribbon */}
-            <div className={`grid grid-cols-3 gap-2 pb-2 shrink-0 border-b text-center text-xs ${isLight ? 'border-slate-300/70' : 'border-slate-700/80'}`}>
+            <div className={`grid grid-cols-2 gap-2 pb-2 shrink-0 border-b text-center text-xs ${isLight ? 'border-slate-300/70' : 'border-slate-700/80'}`}>
               <div
                 className={`p-2 rounded-xl border ${
                   isLight ? 'bg-sky-50/80 border-sky-200/90 shadow-2xs' : 'bg-slate-950/70 border-slate-700/80 shadow-inner'
@@ -467,28 +472,40 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   {selectedSubstation.totalTransformers.toLocaleString()}
                 </span>
               </div>
-              <div
-                className={`p-2 rounded-xl border ${
-                  isLight ? 'bg-pink-50/80 border-pink-200/90 shadow-2xs' : 'bg-slate-950/70 border-slate-700/80 shadow-inner'
-                }`}
-              >
-                <span
-                  className={`text-xs flex items-center justify-center gap-1.5 font-medium ${
-                    isLight ? 'text-pink-700' : 'text-slate-400'
-                  }`}
-                >
-                  <Zap className="w-3.5 h-3.5" />
-                  Feeders
-                </span>
-                <span
-                  className={`font-mono font-bold text-base block mt-0.5 ${
-                    isLight ? 'text-pink-950' : 'text-pink-300'
-                  }`}
-                >
-                  {selectedSubstation.feeders.length}
-                </span>
-              </div>
             </div>
+
+            {/* Status line: what a user needs first, visible on every tab */}
+            {(() => {
+              const profile = getEnrichedHealthProfile(selectedSubstation, activeSubstationOutages);
+              const chip = 'px-2 py-0.5 rounded-md text-xs font-semibold border';
+              const grade = {
+                A: isLight ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+                B: isLight ? 'bg-sky-100 text-sky-900 border-sky-300' : 'bg-sky-500/20 text-cyan-300 border-sky-500/40',
+                C: isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
+                D: isLight ? 'bg-rose-100 text-rose-900 border-rose-300' : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+              }[profile.healthGrade];
+              return (
+                <div className="flex items-center gap-1.5 flex-wrap pt-2 shrink-0 text-xs">
+                  <span className={`${chip} ${grade}`} title="SurgeGrid health score, our own model from 90-day outage history">
+                    Health {profile.healthGrade} · {profile.healthScore}/100
+                  </span>
+                  {activeSubstationOutages.length > 0 ? (
+                    <span className={`${chip} ${isLight ? 'bg-red-100 text-red-800 border-red-300' : 'bg-red-500/20 text-red-300 border-red-500/40'}`}>
+                      {activeSubstationOutages.length} live outage notice{activeSubstationOutages.length > 1 ? 's' : ''}
+                    </span>
+                  ) : (
+                    <span className={`${chip} ${isLight ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+                      No live outage notice
+                    </span>
+                  )}
+                  {officialFlood?.nrsc2015 && (
+                    <span className={`${chip} ${isLight ? 'bg-cyan-100 text-cyan-900 border-cyan-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'}`}>
+                      Inside the 2015 flood extent
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
 
 
             {/* Substation Content */}
@@ -513,7 +530,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     }`}
                   >
                     <Info className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">Plant & Specs</span>
+                    <span className="truncate">Overview</span>
                   </button>
                   <button
                     type="button"
@@ -529,7 +546,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     }`}
                   >
                     <Zap className="w-3.5 h-3.5 shrink-0 text-amber-500" />
-                    <span className="truncate">Circuits & Grid ({selectedSubstation.feeders.length})</span>
+                    <span className="truncate">Feeders ({selectedSubstation.feeders.length})</span>
                   </button>
                   <button
                     type="button"
@@ -543,14 +560,134 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     }`}
                   >
                     <Shield className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">Civic & Crisis</span>
+                    <span className="truncate">Crisis & Contacts</span>
                   </button>
                 </div>
 
                 {/* Tab 2: Circuits & Grid Content */}
                 {inspectorTab === 'circuits' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2">
-                    {/* Upstream Grid Links & Circuit Isolation Card */}
+                    {/* Feeders Heading, Filter & Jargon Explainer Button */}
+                    <div className="flex flex-col gap-1.5 shrink-0 pt-1">
+                      <div className="flex items-center justify-between gap-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <Zap className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
+                          <span className="font-bold text-xs uppercase tracking-wider">
+                            Distribution Circuits ({selectedSubstation.feeders.length})
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setFeederCategoryFilter('all')}
+                            className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all ${
+                              feederCategoryFilter === 'all'
+                                ? isLight
+                                  ? 'bg-slate-900 text-white shadow-xs'
+                                  : 'bg-white text-slate-950 font-black shadow-xs'
+                                : isLight
+                                ? 'text-slate-600 hover:text-slate-900'
+                                : 'text-slate-400 hover:text-white'
+                            }`}
+                          >
+                            All ({selectedSubstation.feeders.length})
+                          </button>
+
+                          {lifelineFeedersCount > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setFeederCategoryFilter('lifelines')}
+                              className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
+                                feederCategoryFilter === 'lifelines'
+                                  ? isLight
+                                    ? 'bg-rose-600 text-white shadow-xs font-black'
+                                    : 'bg-rose-500 text-slate-950 font-black shadow-xs'
+                                  : isLight
+                                  ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                                  : 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
+                              }`}
+                            >
+                              <span>🚨 Lifelines</span>
+                              <span className="font-mono">({lifelineFeedersCount})</span>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Search Filter & Jargon Guide Toggle */}
+                      <div className="flex items-center gap-1.5">
+                        {selectedSubstation.feeders.length > 4 && (
+                          <input
+                            type="text"
+                            placeholder={
+                              feederCategoryFilter === 'lifelines'
+                                ? 'Filter lifeline feeders...'
+                                : 'Filter feeder by name...'
+                            }
+                            value={feederFilter}
+                            onChange={(e) => setFeederFilter(e.target.value)}
+                            className={`flex-1 px-2.5 py-1 text-xs rounded-lg border outline-none ${
+                              isLight
+                                ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
+                                : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
+                            }`}
+                          />
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => setShowJargonGuide(!showJargonGuide)}
+                          className={`font-semibold text-xs flex items-center gap-1 transition-colors px-2 py-1 rounded-lg border shrink-0 ${
+                            isLight
+                              ? 'bg-sky-50 border-sky-200 text-sky-800 hover:bg-sky-100'
+                              : 'bg-slate-900 border-slate-700 text-cyan-300 hover:bg-slate-800'
+                          }`}
+                        >
+                          <Info className="w-3 h-3" />
+                          <span>{showJargonGuide ? 'Hide Guide' : 'Jargon'}</span>
+                        </button>
+                      </div>
+
+                      {/* Collapsible Grid Jargon Explainer Cheat Sheet */}
+                      {showJargonGuide && (
+                        <GridJargonCheatSheet onClose={() => setShowJargonGuide(false)} isLight={isLight} />
+                      )}
+                    </div>
+
+                    {/* Feeders Scroll List */}
+                    <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
+                      {filteredFeeders.length > 0 ? (
+                        filteredFeeders.map((f, idx) => (
+                          <FeederCardItem
+                            key={f.code || idx}
+                            feeder={f}
+                            isFeederActive={selectedFeeder?.code === f.code}
+                            selectedSubstation={selectedSubstation}
+                            disasterScenario={disasterScenario}
+                            isLight={isLight}
+                            onSelectFeeder={(feeder) =>
+                              setSelectedFeeder(selectedFeeder?.code === feeder.code ? null : feeder)
+                            }
+                          />
+                        ))
+                      ) : (
+                        <div
+                          className={`p-3 text-center rounded-xl border text-xs ${
+                            isLight
+                              ? 'bg-slate-50 border-slate-200 text-slate-500'
+                              : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
+                          }`}
+                        >
+                          {feederFilter
+                            ? 'No feeders match your search filter.'
+                            : feederCategoryFilter === 'lifelines'
+                            ? 'No critical lifeline feeders identified on this substation.'
+                            : 'Primary extra-high-voltage bulk grid node.'}
+                        </div>
+                      )}
+                    </div>
+                    {/* Circuit isolation (map tool), kept below the feeder list */}
                     <div
                       className={`p-2.5 rounded-xl border shrink-0 transition-all ${
                         showConnections
@@ -714,126 +851,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       )}
                     </div>
 
-                    {/* Feeders Heading, Filter & Jargon Explainer Button */}
-                    <div className="flex flex-col gap-1.5 shrink-0 pt-1">
-                      <div className="flex items-center justify-between gap-1.5">
-                        <div className="flex items-center gap-1.5">
-                          <Zap className={`w-3.5 h-3.5 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
-                          <span className="font-bold text-xs uppercase tracking-wider">
-                            Distribution Circuits ({selectedSubstation.feeders.length})
-                          </span>
-                        </div>
-
-                        <div className="flex items-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => setFeederCategoryFilter('all')}
-                            className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all ${
-                              feederCategoryFilter === 'all'
-                                ? isLight
-                                  ? 'bg-slate-900 text-white shadow-xs'
-                                  : 'bg-white text-slate-950 font-black shadow-xs'
-                                : isLight
-                                ? 'text-slate-600 hover:text-slate-900'
-                                : 'text-slate-400 hover:text-white'
-                            }`}
-                          >
-                            All ({selectedSubstation.feeders.length})
-                          </button>
-
-                          {lifelineFeedersCount > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => setFeederCategoryFilter('lifelines')}
-                              className={`px-2 py-0.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
-                                feederCategoryFilter === 'lifelines'
-                                  ? isLight
-                                    ? 'bg-rose-600 text-white shadow-xs font-black'
-                                    : 'bg-rose-500 text-slate-950 font-black shadow-xs'
-                                  : isLight
-                                  ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                                  : 'bg-rose-500/10 text-rose-300 border border-rose-500/30'
-                              }`}
-                            >
-                              <span>🚨 Lifelines</span>
-                              <span className="font-mono">({lifelineFeedersCount})</span>
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Search Filter & Jargon Guide Toggle */}
-                      <div className="flex items-center gap-1.5">
-                        {selectedSubstation.feeders.length > 4 && (
-                          <input
-                            type="text"
-                            placeholder={
-                              feederCategoryFilter === 'lifelines'
-                                ? 'Filter lifeline feeders...'
-                                : 'Filter feeder by name...'
-                            }
-                            value={feederFilter}
-                            onChange={(e) => setFeederFilter(e.target.value)}
-                            className={`flex-1 px-2.5 py-1 text-xs rounded-lg border outline-none ${
-                              isLight
-                                ? 'bg-slate-50 border-slate-200 text-slate-800 placeholder-slate-400'
-                                : 'bg-slate-950/70 border-slate-800 text-slate-200 placeholder-slate-500'
-                            }`}
-                          />
-                        )}
-
-                        <button
-                          type="button"
-                          onClick={() => setShowJargonGuide(!showJargonGuide)}
-                          className={`font-semibold text-xs flex items-center gap-1 transition-colors px-2 py-1 rounded-lg border shrink-0 ${
-                            isLight
-                              ? 'bg-sky-50 border-sky-200 text-sky-800 hover:bg-sky-100'
-                              : 'bg-slate-900 border-slate-700 text-cyan-300 hover:bg-slate-800'
-                          }`}
-                        >
-                          <Info className="w-3 h-3" />
-                          <span>{showJargonGuide ? 'Hide Guide' : 'Jargon'}</span>
-                        </button>
-                      </div>
-
-                      {/* Collapsible Grid Jargon Explainer Cheat Sheet */}
-                      {showJargonGuide && (
-                        <GridJargonCheatSheet onClose={() => setShowJargonGuide(false)} isLight={isLight} />
-                      )}
-                    </div>
-
-                    {/* Feeders Scroll List */}
-                    <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">
-                      {filteredFeeders.length > 0 ? (
-                        filteredFeeders.map((f, idx) => (
-                          <FeederCardItem
-                            key={f.code || idx}
-                            feeder={f}
-                            isFeederActive={selectedFeeder?.code === f.code}
-                            selectedSubstation={selectedSubstation}
-                            disasterScenario={disasterScenario}
-                            isLight={isLight}
-                            onSelectFeeder={(feeder) =>
-                              setSelectedFeeder(selectedFeeder?.code === feeder.code ? null : feeder)
-                            }
-                          />
-                        ))
-                      ) : (
-                        <div
-                          className={`p-3 text-center rounded-xl border text-xs ${
-                            isLight
-                              ? 'bg-slate-50 border-slate-200 text-slate-500'
-                              : 'bg-slate-950/40 border-slate-800/60 text-slate-500'
-                          }`}
-                        >
-                          {feederFilter
-                            ? 'No feeders match your search filter.'
-                            : feederCategoryFilter === 'lifelines'
-                            ? 'No critical lifeline feeders identified on this substation.'
-                            : 'Primary extra-high-voltage bulk grid node.'}
-                        </div>
-                      )}
-                    </div>
                   </div>
                 )}
 
@@ -996,34 +1013,23 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     <SubstationHealthCard
                       substation={selectedSubstation}
                       isLight={isLight}
+                      liveOutages={activeSubstationOutages}
+                    />
+                  </div>
+                )}
+
+                {/* Tab 3: Dedicated GCC Municipal & Satellite Disaster Stack */}
+                {inspectorTab === 'civic' && (
+                  <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
+                    <SubstationCopilotCard
+                      substation={selectedSubstation}
+                      isLight={isLight}
                       disasterScenario={disasterScenario}
                       liveOutages={activeSubstationOutages}
                       currentTimestep={currentTimestep}
                     />
-
-                    {/* Quick link to the flood exposure facts (click to jump to Civic & Crisis tab) */}
-                    {selectedSubstation.elevationM !== undefined && (
-                      <button
-                        type="button"
-                        onClick={() => setInspectorTab('civic')}
-                        className={`w-full py-2.5 px-3 rounded-xl border text-xs flex items-center justify-between transition-all group shrink-0 ${
-                          isLight
-                            ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800 shadow-sm'
-                            : 'bg-slate-900/60 hover:bg-slate-800 border-slate-800 text-slate-200'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="text-sm shrink-0">🌊</span>
-                          <span className="font-semibold text-xs truncate">Flood exposure: official maps and plans</span>
-                        </div>
-                        <span className={`text-[11px] font-medium flex items-center gap-1 shrink-0 ${isLight ? 'text-slate-500 group-hover:text-slate-800' : 'text-slate-400 group-hover:text-slate-200'}`}>
-                          <span>View in Civic & Crisis</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </span>
-                      </button>
-                    )}
-
-                    {/* Jurisdictional Section Office Details */}
+                    {renderHydroRiskSection()}
+                    {/* Section office contact (grouped with the ward contacts below) */}
                     {jurisdictionalSections.length > 0 && (
                       <div
                         className={`p-3 rounded-xl border space-y-2 shrink-0 ${
@@ -1089,32 +1095,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       </div>
                     )}
 
-                    {/* Dispatch Guidance Note */}
-                    <div
-                      className={`p-3 rounded-xl border space-y-1.5 ${
-                        isLight
-                          ? 'bg-slate-50 border-slate-200 text-slate-600'
-                          : 'bg-slate-950/40 border-slate-800 text-slate-400'
-                      }`}
-                    >
-                      <span className={`font-semibold block text-xs ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
-                        ⚡ Grid Dispatch Note:
-                      </span>
-                      <p className="text-xs leading-relaxed">
-                        {selectedSubstation.tier === 'bulk'
-                          ? 'Extra High Voltage (EHV) substation feeding sub-transmission loops. Monitored 24x7 by State Load Despatch Centre (SLDC).'
-                          : selectedSubstation.tier === 'subtransmission'
-                          ? 'Sub-transmission hub stepping down 110kV/33kV power for secondary distribution yards across Chennai city divisions.'
-                          : 'Distribution substation stepping down to 11kV. Operates local feeder circuit breakers under jurisdictional Assistant Engineer (AE) control.'}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tab 3: Dedicated GCC Municipal & Satellite Disaster Stack */}
-                {inspectorTab === 'civic' && (
-                  <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
-                    {renderHydroRiskSection()}
                     <MunicipalDisasterCard node={selectedSubstation} isLight={isLight} isDedicatedTab={true} />
                   </div>
                 )}

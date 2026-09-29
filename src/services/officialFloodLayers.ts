@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { CHENNAI_AVERAGE_ELEVATION_M } from '../data/officialSources';
 
 export type FloodMapRating = 'LOW' | 'MODERATE' | 'HIGH';
 export type InundationZoneClass = 'Very Low' | 'Low' | 'Moderate' | 'High' | 'Very High';
@@ -60,4 +61,37 @@ export function useOfficialFlood(code: string | undefined): { meta: OfficialFloo
     };
   }, []);
   return { meta, flood: meta && code ? meta.substations[code] ?? null : null };
+}
+
+/** Result for one substation if the file has already been loaded, otherwise null. Never triggers a load. */
+export function getCachedOfficialFlood(code: string): SubstationOfficialFlood | null {
+  return cache?.substations[code] ?? null;
+}
+
+/** True once the official flood-layer file is loaded. Use it so memoized filters recompute after the load. */
+export function useOfficialFloodLoaded(): boolean {
+  const [loaded, setLoaded] = useState(cache !== null);
+  useEffect(() => {
+    let alive = true;
+    loadOfficialFloodLayers().then(d => {
+      if (alive && d) setLoaded(true);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return loaded;
+}
+
+/**
+ * The one rule for "flood-flagged": yard at or below Chennai's 2.0 m average (GCC City DMP 2023), inside the NRSC 2015 flood
+ * extent, or rated Moderate or High on the official flood-hazard maps. Facts and map checks only.
+ */
+export function isOfficiallyFloodFlagged(elevationM: number | undefined, flood: SubstationOfficialFlood | null): boolean {
+  return (
+    (elevationM !== undefined && elevationM <= CHENNAI_AVERAGE_ELEVATION_M) ||
+    Boolean(flood?.nrsc2015) ||
+    flood?.returnPeriod === 'HIGH' ||
+    flood?.returnPeriod === 'MODERATE'
+  );
 }

@@ -35,7 +35,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Cloud Function proxy to Gemini (own service account) | `gemini-proxy/` (`index.js`, `README.md`) |
 | Architecture write-up | `docs/DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md` |
 
-## Substation card (Civic & Crisis tab)
+## Substation card (Crisis & Contacts tab)
 | What | File |
 |---|---|
 | Flood exposure: grid facts, official flood-map checks, plan quote when it applies | `src/components/Map/FloodExposureCard.tsx` |
@@ -45,7 +45,8 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Built by | `scripts/build_relief_centres.py` |
 | Map layer "Relief centres (by ward)" | `TnebGridMap.tsx`, `MapLayerControls.tsx` |
 | GCC zone/ward card, hotlines, quoted TANGEDCO role, copy-SMS dispatch (quoted action) | `MunicipalDisasterCard.tsx`, `CopyIncidentSmsButton.tsx` |
-| Drawer with the three tabs (Plant & Specs, Circuits & Grid, Civic & Crisis) | `SubstationInspectorDrawer.tsx` |
+| Drawer: header with a status line (health grade, live outage notice, 2015 flood extent) and three tabs: Overview (specs, health score, 90-day log), Feeders (feeder list first, circuit isolation below), Crisis & Contacts (Copilot, flood exposure, relief centres, all contacts, quotes) | `SubstationInspectorDrawer.tsx` |
+| Substation Copilot (quoted actions, shown only while a scenario plays) | `SubstationCopilotCard.tsx` |
 
 ## Grid data and topology
 | What | File |
@@ -59,7 +60,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 ## Health score and live layers
 | What | File |
 |---|---|
-| Outage parser, health score (our model), A-D grade, waterlogging filter (2.0 m or our flood category) | `src/services/gridHealthService.ts` |
+| Outage parser, health score (our model), A-D grade, waterlogging filter (2.0 m, 2015 flood extent, or Moderate/High official map; rule in `officialFloodLayers.ts`) | `src/services/gridHealthService.ts` |
 | Live outage notices, Gold Registry, matching | `src/services/liveOutageService.ts` |
 | Live weather (Google Weather API) | `src/services/liveWeatherService.ts`, `LiveWeatherPill.tsx` |
 

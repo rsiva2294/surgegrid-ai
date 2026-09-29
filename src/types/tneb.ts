@@ -2,7 +2,6 @@ export type VoltageTier = 'bulk' | 'subtransmission' | 'distribution';
 
 export type LifelineCategory = 'hospital' | 'water' | 'transit' | 'governance' | 'industrial_ht';
 export type PriorityLevel = 'P1_CRITICAL' | 'P1_NON_CUT' | 'P2_ESSENTIAL' | 'P3_COMMERCIAL';
-export type FloodRiskCategory = 'CRITICAL_SURGE_RISK' | 'HIGH_WATERLOGGING_RISK' | 'MODERATE_RISK' | 'SAFE';
 
 export type CircuitState = 'LIVE' | 'PRE_EMPTIVE_SAFETY_ISOLATION' | 'STORM_FAULT_TRIPPED' | 'AWAITING_PATROL_CLEARANCE' | 'STAGE_RESTORED';
 
@@ -81,8 +80,6 @@ export interface TnebSubstation {
   feeders: FeederDetail[];
   connections?: PrecomputedConnection[];
   elevationM?: number;
-  riskCategory?: FloodRiskCategory;
-  compositeRiskScore?: number;
   distanceToCoastKm?: number;
   anticipatorySop?: string;
   historicalOutagesCount?: number;
@@ -99,14 +96,10 @@ export interface TnebSubstation {
   gccZone?: number;
   gccZoneName?: string;
   gccWard?: number;
-  geeFloodCategory?: string;
-  geeRunoffMm?: number;
-  geeImperviousPct?: number;
   wardCouncillorMobile?: string;
   wardCmwssbMobile?: string;
   wardTangedcoMobile?: string;
   wardGccAeMobile?: string;
-  wardReliefSheltersCount?: number;
   // Asset Health & 90-Day Operational Risk Profile
   healthProfile?: SubstationHealthProfile;
   outageHistory?: OutageHistoryEvent[];
@@ -187,7 +180,6 @@ export interface SubstationHealthProfile {
   activeLiveTripCount?: number;
   activeLiveTripScope?: 'yard_core' | 'feeder_corridor' | 'lt_street';
   healthGrade: 'A' | 'B' | 'C' | 'D'; // A: >=85, B: 75-84, C: 55-74, D: <55
-  disasterRiskMultiplier: number; // 1.0x to 1.5x
   lastMaintenanceDate?: string;
   lastTripDate?: string;
   events: OutageHistoryEvent[];
@@ -218,14 +210,10 @@ export interface TnebSection {
   gccZone?: number;
   gccZoneName?: string;
   gccWard?: number;
-  geeFloodCategory?: string;
-  geeRunoffMm?: number;
-  geeImperviousPct?: number;
   wardCouncillorMobile?: string;
   wardCmwssbMobile?: string;
   wardTangedcoMobile?: string;
   wardGccAeMobile?: string;
-  wardReliefSheltersCount?: number;
 }
 
 export interface GccWardDisasterInfo {
@@ -239,12 +227,6 @@ export interface GccWardDisasterInfo {
   gccElecMobile?: string;
   policeMobile?: string;
   fireMobile?: string;
-  reliefSheltersCount?: number;
-  geeRunoffMm?: number;
-  geeImperviousPct?: number;
-  geeElevationMeanM?: number;
-  geeFloodCategory?: string;
-  geeFloodScore?: number;
 }
 
 export interface ChennaiGridData {

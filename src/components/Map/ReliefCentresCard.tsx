@@ -1,7 +1,7 @@
 import React from 'react';
 import type { TnebSubstation } from '../../types/tneb';
 import { CHENNAI_AVERAGE_ELEVATION_M } from '../../data/officialSources';
-import { useOfficialFlood } from '../../services/officialFloodLayers';
+import { useOfficialFlood, isOfficiallyFloodFlagged } from '../../services/officialFloodLayers';
 import { useReliefCentres } from '../../services/reliefCentres';
 
 interface ReliefCentresCardProps {
@@ -26,11 +26,7 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
   const centres = wardEntry?.centres ?? [];
 
   const hasLifelineFeeders = (substation.feeders || []).some(f => f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water');
-  const isFlagged =
-    (substation.elevationM !== undefined && substation.elevationM <= CHENNAI_AVERAGE_ELEVATION_M) ||
-    Boolean(flood?.nrsc2015) ||
-    flood?.returnPeriod === 'HIGH' ||
-    flood?.returnPeriod === 'MODERATE';
+  const isFlagged = isOfficiallyFloodFlagged(substation.elevationM, flood);
   const backup = data?.backups[substation.code];
   const showBackup = Boolean(backup) && isFlagged && (centres.length > 0 || hasLifelineFeeders);
 

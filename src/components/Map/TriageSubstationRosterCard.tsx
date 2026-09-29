@@ -21,6 +21,7 @@ import {
   isSubstationWaterloggingRisk 
 } from '../../services/gridHealthService';
 import { getOutagesForSubstation } from '../../services/liveOutageService';
+import { useOfficialFloodLoaded } from '../../services/officialFloodLayers';
 
 interface TriageSubstationRosterCardProps {
   crisisTriageFilter: CrisisTriageFilter;
@@ -58,6 +59,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
   isResizing
 }) => {
   const [filterQuery, setFilterQuery] = useState('');
+  const floodLayersLoaded = useOfficialFloodLoaded();
 
   // 1. Filter and sort substations matching active triage criteria
   const matchingSubstations = useMemo(() => {
@@ -95,7 +97,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
       const outB = getOutagesForSubstation(b, liveOutages).length;
       return outB - outA;
     });
-  }, [substations, crisisTriageFilter, liveOutages, substationsWithOutages]);
+  }, [substations, crisisTriageFilter, liveOutages, substationsWithOutages, floodLayersLoaded]);
 
   const verifiedOutagesCount = useMemo(() => {
     return liveOutages.filter(o => o.mappingStatus === 'VERIFIED_ASSET').length;
@@ -133,7 +135,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
       case 'waterlogging_risk':
         return {
           title: 'Waterlogging Risk Infra',
-          badgeLabel: '≤ 2.0 m MSL or SurgeGrid flood category',
+          badgeLabel: '≤ 2.0 m MSL or on an official flood map',
           icon: Waves,
           themeBg: isLight ? 'bg-cyan-600' : 'bg-cyan-500',
           themeText: isLight ? 'text-cyan-700' : 'text-cyan-400',

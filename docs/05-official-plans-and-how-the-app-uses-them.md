@@ -39,7 +39,7 @@ Earlier versions of the app and docs also claimed "installed 13,810 RMUs". The 2
 - **Phase of an event** (from the scenario data only): before T-0 the phase is watch; from T-0 while hourly rain is 0.1 mm or more it is impact; after T-0 once rain is below 0.1 mm it is restoration. T-0 is the peak-rain hour. The 0.1 mm line is a presentation choice, not an official threshold.
 - **Which substations an action names** (from our grid data): the lowest-lying yards (elevation at or below 2.0 m), substations with overhead or mixed feeders, and substations with hospital or water feeders.
 - **Flood flags on a substation card:** yard at or below 2.0 m; inside the NRSC 2015 flood extent; rated Moderate or High on the official 5 to 100-year flood-hazard maps. These come from checking the substation's location against official layers.
-- **Anything else** (health grade, the ranking panel, the waterlogging filter's flood category, the backup suggestion) is labelled as our own calculation.
+- **Anything else** (health grade, the ranking panel, the backup suggestion) is labelled as our own calculation.
 
 ## 5. Data behind the flood facts
 

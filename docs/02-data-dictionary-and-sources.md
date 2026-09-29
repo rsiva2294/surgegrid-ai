@@ -119,7 +119,7 @@ Earlier versions of this section listed fields such as `esf15SlaHours` (6/12/24/
 | `elevationM` | Ground elevation, m above mean sea level | SRTM terrain data via Earth Engine |
 | `distanceToCoastKm` | Distance to the coast | Computed from the coast line |
 | `gccZone`, `gccWard`, ward hotlines, `wardReliefSheltersCount` | GCC administrative data | GCC |
-| `riskCategory`, `compositeRiskScore` | Flood category and score | **SurgeGrid's own model, not from the plans.** Used only by the waterlogging filter and the ranking panel, and labelled as ours. |
+| `riskCategory`, `compositeRiskScore`, `geeFloodCategory`, `geeRunoffMm`, `geeImperviousPct`, `wardReliefSheltersCount` | Old flood labels and ward satellite numbers | **No longer used or shown (2026-09-30).** No script or file in this repo or `surgegrid-ai-v2` explains how they were made; 109 of 242 substations carry identical round placeholder values. The fields remain in the grid JSON but no code reads them. |
 | `hydroRisk.*` | Modelled depths, homes at risk, advisory text from the sister project's physical model | **Removed from the grid file on 2026-09-30.** The model did not validate (near-chance match to the 2015 satellite map; see `PROJECT_LOG.md` item 24). |
 | `healthProfile`, `outageHistory` | 90-day history, grade A-D | Our health model (docs 08, 09) |
 

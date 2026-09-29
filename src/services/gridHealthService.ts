@@ -1,6 +1,6 @@
 import type { TnebSubstation, OutageHistoryEvent, SubstationHealthProfile, OutageCategory, OutageArchetype, DispatchStatus } from '../types/tneb';
 import { type LiveOutage, getOutagesForSubstation } from './liveOutageService';
-import { CHENNAI_AVERAGE_ELEVATION_M } from '../data/officialSources';
+import { getCachedOfficialFlood, isOfficiallyFloodFlagged } from './officialFloodLayers';
 
 /**
  * Resiliency cut-off threshold (Health score < 75 denotes Strained/Fragile infrastructure)
@@ -13,17 +13,13 @@ export function isSubstationAtRisk(substation: TnebSubstation, liveOutages?: Liv
 }
 
 /**
- * Flags a substation for the waterlogging filter when either:
- * - its yard is at or below Chennai's average elevation of 2.0 m (GCC City DMP 2023, Preface), or
- * - it falls in one of SurgeGrid's own flood-risk categories (our model, not from the official plans).
+ * Flags a substation for the waterlogging filter from facts and official map checks only: yard at or below Chennai's
+ * 2.0 m average, inside the NRSC 2015 flood extent, or rated Moderate/High on the official flood-hazard maps.
+ * Until the official flood-layer file has loaded, only the elevation test applies.
  */
 export function isSubstationWaterloggingRisk(substation: TnebSubstation): boolean {
   if (!substation) return false;
-  return (
-    substation.riskCategory === 'HIGH_WATERLOGGING_RISK' ||
-    substation.riskCategory === 'CRITICAL_SURGE_RISK' ||
-    (substation.elevationM !== undefined && substation.elevationM <= CHENNAI_AVERAGE_ELEVATION_M)
-  );
+  return isOfficiallyFloodFlagged(substation.elevationM, getCachedOfficialFlood(substation.code));
 }
 
 /**
@@ -512,23 +508,12 @@ export function computeHealthProfile(
     dispatchStatus = 'CIVIC_CLEARANCE';
   }
 
-  // Health Grade Mapping
+  // Health grade mapping (our own bands)
   let healthGrade: 'A' | 'B' | 'C' | 'D' = 'A';
-  let disasterRiskMultiplier = 1.0;
-
-  if (healthScore >= 85) {
-    healthGrade = 'A';
-    disasterRiskMultiplier = 1.0;
-  } else if (healthScore >= 75) {
-    healthGrade = 'B';
-    disasterRiskMultiplier = 1.10;
-  } else if (healthScore >= 55) {
-    healthGrade = 'C';
-    disasterRiskMultiplier = 1.25;
-  } else {
-    healthGrade = 'D';
-    disasterRiskMultiplier = 1.45;
-  }
+  if (healthScore >= 85) healthGrade = 'A';
+  else if (healthScore >= 75) healthGrade = 'B';
+  else if (healthScore >= 55) healthGrade = 'C';
+  else healthGrade = 'D';
 
   return {
     totalOutages90d: periodicMaintenanceCount + unscheduledTripsCount,
@@ -547,45 +532,10 @@ export function computeHealthProfile(
     activeLiveTripCount: activeLiveTrips.length,
     activeLiveTripScope,
     healthGrade,
-    disasterRiskMultiplier,
     lastMaintenanceDate,
     lastTripDate,
     events: resolvedEvents
   };
-}
-
-/**
- * Calculates dynamic disaster failure risk based on physical flood/wind risk
- * modulated by operational asset health.
- */
-export function calculateDynamicRisk(
-  baseRisk: number = 20,
-  healthProfile?: SubstationHealthProfile,
-  disasterScenario: string = 'NORMAL'
-): { finalRisk: number; multiplier: number; rationale: string } {
-  if (disasterScenario === 'NORMAL' || !healthProfile) {
-    return {
-      finalRisk: baseRisk,
-      multiplier: 1.0,
-      rationale: 'Baseline operational risk under normal grid dispatch conditions.'
-    };
-  }
-
-  const multiplier = healthProfile.disasterRiskMultiplier;
-  const finalRisk = Math.min(100, Math.round(baseRisk * multiplier));
-
-  let rationale = '';
-  if (healthProfile.healthGrade === 'A') {
-    rationale = `Asset Health Grade A (${healthProfile.healthScore}/100, ${healthProfile.periodicMaintenanceCount} PMs, ${healthProfile.cleanStreakDays || 30}d clean streak): Proactive maintenance provides high operational resilience against environmental stress.`;
-  } else if (healthProfile.healthGrade === 'B') {
-    rationale = `Asset Health Grade B (${healthProfile.healthScore}/100): Healthy switchyard with past events addressed by maintenance; resilient against flood stress.`;
-  } else if (healthProfile.healthGrade === 'C') {
-    rationale = `Asset Health Grade C (<75 Resiliency cut-off, ${healthProfile.unscheduledTripsCount} trips): Strained sub-infra or recent unhealed trips elevate disaster failure risk by ${multiplier}x.`;
-  } else {
-    rationale = `Asset Health Grade D (${healthProfile.unscheduledTripsCount} trips, neglected PM): Chronic tripping and unaddressed faults compound flood hazard; high priority for emergency inspection.`;
-  }
-
-  return { finalRisk, multiplier, rationale };
 }
 
 /**
