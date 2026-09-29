@@ -89,44 +89,15 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
     };
   }
 
-  // TNSDMA 2023 ESF 15 Statutory Restoration SLAs
-  let esf15SlaHours = 48; // Baseline Tier 5 LT Distribution SLA (TNSDMA standard)
-  let restorationStage: 1 | 2 | 3 | 4 | 5 = 5; // Default Stage 5 (LT consumer last-mile)
-
-  if (classified.priorityLevel === 'P1_CRITICAL' || classified.priorityLevel === 'P1_NON_CUT' || classified.lifelineCategory === 'hospital' || classified.lifelineCategory === 'water') {
-    esf15SlaHours = 6; // Statutory SLA: <= 6h for acute hospitals & primary water pumping
-    restorationStage = 3; // Stage 3: Immediate Express Lifelines
-  } else if (classified.priorityLevel === 'P2_ESSENTIAL' || classified.lifelineCategory === 'transit' || classified.lifelineCategory === 'governance') {
-    esf15SlaHours = 12; // Statutory SLA: <= 12h for Metro Rail, Suburban transit, Govt HQ
-    restorationStage = 4; // Stage 4: Automated RMU Priority Loops
-  } else if (is33kVTrunk) {
-    esf15SlaHours = 12; // Sub-transmission trunks feeding downstream 33/11 kV substations
-    restorationStage = 3; // Stage 3: Sub-transmission grid trunks
-  } else if (classified.priorityLevel === 'P3_COMMERCIAL' || classified.lifelineCategory === 'industrial_ht') {
-    esf15SlaHours = 24; // Dedicated commercial / industrial HT services
-    restorationStage = 4; // Stage 4: Automated RMU commercial loops
-  }
-
-  // RMU Capability: actual RMU count is derived from DTR-level htFeeders >= 2 at runtime.
-  // Here we just flag whether the feeder topology supports loop switching.
-  let rmuCount = 0;
-  const cfg = (feeder.config || '').toUpperCase();
-  if (cfg.includes('UG') || cfg.includes('MIXED')) {
-    rmuCount = 1; // RMU-capable topology (actual count shown on map from DTR data)
-  }
-
   return {
     ...classified,
-    esf15SlaHours,
-    restorationStage,
-    rmuCount,
     circuitState: 'LIVE'
   };
 }
 
 import { get, set } from 'idb-keyval';
 
-const IDB_GRID_KEY = 'surgegrid_chennai_grid_v15_no_guessed_depths';
+const IDB_GRID_KEY = 'surgegrid_chennai_grid_v16_official_facts_only';
 let cachedGrid: ChennaiGridData | null = null;
 
 function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
@@ -135,7 +106,6 @@ function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
     // Substations without it get no depth value (no elevation-based guesses).
     if (s.hydroRisk) {
       s.benchmarked2015FloodDepthM = s.hydroRisk.flood2015DepthM;
-      s.statutoryDeenergized = s.hydroRisk.cycloneIsolateRecommended;
       if (s.hydroRisk.advisoryEn) {
         s.anticipatorySop = s.hydroRisk.advisoryEn;
       }

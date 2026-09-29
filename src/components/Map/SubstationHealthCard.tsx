@@ -410,7 +410,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between font-bold">
-              <span>Disaster Impact Multiplier ({disasterScenario.replace('_', ' ')})</span>
+              <span title="SurgeGrid's own model: base risk multiplied by a factor from the health grade. Not from the official plans.">SurgeGrid risk multiplier, our model ({disasterScenario.replace('_', ' ')})</span>
               <span className="font-mono">{baseRisk} → {dynamicRisk.finalRisk} / 100</span>
             </div>
             <p className="text-[11px] mt-0.5 opacity-90">{dynamicRisk.rationale}</p>

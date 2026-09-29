@@ -2,6 +2,7 @@ import React from 'react';
 import { Building2, Phone } from 'lucide-react';
 import type { TnebSubstation, TnebSection } from '../../types/tneb';
 import { CopyIncidentSmsButton } from './CopyIncidentSmsButton';
+import { getQuote } from '../../data/officialSources';
 
 interface MunicipalDisasterCardProps {
   node: TnebSubstation | TnebSection;
@@ -72,7 +73,7 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
           </div>
 
           <p className="text-xs leading-relaxed opacity-90 pt-1 border-t border-current/10">
-            Statutory municipal jurisdiction under the <em>GCC City Disaster Management Perspective Plan 2023 (CDMP)</em>. Governs inter-agency de-energization, fallen tree clearance, and flood shelter feeds.
+            Zone and ward come from GCC data. The GCC City Disaster Management Perspective Plan 2023 gives TANGEDCO this role: “{getQuote('gcc-tangedco-role')?.quote}” ({getQuote('gcc-tangedco-role')?.citation}).
           </p>
         </div>
 
@@ -197,10 +198,10 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
           isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-400'
         }`}>
           <span className={`font-semibold block ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
-            ⚡ Inter-Agency Field Protocol (ESF 14 & 15):
+            ⚡ Before re-energizing (TANGEDCO DMP 2017):
           </span>
           <p className="text-xs leading-relaxed">
-            Prior to re-energizing residential LT feeders in Ward {node.gccWard}, TANGEDCO section line gangs must obtain physical foot-patrol clearance certificate (PTW) confirming GCC conservancy has cleared fallen trees and CMWSSB sewage pumping stations have established operational suction head.
+            “{getQuote('tangedco-no-recharge-before-patrol')?.quote}” ({getQuote('tangedco-no-recharge-before-patrol')?.citation}).
           </p>
         </div>
       </div>

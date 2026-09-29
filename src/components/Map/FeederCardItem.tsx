@@ -3,6 +3,7 @@ import type { FeederDetail, TnebSubstation } from '../../types/tneb';
 import type { DisasterScenario } from './DisasterCockpitBar';
 import { getFeederLifelineBadge } from './mapIcons';
 import { getFeederDisasterStatus } from './disasterUtils';
+import { getQuote } from '../../data/officialSources';
 
 interface FeederCardItemProps {
   feeder: FeederDetail;
@@ -96,7 +97,7 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
             className={`px-2 py-0.5 rounded-md text-xs font-mono font-semibold cursor-help ${
               isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
             }`}
-            title={f.config === 'UG' ? 'Underground Armored Cabling (protected from cyclone winds & tree falls)' : 'Overhead Distribution Conductors'}
+            title={f.config === 'UG' ? 'Underground cable. The national power-sector plan recommends underground cable in cyclone-prone areas (MoP DMP 2021, p. 111).' : 'Overhead or mixed line'}
           >
             {f.config}
           </span>
@@ -108,7 +109,7 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
         <div className="flex items-center gap-1.5 my-0.5 flex-wrap">
           <span
             className={`px-2 py-0.5 rounded-md font-bold text-xs border flex items-center gap-1 ${badge.badgeBg}`}
-            title={`${badge.label}: High-priority statutory lifeline during disaster and storm events`}
+            title={`${badge.label}: classified by SurgeGrid from the feeder name. The national plan lists vital installations such as hospitals and drinking water plants for priority restoration (MoP DMP 2021, p. 239).`}
           >
             <span>{badge.icon}</span>
             <span>{badge.label}</span>
@@ -116,11 +117,9 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
           <span
             className={`px-2 py-0.5 rounded-md text-xs font-mono font-bold cursor-help ${badge.prioBg}`}
             title={
-              f.priorityLevel === 'P1_NON_CUT'
-                ? 'Statutory Non-Cut: Lifeline feeder strictly protected from rolling power cuts and load shedding.'
-                : f.priorityLevel === 'P1_CRITICAL'
-                ? 'P1 Critical: Essential disaster management facility with emergency power priority.'
-                : 'Standard priority distribution feeder.'
+              f.priorityLevel === 'P1_NON_CUT' || f.priorityLevel === 'P1_CRITICAL'
+                ? 'P1 (SurgeGrid class): hospital or water feeder, identified from the feeder name. Official basis: vital installations are restored on a priority basis (MoP DMP 2021, p. 239).'
+                : 'SurgeGrid priority class, identified from the feeder name. Not an official rating.'
             }
           >
             {badge.prioText}
@@ -158,57 +157,15 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
         </div>
       )}
 
-      {/* Row 2: Streamlined Disaster & Engineering Metadata Strip */}
-      {(f.esf15SlaHours !== undefined || (f.rmuCount !== undefined && f.rmuCount > 0) || f.restorationStage) && (
+      {/* Row 2: street-line length to patrol before recharging */}
+      {f.ltLengthKm !== undefined && f.ltLengthKm > 0 && (
         <div className="flex items-center gap-1.5 my-0.5 flex-wrap text-xs font-mono">
-          {f.esf15SlaHours !== undefined && (
-            <span
-              className={`px-2 py-0.5 rounded-md flex items-center gap-0.5 cursor-help transition-colors border ${
-                f.esf15SlaHours <= 6
-                  ? (isLight ? 'bg-rose-100/90 text-rose-900 font-bold border-rose-200' : 'bg-rose-500/20 text-rose-300 font-bold border-rose-500/30')
-                  : f.esf15SlaHours <= 12
-                  ? (isLight ? 'bg-purple-100/90 text-purple-900 font-bold border-purple-200' : 'bg-purple-500/20 text-purple-300 font-bold border-purple-500/30')
-                  : (isLight ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-slate-800 text-slate-300 border-slate-700')
-              }`}
-              title={`ESF 15 (Emergency Support Function 15 - Energy & Utilities): Under TNSDMA statutory disaster rules, power must be restored within a maximum target of ${f.esf15SlaHours} hours.`}
-            >
-              <span>⏱️</span>
-              <span>{f.esf15SlaHours}h SLA</span>
-            </span>
-          )}
-
-          {f.rmuCount !== undefined && f.rmuCount > 0 && (
-            <span
-              className={`px-2 py-0.5 rounded-md flex items-center gap-0.5 cursor-help border ${
-                isLight ? 'bg-sky-100/90 text-sky-900 border-sky-200' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
-              }`}
-              title={`Ring Main Unit (RMU) Loop Capable: This feeder's underground/mixed topology supports automated sectionalizing switches for rapid fault isolation and back-feeding.`}
-            >
-              <span>🔄</span>
-              <span>RMU Loop</span>
-            </span>
-          )}
-
-          {f.restorationStage && (
-            <span
-              className={`px-2 py-0.5 rounded-md flex items-center gap-0.5 cursor-help border ${
-                f.restorationStage === 3
-                  ? (isLight ? 'bg-amber-100/90 text-amber-900 font-bold border-amber-200' : 'bg-amber-500/20 text-amber-300 font-bold border-amber-500/30')
-                  : (isLight ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-slate-800 text-slate-300 border-slate-700')
-              }`}
-              title={`TANGEDCO Sequential Restoration: Priority Stage ${f.restorationStage} (restored ahead of general commercial & domestic feeders).`}
-            >
-              <span>📋</span>
-              <span>Stage {f.restorationStage}</span>
-            </span>
-          )}
-
           {f.ltLengthKm !== undefined && f.ltLengthKm > 0 && (
             <span
               className={`px-2 py-0.5 rounded-md flex items-center gap-0.5 cursor-help border ${
                 isLight ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-slate-800 text-slate-300 border-slate-700'
               }`}
-              title={`Lineman Foot-Patrol Corridor: ${f.ltLengthKm} km of street lines. Under TANGEDCO Disaster SOP, linemen must complete physical foot-patrol clearance across this low-tension network before re-energizing.`}
+              title={`${f.ltLengthKm} km of low-tension street lines. TANGEDCO DMP 2017, p. 73: “${getQuote('tangedco-no-recharge-before-patrol')?.quote ?? ''}”`}
             >
               <span>🚶</span>
               <span>{f.ltLengthKm} km Patrol</span>

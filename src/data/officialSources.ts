@@ -417,6 +417,15 @@ export const OFFICIAL_RULES: OfficialRule[] = [
     section: '4.1.2.1 Damages Caused (Vardah, 2016)',
   },
   {
+    id: 'gcc-tangedco-role',
+    topic: 'CONTEXT',
+    quote: 'Proper maintenance of the electric cables, ensuring 24x7 power supply, attending to cable faults',
+    sourceId: 'GCC_CDMP_2023',
+    pdfPage: 163,
+    printedPage: 145,
+    section: 'Role of the Assistant Engineer, TANGEDCO',
+  },
+  {
     id: 'gcc-average-elevation',
     topic: 'CONTEXT',
     quote: 'most of the areas are with average elevation of barely 2.0 meters above mean sea level',

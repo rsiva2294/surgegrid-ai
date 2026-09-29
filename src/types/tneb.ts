@@ -23,13 +23,10 @@ export interface FeederDetail {
   outageDates?: string[];
   uniqueOutageDays?: number;
   tripRisk?: 'CRITICAL' | 'ELEVATED' | 'MODERATE';
-  // TNSDMA 2023 & TANGEDCO 2017 Disaster Management Extensions
-  esf15SlaHours?: number; // Statutory restoration SLA (6h for P1, 12h for P2/Trunk, 24h for Commercial, 48h for LT)
-  rmuCount?: number; // Automated 11 kV Ring Main Units count for sectionalizing
-  restorationStage?: 1 | 2 | 3 | 4 | 5; // TANGEDCO 5-Stage Sequential Protocol
+  // Disaster-planning fields
   circuitState?: CircuitState;
   preEmptiveTripReason?: 'WIND_GUST_EXCEEDED' | 'PLINTH_INUNDATION_RISK' | 'YARD_SUBMERGED' | 'NONE';
-  clearancePending?: boolean; // Lineman physical foot-patrol clearance certificate required
+  clearancePending?: boolean;
   isCmwssbSps?: boolean; // Dedicated lifeline to CMWSSB Sewage Pumping Station
   isGccShelterFeed?: boolean; // Direct feed to designated GCC Disaster Relief Center / Shelter
   ltLengthKm?: number; // Total low-tension street network length requiring lineman foot-patrol clearance before re-energizing
@@ -94,11 +91,10 @@ export interface TnebSubstation {
   incomingFeedersCount?: number;
   incomingFeederNames?: string[];
   peakDemandMva?: number;
-  // TNSDMA & TANGEDCO Disaster Planning Benchmarks
+  // Model and benchmark fields (not official data)
   plinthElevationM?: number; // Yard equipment & switchgear plinth clearance (typically 1.5m above local GL)
   benchmarked2015FloodDepthM?: number; // 2015 Floods benchmark submersion depth (up to 1.8m / 6ft)
   yardDewateringRequired?: boolean; // Requires high-capacity mobile pumps before yard can be re-energized
-  statutoryDeenergized?: boolean; // Pre-emptively isolated under TNSDMA Section 5.6 public safety mandate
   // Municipal & Satellite Vulnerability Ground Truth (GCC CDMP 2023 & GEE 200 Wards)
   gccZone?: number;
   gccZoneName?: string;

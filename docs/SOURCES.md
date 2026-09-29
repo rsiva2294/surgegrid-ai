@@ -162,5 +162,8 @@ TN SDMP 2023, Four Stage Warning System, PDF p. 148 (printed p. 146).
 
 ### Context
 
+- **`gcc-tangedco-role`** — "Proper maintenance of the electric cables, ensuring 24x7 power supply, attending to cable faults"  
+  GCC City DMP 2023, PDF p. 163 (printed p. 145); Role of the Assistant Engineer, TANGEDCO
+
 - **`gcc-average-elevation`** — "most of the areas are with average elevation of barely 2.0 meters above mean sea level"  
   GCC City DMP 2023, PDF p. 5; Preface

@@ -27,20 +27,20 @@ export const GridJargonCheatSheet: React.FC<GridJargonCheatSheetProps> = ({ onCl
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
         <div className={`p-1.5 rounded border ${isLight ? 'bg-white/80 border-slate-200' : 'bg-black/30 border-white/5'}`}>
-          <strong className="text-rose-700 dark:text-rose-400 font-bold block">P1 NON-CUT (Statutory Lifeline):</strong>
-          <span className="opacity-90">Essential service (water pumping, hospital). Exempt from rolling load-shedding during power crises.</span>
+          <strong className="text-rose-700 dark:text-rose-400 font-bold block">P1 lifeline (SurgeGrid class):</strong>
+          <span className="opacity-90">Hospital or water feeder, identified from the feeder name. The national plan lists drainage pumping, drinking water plants and hospitals for priority restoration (MoP DMP 2021, p. 239).</span>
         </div>
         <div className={`p-1.5 rounded border ${isLight ? 'bg-white/80 border-slate-200' : 'bg-black/30 border-white/5'}`}>
-          <strong className="text-purple-700 dark:text-purple-400 font-bold block">ESF 15: 6h SLA (Disaster Mandate):</strong>
-          <span className="opacity-90">Emergency Support Function 15 (Energy): Under TNSDMA rules, power must be restored within 6 hours.</span>
+          <strong className="text-purple-700 dark:text-purple-400 font-bold block">Operator decision:</strong>
+          <span className="opacity-90">The plans say supply may be switched off “if required” (MoP DMP 2021, p. 246). They give no wind or flood level that forces it.</span>
         </div>
         <div className={`p-1.5 rounded border ${isLight ? 'bg-white/80 border-slate-200' : 'bg-black/30 border-white/5'}`}>
           <strong className="text-sky-700 dark:text-cyan-400 font-bold block">RMU (Ring Main Unit):</strong>
-          <span className="opacity-90">Automated underground switches that allow rapid power re-routing through backup loop circuits without digging.</span>
+          <span className="opacity-90">Switchgear on an 11 kV ring. It lets a faulty section be isolated while the rest of the ring stays supplied.</span>
         </div>
         <div className={`p-1.5 rounded border ${isLight ? 'bg-white/80 border-slate-200' : 'bg-black/30 border-white/5'}`}>
-          <strong className="text-amber-700 dark:text-amber-400 font-bold block">Stage 3 Restoration:</strong>
-          <span className="opacity-90">TANGEDCO storm protocol: Restored right after grid substations, ahead of commercial and domestic lines.</span>
+          <strong className="text-amber-700 dark:text-amber-400 font-bold block">IMD cyclone classes:</strong>
+          <span className="opacity-90">Severe 88-117 km/h, Very Severe 118-167, Extra Severe 168-221, Super 222 and above (MoP DMP 2021, Table-4).</span>
         </div>
       </div>
     </div>

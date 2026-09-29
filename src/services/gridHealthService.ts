@@ -139,7 +139,7 @@ export function evaluateOutageArchetype(
       severityWeight: 0,
       resetsStreak: false,
       isLiveFault: false,
-      matchedReasonLabel: 'Civic & Statutory Public Safety De-energization'
+      matchedReasonLabel: 'Civic / public-safety de-energization'
     };
   }
 

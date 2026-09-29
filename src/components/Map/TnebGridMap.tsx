@@ -1298,7 +1298,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         onCyclePlaybackSpeed={cyclePlaybackSpeed}
       />
 
-      {/* Autonomous Floating Gemini AI Statutory Directive Dialog */}
+      {/* Floating AI Directive dialog (official-quote SOP) */}
       <GeminiSopDialog
         directive={activeDirective}
         isOpen={isGeminiSopOpen}

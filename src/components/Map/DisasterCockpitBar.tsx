@@ -345,10 +345,10 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           <div className="flex items-center gap-2 truncate">
             <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
             <span className="font-bold tracking-tight shrink-0">
-              {activeDirective ? activeDirective.label : 'GEMINI SLDC'}:
+              {activeDirective ? activeDirective.label : 'SOP'}:
             </span>
             <span className="truncate text-[11px] font-medium opacity-90">
-              {activeDirective ? activeDirective.title : 'Statutory grid directive synchronized'}
+              {activeDirective ? activeDirective.title : 'Actions quoted from the official plans'}
             </span>
           </div>
           <button
