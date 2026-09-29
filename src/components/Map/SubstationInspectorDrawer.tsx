@@ -376,15 +376,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
             <h2 className={`text-base font-bold leading-tight truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
               {selectedSubstation?.name || selectedSection?.name}
             </h2>
-            {selectedSubstation && (
-              <p className={`text-xs mt-0.5 truncate ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                {selectedSubstation.tier === 'bulk'
-                  ? 'Bulk Grid Injection Node • Steps down EHV power to regional substations'
-                  : selectedSubstation.tier === 'subtransmission'
-                  ? 'Sub-Transmission Hub • Feeds local 33kV & 11kV distribution yards'
-                  : 'Primary 33/11kV Distribution Substation • Supplies street-level feeders'}
-              </p>
-            )}
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
@@ -921,15 +912,17 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap">
                                   <span className="font-bold text-xs truncate">
-                                    {selectedSubstation.circle || 'Chennai EDC'}
+                                    {selectedSubstation.circle || 'Circle not listed'}
                                   </span>
+                                  {selectedSubstation.regionCode && (
                                   <span
                                     className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-md shrink-0 ${
                                       isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
                                     }`}
                                   >
-                                    Region {selectedSubstation.regionCode || '01/09'}
+                                    Region {selectedSubstation.regionCode}
                                   </span>
+                                  )}
                                   {Boolean(selectedSubstation.totalCapacityMva) && (
                                     <span
                                       className={`text-xs font-mono font-bold px-2 py-0.5 rounded-md shrink-0 ${
@@ -1118,17 +1111,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   <div>
                     <span className="font-bold text-xs block leading-tight">Jurisdictional Boundary</span>
                     <span className={`text-xs block ${isLight ? 'text-amber-800/80' : 'text-amber-400/80'}`}>
-                      Official O&M Field & Fuse-Call Beat
+                      Area shown on the map
                     </span>
                   </div>
                 </div>
-                <span
-                  className={`text-xs font-mono font-semibold px-2 py-0.5 rounded-md ${
-                    isLight ? 'bg-amber-200/70 text-amber-950' : 'bg-amber-500/20 text-amber-300'
-                  }`}
-                >
-                  Territory Active
-                </span>
               </div>
             )}
 
@@ -1184,7 +1170,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   Division
                 </span>
                 <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                  {selectedSection.division || 'Chennai Central'}
+                  {selectedSection.division || 'Not listed'}
                 </span>
               </div>
               <div
@@ -1200,7 +1186,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   Subdivision
                 </span>
                 <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-                  {selectedSection.subdivision || 'O&M'}
+                  {selectedSection.subdivision || 'Not listed'}
                 </span>
               </div>
             </div>

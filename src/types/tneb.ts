@@ -81,17 +81,12 @@ export interface TnebSubstation {
   connections?: PrecomputedConnection[];
   elevationM?: number;
   distanceToCoastKm?: number;
-  anticipatorySop?: string;
   historicalOutagesCount?: number;
   powerTransformersCount?: number;
   totalCapacityMva?: number;
   incomingFeedersCount?: number;
   incomingFeederNames?: string[];
   peakDemandMva?: number;
-  // Model and benchmark fields (not official data)
-  plinthElevationM?: number; // Yard equipment & switchgear plinth clearance (typically 1.5m above local GL)
-  benchmarked2015FloodDepthM?: number; // 2015 Floods benchmark submersion depth (up to 1.8m / 6ft)
-  yardDewateringRequired?: boolean; // Requires high-capacity mobile pumps before yard can be re-energized
   // Municipal & Satellite Vulnerability Ground Truth (GCC CDMP 2023 & GEE 200 Wards)
   gccZone?: number;
   gccZoneName?: string;

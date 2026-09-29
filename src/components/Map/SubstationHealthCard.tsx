@@ -160,7 +160,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
           <span className={`font-bold text-xs truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
-            SurgeGrid health score (our model) and 90-day log
+            Health score (our model)
           </span>
         </div>
 

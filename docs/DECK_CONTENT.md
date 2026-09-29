@@ -56,7 +56,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 ## 8. Live demo (about 3 minutes)
 1. Open the site; Michaung starts at T-24h. Show the AI Directive: 6 quoted actions with page numbers.
 2. Press play at 4x; the directive moves to impact, then restoration.
-3. Open a low-lying substation (ETL, -1 m): flood facts, official flood maps, copilot, relief centre and backup.
+3. Open a low-lying substation (ETL, -1 m): status line, then Crisis & Contacts: copilot's quoted actions, flood facts, official flood maps, relief centre and backup.
 4. Open a substation not inside any layer: it stays quiet, no false alarms.
 5. Switch to the 2015 scenario; toggle the relief-centre layer.
 *Note:* End on the quote and page number: "this is the plan's own text".

@@ -23,8 +23,8 @@ Before recording: open the site fresh, dark or light theme (pick one), close oth
 **Say:** "Press play. As the rain peaks, the phase changes from watch to impact. When the rain stops, it moves to restoration. The phase comes only from the rain data. The actions change with it, and each is still a quote."
 
 ## 2:05 - 2:55  One substation
-**Screen:** Click a low-lying substation. Show the Civic & Crisis tab: flood exposure, official flood maps, copilot, relief centres, backup.
-**Say:** "Open a low-lying substation. Its yard elevation is compared with Chennai's official 2.0 metre average. Then we show only the official flood maps this spot falls in: the 2015 satellite flood extent and the hazard maps. That is a map check, not a prediction. The copilot lists quoted actions for this substation, with feeder names. Below that are the Greater Chennai Corporation relief centres for the ward, and a nearby substation with none of the flood flags, as a backup suggestion."
+**Screen:** Click a low-lying substation. Show the status line under the name, then the Crisis & Contacts tab from the top: the Copilot's quoted actions, flood exposure, official flood maps, relief centres, backup, then the contacts.
+**Say:** "Open a low-lying substation. The line under its name shows its health and any live outage notice. On the Crisis tab, the copilot comes first: quoted actions for this substation, with feeder names. Below are the flood facts: its yard elevation against Chennai's official 2.0 metre average, and only the official flood maps this spot falls in. That is a map check, not a prediction. Then the Greater Chennai Corporation relief centres for the ward, and a nearby substation with none of the flood flags, as a backup suggestion."
 
 ## 2:55 - 3:15  Quiet when nothing applies
 **Screen:** Click a substation outside every flood layer.

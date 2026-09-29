@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
 import type { TnebSubstation, TnebSection } from '../../types/tneb';
 import { CopyIncidentSmsButton } from './CopyIncidentSmsButton';
 import { getQuote } from '../../data/officialSources';
@@ -17,25 +17,12 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
 }) => {
   if (!node.gccZone) {
     return (
-      <div className={`p-3 rounded-xl border text-xs shrink-0 space-y-2 ${
+      <div className={`p-3 rounded-xl border text-xs shrink-0 space-y-1 ${
         isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-300'
       }`}>
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-base">🌐</span>
-            <div>
-              <span className="font-bold text-xs block">Peri-Urban CMA Grid Hub</span>
-              <span className="opacity-75 text-xs">Outside GCC Municipal Wards • CMA Regional Outer Ring</span>
-            </div>
-          </div>
-          <span className={`text-xs font-mono px-2 py-0.5 rounded-md font-bold ${
-            isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
-          }`}>
-            CMA EHT Corridor
-          </span>
-        </div>
+        <span className="font-bold text-xs block">Outside the 200 GCC wards</span>
         <p className="text-xs leading-relaxed opacity-85">
-          This node serves as an Extra High Voltage (EHT) bulk transmission injection corridor (Kanchipuram / Tiruvallur / Chengalpattu circles), feeding power directly into the Chennai metropolitan core.
+          No GCC zone, ward or ward contact is listed for this location in our GCC data.
         </p>
       </div>
     );
@@ -122,36 +109,15 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
         {/* 2G SMS / Wireless Incident Dispatch Generator */}
         <CopyIncidentSmsButton node={node} isLight={isLight} />
 
-        {/* GCC Municipal Command Card */}
-        <div className={`p-3 rounded-xl border text-xs shadow-xs space-y-2 ${
+        {/* GCC zone and ward, with the plan's TANGEDCO role */}
+        <div className={`p-3 rounded-xl border text-xs space-y-1 ${
           isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
         }`}>
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-2">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                isLight ? 'bg-indigo-200/80 text-indigo-800' : 'bg-indigo-500/20 text-indigo-300'
-              }`}>
-                <Building2 className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="font-bold text-sm block leading-tight">
-                  GCC Zone {node.gccZone} ({node.gccZoneName})
-                </span>
-                <span className={`text-xs block mt-0.5 font-mono ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>
-                  Greater Chennai Corporation • Ward {node.gccWard}
-                </span>
-              </div>
-            </div>
-
-            <span className={`px-2 py-0.5 rounded-md font-mono text-xs font-bold ${
-              isLight ? 'bg-indigo-600 text-white' : 'bg-indigo-500 text-slate-950 font-black'
-            }`}>
-              Z{node.gccZone}:W{node.gccWard}
-            </span>
-          </div>
-
-          <p className="text-xs leading-relaxed opacity-90 pt-1 border-t border-current/10">
-            Zone and ward come from GCC data. The GCC City Disaster Management Perspective Plan 2023 gives TANGEDCO this role: “{getQuote('gcc-tangedco-role')?.quote}” ({getQuote('gcc-tangedco-role')?.citation}).
+          <span className="font-semibold block">
+            GCC Zone {node.gccZone} ({node.gccZoneName}), Ward {node.gccWard}
+          </span>
+          <p className="text-xs leading-relaxed opacity-90">
+            The GCC City Disaster Management Perspective Plan 2023 gives TANGEDCO this role: “{getQuote('gcc-tangedco-role')?.quote}” ({getQuote('gcc-tangedco-role')?.citation}).
           </p>
         </div>
 

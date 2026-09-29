@@ -199,6 +199,8 @@
    - **New layout:** header status line (health grade, live outage notice, inside 2015 extent) and no `#code`; Feeders tile removed. Tabs: **Overview** (outage banner, specs, health score labelled "our model", 90-day log); **Feeders** (list first, circuit isolation pinned below); **Crisis & Contacts** (Substation Copilot moved here as `SubstationCopilotCard.tsx`, flood exposure, relief centres, section office, ward contacts, 1913, Copy SMS, zone and re-energizing quotes).
    - **Verified** in the dev server: filter shows 87; card shows the new tabs and order; Copilot appears at the top of the Crisis tab in the Michaung scenario; `tsc` clean; only console error is the known GCS CORS one. Not redeployed.
 
+36. **Clean-up pass after item 35 (owner approved).** Header subtitle removed (repeated the badge); "Chennai EDC", "01/09", "Chennai Central" and "O&M" fallbacks replaced by "not listed" or hidden; unsourced wording removed ("Official O&M Field & Fuse-Call Beat", "Territory Active", the "Peri-Urban CMA / EHT corridor" paragraph, now "Outside the 200 GCC wards: no GCC zone, ward or contact listed in our data"); zone card shrunk to two lines with the plan quote; dead type fields deleted (`anticipatorySop`, `plinthElevationM`, `benchmarked2015FloodDepthM`, `yardDewateringRequired`); video script, deck (content and `.pptx`) and docs 03 and 06 updated to the new tab names. Checked at desktop and phone width in the dev server. Not redeployed.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat
