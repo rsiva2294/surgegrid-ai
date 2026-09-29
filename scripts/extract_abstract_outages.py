@@ -29,7 +29,9 @@ OUTPUT_DIR = Path('c:/projects/surgegrid-ai/data/tneb_abstract_json')
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 MASTER_JSON_PATH = Path('c:/projects/surgegrid-ai/data/tneb_abstract_outages_master.json')
 
-API_KEY = os.environ.get('GEMINI_API_KEY', 'AQ.Ab8RN6L7dKhreV_PbMwNNc1Awwsn2bjqB4mA3qIRD6jwbvBnCQ')
+API_KEY = os.environ.get('GEMINI_API_KEY', '').strip()
+if not API_KEY:
+    sys.exit('ERROR: environment variable GEMINI_API_KEY is not set (see scripts/README.md).')
 MODEL_NAME = 'gemini-3.1-flash-lite'
 client = genai.Client(api_key=API_KEY)
 

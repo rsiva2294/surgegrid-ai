@@ -4,6 +4,39 @@ All notable changes, architectural decisions, and data extractions for the Surge
 
 ---
 
+## [2.1.0-gemini-enrichment-and-documentation-audit] - 2026-09-29
+
+### Security
+- Removed hardcoded credentials from `scripts/` (Instagram cookies, X/Twitter tokens, Gemini API keys). Scripts now read them from environment variables and fail fast if unset; variables are documented in `scripts/README.md`. Previously committed values remain in git history.
+
+### Changed (Gold Registry: Gemini enrichment passes, 2026-09-28)
+- **Pass 1 (`2c24725`)**: `scripts/enrich_unmapped_with_gemini.py` recovered 6 unmapped switchyards and added 9 novel signatures (registry 2,785).
+- **Pass 2 (`9d6a45d`)**: `analyze_remaining_unmapped.py`, `categorize_remaining.py` and `gemini_pass2_recover_remaining.py` resolved the last 21 records (8 fuzzy catalog matches, 9 section→substation resolutions, 4 left as street-level `LOCALIZED_AREA`). Abstract-report coverage reached **786 / 792 (99.2 %)**; bundled registry now **2,789 signatures**, 2,298 verified instances, 10 localities.
+
+### Documentation audit (all docs re-verified against `src/`, `public/data/` and `scripts/`)
+- **README**: corrected the link count (583 total: 318 substation-to-substation + 265 substation-to-section; the earlier "1,493" was a V4-era figure), added docs 08–10 and the scripts README to the index, added an environment-variable table and an explicit *Not in the app* list.
+- **Doc 01**: added an implementation-status note (Gemini features, forecast slider, inundation overlays and shelter tie-line routing are design intent, not shipped).
+- **Doc 02**: rewrote the dataset catalog into *shipped* (`public/data/`, with real sizes and counts) vs *archived* (`data-archive/data/`, not loaded); documented runtime endpoints, real map bounds, that the 2015 flood depth and dewatering flag are derived from elevation, and data-quality caveats (119 synthetic maintenance events; `LOW_ELEVATION_RISK` missing from the TypeScript type).
+- **Doc 03**: replaced the removed *Split View* / *Grid Links* / *Info* descriptions with the three-tab drawer; lifeline feeders are 257 (not 223+); noted that the topology scoping banner is not rendered.
+- **Doc 04**: circle file tree now lists all 8 circles; corrected marker colors; outage scoping is by substation/section, not feeder vector.
+- **Doc 05**: `Normal` is now `Live`; RMU counts and restoration stages are documented as estimates/limited to stages 3–5; corrected UI descriptions.
+- **Doc 06**: clarified that ward/GEE values are embedded in the grid file; jargon toggle label.
+- **Doc 07**: updated grid payload (3.2 MB; 371 KB Brotli), IndexedDB behaviour (cache key, version-gated revalidation, missing compact fallback file), triage filters, component list and line counts.
+- **Doc 08**: rewritten as an as-built specification (actual penalty/credit constants, live ceilings 50/74/84, status of each planned milestone, known limitations).
+- **Doc 09**: added an as-built status section (rule order, `severityWeight` not consumed by the scorer, feeder-name misclassification risk).
+- **Doc 10**: clarified repository boundary (aggregator repo not verifiable here), added the Gemini passes, current registry counts and the client's actual lookup keys and live-feed source.
+- **V5 doc**: feeder geometry count corrected to 3,335 (was 3,438).
+- **Scripts README**: added the registry/Gemini and grid-builder scripts and a credentials warning.
+- **`public/llms.txt`, `public/llms-full.txt`**: corrected feeder/DTR counts and substation count.
+
+### Known documentation-relevant issues found (not fixed here)
+- Credentials are committed as string literals in `scripts/` (Instagram session cookies, X/Twitter auth token, Gemini keys). Rotate and move to environment variables.
+- `index.html` meta descriptions still say "75+ TNEB substations" (the grid has 286).
+- `computeHealthProfile()` fabricates placeholder events for substations with only a historical count; 119 shipped events are synthetic.
+- The Weather API key is sent in the request URL from the browser.
+
+---
+
 ## [2.0.0-cloud-gold-registry-and-automated-self-enrichment] - 2026-09-28
 
 ### Added & Consolidated (Master Gold Registry v2.0 & Continuous Cloud Self-Enrichment Pipeline)

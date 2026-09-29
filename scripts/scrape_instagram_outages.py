@@ -32,19 +32,25 @@ IST = timezone(timedelta(hours=5, minutes=30))
 CUTOFF_DT = datetime(2026, 7, 1, 0, 0, 0, tzinfo=IST)
 CUTOFF_TS = int(CUTOFF_DT.timestamp())
 
-# Cookies & headers extracted from authenticated session
+def _require_env(name):
+    value = os.environ.get(name, '').strip()
+    if not value:
+        sys.exit(f'ERROR: environment variable {name} is not set (see scripts/README.md).')
+    return value
+
+# Cookies & headers from an authenticated session (values come from the environment)
 COOKIES = {
-    'ds_user_id': '78440927411',
-    'ig_did': 'C8FF8B08-1A06-4FE5-800F-B47BF74BAB1A',
-    'csrftoken': 'WuxfFDZMntI88qGzBhYXQw',
-    'mid': 'ahDJlgALAAEY3pnSs4yJZ1UDAu4N',
+    'ds_user_id': _require_env('IG_DS_USER_ID'),
+    'ig_did': _require_env('IG_IG_DID'),
+    'csrftoken': _require_env('IG_CSRFTOKEN'),
+    'mid': _require_env('IG_MID'),
     'ps_l': '1',
     'ps_n': '1',
-    'datr': 'rvRXamrJ4njUXUNC0bX-_JE6',
+    'datr': _require_env('IG_DATR'),
     'dpr': '1.5625',
-    'sessionid': '78440927411:6y5UYnoWLvPZ1e:2:AYnGjcI4s0gmDHuoSOdaOht4CYZkq9MxEhqoQxHJo1Q',
+    'sessionid': _require_env('IG_SESSIONID'),
     'wd': '1065x1004',
-    'rur': 'VCN,17841478462355115,1791800635:01ff470cddf4571c6e977d5dd70f46830210775316429d8c1631499489f874d3bb066f03',
+    'rur': _require_env('IG_RUR'),
 }
 
 HEADERS = {
@@ -62,9 +68,9 @@ HEADERS = {
     'user-agent': 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36',
     'x-asbd-id': '359341',
     'x-bloks-version-id': '62077fc559de123afe03ebeb18194a88ba5d4e6874d9a07873752f3792adb8a0',
-    'x-csrftoken': 'WuxfFDZMntI88qGzBhYXQw',
+    'x-csrftoken': _require_env('IG_CSRFTOKEN'),
     'x-fb-friendly-name': 'PolarisProfilePostsTabContentQuery_connection',
-    'x-fb-lsd': 'sNEKb-Qt0S2LqeGz7WSL9h',
+    'x-fb-lsd': _require_env('IG_FB_LSD'),
     'x-ig-app-id': '936619743392459',
     'x-root-field-name': 'xdt_api__v1__feed__user_timeline_graphql_connection',
 }

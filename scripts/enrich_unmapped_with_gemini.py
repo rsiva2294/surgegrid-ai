@@ -3,7 +3,9 @@ import urllib.request
 import re
 import os
 
-API_KEY = 'AIzaSyATey0LR_p1GbzzFakf3MnnEnJHqMfG-c8'
+API_KEY = os.environ.get('GEMINI_API_KEY', '').strip()
+if not API_KEY:
+    raise SystemExit('ERROR: environment variable GEMINI_API_KEY is not set (see scripts/README.md).')
 MODEL = 'gemini-2.5-flash-lite'
 
 def call_gemini(prompt: str) -> str:

@@ -26,9 +26,16 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 # ──────────────────────── Config ────────────────────────
-BEARER = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
-CT0 = '9dd9d8ca34bba60e1829bbf365a6aaf37ecf6e291b042d145b985fc8ea0409d9e81b3c254f4c95225376fbf119643916c7f13f7a477801664bf317fd5f2d6b6a9610c33d49637cff82c3127dc3bfa1b8'
-AUTH_TOKEN = '6610eafeb1f3a0b06a4035a150205bb8a7b20788'
+def _require_env(name):
+    value = os.environ.get(name, '').strip()
+    if not value:
+        sys.exit(f'ERROR: environment variable {name} is not set (see scripts/README.md).')
+    return value
+
+
+BEARER = _require_env('X_BEARER_TOKEN')
+CT0 = _require_env('X_CT0')
+AUTH_TOKEN = _require_env('X_AUTH_TOKEN')
 
 USER_ID = '1548918713302532096'  # @TANGEDCO_Offcl
 MEDIA_QID = 'GEs4r5bWKm0P0EIRfo2DGw'  # UserMedia GraphQL query ID
@@ -332,7 +339,7 @@ def main():
         except requests.exceptions.HTTPError as e:
             log(f'HTTP Error: {e}')
             if e.response and e.response.status_code == 401:
-                log('Auth token expired — please update CT0 and AUTH_TOKEN')
+                log('Auth token expired — please update X_CT0 and X_AUTH_TOKEN')
             break
         except Exception as e:
             log(f'Fetch error: {e}')
