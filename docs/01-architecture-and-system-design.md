@@ -1,94 +1,48 @@
-# 01 - Architecture & System Design: SurgeGrid AI
+# 01 - Architecture & System Design
 
-## 1. Executive Summary
+*Rewritten 2026-09-30 to describe what is built. The earlier version described a larger design (a live Earth Engine pipeline, WeatherNext forecast slider, parametric-insurance reports, inundation contours, shelter tie-line routing) that was never implemented, plus risk formulas with invented thresholds. Those were removed.*
 
-**SurgeGrid AI** is a predictive climate risk, electrical grid vulnerability, and anticipatory action platform designed for **Track 5 (Extreme Weather & Climate Risk Modeling)** of the *Code for Communities 2* Hackathon.
+## 1. What the app is
 
-### The Problem
-During severe cyclonic storms in the Bay of Bengal (e.g. *Cyclone Michaung, Vardah, Mandous*), coastal cities like Chennai experience widespread infrastructure failure. Disasters are managed reactively:
-* Electrical substations flood and transformers explode, causing citywide blackouts lasting 4–7 days.
-* Emergency relief shelters lose power when primary feeders trip.
-* Post-disaster liquidity and parametric insurance payouts are delayed by weeks due to manual damage surveys.
+A control-room console for Chennai's power network during heavy rain. It replays three real rain events hour by hour, shows which substations, feeders and relief-centre wards are exposed, and lists the actions the official disaster plans call for, with Gemini adding short notes. Principle: every rule, warning and action is either an official quote, real data with a source, a map check against an official layer, or our own calculation labelled as ours (see the README and [SOURCES.md](./SOURCES.md)).
 
-### The Solution
-SurgeGrid AI shifts disaster operations from post-landfall recovery to **pre-landfall anticipatory protection** by integrating:
-1. **Google DeepMind WeatherNext 3 (August 2026)** for hourly cyclone trajectory forecasting.
-2. **Google Earth Engine (GEE 2024–2026)** for 10-band multi-hazard terrain, built-up concrete surface, and historical water recurrence modeling.
-3. **TNEB V5 GIS-Based Electrical Connectivity Model** mapping all 286 Chennai Substations, 352 AE Section Offices, 5,192,167 registered consumers baseline, and 318 inter-substation connections with Level 1 dual-endpoint polygon containment verification (`ST_Contains == TRUE`), circle-partitioned 11kV radial feeders, and 65,000+ distribution transformers (DTRs).
-4. **GCC Municipal Hydrology** mapping 5,513 stormwater drains and 162 emergency relief shelters.
-5. **Google Gemini 3.7 Flash** for multimodal automated early-warning dispatches, grid isolation SOPs, and parametric insurance liquidity calculations.
-
----
-
-> **Status note (audited against the code, 2026-09-29).** This document describes the full design vision. Implemented in `src/` today: live weather (Google Maps Weather API), the grid, feeder, DTR, lifeline and live-outage layers with health scoring, the map cockpit, an **hour-by-hour disaster simulation** (Cyclone Michaung, 61 steps; 2015 Megaflood hindcast, 120 steps) with a timeline scrubber, and **two tiers of Gemini** (city-wide SOP and per-substation copilot, model `gemini-2.5-flash`, with a rule-engine fallback). **Not implemented:** a live Earth Engine pipeline (its outputs are pre-baked into `chennai_tneb_grid.json` as `elevationM`, `compositeRiskScore`, `geeRunoffMm`, `hydroRisk`, etc.), Gemini de-energization timetables, insurance reports and Tamil/English dispatch drafting, a live WeatherNext forecast slider, inundation contour overlays, road exposure and shelter tie-line routing. The GCC drain, river, shelter and flood-hotspot datasets live in `data-archive/data/` and are not loaded at runtime. See [00-feature-map.md](./00-feature-map.md) and the README's *Not built yet* list.
-
----
-
-## 2. System Architecture Diagram
+## 2. Data flow
 
 ```
-+---------------------------------------------------------------------------------------------------------+
-|                                        SURGEGRID AI SYSTEM TOPOLOGY                                     |
-+---------------------------------------------------------------------------------------------------------+
-
-  [ LAYER 1: METEOROLOGICAL & CLIMATE FORCING ]
-  +-----------------------------------------------------------------------------------------------------+
-  | Google DeepMind WeatherNext 3 (FGN Mesh Transformer, 0.05°-0.1°, Hourly Timesteps)                  |
-  | - wind_speed_10m (m/s)  - total_precipitation_1hr (m)  - mean_sea_level_pressure (Pa)  - cloud_cover |
-  +-----------------------------------------------------------------------------------------------------+
-                                                     |
-                                                     v
-  [ LAYER 2: PLANETARY TERRAIN & HYDROLOGY (GEE 2024–2026) ]
-  +-----------------------------------------------------------------------------------------------------+
-  | Google Earth Engine (Project: namma-map-407ca)                                                      |
-  | - NASA SRTM 30m DEM + Slope (USGS/SRTMGL1_003)                                                      |
-  | - Dynamic World 10m Built-Up & Water (GOOGLE/DYNAMICWORLD/V1)                                       |
-  | - Copernicus Sentinel-2 MNDWI Wetness (COPERNICUS/S2_SR_HARMONIZED)                                 |
-  | - JRC Global Surface Water 38-Year Baseline (JRC/GSW1_4/GlobalSurfaceWater)                         |
-  | - NASA GPM IMERG V07 Precipitation + ECMWF ERA5-Land Wind & Runoff                                  |
-  +-----------------------------------------------------------------------------------------------------+
-                                                     |
-                                                     v
-  [ LAYER 3: INFRASTRUCTURE & LIFELINE FUSION ENGINE ]
-  +-----------------------------------------------------------------------------------------------------+
-  | - 286 TNEB Substations (33kV to 400kV) with 318 Inter-Substation Connections (L1 Verified & L2)     |
-  | - 352 TNEB AE Section Offices & 5,192,167 Registered Consumer Baseline                              |
-  | - Circle-partitioned 11kV Feeders & 65,000+ Distribution Transformers (DTRs)                        |
-  | - 5,513 GCC Stormwater Drains (Gravity Flow vs Uphill Backflow Chokepoints)                         |
-  | - 162 GCC Relief Shelters (Automated 11kV Backup Tie-Line Routing Engine)                           |
-  | - 4 Major Waterways (Adyar, Cooum, Kosasthalaiyar, Buckingham Canal)                                |
-  | - Autonomous Outage Intelligence Engine: Direct Cloud Storage Telemetry & Gold Standard Resolution |
-  +-----------------------------------------------------------------------------------------------------+
-                                                     |
-                                                     v
-  [ LAYER 4: MULTIMODAL AI & ANTICIPATORY DISPATCH ]
-  +-----------------------------------------------------------------------------------------------------+
-  | Google Gemini 3.7 Flash (@google/genai)                                                             |
-  | 1. Controlled Pre-Landfall De-energization Timetable (T-6h, T-2h, T-0h)                              |
-  | 2. Hyperlocal Multilingual Early Warning Dispatches (Tamil + English for GCC Nodal Officers)        |
-  | 3. Parametric Disaster Insurance Loss Liquidity Report (Instant Fund Triggers)                      |
-  +-----------------------------------------------------------------------------------------------------+
-                                                     |
-                                                     v
-  [ LAYER 5: GOOGLE MAPS COMMAND COCKPIT (VITE + REACT + TYPESCRIPT) ]
-  +-----------------------------------------------------------------------------------------------------+
-  | - Google Maps Platform (Vector 3D & Satellite Hybrid View)                                          |
-  | - WeatherNext 3 Hourly Horizon Slider (T-48h -> Landfall T-0h)                                      |
-  | - Dynamic Inundation Overlays (1.0m - 5.0m Surge & Runoff Contours)                                 |
-  | - Interactive Substation Risk Blinkers & Animated Shelter Tie-Line Cables                           |
-  +-----------------------------------------------------------------------------------------------------+
+ REAL DATA (offline builds)                          APP (browser)                                   GOOGLE CLOUD
+ ------------------------------------------          ---------------------------------------------   ---------------------------
+ NASA IMERG rain + ERA5-Land wind (Earth Engine)     public/data/scenarios/*.json (3 hindcasts)      Cloud Function surgegridGemini
+ TNEB grid, feeders, DTRs, outage history            public/data/chennai_tneb_grid.json, feeders/,      (keyless: service account
+ OpenCity GCC flood layers                             dtr/, substation_feeders/                       calls Gemini 2.5 Flash on the
+   -> scripts/build_official_flood_layers.py         public/data/official_flood_layers.json             Gemini Enterprise Agent
+ GCC relief-centre list + ward polygons              public/data/relief_centres.json                    Platform, formerly Vertex AI)
+   -> scripts/build_relief_centres.py                src/data/officialSources.ts (37 plan quotes)
+ Live: TANGEDCO notices, Google Weather              outageService, weatherService  ---------------> /api/gemini  (wording only)
 ```
 
----
+## 3. Layers in the code
 
-## 3. Mathematical Risk Formulations
+| Layer | What it does | Main files |
+|---|---|---|
+| Scenario engine | Loads a hindcast, plays it hour by hour, opens the AI Directive at milestones | `scenarioService.ts`, `TnebGridMap.tsx`, `DisasterCockpitBar.tsx` |
+| Official quote bank | The only source of plan text shown to users | `src/data/officialSources.ts`, `docs/SOURCES.md` |
+| SOP (city-wide) | Chooses the official actions for the phase and the substations they name; Gemini words a note | `geminiSopService.ts`, `GeminiSopDialog.tsx` |
+| Substation Copilot | Flags from our data plus quoted actions for one substation | `geminiSubstationCopilotService.ts`, `SubstationHealthCard.tsx` |
+| Flood exposure | Elevation, official flood-map checks, plan quote when it applies | `FloodExposureCard.tsx`, `officialFloodLayers.ts` |
+| Relief centres | GCC centres by ward, backup suggestion, map layer | `ReliefCentresCard.tsx`, `reliefCentres.ts`, `TnebGridMap.tsx` |
+| Grid model | Substations, feeders, DTRs, links, lifeline classification by feeder name | `tnebGridService.ts`, `feederGeometryService.ts`, `types/tneb.ts` |
+| Live layers | Outage notices matched to substations; live weather | `liveOutageService.ts`, `liveWeatherService.ts` |
+| Health score (our model) | Grades A-D from 90-day history and live notices | `gridHealthService.ts` (docs 08, 09) |
+| Gemini access | One shared browser client; the proxy holds the identity | `geminiClient.ts`, `gemini-proxy/` |
 
-### A. Substation Composite Flood & Grid Risk Score (0 to 100)
-Calculated from 4 distinct physical risk drivers:
-1. **Direct Oceanic Surge Factor**: Function of elevation E (meters MSL) and Euclidean distance to coast D (km). Exponentially increases when E <= 4m and D <= 3.5km.
-2. **Pluvial Runoff Factor**: Derived from Dynamic World 10m concrete impervious percentage and drainage slope (< 0.5 degrees).
-3. **Historical Grid Vulnerability Factor**: Weighted by Q3 2026 breakdown occurrences from resolved TNEB notices.
-4. **Wind Line Snap Factor**: Function of cyclonic wind gusts exceeding 80 km/h in saturated soil conditions.
+## 4. How Gemini is used
 
-### B. Relief Shelter Backup Tie-Line Routing Formulation
-For any relief shelter served by a vulnerable primary substation (elevation <= 3m MSL), the engine calculates the nearest **Safe Substation (elevation >= 8m MSL)** via spherical haversine distance and outputs the 11kV tie-line load transfer procedure.
+Gemini 2.5 Flash chooses target names from lists we send and writes one short note. It never writes or cites the plan quotes, and a note that contains a number not present in the prompt is discarded. With Gemini unavailable the same quoted actions appear with rule-based notes. Details in [DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md](./DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md).
+
+## 5. Offline resilience
+
+The grid, feeders, transformers and outage data are cached in IndexedDB (stale-while-revalidate). If the Gemini proxy, the weather API or the outage feed is unreachable, the app falls back to rule-based text, a labelled fallback for weather, and the cached outage data.
+
+## 6. What is not built
+
+Storm surge and cyclone-track modelling; a trained flood forecast; road exposure; Tamil text; image input to Gemini; other cities. The sister project `surgegrid-ai-v2` holds an evaluated flood-proneness pipeline whose honest results (good match to the city's 2020 hotspots, poor match to the 2015 satellite map) are the reason the app shows official-map checks instead of model flood depths.

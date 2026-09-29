@@ -1,3 +1,5 @@
+> **Status note (2026-09-30).** Sections about weather describe the live-weather widget only. The scenario simulation now uses three real hindcasts (doc `DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md`). The 2G SMS copy button now ends with an official quote instead of an invented action.
+
 # Architectural Specification: Crisis Resilience & Google Maps Platform Optimization
 
 **Document ID**: `SURGEGRID-ARCH-07`  
@@ -10,7 +12,7 @@
 
 ## 1. Executive Summary & Crisis Operational Context
 
-During severe tropical cyclones (e.g., Cyclone Vardah, Cyclone Michaung) and catastrophic coastal tidal surges (>3.0m MSL), electrical grid dispatchers and municipal disaster relief personnel operate in extreme, constrained environments:
+During severe tropical cyclones (e.g., Cyclone Vardah, Cyclone Michaung) and catastrophic coastal tidal surges, electrical grid dispatchers and municipal disaster relief personnel operate in extreme, constrained environments:
 1. **Severe Bandwidth Throttling**: Cellular backhaul collapses from 5G/4G to edge 2G or intermittent satellite links with high packet loss.
 2. **Device Thermal Throttling & Battery Scarcity**: Field units operate on battery backup; high CPU/GPU load from rendering thousands of DOM elements quickly drains portable power.
 3. **Data Loss & Disconnection**: Network connectivity drops without warning. The client application must remain 100% operational offline without crashing or demanding network re-fetches.
@@ -217,8 +219,8 @@ graph TD
 6. **`src/components/Map/MapLayerControls.tsx`**: Collapsible grid layer toggles (`Bulk EHV`, `Sub-Transmission`, `Distribution`, `AE Section Offices`, `Satellite/Hybrid`).
 7. **`src/components/Map/MunicipalDisasterCard.tsx`**: Greater Chennai Corporation (GCC) ward coordination, ward councillor CUG contacts, water/civil AE numbers, and Ripon Building emergency hotlines.
 8. **`src/components/Map/CopyIncidentSmsButton.tsx`**: 1-click generator for standardized offline text dispatch payloads sent to field personnel via edge 2G cellular or VHF radio.
-9. **`src/components/Map/FeederCardItem.tsx`**: Single feeder telemetry card with priority rank badges (P1 Non-Cut, P2 Essential), trip counts, voltage/cabling badges, and map view triggers.
-10. **`src/components/Map/GridJargonCheatSheet.tsx`**: Field jargon guide for emergency personnel (explaining P1 Non-Cut, ESF 15, RMU, and Stage 3 restoration).
+9. **`src/components/Map/FeederCardItem.tsx`**: Single feeder card: voltage, UG/OH badge, lifeline badge with a SurgeGrid priority class (from the feeder name), consumers, transformers, length, and, during a scenario, a fact-only flag with an official quote.
+10. **`src/components/Map/GridJargonCheatSheet.tsx`**: Field jargon guide (P1 lifeline class, operator decision, RMU, IMD cyclone classes).
 11. **`src/components/Map/SubstationInspectorDrawer.tsx`**: Full-height inspector drawer (1,251 lines) with three tabs (`Plant & Specs`, `Circuits & Grid` with CSS-virtualized feeder cards, `Civic & Crisis`) and a section-office view. There is no dual-column split view.
 12. **`src/components/Map/SubstationHealthCard.tsx`**: Grade, dispatch-status banner, 90-day durability, PM / trip counts, clean streak, disaster multiplier and the filterable incident log (see doc 08).
 13. **`src/components/Map/TriageSubstationRosterCard.tsx`**: Sortable roster shown when a triage filter is active.
@@ -229,7 +231,7 @@ graph TD
 
 ### 5.1 The Need for Real-Time Meteorological Telemetry
 During tropical cyclones, grid vulnerability is governed by atmospheric conditions:
-- **Wind Velocity $\ge 80\text{ km/h}$**: Triggers statutory pre-emptive tripping of overhead radial lines (TNSDMA §5.6 Mandate) to prevent snapped live wire electrocutions and cascade transformer explosions.
+- **Wind speed**: shown with its IMD cyclone class (Severe from 88 km/h, MoP DMP 2021 Table-4). The official plans give no wind speed at which overhead lines must be switched off; they say supply may be switched off "if required" (MoP DMP 2021, p. 246), so the app shows an "operator decision" and never trips a feeder on a wind threshold. (An earlier version claimed an 80 km/h statutory trip; that was removed.)
 - **Barometric Pressure Drop**: Early indicator of cyclone eye landfall proximity.
 - **Micro-Climate Disparities Across Chennai Metro**: Coastal switchyards (*Ennore 400kV*, *Royapuram 110kV*, *Thiruvanmiyur*) face immediate marine wind gusts and salt-spray flashover risks, while western inland industrial nodes (*Sriperumbudur 400kV*, *Ambattur*) experience higher convective heat indexes and delayed squall lines.
 

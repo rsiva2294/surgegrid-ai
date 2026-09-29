@@ -388,7 +388,7 @@ flowchart TD
 ```
 
 #### The 5 Tiers Explained:
-1. **Tier 1 (P1 Critical Lifelines):** Non-cut municipal lifelines (`P1_NON_CUT` / `P1_CRITICAL`). Water headworks (e.g., CMWSSB Pumping Stations, Kilpauk Water Works), sewage treatment plants, and major trauma hospitals are pinned to the top of the roster.
+1. **Tier 1 (P1 Critical Lifelines):** Hospital and water feeders (`P1_NON_CUT` / `P1_CRITICAL`, a SurgeGrid class assigned from the feeder name; the national plan lists such installations for priority restoration). Water headworks (e.g., CMWSSB Pumping Stations, Kilpauk Water Works), sewage treatment plants, and major trauma hospitals are pinned to the top of the roster.
 2. **Tier 2 (P2 Essential Infrastructure):** Essential transit and civil administration lines (`P2_ESSENTIAL`), including CMRL Chennai Metro traction feeds, Southern Railway corridors, and Secretariat / Police HQ lines.
 3. **Tier 3 (33 kV Sub-Transmission Trunks):** High-capacity step-down interconnector lines (`33 kV UG/Overhead`) that deliver multi-megawatt bulk power from $110\text{kV}$ transmission hubs into downstream $33/11\text{kV}$ neighborhood substations.
    * **Visual Badging:** Distinctively badged as `[⚡ 33 kV Sub-Transmission Trunk] [INTER-SS]`.

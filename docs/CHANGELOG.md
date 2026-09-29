@@ -2,6 +2,22 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [3.0.0-official-facts-only] - 2026-09-30
+
+### Changed (the app now shows only official quotes, real data with a source, map checks, and labelled own calculations)
+- **Official quote bank** (`src/data/officialSources.ts`, `docs/SOURCES.md`): 37 word-for-word quotes from the MoP 2021, TANGEDCO 2017, TN SDMP 2023 and GCC 2023 plans, each with its page and checked against the PDF text.
+- **AI Directive and Substation Copilot rebuilt** on those quotes. Gemini only chooses names from lists we send and words one note; numbers not in the prompt are rejected.
+- **Real scenarios**: Michaung 2023, 2015 floods and a Nov 2020 monsoon spell, all NASA IMERG rain and ERA5-Land wind hindcasts. The synthetic "Category-3" file was removed. Playback speed control added.
+- **Gemini proxy**: Cloud Function `surgegridGemini` (Gemini 2.5 Flash on the Gemini Enterprise Agent Platform, formerly Vertex AI) with its own service account. No API key in the app.
+- **Flood exposure**: model flood panels removed. Official flood-map checks per substation (`official_flood_layers.json`) and a plan quote only when it applies.
+- **Relief centres**: GCC list by ward (no coordinates), backup-substation suggestion, optional map layer.
+
+### Removed (not in any of the four plans)
+- Wind (80/75/65/60 km/h) and surge/flood trip thresholds, "statutory" section numbers, restoration-hour limits (6/12/24/48 h), the five-stage restoration protocol, RMU-loop badges, the 1.5 m plinth and 3.0 m/3.2 m rules, elevation-derived flood depths, invented SOP figures, the 224 baked-in advisories and "installed 13,810 RMUs".
+
+### Docs
+- Rewrote README, docs 00, 01, 05 (renamed to `05-official-plans-and-how-the-app-uses-them.md`) and the Gemini architecture doc; patched 02, 03, 04, 06 and 07. Full history in `PROJECT_LOG.md`.
+
 ## [2.4.0-docs-refresh] - 2026-09-29
 
 ### Added (summary of simulation and Gemini work shipped earlier the same day)
@@ -449,7 +465,7 @@ All notable changes, architectural decisions, and data extractions for the Surge
     - TNEB Switchgear Equipment Plinth Clearance (1.5m standard above local ground level).
     - TNSDMA 2023 Coastal Surge Standard (3.0m MSL limit).
     - Mobile Dewatering Pump Mandate status.
-- **Statutory Documentation Reference**: Published `docs/05-disaster-management-and-statutory-sop-linkage.md` detailing the legal mandates, SOP clauses, and architecture.
+- **Statutory Documentation Reference**: Published `docs/05-official-plans-and-how-the-app-uses-them.md` detailing the legal mandates, SOP clauses, and architecture.
 
 ---
 

@@ -1,101 +1,70 @@
-# Disaster Simulation & Gemini AI Architecture
+# Disaster Simulation & Gemini Architecture
 
-> Describes what the code does today (audited against `src/` on 2026-09-29).
-> Files: `scenarioService.ts`, `disasterUtils.ts`, `geminiSopService.ts`, `geminiSubstationCopilotService.ts`, `GeminiSopDialog.tsx`, `SubstationHealthCard.tsx`.
+*Rewritten 2026-09-30 for the final state. Files: `scenarioService.ts`, `geminiSopService.ts`, `geminiSubstationCopilotService.ts`, `geminiClient.ts`, `gemini-proxy/index.js`, `GeminiSopDialog.tsx`, `SubstationHealthCard.tsx`.*
 
 ## 1. Overview
 
-The app replays a storm hour by hour. At each hour it works out which substations are most at risk, then uses Gemini to write the plan for the control room. If Gemini is unavailable, a built-in rule engine writes a plan instead, so the screen always shows guidance.
+The app replays a real rain event hour by hour. At each hour it decides which **official actions** apply and which substations they name, then Gemini adds one short note. If Gemini is unavailable, the same quoted actions appear with rule-based notes. Nothing on screen is invented: see [SOURCES.md](./SOURCES.md) and [05](./05-official-plans-and-how-the-app-uses-them.md).
 
 ```mermaid
 flowchart TB
-    SC["Scenario file (hourly wind / rain / surge)"] --> HOUR["Selected hour (timeline)"]
-    GRID["Grid file: elevation, risk, hydroRisk, feeders"] --> HOUR
-    HEALTH["Health grade + live outages"] --> HOUR
-    HOUR --> FEED["Feeder status (disasterUtils)"]
-    HOUR --> TOP6["extractTopCompromisedInfra: top 6 substations"]
-    TOP6 --> T1["Tier 1: Grid Commander SOP (city-wide)"]
-    HOUR --> T2["Tier 2: Substation Copilot (one substation)"]
-    T1 --> G["Gemini 2.5 Flash, or rule-engine fallback"]
-    T2 --> G
-    G --> UI1["AI Directive window"]
-    G --> UI2["Advisory card in inspector drawer"]
+    SC["Scenario hindcast: hourly rain + wind (NASA IMERG, ERA5-Land)"] --> HOUR["Hour on screen"]
+    GRID["Grid data: elevation, feeders, hospital/water feeders"] --> HOUR
+    HOUR --> PHASE["Phase from data: watch / impact / restoration"]
+    PHASE --> ACTIONS["Official actions for the phase (quote bank)"]
+    HOUR --> TARGETS["Substation names: lowest-lying, overhead feeders, hospital/water feeders"]
+    ACTIONS --> SOP["AI Directive (city-wide)"]
+    TARGETS --> SOP
+    ACTIONS --> COP["Substation Copilot (one substation)"]
+    SOP --> G["Gemini 2.5 Flash via proxy: picks names, words a note"]
+    COP --> G
+    G --> UI["Quotes + citations + note"]
 ```
 
-## 2. Simulation
+## 2. The scenarios
 
-### 2.1 Scenarios and timeline
-| Scenario | Data file | Steps | What it is |
+| Scenario | File | Steps | Notes |
 |---|---|---|---|
-| Cyclone Michaung | `public/data/scenarios/michaung_class_cat3.json` | 61 hourly, T-48h to T+12h | Modelled Category-3 benchmark. Peak ~134 km/h wind, ~46 mm/h rain, ~4 m surge at landfall (T-0h). Not a live forecast. |
-| 2015 Megaflood | `public/data/scenarios/floods2015.json` | 120 hourly, -85h to +34h | Hindcast from NASA IMERG rain and ERA5-Land wind (Earth Engine). No surge (sea level held at 0.4 m). |
+| Cyclone Michaung, Dec 2023 | `michaung2023.json` | 144 hourly, T-69h..T+74h | Real hindcast; peak 14.0 mm/h at T-0; total 273 mm |
+| 2015 Megaflood | `floods2015.json` | 120 hourly, T-85h..T+34h | Real hindcast; peak 23.4 mm/h; total 372 mm |
+| Monsoon Spell, Nov 2020 | `monsoon2020.json` | 144 hourly, T-69h..T+74h | Real hindcast of an ordinary heavy spell; peak 16.8 mm/h; total 198 mm |
 
-The user plays, pauses, steps or scrubs hour by hour in the cockpit bar. Playback advances one step every 2.2 s. The AI Directive window opens by itself (and playback pauses) at milestone hours: **Michaung -24, 0, 12; Megaflood -48, 0, 12** (see `SCENARIO_MILESTONES`, `TnebGridMap.tsx`).
+Built with `surgegrid-ai-v2/pipeline/07_build_scenario_from_gee.py`: NASA GPM IMERG V07 rain and ERA5-Land wind and pressure, averaged over the Chennai area (lat 12.8-13.25, lng 80.0-80.35). **Wind is an area average, not gusts. No storm surge is modelled** (sea level is held at normal tide). T-0 is the hour of peak rain, not a landfall time. The earlier synthetic "Category-3" file was removed.
 
-### 2.2 Feeder status rules (`disasterUtils.ts`)
-Checked in order for each feeder at the current hour:
-1. **Yard flood trip**: substation elevation is at or below the surge (in the Megaflood, at or below a fixed 4.0 m).
-2. **Pre-emptive wind trip**: wind above 80 km/h on an overhead or mixed feeder (TNSDMA §5.6).
-3. **Cyclone watch**: wind above 60 km/h on an overhead or mixed feeder.
-4. **Live (underground)**: everything else.
+## 3. Phase of an event (data only)
 
-There is no water-depth calculation. Flood depth per substation comes pre-computed in the grid file (`hydroRisk`).
+- Before T-0: **watch**.
+- From T-0 while hourly rain is 0.1 mm or more: **impact**.
+- After T-0 once hourly rain is below 0.1 mm: **restoration**.
 
-### 2.3 Disaster score (`extractTopCompromisedInfra`)
-Used to pick the 6 substations sent to Gemini. Points are added up:
-- Health grade: D +70, C +45, B +15
-- Health score: +1.2 for each point below 100
-- Unscheduled trips: +5 each, capped at +50
-- Elevation at or below surge + 0.3 m: +65; otherwise at or below 3.2 m: +30
-- Risk category: `CRITICAL_SURGE_RISK` +35, `HIGH_WATERLOGGING_RISK` +25
-- If wind is 75 km/h or more: within 6 km of the coast +30, has overhead feeders +20
+The 0.1 mm line is a presentation choice, not an official threshold. Wind is shown with its IMD cyclone class (Severe from 88 km/h) but does not drive the phase, because area-mean wind never reaches that class in these scenarios.
 
-## 3. Tier 1 — Grid Commander SOP (city-wide)
+## 4. Official actions by phase
 
-**Rule engine (always runs first)**: `getDirectiveForTimestep` picks a phase and fills a template with the top substations' names.
-- Michaung: hour ≥ 6 → Restoration, hour ≥ -12 → Critical, otherwise Watch.
-- Megaflood: hour ≥ 12 → Restoration, otherwise Critical (there is no Watch phase, and the title and statutory reference always come from the flood template).
-- The impact numbers (at-risk, tripped feeders, protected lifelines) are **rough estimates from a formula**, not counted data. The fixed templates also contain sample figures (for example patrol-gang counts).
-- The Tamil summary is left empty in the dynamic output.
+`geminiSopService.ts` holds a table from scenario and phase to a list of quote ids in `officialSources.ts`. Cyclone scenarios use the cyclone-alert actions in the watch phase (diesel for 7 days, inventories, ERS towers, expert manpower, plus flood identification and pumps); flood and monsoon scenarios use flood preparation, sandbags and retaining walls. Impact adds switching supply off "if required", pumping out flood water, mobile DG sets and overhead lines kept out of service. Restoration adds recharge only after patrol, restoration priority, mobile substations, an Emergency Operation Centre and generators at sewage pumping stations. Titles for each action are short labels of ours; the quote and citation under each are official.
 
-**Gemini call (only if `VITE_GEMINI_API_KEY` is set)**: `fetchLiveGeminiDirective`
-- Runs whenever the hour changes, not just at milestones, and is cached by `scenario_hour_assetCodes`. Only successful Gemini replies are cached.
-- Prompt is a compact pipe-delimited table of the top 6 substations (name, grade, score, elevation, trips, risk) plus the weather line. It does not include hospitals, feeder types or lifelines.
-- Uses a system instruction (Senior Grid Commander persona) and a response schema (title, summary, statutory reference, action items with priority and category).
-- Only title, summary, statutory reference and action items are taken from Gemini. Urgency, impact numbers and weather come from the rule engine.
-- The schema fixes the *shape* of the reply. It does not check that the content is correct, so names Gemini writes may not match real substations.
+## 5. Which substations an action names
 
-**UI**: `GeminiSopDialog.tsx` shows the summary, targeted-asset badges, and a checklist with priority badges and tick-off. It can be minimized to a floating pill.
+From our grid data only:
+- **Lowest-lying**: substations sorted by elevation; the count at or below Chennai's 2.0 m average (GCC City DMP 2023).
+- **Overhead**: substations with overhead or mixed feeders (`config` values `OH` and `Mixed`).
+- **Lifeline**: substations with hospital or water feeders (classified by feeder name, our classification).
 
-## 4. Tier 2 — Substation Copilot (one substation)
+## 6. Substation Copilot
 
-Shown in `SubstationHealthCard.tsx` while a scenario is running (not in Live mode).
+Flags: low-lying yard (at or below 2.0 m), overhead feeders (count), hospital/water feeders (count and names). Up to four quoted actions are chosen from the flags and the current phase; a substation with no flag gets one baseline action. Gemini may pick feeder names from the lists we send and write one note. The card shows the flag chips, the note, the quoted actions with citations and feeder names, and a "Re-evaluate" button that forces a fresh Gemini call.
 
-**Rule engine (`generateDeterministicTacticalAdvisory`)**, first match wins:
-1. **PRE_EMPTIVE_ISOLATE**: elevation ≤ surge + 0.3 m, or the grid file says `cycloneIsolateRecommended` (any scenario other than normal).
-2. **DEWATERING_PUMP**: elevation ≤ surge + 0.9 m, or risk category is `CRITICAL_SURGE_RISK`.
-3. **LOAD_SHED_SELECTIVE**: wind ≥ 75 km/h and the substation has overhead or mixed feeders.
-4. **SAFE_MONITOR**: otherwise.
+## 7. How Gemini is called
 
-Each posture returns three fixed-style actions (plinth, feeder isolation, lifeline loop; some use real feeder names such as hospital feeders).
+- **Browser**: `geminiClient.ts` posts to `/api/gemini` (30 s timeout; pauses for 60 s after three failures). No API key in the app.
+- **Proxy**: `gemini-proxy/index.js`, Cloud Function `surgegridGemini` (project `namma-map-407ca`, `asia-south1`). It accepts POST only from allowed site origins, caps the request at 30 KB and the reply at 4,096 tokens, fixes the model to `gemini-2.5-flash`, passes only whitelisted generation settings, rate-limits per IP and runs at most 3 instances. It calls Gemini on Google Cloud's Gemini Enterprise Agent Platform (formerly Vertex AI) with the service account `surgegrid-gemini-proxy`, which holds only the Vertex AI user role.
+- **Checks on the reply**: the JSON schema fixes the shape and restricts rule ids to those we sent. Feeder and substation names are filtered to the lists we sent. A note or summary is accepted only if it is at most 240 (or 420) characters and every number in it also appears in the prompt. Quotes and citations never come from Gemini.
+- **Request control**: no Gemini call while the timeline plays; a 700 ms pause after the hour stops changing (600 ms for the copilot); results are cached by scenario, hour and target lists; failures are not cached.
+- **Fallback**: with no proxy, no network or an invalid reply, the app shows the same quoted actions with rule-based notes and the tag "Official quotes · rule-based".
 
-**Gemini call**: `fetchSubstationTacticalAdvisory` sends a short asset summary (name, elevation, health grade, trips, disaster telemetry, feeder counts) and asks for a posture plus three actions in a fixed JSON schema. Gemini's posture is used as returned; it is not checked against the rule engine.
+## 8. Known limits
 
-**Cache**: keyed by `substationCode_scenario_hour`, in memory. The fallback answer is also cached when there is no key or the call fails, so the *Re-evaluate* button re-reads the cache rather than calling Gemini again.
-
-## 5. Fallback and resilience
-- No API key, offline, or API error → rule-engine output, no error banner.
-- Model tag on screen tells you the source: *Gemini 2.5 Flash · Live Copilot / Tactical Copilot* or the deterministic label.
-- The API key is read from the browser bundle (`VITE_GEMINI_API_KEY`) and sent in the request URL, so it is visible to users. Restrict it in Google Cloud, or move the call behind a server.
-
-## 6. Tier 1 vs Tier 2
-| | Tier 1 | Tier 2 |
-|---|---|---|
-| Where | AI Directive window | Substation inspector, health card |
-| Scope | Top 6 substations, city-wide | One substation |
-| Trigger | Every hour change (call), auto-open at milestones | Substation selected or hour changed |
-| Output | Title, summary, statutory reference, action checklist | Posture badge, rationale, three actions |
-| Fallback | Templates filled with real substation names | Rule engine |
-
-## 7. Known issues (as of 2026-09-29)
-See [PROJECT_LOG.md](./PROJECT_LOG.md), session 1, item 2 for the full list and the proposed fix plan.
+- The SOP names substations by simple rules (elevation, overhead feeders, lifeline feeders). It does not forecast where water will go.
+- Hospital and water feeders are found from feeder names, so some may be missed or mislabelled.
+- Whatever Gemini writes in a note is limited to the facts in the prompt, but it is still generated text; the quotes are the authoritative part.
+- The rate limit is best-effort per instance.

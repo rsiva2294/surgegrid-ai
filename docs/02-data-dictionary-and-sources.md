@@ -6,7 +6,7 @@ This document details the core spatial, meteorological, and electrical datasets 
 
 ## 1. Master Dataset Catalog
 
-Audited against `public/data/`, `data-archive/data/` and `src/` on 2026-09-29. Only the datasets in §1.1 are loaded by the running app.
+Audited against `public/data/`, `data-archive/data/` and `src/` on 2026-09-30. Only the datasets in §1.1 are loaded by the running app. Plan text is not data: it lives in `src/data/officialSources.ts` and [SOURCES.md](./SOURCES.md).
 
 ### 1.1 Shipped in `public/data/` (loaded at runtime)
 
@@ -16,6 +16,9 @@ Audited against `public/data/`, `data-archive/data/` and `src/` on 2026-09-29. O
 | `feeders/{circleCode}.json` | 21 MB (8 circles: 0400, 0401, 0402, 0404, 0406, 0408, 0410, 0411) | 3,335 feeder geometries | `feederGeometryService.ts` (on demand, IndexedDB-cached) | Keyed by `fdr_code`: `name`, `code`, `ss_code`, `volt`, `len`, `dts`, `cons`, `type`, `coords` (MultiLineString, RDP-decimated). |
 | `dtr/{circleCode}.json` | 6.3 MB (same 8 circles) | 65,557 DTR points | `feederGeometryService.ts` (on demand, IndexedDB-cached) | Keyed by `fdr_code`: `id`, `name`, `kva`, `cons`, `lat`, `lng`. |
 | `chennai_outage_gold_registry.json` | 962 KB | 2,789 signatures, 10 localities, 2,298 verified instances (v2.0.0) | `liveOutageService.getGoldRegistry()` | Bundled fallback for the GCS-hosted copy (see doc 10). |
+| `scenarios/michaung2023.json`, `floods2015.json`, `monsoon2020.json` | 30 KB, 26 KB, 30 KB | 144, 120 and 144 hourly steps | `scenarioService.ts` | Real hindcasts: NASA GPM IMERG V07 rain and ERA5-Land wind and pressure, averaged over the Chennai area via Earth Engine. Fields: `timestep_hour` (0 = peak-rain hour), `utc`, `total_precipitation_1hr_mm`, `wind_speed_10m_kmh` (area mean, not gusts), `surface_pressure_hpa`, `simulated_storm_surge_msl_m` (constant 0.4 = normal tide; no surge modelled). Built by `surgegrid-ai-v2/pipeline/07_build_scenario_from_gee.py`. |
+| `official_flood_layers.json` | 36 KB | 286 substations | `officialFloodLayers.ts` | Per substation: `nrsc2015` (inside the NRSC 2015 flood extent), `returnPeriod` (highest LOW/MODERATE/HIGH across the 5, 10, 25, 50 and 100-year flood maps, or null), `inundationZone` (worst GCC class, or null), `stagnation2015Within500m`, `hotspots2020Within500m`. Point-in-polygon and distance checks against OpenCity GCC layers. Built by `scripts/build_official_flood_layers.py`. Not a prediction. |
+| `relief_centres.json` | 27 KB | 120 wards, 162 centres; 87 backup suggestions | `reliefCentres.ts` | `wards[ward]`: zone, a point inside the ward polygon (the GCC list has **no coordinates**), centres with address, officer and contact. `backups[substationCode]`: nearest other distribution-tier substation with none of the flood flags (yard at or below 2.0 m, inside the 2015 extent, Moderate/High rating), straight-line km. Built by `scripts/build_relief_centres.py`. |
 
 **Runtime remote sources**
 
@@ -97,25 +100,27 @@ Feeders nested inside `substations[].feeders` in `chennai_tneb_grid.json` and dy
 
 ---
 
-## 4. Disaster Resilience & Statutory Governance Attributes
+## 4. Disaster-Related Fields (what is official, what is ours)
 
-Added in Release **1.3.0** per the **Tamil Nadu State Disaster Management Plan (TNSDMA 2023)** and **TANGEDCO Disaster Management Manual**:
+Earlier versions of this section listed fields such as `esf15SlaHours` (6/12/24/48 h restoration times), `restorationStage` (a five-stage protocol), `rmuCount`, `plinthElevationM` (1.5 m), depths derived from elevation and a wind/surge trip reason. **None of those come from the four official plans**, and the fields were removed from the code. What remains:
 
-### 4.1 Feeder Resilience Schema (`FeederDetail` Extensions)
-| Field | Type | Statutory Provenance | Description & Range |
-| :--- | :--- | :--- | :--- |
-| `esf15SlaHours` | number | TNSDMA 2023 Chapter 8 (ESF 15: Power & Energy) | Statutory maximum restoration time target: `6h` (P1 Lifelines), `12h` (P2 & 33kV Trunks), `24h` (P3 Commercial HT), `48h` (LT Distribution). |
-| `rmuCount` | number | TANGEDCO Post-Vardah Network Hardening | Number of automated 11 kV Ring Main Units (RMUs) enabling micro-loop sectionalizing without de-energizing entire feeders (`1` to `12`). Pure OH radial lines = `0`. |
-| `restorationStage` | number (1-5) | TANGEDCO 5-Stage Sequential Restoration Protocol | Canonical sequence order: `3` (Trunk/Lifeline), `4` (Automated RMU Loops), `5` (DTR Megger & LT Charging). |
-| `circuitState` | string | TNSDMA §5.6 Safety Mandate | Real-time simulated status: `'LIVE'`, `'PRE_EMPTIVE_SAFETY_ISOLATION'`, `'STORM_FAULT_TRIPPED'`, `'AWAITING_PATROL_CLEARANCE'`. |
-| `preEmptiveTripReason` | string | TNSDMA Public Electrocution Prevention | Statutory justification: `'WIND_GUST_EXCEEDED'` (Wind > 80 km/h), `'YARD_SUBMERGED'` (Surge > 3.0m). |
+### 4.1 Feeder fields (`FeederDetail`)
+| Field | Meaning | Provenance |
+| :--- | :--- | :--- |
+| `config` | `UG`, `OH` or `Mixed` | TNEB feeder data |
+| `lifelineCategory`, `lifelineLabel`, `priorityLevel` | `hospital`, `water`, `transit`, `governance`, `industrial_ht`; priority `P1_*` to `P3_COMMERCIAL` | **Our classification from the feeder name.** The national plan lists drainage pumping, drinking-water plants and hospitals for priority restoration (MoP DMP 2021, p. 239), but does not define these classes. |
+| `isDedicated`, `ltLengthKm`, `isCmwssbSps`, `isGccShelterFeed` | Service and length facts | TNEB / GCC data |
+| `circuitState` | Always `LIVE` in the data | Feeder status during a scenario is computed on screen from elevation and feeder type (see doc 05) |
 
-### 4.2 Substation Resilience Schema (`TnebSubstation` Extensions)
-| Field | Type | Engineering Benchmark | Description |
-| :--- | :--- | :--- | :--- |
-| `plinthElevationM` | number | TNEB Control Room Standards | Switchgear equipment and busbar plinth clearance above local ground level (`1.5 m`). |
-| `benchmarked2015FloodDepthM` | number | 2015 Floods Historical Ground Truth | Derived from `elevationM` in `sanitizeGridData()` (`tnebGridService.ts`), not surveyed per yard: `1.8 m` (6 ft) if elevation ≤ 3.0 m, `0.9 m` if ≤ 6.0 m, `0.2 m` above that, `0.5 m` when elevation is unknown. |
-| `yardDewateringRequired` | boolean | TANGEDCO Substation Recovery SOP | Also derived in `sanitizeGridData()`: `true` only if elevation ≤ 3.0 m. Requires high-capacity mobile diesel pumps before busbar megger testing and re-energization. |
-| `statutoryDeenergized` | boolean | TNSDMA §5.6 State Order | Isolated by statutory mandate during severe weather to prevent mass public electrocution. |
+### 4.2 Substation fields (`TnebSubstation`)
+| Field | Meaning | Provenance |
+| :--- | :--- | :--- |
+| `elevationM` | Ground elevation, m above mean sea level | SRTM terrain data via Earth Engine |
+| `distanceToCoastKm` | Distance to the coast | Computed from the coast line |
+| `gccZone`, `gccWard`, ward hotlines, `wardReliefSheltersCount` | GCC administrative data | GCC |
+| `riskCategory`, `compositeRiskScore` | Flood category and score | **SurgeGrid's own model, not from the plans.** Used only by the waterlogging filter and the ranking panel, and labelled as ours. |
+| `hydroRisk.*` | Modelled depths, homes at risk, advisory text from the sister project's physical model | **Not shown anywhere.** The model did not validate (near-chance match to the 2015 satellite map; see `PROJECT_LOG.md` item 24). Kept in the file only for provenance. |
+| `healthProfile`, `outageHistory` | 90-day history, grade A-D | Our health model (docs 08, 09) |
 
-
+### 4.3 Official flood facts
+Flood facts shown to users come from `official_flood_layers.json` and `relief_centres.json` (section 1.1), not from `hydroRisk`.

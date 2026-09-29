@@ -1,74 +1,77 @@
 # 00 - Feature Map: Where Things Live
 
-A quick locator: **feature → file**. Written from a full read of `src/` on 2026-09-29. Line numbers are approximate and will drift; search by name.
+A locator: **feature to file**. Updated 2026-09-30 for the final state. Search by name, since line numbers drift.
 
 ## App shell
 | What | File |
 |---|---|
-| Entry, header, light/dark toggle (saved as `sg_theme`), grid loading, weather refresh every 10 min | `src/App.tsx` |
-| The whole map screen (state hub for scenario, timeline, Gemini, selection, layers) | `src/components/Map/TnebGridMap.tsx` (1,400 lines) |
+| Entry, header, light/dark toggle, grid loading, weather refresh every 10 min | `src/App.tsx` |
+| The map screen (state hub for scenario, timeline, directive, selection, layers) | `src/components/Map/TnebGridMap.tsx` |
 
-## Disaster simulation
+## Scenarios and timeline
 | What | File |
 |---|---|
-| Scenario list, milestone hours, scenario JSON loader | `src/services/scenarioService.ts` |
-| Scenario data (61 hourly steps, T-48h..T+12h) | `public/data/scenarios/michaung_class_cat3.json` |
-| Scenario data (120 hourly steps, hindcast, no surge) | `public/data/scenarios/floods2015.json` |
-| Cockpit bar: scenario buttons, play/pause, scrubber, wind/rain/surge readouts, triage filter buttons, *AI Directive* button (draggable) | `src/components/Map/DisasterCockpitBar.tsx` |
-| Timeline state, playback (2.2 s per step), auto-open of the directive at milestones | `TnebGridMap.tsx` (search `Scenario Loader`, `Playback Loop`, `Autonomous Gemini`) |
-| Per-feeder trip/status rules (yard flood, wind > 80 km/h, watch > 60) | `src/components/Map/disasterUtils.ts` |
-| `?scenario=` URL switch | `TnebGridMap.tsx` (`disasterScenario` initial state) |
+| Scenario ids, data files, start hours, milestone jumps, loader | `src/services/scenarioService.ts` |
+| Three real hindcasts (IMERG rain + ERA5-Land wind) | `public/data/scenarios/michaung2023.json`, `floods2015.json`, `monsoon2020.json` |
+| Cockpit bar: scenario buttons, play/pause, speed (1x to 8x), scrubber, wind/rain readouts, triage filters, AI Directive button | `src/components/Map/DisasterCockpitBar.tsx` |
+| Playback loop, auto-open of the directive at milestones, debounce of Gemini calls | `TnebGridMap.tsx` |
+| Feeder flags in a scenario (low-lying yard, operator decision, underground) | `src/components/Map/disasterUtils.ts` |
 
-## Gemini AI
+## Official plan text (the only source of plan wording)
 | What | File |
 |---|---|
-| Tier 1: top-6 vulnerable substations scorer (`extractTopCompromisedInfra`) | `src/services/geminiSopService.ts` |
-| Tier 1: built-in SOP (fixed templates + dynamic fill-in) and live Gemini call with cache | `src/services/geminiSopService.ts` (`getDirectiveForTimestep`, `fetchLiveGeminiDirective`) |
-| Tier 1 UI: floating *AI Directive* window, checklist, minimize | `src/components/Map/GeminiSopDialog.tsx` |
-| Tier 2: rule-based posture (`generateDeterministicTacticalAdvisory`) and live Gemini call with cache | `src/services/geminiSubstationCopilotService.ts` |
-| Tier 2 UI: advisory card inside the substation health card | `src/components/Map/SubstationHealthCard.tsx` (search `Tier-2`) |
-| Deep dive | `docs/DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md` |
+| 37 word-for-word quotes with page numbers, IMD cyclone classes, IMD warning stages, `CHENNAI_AVERAGE_ELEVATION_M` (2.0 m) | `src/data/officialSources.ts` |
+| Human-readable copy of the same list and what the plans do not say | `docs/SOURCES.md` |
+| How the app uses each plan | `docs/05-official-plans-and-how-the-app-uses-them.md` |
 
-Both services read `VITE_GEMINI_API_KEY`, call `gemini-2.5-flash`, and fall back to the rule engine on any failure.
+## AI Directive and Substation Copilot
+| What | File |
+|---|---|
+| Phase rule, action table per scenario and phase, targets from grid data, Gemini wording layer, our ranking panel | `src/services/geminiSopService.ts` |
+| AI Directive window (quotes, citations, notes, target chips) | `src/components/Map/GeminiSopDialog.tsx` |
+| Flags, quoted actions, Gemini note for one substation | `src/services/geminiSubstationCopilotService.ts` |
+| Copilot card inside the health card | `src/components/Map/SubstationHealthCard.tsx` |
+| Shared browser client for Gemini (no key) | `src/services/geminiClient.ts` |
+| Cloud Function proxy to Gemini (own service account) | `gemini-proxy/` (`index.js`, `README.md`) |
+| Architecture write-up | `docs/DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md` |
+
+## Substation card (Civic & Crisis tab)
+| What | File |
+|---|---|
+| Flood exposure: grid facts, official flood-map checks, plan quote when it applies | `src/components/Map/FloodExposureCard.tsx` |
+| Official flood-layer results per substation (loader + hook) | `src/services/officialFloodLayers.ts`, `public/data/official_flood_layers.json` |
+| Built by | `scripts/build_official_flood_layers.py` (reads OpenCity GCC KML files kept outside the repo) |
+| Relief centres by ward, backup suggestion | `src/components/Map/ReliefCentresCard.tsx`, `src/services/reliefCentres.ts`, `public/data/relief_centres.json` |
+| Built by | `scripts/build_relief_centres.py` |
+| Map layer "Relief centres (by ward)" | `TnebGridMap.tsx`, `MapLayerControls.tsx` |
+| GCC zone/ward card, hotlines, quoted TANGEDCO role, copy-SMS dispatch (quoted action) | `MunicipalDisasterCard.tsx`, `CopyIncidentSmsButton.tsx` |
+| Drawer with the three tabs (Plant & Specs, Circuits & Grid, Civic & Crisis) | `SubstationInspectorDrawer.tsx` |
 
 ## Grid data and topology
 | What | File |
 |---|---|
-| Load grid (memory → IndexedDB → network), classify feeders as lifelines, restoration SLAs, prune impossible links | `src/services/tnebGridService.ts` |
+| Load grid (memory, IndexedDB, network), lifeline classification by feeder name, prune impossible links | `src/services/tnebGridService.ts` |
 | Main dataset (286 substations, 352 sections) | `public/data/chennai_tneb_grid.json` |
-| Feeder street geometry and transformer (DTR) points, per circle / per substation | `src/services/feederGeometryService.ts`, `public/data/feeders/`, `dtr/`, `substation_feeders/` |
-| All data types (`TnebSubstation`, `FeederDetail`, `SubstationHydroRisk`, health profile, etc.) | `src/types/tneb.ts` |
-| GCC ward hotlines and disaster directory | `src/data/gcc_ward_disaster_directory.json` |
+| Feeder street geometry and transformer points, per circle and per substation | `src/services/feederGeometryService.ts`, `public/data/feeders/`, `dtr/`, `substation_feeders/` |
+| Data types | `src/types/tneb.ts` |
+| GCC ward hotline directory | `src/data/gcc_ward_disaster_directory.json` |
 
-## Health scoring and live outages
+## Health score and live layers
 | What | File |
 |---|---|
-| Outage-reason parser, health score, A–D grade, risk multiplier, "at risk" (< 75) and waterlogging checks | `src/services/gridHealthService.ts` |
-| Live outage fetch, Gold Registry, locality matching, outage → substation/section matching | `src/services/liveOutageService.ts` |
-| Live weather (Google Weather API, 10-min cache, fallback) | `src/services/liveWeatherService.ts`, pill UI in `src/components/Map/LiveWeatherPill.tsx` |
+| Outage parser, health score (our model), A-D grade, waterlogging filter (2.0 m or our flood category) | `src/services/gridHealthService.ts` |
+| Live outage notices, Gold Registry, matching | `src/services/liveOutageService.ts` |
+| Live weather (Google Weather API) | `src/services/liveWeatherService.ts`, `LiveWeatherPill.tsx` |
 
-## Map and panels
-| What | File |
-|---|---|
-| Map layers (tiers, sections, satellite, connections) panel | `src/components/Map/MapLayerControls.tsx` |
-| Search box | `src/components/Map/MapSearchBox.tsx` |
-| Triage roster (poor stability / waterlogging / live outages) | `src/components/Map/TriageSubstationRosterCard.tsx` |
-| Marker icons, lifeline badges | `src/components/Map/mapIcons.ts` |
-| Map styles (light/dark, no POI) | `src/components/Map/mapStyles.ts` |
-| Substation / section inspector drawer (tabs: *Plant & Specs*, *Circuits & Grid*, *Civic & Crisis*) | `src/components/Map/SubstationInspectorDrawer.tsx` (1,800 lines) |
-| Health card (score, grade, history, Tier-2 advisory) | `src/components/Map/SubstationHealthCard.tsx` |
-| Feeder list card | `src/components/Map/FeederCardItem.tsx` |
-| GCC ward / GEE runoff / shelters card | `src/components/Map/MunicipalDisasterCard.tsx` |
-| Copy incident SMS button | `src/components/Map/CopyIncidentSmsButton.tsx` |
-| Grid jargon cheat sheet | `src/components/Map/GridJargonCheatSheet.tsx` |
+## Other panels
+`MapLayerControls.tsx` (layers), `MapSearchBox.tsx` (search), `TriageSubstationRosterCard.tsx` (triage roster), `FeederCardItem.tsx` (feeder cards with quotes), `GridJargonCheatSheet.tsx`, `mapIcons.ts`, `mapStyles.ts`.
 
-## Offline data pipeline (not part of the app)
-`scripts/` rebuilds the grid, gold registry, GCC/ward enrichment, substation history and Gemini-assisted outage recovery. See `scripts/README.md`. `data/` and `data-archive/` hold raw and archived inputs; they are not loaded at runtime.
+## Offline pipeline (not part of the app)
+`scripts/` rebuilds the grid, gold registry, enrichments and the two new JSON files above. The sister project `C:\projects\surgegrid-ai-v2` (not in this repo) holds the scenario builder, the official flood layers as KML, an evaluated flood-proneness pipeline and its honest test results (see `PROJECT_LOG.md`, items 15 and 26).
 
 ## Deploy
-`firebase.json` + `.firebaserc`: Hosting target `surgegrid` on project `namma-map-407ca`. `/api/v2/**` → Cloud Function `outageApi` (source in another repo). Build output: `dist/`.
+`firebase.json` and `.firebaserc`: Hosting site `surgegrid` on project `namma-map-407ca`. `/api/v2/**` goes to `outageApi` (source in another repo) and `/api/gemini` goes to `surgegridGemini` (`gemini-proxy/`). Build output is `dist/`.
 
 ## Leftovers worth knowing
-- `DisasterScenario` in `DisasterCockpitBar.tsx` still lists `CYCLONE_ALERT`, `SEVERE_CYCLONE`, `EXTREME_SURGE`. The UI no longer offers them, but `disasterUtils.ts` still handles them.
-- `VITE_PROJECT_ID` is in `.env.example` but unused. `src/components/Analytics/` is empty.
-- `functions/` holds only `node_modules` (no function source).
+- `hydroRisk` fields remain in `chennai_tneb_grid.json` but nothing on screen shows them (they came from a model that did not validate; see log item 24).
+- `VITE_PROJECT_ID` in `.env.example` is unused. `src/components/Analytics/` is empty. `functions/` holds only `node_modules`.
