@@ -32,6 +32,7 @@ import {
   getFeederDisasterStatus
 } from './disasterUtils';
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
+import { useReliefCentres } from '../../services/reliefCentres';
 import {
   fetchScenarioData,
   isSimulationScenario,
@@ -110,6 +111,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [showSubTrans, setShowSubTrans] = useState(true);
   const [showDistribution, setShowDistribution] = useState(true);
   const [showSections, setShowSections] = useState(false);
+  const [showReliefCentres, setShowReliefCentres] = useState(false);
+  const reliefData = useReliefCentres();
+  const reliefMarkersRef = useRef<google.maps.Marker[]>([]);
   const [isSatellite, setIsSatellite] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showConnections, setShowConnections] = useState(false);
@@ -789,6 +793,38 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     }
   }, [selectedSubstation, selectedSection, showConnections]);
 
+  // Relief centres, one marker per ward. The GCC list has no coordinates, so each marker sits inside its ward, not at a real site.
+  useEffect(() => {
+    reliefMarkersRef.current.forEach(m => m.setMap(null));
+    reliefMarkersRef.current = [];
+    if (!mapRef.current || !mapLoaded || !showReliefCentres || !reliefData) return;
+
+    Object.entries(reliefData.wards).forEach(([ward, w]) => {
+      if (w.lat === null || w.lng === null) return;
+      const marker = new google.maps.Marker({
+        position: { lat: w.lat, lng: w.lng },
+        map: mapRef.current,
+        title: `Ward ${ward} (Zone ${w.zone}): ${w.centres.length} relief centre${w.centres.length > 1 ? 's' : ''} on the GCC list. Marker is inside the ward; exact sites are not on the list.`,
+        zIndex: 6,
+        icon: {
+          path: 'M 0,-7 L 7,0 0,7 -7,0 z',
+          fillColor: '#7c3aed',
+          fillOpacity: 0.9,
+          strokeColor: '#ffffff',
+          strokeWeight: 1.5,
+          scale: 1
+        },
+        optimized: true
+      });
+      reliefMarkersRef.current.push(marker);
+    });
+
+    return () => {
+      reliefMarkersRef.current.forEach(m => m.setMap(null));
+      reliefMarkersRef.current = [];
+    };
+  }, [showReliefCentres, reliefData, mapLoaded]);
+
   // 9. On-Demand Jurisdictional Boundary Polygon for Selected Section Office
   useEffect(() => {
     // Clear previous polygons
@@ -1400,6 +1436,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               setShowDistribution={setShowDistribution}
               showSections={showSections}
               setShowSections={setShowSections}
+              showReliefCentres={showReliefCentres}
+              setShowReliefCentres={setShowReliefCentres}
+              reliefWardCount={reliefData ? Object.values(reliefData.wards).filter(w => w.lat !== null).length : 0}
               isHospitalLifelineActive={isHospitalLifelineActive}
               substations={substations}
               sections={sections}

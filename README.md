@@ -32,6 +32,8 @@
 - **Feeders and transformers on demand**: 2,678 feeders inside the substation records; street geometry and ~65,000 distribution transformers (DTRs) load per circle from `public/data/feeders/` and `dtr/`, cached in IndexedDB. DTR pins show from zoom 13.8.
 - **Lifeline feeders**: hospitals, water/sewage pumping (P1), metro/rail/port and government (P2), commercial (P3), each with a restoration target time (6 / 12 / 24 / 48 h).
 - **Flood and terrain fields per substation** (baked in from Earth Engine): elevation, distance to coast, risk category, runoff, impervious %, and a `hydroRisk` block (cyclone depth, first-fail hour, isolate recommended, 2015 flood depth).
+- **Relief centres (GCC list)**: 162 relief centres in 120 wards, shown per ward in the substation's *Civic & Crisis* tab (address, officer, contact) and as an optional map layer. The GCC list has **no coordinates**, so markers sit inside each ward, not at a centre's real site, and we do not claim which substation feeds which centre. Flagged substations also show the nearest other substation with none of the flood flags, as a suggestion (straight-line distance; load transfer not checked). Built by `scripts/build_relief_centres.py`.
+- **Official flood maps per substation**: whether a substation's location falls in the NRSC 2015 flood extent, the 5 to 100-year flood-hazard maps and the GCC inundation zones, plus nearby 2015 stagnation points and 2020 hotspots (OpenCity, GCC profile). Built by `scripts/build_official_flood_layers.py`. A map check, not a prediction.
 - **Municipal context**: GCC zone and ward, ward officer hotlines, relief-shelter counts, and a **Copy incident SMS** button that builds a ready-to-send dispatch text.
 
 ### 4. Live intelligence

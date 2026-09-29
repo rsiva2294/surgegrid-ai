@@ -28,6 +28,7 @@ import { SubstationHealthCard } from './SubstationHealthCard';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
+import { ReliefCentresCard } from './ReliefCentresCard';
 
 interface SubstationInspectorDrawerProps {
   selectedSubstation: TnebSubstation | null;
@@ -230,8 +231,13 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   }, [selectedSubstation, feederFilter, feederCategoryFilter]);
 
   const renderHydroRiskSection = () => {
-    if (!selectedSubstation || selectedSubstation.elevationM === undefined) return null;
-    return <FloodExposureCard substation={selectedSubstation} isLight={isLight} />;
+    if (!selectedSubstation) return null;
+    return (
+      <>
+        {selectedSubstation.elevationM !== undefined && <FloodExposureCard substation={selectedSubstation} isLight={isLight} />}
+        <ReliefCentresCard substation={selectedSubstation} isLight={isLight} />
+      </>
+    );
   };
 
   if (!selectedSubstation && !selectedSection) return null;

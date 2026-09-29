@@ -15,6 +15,9 @@ interface MapLayerControlsProps {
   setShowDistribution: (show: boolean) => void;
   showSections: boolean;
   setShowSections: (show: boolean) => void;
+  showReliefCentres: boolean;
+  setShowReliefCentres: (show: boolean) => void;
+  reliefWardCount: number;
   isHospitalLifelineActive?: boolean;
   substations: TnebSubstation[];
   sections: TnebSection[];
@@ -39,6 +42,9 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
   setShowDistribution,
   showSections,
   setShowSections,
+  showReliefCentres,
+  setShowReliefCentres,
+  reliefWardCount,
   isHospitalLifelineActive,
   substations,
   sections,
@@ -269,6 +275,36 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                 }`}
               >
                 {sections.length}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setShowReliefCentres(!showReliefCentres)}
+              title="GCC relief centres grouped by ward. The GCC list has no coordinates, so each marker sits inside its ward, not at the centre's real site."
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
+                showReliefCentres
+                  ? isLight
+                    ? 'bg-violet-50/90 border-violet-300 text-violet-900 shadow-sm'
+                    : 'bg-violet-950/50 border-violet-500/60 text-violet-200 shadow-sm'
+                  : isLight
+                  ? 'bg-slate-100/90 border-slate-300 text-slate-700 line-through'
+                  : 'bg-slate-900/80 border-slate-700 text-slate-300 line-through'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2.5 h-2.5 rotate-45 ${
+                    isLight ? 'bg-violet-600 ring-2 ring-violet-300' : 'bg-violet-500 ring-2 ring-violet-400/40'
+                  }`}
+                />
+                <span className="font-medium">Relief centres (by ward)</span>
+              </div>
+              <span
+                className={`font-mono text-xs px-1.5 py-0.5 rounded font-bold ${
+                  isLight ? 'bg-violet-100 text-violet-700' : 'bg-violet-500/20 text-violet-300'
+                }`}
+              >
+                {reliefWardCount}
               </span>
             </button>
           </div>
