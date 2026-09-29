@@ -191,3 +191,25 @@
      - Desktop: Performance 89 -> 91, Accessibility 91 -> 100, Best Practices 92 -> 92, SEO 100 -> 100. FCP 0.3 -> 0.3 s, LCP 2.1 -> 1.9 s, TBT 50 -> 80 ms, CLS 0.010 -> 0.018, Speed Index 1.3 -> 1.3 s, TTI 2.1 -> 1.9 s, transfer 1,249 -> 1,025 KiB, requests 96 -> 107.
    - **Reading:** real but modest gains. Speed Index and mobile FCP got slightly worse: the old full-screen spinner painted early, while now the map area stays blank until Google Maps loads; the extra code-split chunks add requests; the lab TTFB varied (418 ms this run vs 69 ms before). Mobile LCP is still the map tile: resource load delay 1.6 s (Maps script must load and initialise before tiles are requested) plus 0.5 s render delay. Remaining flagged items: console error (bucket CORS), a 1x1 Maps image size, forced reflow (desktop), and LCP discovery.
    - **Options for more gain:** inject the Maps script from `index.html` at HTML parse instead of after the React bundle runs; create the 286 markers in chunks to cut the 407 ms first-render task; load feeders and health-event details on demand; bucket CORS (needs owner approval). Not done.
+
+---
+
+## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat
+
+**State**
+- Branch `feature/hackathon-polish` (created from `feature/disaster-simulation-mvp`), all work committed and pushed. **Master was never touched or merged.** Live site https://surgegrid.web.app was deployed from commit `de6307f` (Hosting site `surgegrid`, project `namma-map-407ca`); later commits are docs only.
+- Working rules: get approval for a plan before writing code; keep answers plain and short; keep this log updated; the app shows **only truths** (official quotes with page, real data with a source, map checks, or our own labelled calculations).
+- Hackathon: Build with AI: Code for Communities, Track 5. Deadline 2026-09-30. **Still to do: pitch deck (10-12 slides), 3-5 minute demo video, 2-3 line description.** The README, `docs/SOURCES.md` and this log hold the story.
+
+**What is built (see README and `docs/00-feature-map.md`)**
+- Three real rain hindcasts (Michaung 2023, 2015 floods, Nov 2020 monsoon spell); AI Directive and Substation Copilot built on 37 quoted plan actions (`src/data/officialSources.ts`, `docs/SOURCES.md`); Gemini 2.5 Flash only words notes, via the keyless Cloud Function `surgegridGemini` (`gemini-proxy/`, `asia-south1`); official flood-map checks per substation (`public/data/official_flood_layers.json`); GCC relief centres by ward with a backup suggestion and a map layer (`public/data/relief_centres.json`); playback speed; slimmed and code-split app.
+- Data scripts: `scripts/build_official_flood_layers.py`, `scripts/build_relief_centres.py`, `scripts/slim_grid_data.py` (run after regenerating the grid). The large OpenCity GCC KML files and the scenario builder live in the sister project `C:\projects\surgegrid-ai-v2` (not in git; see items 15, 26).
+
+**Open items / ideas (none started)**
+1. Deck, video, description (above).
+2. More mobile speed: inject the Maps script from `index.html`, create markers in chunks, load feeder/health details on demand (item 34).
+3. Bucket CORS for the outage Gold Registry on `namma-map-407ca.firebasestorage.app` for `https://surgegrid.web.app` (shared with Namma Map, needs owner approval); it is the only console error on the live site.
+4. Optional from v2: substation ranking by homes in officially mapped flood areas (a fact count, no assumed thresholds) and shelter/hospital exposure at ward level; Tamil advisories (owner said not now).
+5. Known labelled-as-ours items still on screen: health score/grades, SurgeGrid ranking panel, waterlogging filter (yard at or below 2.0 m or our flood category), backup suggestion. The `riskCategory`/`compositeRiskScore` fields have unknown provenance.
+6. Consider a budget alert for Gemini spend and restricting the Google Maps key by referrer (it ships in the browser bundle).
+7. `master` still contains none of this; merging is the owner's decision.
