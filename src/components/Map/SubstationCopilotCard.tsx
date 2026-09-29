@@ -4,6 +4,7 @@ import type { TnebSubstation } from '../../types/tneb';
 import type { DisasterScenario } from './DisasterCockpitBar';
 import type { LiveOutage } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
+import { useOfficialFloodLoaded } from '../../services/officialFloodLayers';
 import {
   fetchSubstationTacticalAdvisory,
   generateDeterministicTacticalAdvisory,
@@ -26,6 +27,7 @@ export const SubstationCopilotCard: React.FC<SubstationCopilotCardProps> = ({
   liveOutages = [],
   currentTimestep
 }) => {
+  const floodLoaded = useOfficialFloodLoaded();
   const [copilotAdvisory, setCopilotAdvisory] = useState<SubstationCopilotAdvisory | null>(null);
   const [isLoadingCopilot, setIsLoadingCopilot] = useState(false);
 
@@ -55,7 +57,7 @@ export const SubstationCopilotCard: React.FC<SubstationCopilotCardProps> = ({
       isSubscribed = false;
       clearTimeout(timer);
     };
-  }, [substation.code, disasterScenario, currentTimestep?.timestep_hour, liveOutages]);
+  }, [substation.code, disasterScenario, currentTimestep?.timestep_hour, liveOutages, floodLoaded]);
 
   if (disasterScenario === 'NORMAL' || disasterScenario === 'LIVE' || !copilotAdvisory) return null;
 
@@ -108,7 +110,7 @@ export const SubstationCopilotCard: React.FC<SubstationCopilotCardProps> = ({
                 key={flag.id}
                 title={flag.detail}
                 className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border cursor-help ${
-                  flag.id === 'LOW_LYING'
+                  flag.id === 'LOW_LYING' || flag.id === 'FLOOD_MAP'
                     ? (isLight ? 'bg-cyan-100 text-cyan-950 border-cyan-300' : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40')
                     : flag.id === 'OVERHEAD'
                     ? (isLight ? 'bg-amber-100 text-amber-950 border-amber-300' : 'bg-amber-500/20 text-amber-200 border-amber-500/40')

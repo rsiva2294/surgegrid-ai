@@ -15,7 +15,7 @@ import type { LiveWeatherConditions } from './liveWeatherService';
 import { getEnrichedHealthProfile } from './gridHealthService';
 import { getCachedOfficialFlood, describeOfficialFlood } from './officialFloodLayers';
 import { generateJson } from './geminiClient';
-import { isOverheadFeeder } from './geminiSopService';
+import { isOverheadFeeder, BANNED_WORDING } from './geminiSopService';
 import { CHENNAI_AVERAGE_ELEVATION_M } from '../data/officialSources';
 
 export interface SubstationBrief {
@@ -37,8 +37,6 @@ const SYSTEM_INSTRUCTION =
   "Say that the health score is SurgeGrid's own rating when you mention it. " +
   'Never add numbers, names, causes or facts that are not in the input. ' +
   'Do not predict, forecast, warn, advise actions, or say a place is or is not at risk, safe, or likely to flood; only state what the input states.';
-
-const BANNED = /\b(will|likely|expected to|forecast|predict\w*|at risk|danger\w*|safe|should|must|recommend\w*)\b/i;
 
 function numbersIn(text: string): string[] {
   return text.match(/\d+(?:\.\d+)?/g) || [];
@@ -164,7 +162,7 @@ export async function fetchSubstationBrief(
       responseSchema: { type: 'OBJECT', properties: { summary: { type: 'STRING' } }, required: ['summary'] },
     })) as { summary?: unknown } | null;
     const text = parsed && typeof parsed.summary === 'string' ? parsed.summary.trim() : '';
-    const ok = text !== '' && text.length <= MAX_CHARS && !BANNED.test(text) && numbersIn(text).every(n => promptNumbers.has(n));
+    const ok = text !== '' && text.length <= MAX_CHARS && !BANNED_WORDING.test(text) && numbersIn(text).every(n => promptNumbers.has(n));
     if (!ok) return fallback;
     const brief: SubstationBrief = {
       ...fallback,

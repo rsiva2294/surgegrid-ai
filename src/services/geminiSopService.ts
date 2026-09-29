@@ -492,15 +492,24 @@ const SOP_SYSTEM_INSTRUCTION =
   'Also write a two-sentence summary of the situation. ' +
   'Rules: use only substation names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
   'never restate, reword or cite the quotes; if an action has no list, return an empty applyTo. ' +
-  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so.';
+  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so. ' +
+  'Never say that a fact causes, indicates, suggests or calls for an action; state the facts, and say only that the listed action applies to the named substations.';
 
 function numbersIn(text: string): string[] {
   return text.match(/\d+(?:\.\d+)?/g) || [];
 }
 
-/** A generated sentence is accepted only if every number in it already appears in the prompt. */
-function isGroundedText(text: unknown, promptNumbers: Set<string>, maxChars: number): text is string {
+/**
+ * Wording Gemini may not use: predictions, warnings, advice, and words that say one fact causes or calls for something.
+ * A sentence that contains any of these is discarded and the rule-based text is used instead.
+ */
+export const BANNED_WORDING =
+  /\b(will|likely|expected to|forecast\w*|predict\w*|at risk|danger\w*|safe|should|must|need\w*|indicat\w*|suggest\w*|recommend\w*|because|therefore|due to|call\w* for|requir\w*)\b/i;
+
+/** A generated sentence is accepted only if every number in it already appears in the prompt and it uses no banned wording. */
+export function isGroundedText(text: unknown, promptNumbers: Set<string>, maxChars: number): text is string {
   if (typeof text !== 'string' || text.trim() === '' || text.length > maxChars) return false;
+  if (BANNED_WORDING.test(text)) return false;
   return numbersIn(text).every(n => promptNumbers.has(n));
 }
 

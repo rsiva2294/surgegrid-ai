@@ -23,6 +23,7 @@ import {
 } from '../data/officialSources';
 import {
   RULE_META,
+  isGroundedText,
   isOverheadFeeder,
   resolvePhase,
   scenarioLabel,
@@ -30,7 +31,7 @@ import {
   type SopPhase,
 } from './geminiSopService';
 
-export type SubstationFlagId = 'LOW_LYING' | 'OVERHEAD' | 'LIFELINE';
+export type SubstationFlagId = 'LOW_LYING' | 'FLOOD_MAP' | 'OVERHEAD' | 'LIFELINE';
 
 export interface SubstationFlag {
   id: SubstationFlagId;
@@ -66,12 +67,15 @@ export interface SubstationCopilotAdvisory {
 
 // Official actions used for each flag and phase. Every id exists in officialSources.ts.
 type FlagKey = SubstationFlagId | 'BASE';
+const FLOOD_ACTIONS: Record<SopPhase, string[]> = {
+  WATCH: ['mop-dewatering-pump-arranged', 'tangedco-sandbags'],
+  CRITICAL: ['tangedco-pump-out-flood', 'mop-mobile-dg-sets'],
+  RESTORATION: ['tangedco-pump-out-flood'],
+};
+
 const FLAG_ACTIONS: Record<FlagKey, Record<SopPhase, string[]>> = {
-  LOW_LYING: {
-    WATCH: ['mop-dewatering-pump-arranged', 'tangedco-sandbags'],
-    CRITICAL: ['tangedco-pump-out-flood', 'mop-mobile-dg-sets'],
-    RESTORATION: ['tangedco-pump-out-flood'],
-  },
+  LOW_LYING: FLOOD_ACTIONS,
+  FLOOD_MAP: FLOOD_ACTIONS,
   OVERHEAD: {
     WATCH: ['gcc-check-transformers-pillar-boxes'],
     CRITICAL: ['tangedco-oh-lines-out-of-service', 'mop-switch-off-if-required'],
@@ -101,6 +105,10 @@ function isLifelineFeeder(f: FeederDetail): boolean {
 
 interface SubstationFacts {
   elevation: number | undefined;
+  /** Official flood-map lines that are true for this location (empty if none or not loaded). */
+  floodMapLines: string[];
+  /** True when inside the 2015 extent or rated Moderate/High on the official hazard maps. */
+  onFloodMap: boolean;
   total: number;
   overhead: FeederDetail[];
   underground: number;
@@ -110,8 +118,11 @@ interface SubstationFacts {
 function gatherFacts(substation: TnebSubstation): SubstationFacts {
   const feeders = substation.feeders || [];
   const overhead = feeders.filter(isOverheadFeeder);
+  const officialFlood = getCachedOfficialFlood(substation.code);
   return {
     elevation: substation.elevationM,
+    floodMapLines: officialFlood ? describeOfficialFlood(officialFlood) : [],
+    onFloodMap: Boolean(officialFlood && (officialFlood.nrsc2015 || officialFlood.returnPeriod === 'HIGH' || officialFlood.returnPeriod === 'MODERATE')),
     total: feeders.length,
     overhead,
     underground: feeders.length - overhead.length,
@@ -126,6 +137,13 @@ function buildFlags(facts: SubstationFacts): SubstationFlag[] {
       id: 'LOW_LYING',
       label: 'Low-lying yard',
       detail: `Yard elevation ${facts.elevation} m MSL, at or below Chennai's average of ${CHENNAI_AVERAGE_ELEVATION_M} m.`,
+    });
+  }
+  if (facts.onFloodMap) {
+    flags.push({
+      id: 'FLOOD_MAP',
+      label: 'On an official flood map',
+      detail: `Official flood-map checks: ${facts.floodMapLines.join('; ')}.`,
     });
   }
   if (facts.overhead.length > 0) {
@@ -225,7 +243,8 @@ const COPILOT_SYSTEM_INSTRUCTION =
   'For each action, choose which of the listed feeder names it applies to, and write one short note (one sentence) that ties the actions to the facts provided. ' +
   'Rules: use only feeder names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
   'never restate, reword or cite the quotes; if an action has no feeder list, return an empty feeders array. ' +
-  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so.';
+  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so. ' +
+  'Never say that a fact causes, indicates, suggests or calls for an action; state the facts, and say only that the listed actions apply.';
 
 function numbersIn(text: string): string[] {
   return text.match(/\d+(?:\.\d+)?/g) || [];
@@ -246,7 +265,7 @@ export async function fetchSubstationTacticalAdvisory(
   const { advisory: fallback, facts, allowedFeeders } = built;
   if (!timestep || scenarioId === 'LIVE' || scenarioId === 'NORMAL' || fallback.actions.length === 0) return fallback;
 
-  const cacheKey = `${substation.code}_${scenarioId}_${timestep.timestep_hour}`;
+  const cacheKey = `${substation.code}_${scenarioId}_${timestep.timestep_hour}_${built.facts.floodMapLines.length}`;
   if (!options.force) {
     const cached = copilotCache.get(cacheKey);
     if (cached) return { ...cached, cached: true };
@@ -313,11 +332,7 @@ ${actionLines}`;
       return chosen.length > 0 ? { ...act, feeders: chosen } : act;
     });
 
-    const noteOk =
-      typeof parsed.note === 'string' &&
-      parsed.note.trim() !== '' &&
-      parsed.note.length <= MAX_NOTE_CHARS &&
-      numbersIn(parsed.note).every(n => promptNumbers.has(n));
+    const noteOk = isGroundedText(parsed.note, promptNumbers, MAX_NOTE_CHARS);
 
     const enriched: SubstationCopilotAdvisory = {
       ...fallback,
