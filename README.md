@@ -63,6 +63,7 @@ See the review notes in [docs/PROJECT_LOG.md](./docs/PROJECT_LOG.md) (SOP impact
 ## Documentation
 - [00 - Feature Map (where things live)](./docs/00-feature-map.md)
 - [Project Log (decisions and history)](./docs/PROJECT_LOG.md)
+- [Official Sources: quote bank with page numbers](./docs/SOURCES.md)
 - [Disaster Simulation & Gemini Architecture](./docs/DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md)
 - [01 - Architecture & System Design](./docs/01-architecture-and-system-design.md) (design vision; see its status note)
 - [02 - Data Dictionary & Sources](./docs/02-data-dictionary-and-sources.md)
