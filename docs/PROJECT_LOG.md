@@ -210,6 +210,8 @@
 
 38. **Overview reordered and flood card restyled (owner approved).** Overview is now: outage banner, **health score**, **flood exposure**, plant specs. The flood card uses the same look as the health card: a badge ("Inside 2015 flood extent", "On an official flood map" or "In no official flood layer"), three tiles (yard elevation against the 2.0 m average, 2015 flood extent Yes/No, hazard map rating) and chips for only the true lines (GCC inundation zone, 2015 stagnation points and 2020 hotspots within 500 m, distance to coast). The two flood plan quotes moved out of the card into the Respond tab, inside the collapsed "Plan notes" section (`FloodPlanNotes.tsx`), with the "Applies here" reason, and only when a flood flag applies. Health card title shortened to "Health (our model)" so it fits on phones. Checked at desktop and phone width. Not redeployed.
 
+39. **Redeployed to Firebase Hosting (branch `feature/hackathon-polish`, commit df73209, master untouched) and re-measured.** Lighthouse 13.5.0 on `https://surgegrid.web.app/?scenario=MICHAUNG_2023`: **mobile** Accessibility 100, Best Practices 92, SEO 100, Performance 48, 53 and 57 over three runs (median 53; LCP 8.9-9.6 s, TBT 660-1,000 ms, CLS 0.017); **desktop** Performance 88, Accessibility 100, Best Practices 92, SEO 100 (LCP 2.2 s, TBT 80 ms, CLS 0.008). Same range as item 34 (mobile 54, desktop 91): the run-to-run spread on mobile is about 10 points, and the main bundle is unchanged (321 KB); the new drawer code sits in the lazy drawer chunk (92 KB). The only new startup request is the 37 KB official flood-layer file, now loaded once at map start for the waterlogging count.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat

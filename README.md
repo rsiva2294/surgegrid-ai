@@ -65,8 +65,8 @@ Gemini 2.5 Flash on Google Cloud's Gemini Enterprise Agent Platform (formerly Ve
 
 ---
 
-## Performance (live site, Lighthouse 13.5.0, 2026-09-30)
-Mobile: Performance 54, Accessibility 100, Best Practices 92, SEO 100 (LCP 8.3 s, total blocking time 720 ms). Desktop: Performance 91, Accessibility 100, Best Practices 92, SEO 100 (LCP 1.9 s). The map, code split and slimmed data files (grid file 1.7 MB) helped; the mobile LCP is now mostly Google Maps' own load time. Remaining ideas are listed in `docs/PROJECT_LOG.md` (item 34).
+## Performance (live site, Lighthouse 13.5.0, after the final deploy)
+Mobile: Performance 48 to 57 across three runs (median 53), Accessibility 100, Best Practices 92, SEO 100 (LCP about 9 s, total blocking time 660 to 1,000 ms). Desktop: Performance 88, Accessibility 100, Best Practices 92, SEO 100 (LCP 2.2 s). Mobile scores vary by about 10 points from run to run. The map, code split and slimmed data files (grid file 1.7 MB) helped; the mobile LCP is now mostly Google Maps' own load time. Remaining ideas are listed in `docs/PROJECT_LOG.md` (items 34 and 39).
 
 ---
 
