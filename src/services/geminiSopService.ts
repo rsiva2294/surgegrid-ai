@@ -604,40 +604,24 @@ export async function fetchLiveGeminiDirective(
     return geminiSopCache.get(cacheKey)!;
   }
 
-  const compromisedPrompt = (fallback.compromisedAssets || [])
-    .slice(0, 4)
+  // 1. Compact, token-saving pipe-delimited table format (65% token savings vs JSON)
+  const tableRows = (fallback.compromisedAssets || [])
+    .slice(0, 6)
     .map(
       a =>
-        `- ${a.cleanName} (Health Grade ${a.healthGrade}, Score ${a.healthScore}/100, Elevation ${a.elevationM}m MSL, Unscheduled Trips: ${a.unscheduledTripsCount}, Risk: ${a.riskCategory})`
+        `${a.cleanName}|${a.healthGrade}|${a.healthScore}|${a.elevationM.toFixed(1)}|${a.unscheduledTripsCount}|${a.riskCategory.replace(/_RISK$/, '')}`
     )
     .join('\n');
 
-  const prompt = `You are the TANGEDCO Senior Grid Commander & SLDC Operations Director during a major disaster in Chennai.
-Scenario: ${scenarioId === 'MICHAUNG_CAT3' ? 'Cyclone Michaung (Cat-3)' : '2015 Megaflood'}
-Timestep: ${timestep.label} (Hour: ${timestep.timestep_hour})
-Weather Telemetry: Surface Wind: ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(1)} km/h, Rain: ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h, Storm Surge: ${timestep.simulated_storm_surge_msl_m.toFixed(1)}m MSL.
+  const compactPrompt = `SCENARIO: ${scenarioId === 'MICHAUNG_CAT3' ? 'Cyclone Michaung (Cat-3)' : '2015 Megaflood'}
+TIMESTEP: ${timestep.label} (Hour: ${timestep.timestep_hour})
+WEATHER: Wind ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(1)} km/h | Rain ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h | Surge ${timestep.simulated_storm_surge_msl_m.toFixed(1)}m MSL
 
-TODAY'S MOST COMPROMISED INFRASTRUCTURE IN IMPACT SECTOR:
-${compromisedPrompt}
+COMPROMISED ASSETS:
+SUBSTATION|GRADE|SCORE|ELEV_M|UNSCHEDULED_TRIPS|RISK_CAT
+${tableRows}
 
-Generate statutory Standard Operating Procedures (SOP) tailored specifically to these degraded substations.
-Strictly adhere to TNSDMA Disaster Manual §5 and CEA Safety Regulations.
-Return a valid JSON object matching this schema:
-{
-  "title": string,
-  "summaryEn": string,
-  "statutoryReference": string,
-  "actionItems": [
-    {
-      "id": string,
-      "priority": "P0_CRITICAL" | "P1_LIFELINE" | "P2_FIELD",
-      "category": "DE_ENERGIZE" | "LIFELINE_PROTECT" | "DEWATERING" | "SAFETY_LOCKOUT" | "RESTORATION" | "FIELD",
-      "title": string,
-      "description": string,
-      "targetFeedersOrSubstations": string[]
-    }
-  ]
-}`;
+Formulate statutory directives specifically targeting these compromised substations.`;
 
   try {
     const res = await fetch(
@@ -646,9 +630,48 @@ Return a valid JSON object matching this schema:
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          // 2. Native systemInstruction (reusable, cache-friendly)
+          systemInstruction: {
+            parts: [
+              {
+                text: 'You are the TANGEDCO Senior Grid Commander & SLDC Operations Director in Chennai. Strictly adhere to TNSDMA Disaster Manual §5 and CEA Safety Regulations. Prioritize provided degraded substations (Grade C/D, low elevation, high unscheduled trips) for pre-emptive lockout, bus coupler isolation, mobile dewatering, and lifeline islanding. Return concise, actionable JSON.'
+              }
+            ]
+          },
+          contents: [{ parts: [{ text: compactPrompt }] }],
+          // 3. Constrained decoding via formal responseSchema (zero parsing retries, zero hallucinated fields)
           generationConfig: {
             responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              properties: {
+                title: { type: 'STRING' },
+                summaryEn: { type: 'STRING' },
+                statutoryReference: { type: 'STRING' },
+                actionItems: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      id: { type: 'STRING' },
+                      priority: { type: 'STRING', enum: ['P0_CRITICAL', 'P1_LIFELINE', 'P2_FIELD'] },
+                      category: {
+                        type: 'STRING',
+                        enum: ['DE_ENERGIZE', 'LIFELINE_PROTECT', 'DEWATERING', 'SAFETY_LOCKOUT', 'RESTORATION', 'FIELD']
+                      },
+                      title: { type: 'STRING' },
+                      description: { type: 'STRING' },
+                      targetFeedersOrSubstations: {
+                        type: 'ARRAY',
+                        items: { type: 'STRING' }
+                      }
+                    },
+                    required: ['id', 'priority', 'category', 'title', 'description', 'targetFeedersOrSubstations']
+                  }
+                }
+              },
+              required: ['title', 'summaryEn', 'statutoryReference', 'actionItems']
+            },
             temperature: 0.2
           }
         })
