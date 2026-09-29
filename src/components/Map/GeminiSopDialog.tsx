@@ -249,6 +249,54 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             </p>
           </div>
 
+          {/* Today's Compromised Grid Focus (Real Graded Infrastructure) */}
+          {directive.compromisedAssets && directive.compromisedAssets.length > 0 && (
+            <div className={`p-3 rounded-xl border ${
+              isLight ? 'bg-amber-50/60 border-amber-200 text-slate-800' : 'bg-amber-950/20 border-amber-800/40 text-slate-200'
+            }`}>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-500">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>Today's Vulnerable Grid Focus (Health + Hazard)</span>
+                </div>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                  Grade C/D & Low Plinth
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                {directive.compromisedAssets.slice(0, 6).map((asset) => (
+                  <button
+                    key={asset.code}
+                    type="button"
+                    onClick={() => onSelectSubstation?.(asset.cleanName)}
+                    className={`p-2 rounded-lg border text-left transition-all group ${
+                      isLight
+                        ? 'bg-white hover:bg-amber-50 border-slate-200 hover:border-amber-400 shadow-xs'
+                        : 'bg-slate-900/90 hover:bg-amber-950/40 border-slate-700/70 hover:border-amber-500/50 shadow-xs'
+                    }`}
+                    title={`Focus on ${asset.cleanName} in map`}
+                  >
+                    <div className="flex items-center justify-between gap-1 mb-0.5">
+                      <span className="font-bold text-xs truncate group-hover:text-amber-400 transition-colors">
+                        {asset.cleanName}
+                      </span>
+                      <span className={`text-[9px] font-mono px-1 rounded font-bold shrink-0 ${
+                        asset.healthGrade === 'D'
+                          ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                      }`}>
+                        {asset.healthGrade}
+                      </span>
+                    </div>
+                    <div className="text-[10px] text-slate-400 font-mono truncate">
+                      {asset.healthScore}/100 • {asset.elevationM.toFixed(1)}m MSL
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Impact Overview Metrics */}
           <div className="grid grid-cols-3 gap-2">
             <div className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${

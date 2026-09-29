@@ -33,7 +33,7 @@ import {
 } from './disasterUtils';
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
 import { fetchScenarioData, type ScenarioData, type ScenarioId } from '../../services/scenarioService';
-import { getDirectiveForTimestep } from '../../services/geminiSopService';
+import { getDirectiveForTimestep, fetchLiveGeminiDirective, type GeminiSopDirective } from '../../services/geminiSopService';
 import { GeminiSopDialog } from './GeminiSopDialog';
 
 export type { DisasterScenario, FeederDisasterStatus };
@@ -185,10 +185,36 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return scenarioData.timesteps.find(t => t.timestep_hour === simulationHour) || scenarioData.timesteps[0] || null;
   }, [scenarioData, simulationHour, disasterScenario]);
 
-  const activeDirective = useMemo(() => {
+  const [liveGeminiDirective, setLiveGeminiDirective] = useState<GeminiSopDirective | null>(null);
+
+  const baseDirective = useMemo(() => {
     if (!currentTimestep || (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015')) return null;
-    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep);
-  }, [currentTimestep, disasterScenario]);
+    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages);
+  }, [currentTimestep, disasterScenario, substations, liveOutages]);
+
+  useEffect(() => {
+    if (!currentTimestep || (disasterScenario !== 'MICHAUNG_CAT3' && disasterScenario !== 'FLOODS_2015')) {
+      setLiveGeminiDirective(null);
+      return;
+    }
+
+    let isSubscribed = true;
+    fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages)
+      .then((res) => {
+        if (isSubscribed && res) {
+          setLiveGeminiDirective(res);
+        }
+      })
+      .catch((err) => {
+        console.warn('Live Gemini SOP fetch ignored:', err);
+      });
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [currentTimestep, disasterScenario, substations, liveOutages]);
+
+  const activeDirective = liveGeminiDirective || baseDirective;
 
   const availableHours = useMemo(() => {
     if (!scenarioData) return [-48, -24, -12, 0, 6, 12];
@@ -1259,9 +1285,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         onTogglePlay={() => setIsPlaying(p => !p)}
         isLight={isLight}
         onSelectSubstation={(name) => {
+          const query = name.toUpperCase().trim();
           const match = substations.find(s => 
-            s.name.toUpperCase().includes(name.toUpperCase()) || 
-            name.toUpperCase().includes(s.name.toUpperCase())
+            s.name.toUpperCase().includes(query) || 
+            query.includes(s.name.toUpperCase()) ||
+            (s.cleanName && (
+              s.cleanName.toUpperCase().includes(query) ||
+              query.includes(s.cleanName.toUpperCase())
+            )) ||
+            s.code === query
           );
           if (match) onSelectSubstation(match);
         }}

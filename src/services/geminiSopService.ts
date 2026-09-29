@@ -6,6 +6,9 @@
  */
 
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
+import type { TnebSubstation } from '../types/tneb';
+import type { LiveOutage } from './liveOutageService';
+import { getEnrichedHealthProfile } from './gridHealthService';
 
 export interface SopActionItem {
   id: string;
@@ -15,6 +18,20 @@ export interface SopActionItem {
   description: string;
   targetFeedersOrSubstations?: string[];
   completed?: boolean;
+}
+
+export interface CompromisedSubstationSummary {
+  name: string;
+  cleanName: string;
+  code: string;
+  voltage: string;
+  healthGrade: 'A' | 'B' | 'C' | 'D';
+  healthScore: number;
+  unscheduledTripsCount: number;
+  elevationM: number;
+  riskCategory: string;
+  vulnerabilityReason: string;
+  disasterScore: number;
 }
 
 export interface GeminiSopDirective {
@@ -40,6 +57,92 @@ export interface GeminiSopDirective {
   actionItems: SopActionItem[];
   geminiModelTag: string;
   timestamp: string;
+  compromisedAssets?: CompromisedSubstationSummary[];
+}
+
+/**
+ * Evaluates Chennai's active infrastructure health ("Today's State") against
+ * active disaster physical hazards (surge depth, wind speed, inundation risk).
+ * Returns the top degraded substations that face compounding disaster failure risk.
+ */
+export function extractTopCompromisedInfra(
+  substations: TnebSubstation[],
+  liveOutages: LiveOutage[] = [],
+  timestep?: ScenarioTimestep | null,
+  limit = 6
+): CompromisedSubstationSummary[] {
+  if (!substations || substations.length === 0) return [];
+
+  const surgeM = timestep ? timestep.simulated_storm_surge_msl_m : 0;
+  const windKmh = timestep ? Math.abs(timestep.wind_speed_10m_kmh) : 25;
+
+  const scored: CompromisedSubstationSummary[] = substations.map((ss) => {
+    const profile = getEnrichedHealthProfile(ss, liveOutages);
+    const elevation = ss.elevationM !== undefined ? ss.elevationM : 6.0;
+
+    let disasterScore = 0;
+
+    // 1. Health Grade & Trip degradation ("Today's" chronic status)
+    if (profile.healthGrade === 'D') {
+      disasterScore += 70;
+    } else if (profile.healthGrade === 'C') {
+      disasterScore += 45;
+    } else if (profile.healthGrade === 'B') {
+      disasterScore += 15;
+    }
+    disasterScore += (100 - profile.healthScore) * 1.2;
+    disasterScore += Math.min(profile.unscheduledTripsCount * 5, 50);
+
+    // 2. Physical terrain & storm surge inundation compounding
+    if (elevation <= surgeM + 0.3) {
+      disasterScore += 65; // Direct water breach into switchyard equipment
+    } else if (elevation <= 3.2) {
+      disasterScore += 30; // Critical low-lying flood bowl
+    }
+
+    if (ss.riskCategory === 'CRITICAL_SURGE_RISK') {
+      disasterScore += 35;
+    } else if (ss.riskCategory === 'HIGH_WATERLOGGING_RISK') {
+      disasterScore += 25;
+    }
+
+    // 3. High-wind corridor vulnerability
+    if (windKmh >= 75) {
+      const distCoast = ss.distanceToCoastKm ?? 10;
+      if (distCoast <= 6) disasterScore += 30;
+      const hasOverhead = ss.feeders?.some(
+        f => f.config?.toLowerCase().includes('overhead') || f.config?.toLowerCase().includes('mixed')
+      );
+      if (hasOverhead) disasterScore += 20;
+    }
+
+    const cleanName = ss.cleanName || ss.name.replace(/^(110\/33-11KV|230\/110KV|33\/11 KV|110\/11 KV SS|33\/11KV|110KV|230KV|33KV)\s*/i, '').trim();
+
+    const vulnerabilityReason = [
+      `Grade ${profile.healthGrade} (${profile.healthScore}/100)`,
+      elevation <= 3.2 ? `${elevation.toFixed(1)}m MSL Plinth` : null,
+      profile.unscheduledTripsCount > 0 ? `${profile.unscheduledTripsCount} Trips` : null,
+      ss.riskCategory === 'CRITICAL_SURGE_RISK' ? 'Coastal Surge Zone' : null,
+      ss.riskCategory === 'HIGH_WATERLOGGING_RISK' ? 'Flood Basin' : null
+    ].filter(Boolean).join(' • ');
+
+    return {
+      name: ss.name,
+      cleanName,
+      code: ss.code,
+      voltage: ss.voltage,
+      healthGrade: profile.healthGrade,
+      healthScore: profile.healthScore,
+      unscheduledTripsCount: profile.unscheduledTripsCount,
+      elevationM: elevation,
+      riskCategory: ss.riskCategory || 'MODERATE_RISK',
+      vulnerabilityReason,
+      disasterScore,
+    };
+  });
+
+  scored.sort((a, b) => b.disasterScore - a.disasterScore);
+  return scored.slice(0, limit);
 }
 
 // Statutory directives calibrated with TNSDMA guidelines
@@ -267,66 +370,315 @@ const MILESTONE_DIRECTIVES: Record<string, GeminiSopDirective> = {
 };
 
 /**
- * Returns the relevant Gemini SOP directive for a given scenario and timestep.
- * Picks the closest statutory milestone directive if an exact match doesn't exist,
- * dynamically updating the live weather metrics from the current timestep.
+ * Returns the relevant Gemini SOP directive for a given scenario and timestep,
+ * dynamically synthesized using Chennai's active infrastructure condition ("Today's State"):
+ * - Prioritizes Grade C/D substations, chronic trips, and low-plinth inundation bowls.
+ * - Formulates statutory TNSDMA & CEA directives targeting those exact assets.
  */
 export function getDirectiveForTimestep(
   scenarioId: ScenarioId,
-  timestep: ScenarioTimestep
+  timestep: ScenarioTimestep,
+  substations: TnebSubstation[] = [],
+  liveOutages: LiveOutage[] = []
 ): GeminiSopDirective | null {
   if (scenarioId === 'LIVE') return null;
 
-  // Direct milestone hit check
-  const exactKey = `${scenarioId}_${timestep.timestep_hour}`;
-  if (MILESTONE_DIRECTIVES[exactKey]) {
-    const base = MILESTONE_DIRECTIVES[exactKey];
-    return {
-      ...base,
-      weatherSnapshot: {
-        windKmh: Math.abs(timestep.wind_speed_10m_kmh),
-        rainMm: timestep.total_precipitation_1hr_mm,
-        surgeM: timestep.simulated_storm_surge_msl_m,
-        distanceKm: timestep.cyclone_distance_to_chennai_km,
-      },
-    };
-  }
+  const topCompromised = extractTopCompromisedInfra(substations, liveOutages, timestep, 6);
 
-  // Fallback: Pick the closest milestone prior or equal to current timestep
-  if (scenarioId === 'MICHAUNG_CAT3') {
-    let chosenKey = 'MICHAUNG_CAT3_-24';
+  // Weather snapshot
+  const windKmh = Math.abs(timestep.wind_speed_10m_kmh);
+  const rainMm = timestep.total_precipitation_1hr_mm;
+  const surgeM = timestep.simulated_storm_surge_msl_m;
+  const distanceKm = timestep.cyclone_distance_to_chennai_km;
+
+  // Real at-risk substations count in Chennai grid for this timestep
+  const atRiskCount = substations.length > 0
+    ? substations.filter(ss => {
+        const p = getEnrichedHealthProfile(ss, liveOutages);
+        const elev = ss.elevationM !== undefined ? ss.elevationM : 6;
+        return (
+          p.healthGrade === 'D' ||
+          p.healthGrade === 'C' ||
+          elev <= surgeM + 0.3 ||
+          (windKmh >= 80 && (ss.distanceToCoastKm ?? 10) <= 6)
+        );
+      }).length
+    : 14;
+
+  const trippedEstimate = Math.min(
+    Math.round(atRiskCount * (windKmh > 80 ? 1.4 : windKmh > 60 ? 0.7 : 0.2) + (surgeM > 1.0 ? surgeM * 12 : 0)),
+    180
+  );
+
+  // Phase selection
+  const isMichaung = scenarioId === 'MICHAUNG_CAT3';
+  let phase: 'WATCH' | 'CRITICAL' | 'RESTORATION' = 'WATCH';
+  let directiveKey = isMichaung ? 'MICHAUNG_CAT3_-24' : 'FLOODS_2015_0';
+
+  if (isMichaung) {
     if (timestep.timestep_hour >= 6) {
-      chosenKey = 'MICHAUNG_CAT3_12';
+      phase = 'RESTORATION';
+      directiveKey = 'MICHAUNG_CAT3_12';
     } else if (timestep.timestep_hour >= -12) {
-      chosenKey = 'MICHAUNG_CAT3_0';
+      phase = 'CRITICAL';
+      directiveKey = 'MICHAUNG_CAT3_0';
+    } else {
+      phase = 'WATCH';
+      directiveKey = 'MICHAUNG_CAT3_-24';
     }
-    const base = MILESTONE_DIRECTIVES[chosenKey];
-    return {
-      ...base,
-      hour: timestep.timestep_hour,
-      label: timestep.label,
-      weatherSnapshot: {
-        windKmh: Math.abs(timestep.wind_speed_10m_kmh),
-        rainMm: timestep.total_precipitation_1hr_mm,
-        surgeM: timestep.simulated_storm_surge_msl_m,
-        distanceKm: timestep.cyclone_distance_to_chennai_km,
-      },
-    };
+  } else {
+    // 2015 Megafloods
+    if (timestep.timestep_hour >= 12) {
+      phase = 'RESTORATION';
+    } else {
+      phase = 'CRITICAL';
+    }
   }
 
-  if (scenarioId === 'FLOODS_2015') {
-    const base = MILESTONE_DIRECTIVES['FLOODS_2015_0'];
-    return {
-      ...base,
-      hour: timestep.timestep_hour,
-      label: timestep.label,
-      weatherSnapshot: {
-        windKmh: Math.abs(timestep.wind_speed_10m_kmh),
-        rainMm: timestep.total_precipitation_1hr_mm,
-        surgeM: timestep.simulated_storm_surge_msl_m,
-      },
-    };
+  const baseTemplate = MILESTONE_DIRECTIVES[directiveKey] || MILESTONE_DIRECTIVES['MICHAUNG_CAT3_-24'];
+
+  // If we have actual compromised assets from today's grid, dynamically synthesize tailored actions
+  let actionItems: SopActionItem[] = baseTemplate.actionItems;
+  let summaryEn = baseTemplate.summaryEn;
+
+  if (topCompromised.length >= 2) {
+    const primary = topCompromised[0];
+    const secondary = topCompromised[1];
+    const tertiary = topCompromised[2] || primary;
+    const quaternary = topCompromised[3] || secondary;
+    const quinary = topCompromised[4] || tertiary;
+
+    if (phase === 'WATCH') {
+      summaryEn = `Cyclone approaching at ${distanceKm ? `${distanceKm.toFixed(0)} km SE` : 'offshore'}. Winds at ${windKmh.toFixed(1)} km/h. Mandatory pre-emptive intervention for Chennai's most fragile infrastructure: ${primary.cleanName} (${primary.vulnerabilityReason}) and ${secondary.cleanName} (${secondary.vulnerabilityReason}).`;
+      actionItems = [
+        {
+          id: `sop-watch-1`,
+          priority: 'P0_CRITICAL',
+          category: 'SAFETY_LOCKOUT',
+          title: `Lineman Foot Patrols to Fragile Corridors (${primary.cleanName})`,
+          description: `Deploy 24 lineman squads across radial spans originating from ${primary.cleanName} (${primary.vulnerabilityReason}) and ${secondary.cleanName} to trim precariously hanging branches before wind breaches 75 km/h.`,
+          targetFeedersOrSubstations: [primary.cleanName, secondary.cleanName]
+        },
+        {
+          id: `sop-watch-2`,
+          priority: 'P1_LIFELINE',
+          category: 'DEWATERING',
+          title: `Pre-Position 50HP Pumps at Low-Plinth Switchyards (${tertiary.cleanName})`,
+          description: `Stage mobile high-discharge submersible dewatering pumps at low-elevation switchyards: ${tertiary.cleanName} (${tertiary.elevationM.toFixed(1)}m MSL) and ${quaternary.cleanName} to protect ground equipment before storm surge arrival.`,
+          targetFeedersOrSubstations: [tertiary.cleanName, quaternary.cleanName]
+        },
+        {
+          id: `sop-watch-3`,
+          priority: 'P0_CRITICAL',
+          category: 'SAFETY_LOCKOUT',
+          title: `Arm Remote SCADA Trip Groups for Strained Radials (${quinary.cleanName})`,
+          description: `Verify remote supervisory trip groups on all radial distribution lines at ${primary.cleanName} and ${quinary.cleanName} for instant group isolation once wind triggers 80 km/h.`,
+          targetFeedersOrSubstations: [primary.cleanName, quinary.cleanName]
+        },
+        {
+          id: `sop-watch-4`,
+          priority: 'P1_LIFELINE',
+          category: 'LIFELINE_PROTECT',
+          title: `Lock Diesel Genset Transfers on Vulnerable Lifeline Feeds`,
+          description: `Verify automatic transfer switches (ATS) and lock generator emergency fuel reserves for hospitals supplied along the ${secondary.cleanName} network corridor.`,
+          targetFeedersOrSubstations: [secondary.cleanName]
+        }
+      ];
+    } else if (phase === 'CRITICAL') {
+      summaryEn = `Landfall peak in progress: Winds ${windKmh.toFixed(1)} km/h, storm surge ${surgeM.toFixed(1)}m MSL. Immediate statutory de-energization ordered for compromised low-plinth yards ${primary.cleanName} (${primary.vulnerabilityReason}) and ${secondary.cleanName} to prevent catastrophic phase flashovers.`;
+      actionItems = [
+        {
+          id: `sop-crit-1`,
+          priority: 'P0_CRITICAL',
+          category: 'DE_ENERGIZE',
+          title: `Statutory De-Energization of Inundated Radials (${primary.cleanName})`,
+          description: `Immediately open bus breakers on all 11kV/33kV overhead radial lines at ${primary.cleanName} and ${secondary.cleanName}. Extreme wind and water ingress compound existing Grade ${primary.healthGrade} trip degradation.`,
+          targetFeedersOrSubstations: [primary.cleanName, secondary.cleanName]
+        },
+        {
+          id: `sop-crit-2`,
+          priority: 'P0_CRITICAL',
+          category: 'SAFETY_LOCKOUT',
+          title: `Isolate Low-Plinth Switchgear Bus Couplers (${tertiary.cleanName})`,
+          description: `Storm surge of ${surgeM.toFixed(1)}m MSL breaches equipment plinth at ${tertiary.cleanName} (${tertiary.elevationM.toFixed(1)}m MSL). Remotely open incoming circuit breakers to protect main power transformers.`,
+          targetFeedersOrSubstations: [tertiary.cleanName, quaternary.cleanName]
+        },
+        {
+          id: `sop-crit-3`,
+          priority: 'P1_LIFELINE',
+          category: 'LIFELINE_PROTECT',
+          title: `Ring-Fence Essential Hospital Supplies via Underground GIS`,
+          description: `Transfer vital hospital lifelines onto hardened 33kV GIS underground rings, severing overhead radial ties connected through ${quinary.cleanName}.`,
+          targetFeedersOrSubstations: [quinary.cleanName]
+        },
+        {
+          id: `sop-crit-4`,
+          priority: 'P0_CRITICAL',
+          category: 'SAFETY_LOCKOUT',
+          title: `Lock Out SCADA Automatic Circuit Reclosers (ACR)`,
+          description: `Inhibit automatic reclosing across all substations in the storm core to prevent repeated reclosures into submerged conductors or grounded trees.`,
+          targetFeedersOrSubstations: [primary.cleanName, tertiary.cleanName]
+        }
+      ];
+    } else {
+      // Restoration
+      summaryEn = `Storm core weakening; winds eased to ${windKmh.toFixed(1)} km/h. Floodwaters draining. Mandatory statutory insulation verification before re-energizing flood-affected transformers at ${primary.cleanName} and ${tertiary.cleanName}.`;
+      actionItems = [
+        {
+          id: `sop-rest-1`,
+          priority: 'P0_CRITICAL',
+          category: 'SAFETY_LOCKOUT',
+          title: `Mandatory 1000V Megger Insulation Testing (${primary.cleanName})`,
+          description: `Strictly prohibit re-energizing inundated ground-mounted transformers at ${primary.cleanName} (${primary.vulnerabilityReason}) and ${tertiary.cleanName} until line insulation resistance tests >50 MΩ.`,
+          targetFeedersOrSubstations: [primary.cleanName, tertiary.cleanName]
+        },
+        {
+          id: `sop-rest-2`,
+          priority: 'P1_LIFELINE',
+          category: 'RESTORATION',
+          title: `Stage-1 Lifeline Restoration: Water Pumping & Medical Centers`,
+          description: `Energize dedicated underground trunk feeders at ${secondary.cleanName} and ${quaternary.cleanName} under direct SLDC clearance once yard drainage is certified.`,
+          targetFeedersOrSubstations: [secondary.cleanName, quaternary.cleanName]
+        },
+        {
+          id: `sop-rest-3`,
+          priority: 'P2_FIELD',
+          category: 'FIELD',
+          title: `Dispatch Conductor & Pole Replacement Squads (${quinary.cleanName})`,
+          description: `Deploy mobile crane squads to re-erect snapped poles and string fallen spans along the ${quinary.cleanName} and ${secondary.cleanName} distribution corridors.`,
+          targetFeedersOrSubstations: [quinary.cleanName, secondary.cleanName]
+        }
+      ];
+    }
   }
 
-  return null;
+  return {
+    scenarioId,
+    hour: timestep.timestep_hour,
+    label: timestep.label,
+    title: baseTemplate.title,
+    urgency: phase,
+    summaryEn,
+    summaryTa: '',
+    statutoryReference: baseTemplate.statutoryReference,
+    weatherSnapshot: {
+      windKmh,
+      rainMm,
+      surgeM,
+      distanceKm
+    },
+    impactMetrics: {
+      atRiskSubstations: atRiskCount,
+      trippedFeeders: trippedEstimate,
+      protectedLifelines: Math.max(12, 35 - Math.round(trippedEstimate / 6))
+    },
+    actionItems,
+    geminiModelTag: 'Gemini 2.5 Flash · Grid Copilot',
+    timestamp: `${timestep.label} (${timestep.timestep_hour >= 0 ? `+${timestep.timestep_hour}` : timestep.timestep_hour}h)`,
+    compromisedAssets: topCompromised
+  };
+}
+
+const geminiSopCache = new Map<string, GeminiSopDirective>();
+
+/**
+ * Calls live Google Gemini 2.5 Flash API with today's compromised infrastructure
+ * and active storm telemetry. Seamlessly falls back to deterministic grid synthesis.
+ */
+export async function fetchLiveGeminiDirective(
+  scenarioId: ScenarioId,
+  timestep: ScenarioTimestep,
+  substations: TnebSubstation[] = [],
+  liveOutages: LiveOutage[] = []
+): Promise<GeminiSopDirective | null> {
+  const fallback = getDirectiveForTimestep(scenarioId, timestep, substations, liveOutages);
+  if (!fallback) return null;
+
+  const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
+  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
+    return fallback;
+  }
+
+  const cacheKey = `${scenarioId}_${timestep.timestep_hour}_${(fallback.compromisedAssets || []).map(a => a.code).join('-')}`;
+  if (geminiSopCache.has(cacheKey)) {
+    return geminiSopCache.get(cacheKey)!;
+  }
+
+  const compromisedPrompt = (fallback.compromisedAssets || [])
+    .slice(0, 4)
+    .map(
+      a =>
+        `- ${a.cleanName} (Health Grade ${a.healthGrade}, Score ${a.healthScore}/100, Elevation ${a.elevationM}m MSL, Unscheduled Trips: ${a.unscheduledTripsCount}, Risk: ${a.riskCategory})`
+    )
+    .join('\n');
+
+  const prompt = `You are the TANGEDCO Senior Grid Commander & SLDC Operations Director during a major disaster in Chennai.
+Scenario: ${scenarioId === 'MICHAUNG_CAT3' ? 'Cyclone Michaung (Cat-3)' : '2015 Megaflood'}
+Timestep: ${timestep.label} (Hour: ${timestep.timestep_hour})
+Weather Telemetry: Surface Wind: ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(1)} km/h, Rain: ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h, Storm Surge: ${timestep.simulated_storm_surge_msl_m.toFixed(1)}m MSL.
+
+TODAY'S MOST COMPROMISED INFRASTRUCTURE IN IMPACT SECTOR:
+${compromisedPrompt}
+
+Generate statutory Standard Operating Procedures (SOP) tailored specifically to these degraded substations.
+Strictly adhere to TNSDMA Disaster Manual §5 and CEA Safety Regulations.
+Return a valid JSON object matching this schema:
+{
+  "title": string,
+  "summaryEn": string,
+  "statutoryReference": string,
+  "actionItems": [
+    {
+      "id": string,
+      "priority": "P0_CRITICAL" | "P1_LIFELINE" | "P2_FIELD",
+      "category": "DE_ENERGIZE" | "LIFELINE_PROTECT" | "DEWATERING" | "SAFETY_LOCKOUT" | "RESTORATION" | "FIELD",
+      "title": string,
+      "description": string,
+      "targetFeedersOrSubstations": string[]
+    }
+  ]
+}`;
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: 'application/json',
+            temperature: 0.2
+          }
+        })
+      }
+    );
+
+    if (!res.ok) {
+      console.warn('Gemini API returned status:', res.status);
+      return fallback;
+    }
+
+    const data = await res.json();
+    const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!rawText) return fallback;
+
+    const parsed = JSON.parse(rawText);
+    const enriched: GeminiSopDirective = {
+      ...fallback,
+      title: parsed.title || fallback.title,
+      summaryEn: parsed.summaryEn || fallback.summaryEn,
+      statutoryReference: parsed.statutoryReference || fallback.statutoryReference,
+      actionItems:
+        Array.isArray(parsed.actionItems) && parsed.actionItems.length > 0 ? parsed.actionItems : fallback.actionItems,
+      geminiModelTag: 'Gemini 2.5 Flash · Live Copilot'
+    };
+
+    geminiSopCache.set(cacheKey, enriched);
+    return enriched;
+  } catch (err) {
+    console.warn('Gemini live call error, using deterministic grid synthesis fallback:', err);
+    return fallback;
+  }
 }
