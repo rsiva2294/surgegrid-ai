@@ -67,7 +67,51 @@ export function getFeederThemeColors(category?: string, isLight?: boolean) {
   }
 }
 
-export function getDtrMarkerIcon(isLight: boolean, category?: string): google.maps.Symbol {
+export type FeederNodeType = 'RMU' | 'LIFELINE_DTR' | 'STANDARD_DTR';
+
+export function classifyDtrPoint(
+  dtr: { name?: string; kva?: number | string; cons?: number; htFeeders?: number | null },
+  feederCategory?: string
+): { type: FeederNodeType; isRmu: boolean; isLifeline: boolean; label: string } {
+  const nameUpper = (dtr.name || '').toUpperCase();
+  // True RMU = dual HT incomer (loop-in/loop-out switching capability).
+  // "RMU" in TNEB GIS names is just a naming convention, not actual switchgear.
+  const isRmu = (dtr.htFeeders != null && dtr.htFeeders >= 2);
+  const isLifeline = !isRmu && (
+    Boolean(feederCategory && feederCategory !== 'industrial_ht') ||
+    nameUpper.includes('HOSPITAL') ||
+    nameUpper.includes('METRO') ||
+    nameUpper.includes('WATER') ||
+    nameUpper.includes('CMWSSB') ||
+    nameUpper.includes('PUMPING')
+  );
+
+  if (isRmu) {
+    return { type: 'RMU', isRmu: true, isLifeline: false, label: 'Ring Main Unit (RMU)' };
+  }
+  if (isLifeline) {
+    return { type: 'LIFELINE_DTR', isRmu: false, isLifeline: true, label: 'Lifeline Transformer' };
+  }
+  return { type: 'STANDARD_DTR', isRmu: false, isLifeline: false, label: 'Distribution Transformer' };
+}
+
+export function getRmuMarkerIcon(isLight: boolean): google.maps.Symbol {
+  return {
+    // Distinct prominent diamond shape for switching & sectionalizing RMU nodes
+    path: 'M 0,-6 L 6,0 L 0,6 L -6,0 Z',
+    fillColor: isLight ? '#0284C7' : '#00E5FF',
+    fillOpacity: 1,
+    strokeColor: isLight ? '#FFFFFF' : '#0F172A',
+    strokeWeight: 2.5,
+    scale: 2.6
+  };
+}
+
+export function getDtrMarkerIcon(isLight: boolean, category?: string, isRmu: boolean = false): google.maps.Symbol {
+  if (isRmu) {
+    return getRmuMarkerIcon(isLight);
+  }
+
   let fillColor = isLight ? '#D97706' : '#F59E0B';
   if (category === 'hospital') {
     fillColor = isLight ? '#E11D48' : '#F43F5E';
@@ -77,13 +121,15 @@ export function getDtrMarkerIcon(isLight: boolean, category?: string): google.ma
     fillColor = isLight ? '#7C3AED' : '#8B5CF6';
   }
 
+  const isLifeline = Boolean(category && category !== 'industrial_ht');
+
   return {
-    path: 'M -3,-3 L 3,-3 L 3,3 L -3,3 Z',
+    path: isLifeline ? google.maps.SymbolPath.CIRCLE : 'M -3,-3 L 3,-3 L 3,3 L -3,3 Z',
     fillColor,
     fillOpacity: 1,
     strokeColor: isLight ? '#0F172A' : '#FFFFFF',
-    strokeWeight: 1.5,
-    scale: 1.8
+    strokeWeight: isLifeline ? 2.0 : 1.2,
+    scale: isLifeline ? 4.5 : 1.6
   };
 }
 

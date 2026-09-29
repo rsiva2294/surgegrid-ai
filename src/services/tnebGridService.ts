@@ -107,20 +107,12 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
     restorationStage = 4; // Stage 4: Automated RMU commercial loops
   }
 
-  // Automated 11 kV Ring Main Unit (RMU) Estimation (Post-Vardah 13,810 RMU deployment)
+  // RMU Capability: actual RMU count is derived from DTR-level htFeeders >= 2 at runtime.
+  // Here we just flag whether the feeder topology supports loop switching.
   let rmuCount = 0;
   const cfg = (feeder.config || '').toUpperCase();
-  if (cfg.includes('UG')) {
-    // Pure Underground: sectionalized loop ring with RMUs every 3-4 DTRs or ~1.5 km
-    const byDtr = Math.max(1, Math.round((feeder.transformers || 0) / 3.2));
-    const byKm = Math.max(1, Math.round((feeder.lengthKm || 0) / 1.5));
-    rmuCount = Math.max(2, Math.min(byDtr, byKm, 12));
-  } else if (cfg.includes('MIXED')) {
-    // Mixed: RMUs installed on underground cable segments; GOAB switches on overhead spans
-    rmuCount = Math.max(1, Math.round((feeder.transformers || 0) / 4.5));
-  } else {
-    // Overhead: No automated RMU loops, reliant on manual pole-mounted GOAB switches
-    rmuCount = 0;
+  if (cfg.includes('UG') || cfg.includes('MIXED')) {
+    rmuCount = 1; // RMU-capable topology (actual count shown on map from DTR data)
   }
 
   return {

@@ -23,10 +23,15 @@ export interface FeederGeometry {
 export interface DTRPoint {
   id: string;
   name: string;
-  kva: number;
+  kva: number | string;
   cons: number;
   lat: number;
   lng: number;
+  poles?: number | null; // 0 = Plinth ground-mount (inundation risk), 2 = DP pole structure
+  htFeeders?: number | null; // >= 2 = Loop-in / Loop-out RMU switchable node
+  ltFeeders?: number | null; // Number of outgoing LT service lines
+  make?: string | null; // Equipment manufacturer for disaster replacement contracts
+  scheme?: string | null;
 }
 
 import { get, set } from 'idb-keyval';
@@ -102,8 +107,8 @@ export async function getFeederTransformers(circleCode: string, feederCode: stri
       return dtrCircleCache.get(cir)?.[feederCode] || [];
     }
 
-    // 2. Persistent IndexedDB check
-    const idbKey = `sg_dtr_circle_${cir}`;
+    // 2. Persistent IndexedDB check (versioned to v2 for enriched DR metadata)
+    const idbKey = `sg_dtr_circle_${cir}_v2`;
     try {
       const cached = await get<Record<string, DTRPoint[]>>(idbKey);
       if (cached && Object.keys(cached).length > 0) {

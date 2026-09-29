@@ -2,6 +2,37 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [2.3.5-disaster-recovery-metadata-and-rmu-fix] - 2026-09-29
+
+### Added
+- **Disaster Recovery Metadata Enrichment from Raw GIS Data**:
+  - Created `scripts/enrich_disaster_metadata.py` to parse physical pole counts (`no_of_pole`), HT feeder connectivity (`no_ht_fdr`), LT corridor counts, and equipment manufacturer data from raw TNEB GIS `.geojson.gz` files in `tneb_gis_raw/`.
+  - Enriched all DTR JSON files (`public/data/dtr/*.json`) with new fields: `poles`, `htFeeders`, `ltFeeders`, `make`, `scheme`.
+  - Updated `DTRPoint` interface in `feederGeometryService.ts` with disaster recovery metadata fields.
+  - Bumped IDB cache key to `sg_dtr_circle_${cir}_v2` to invalidate stale DTR caches.
+- **DTR InfoWindow Disaster Context**:
+  - Ground plinth mount DTRs (`poles == 0`) now display `⚠️ Ground Plinth Mount • Inundation / Dewatering Risk` warning.
+  - Elevated pole DTRs show `🛡️ Elevated Pole Structure (N-Pole) • Storm Water Resilient` confirmation.
+  - Dual HT incomer DTRs (`htFeeders >= 2`) show `🔄 Dual HT Incomer • Loop Switchable` capability badge.
+  - Equipment make and LT feeder count displayed when available.
+- **Lineman Foot-Patrol Corridor Badge** in `FeederCardItem.tsx` showing estimated patrol distance from LT corridor length data.
+
+### Fixed
+- **RMU Detection — False Positives from GIS Naming Convention**:
+  - **Root Cause**: TNEB's raw GIS data uses "RMU" as a generic suffix in DTR names (e.g., "NO.2 CRESCENT PARK STREET RMU") — this is a naming convention, NOT an indication of actual Ring Main Unit switchgear. The old name-based detection (`name.includes('RMU')`) was classifying 10-70 DTRs per feeder as RMUs, creating massive visual contradictions against the feeder card's estimated count.
+  - **Fix**: RMU detection across all three detection sites now uses `htFeeders >= 2` (dual HT incomer = genuine loop-switchable node):
+    - `mapIcons.ts` → `classifyDtrPoint()`: Updated signature to accept `htFeeders` field.
+    - `TnebGridMap.tsx` → marker rendering: Replaced name-matching Pass 1 and synthetic even-distribution Pass 2 with single `htFeeders >= 2` check.
+    - `tnebGridService.ts` → feeder-level estimation: Replaced aggressive formula (`Math.max(2, ...)`) with simple UG/MIXED topology capability flag.
+  - Feeder card RMU badge now shows **"RMU Loop"** (topology capability) instead of a fabricated count like "2 RMU".
+- **InfoWindow Header Excess Blank Space**:
+  - Long DTR names (e.g., "VN ROAD JUNCTION SOUTH BOAG ROAD RMU (CGL)") caused `white-space:nowrap` to force a single-line layout, widening the popup excessively.
+  - Fixed header to use `word-break:break-word` with `max-width:280px` and `align-items:flex-start` for clean multi-line wrapping.
+- **InfoWindow JSX Comment Leak**: Removed `{/* ... */}` comment blocks that were rendering as visible text in the Google Maps InfoWindow HTML template (template literals don't strip JSX comments).
+- **Removed FeederFlowSchematic Card** from `SubstationInspectorDrawer.tsx` — was taking up excessive vertical space without adding essential value.
+
+---
+
 ## [2.3.4-typography-standardization-and-layout-harmonization] - 2026-09-29
 
 ### Fixed

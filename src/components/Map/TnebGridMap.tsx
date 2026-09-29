@@ -15,6 +15,8 @@ import {
   getNodeColor,
   getFeederThemeColors,
   getDtrMarkerIcon,
+  getRmuMarkerIcon,
+  classifyDtrPoint,
   getFeederLifelineBadge,
   getSubstationMarkerIcon,
   getSectionMarkerIcon
@@ -907,52 +909,110 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           dtrInfoWindowRef.current = new google.maps.InfoWindow();
         }
 
-        const dtrIcon = getDtrMarkerIcon(isLight, selectedFeeder.lifelineCategory);
         const lifelineBadge = getFeederLifelineBadge(selectedFeeder, isLight);
 
+        interface ClassifiedMarker {
+          marker: google.maps.Marker;
+          minZoom: number;
+        }
+        const classifiedMarkers: ClassifiedMarker[] = [];
+
         if (dtrs && dtrs.length > 0) {
-          dtrs.forEach(dtr => {
+          // Build RMU index from physical data: DTRs with dual HT incomer (htFeeders >= 2)
+          // are genuine loop-switchable Ring Main Units. "RMU" in GIS names is just a naming convention.
+          const rmuIndices = new Set<number>();
+          dtrs.forEach((d, idx) => {
+            if (d.htFeeders != null && d.htFeeders >= 2) {
+              rmuIndices.add(idx);
+            }
+          });
+
+          dtrs.forEach((dtr, dtrIdx) => {
             if (typeof dtr.lat !== 'number' || typeof dtr.lng !== 'number' || isNaN(dtr.lat) || isNaN(dtr.lng)) return;
             bounds.extend({ lat: dtr.lat, lng: dtr.lng });
+
+            const classification = classifyDtrPoint(dtr, selectedFeeder.lifelineCategory);
+            const isRmu = rmuIndices.has(dtrIdx) || classification.isRmu;
+            const isLifeline = !isRmu && classification.isLifeline;
+
+            const icon = isRmu
+              ? getRmuMarkerIcon(isLight)
+              : getDtrMarkerIcon(isLight, selectedFeeder.lifelineCategory, false);
+
+            const zIndex = isRmu ? 70 : isLifeline ? 60 : 55;
+            // RMUs visible earlier at Zoom >= 11.5; Lifeline DTRs at >= 13.0; standard DTRs at >= 13.8
+            const minZoom = isRmu ? 11.5 : isLifeline ? 13.0 : 13.8;
+
             const marker = new google.maps.Marker({
               position: { lat: dtr.lat, lng: dtr.lng },
-              icon: dtrIcon,
-              zIndex: 55,
-              title: `${dtr.name} (${selectedFeeder.name} Feeder)`,
-              map: null // Detached by default; dynamically attached at street zoom (LOD)
+              icon,
+              zIndex,
+              title: `${isRmu ? '🔄 [RMU Sectionalizer]' : isLifeline ? '🏥 [Lifeline]' : '⚡'} ${dtr.name} (${selectedFeeder.name} Feeder)`,
+              map: null
             });
 
             marker.addListener('click', () => {
               const headerEl = document.createElement('div');
-              headerEl.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:24px;width:100%;font-family:system-ui,-apple-system,sans-serif;';
+              headerEl.style.cssText = 'display:flex;align-items:flex-start;justify-content:space-between;gap:6px;padding-right:24px;max-width:280px;font-family:system-ui,-apple-system,sans-serif;';
               
               const titleSpan = document.createElement('span');
-              titleSpan.style.cssText = `font-weight:700;font-size:12px;color:${isNonCut ? '#e11d48' : '#b45309'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`;
-              titleSpan.textContent = `⚡ ${dtr.name}`;
+              titleSpan.style.cssText = `font-weight:700;font-size:12px;color:${isRmu ? (isLight ? '#0284c7' : '#00e5ff') : isNonCut ? '#e11d48' : '#b45309'};word-break:break-word;line-height:1.3;`;
+              titleSpan.textContent = isRmu ? `🔄 ${dtr.name}` : `⚡ ${dtr.name}`;
               
-              const kvaSpan = document.createElement('span');
-              kvaSpan.style.cssText = 'font-size:10px;font-family:monospace;background:#fef3c7;color:#92400e;padding:1px 5px;border-radius:4px;font-weight:600;flex-shrink:0;';
-              kvaSpan.textContent = dtr.kva ? `${dtr.kva} kVA` : 'DTR';
+              const badgeSpan = document.createElement('span');
+              badgeSpan.style.cssText = `font-size:10px;font-family:monospace;padding:1px 5px;border-radius:4px;font-weight:700;flex-shrink:0;${
+                isRmu
+                  ? 'background:#e0f2fe;color:#0369a1;'
+                  : 'background:#fef3c7;color:#92400e;'
+              }`;
+              badgeSpan.textContent = isRmu ? 'RMU SWITCH' : (dtr.kva ? `${dtr.kva} kVA` : 'DTR');
               
               headerEl.appendChild(titleSpan);
-              headerEl.appendChild(kvaSpan);
+              headerEl.appendChild(badgeSpan);
 
               if (typeof dtrInfoWindowRef.current?.setHeaderContent === 'function') {
                 dtrInfoWindowRef.current.setHeaderContent(headerEl);
               }
 
               dtrInfoWindowRef.current?.setContent(`
-                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 0; color: #0f172a; max-width: 240px; line-height: 1.35;">
-                  ${lifelineBadge ? `
+                <div style="font-family: system-ui, -apple-system, sans-serif; padding: 0; color: #0f172a; max-width: 250px; line-height: 1.35;">
+                  ${isRmu ? `
+                    <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;">
+                      <span>🔄</span>
+                      <span>Ring Main Unit (RMU)</span>
+                      <span style="margin-left: auto; font-family: monospace; font-size: 9px; opacity: 0.9;">SECTIONALIZER</span>
+                    </div>
+                    <div style="font-size: 10.5px; color: #0369a1; background: #f0f9ff; border: 1px solid #e0f2fe; padding: 4px 6px; border-radius: 6px; margin-bottom: 6px;">
+                      ⚡ <strong>Loop Switching Node:</strong> Enables rapid fault isolation and back-feeding from adjacent feeders without trenching.
+                    </div>
+                  ` : lifelineBadge ? `
                     <div style="display: flex; align-items: center; gap: 4px; margin-bottom: 5px; font-size: 10px; font-weight: 700; padding: 3px 6px; border-radius: 4px; background: ${selectedFeeder.lifelineCategory === 'hospital' ? '#ffe4e6; color: #9f1239' : selectedFeeder.lifelineCategory === 'water' ? '#e0f2fe; color: #0369a1' : selectedFeeder.lifelineCategory === 'transit' ? '#f3e8ff; color: #6b21a8' : '#fef3c7; color: #92400e'};">
                       <span>${lifelineBadge.icon}</span>
                       <span>${lifelineBadge.label}</span>
                       <span style="margin-left: auto; font-family: monospace; font-size: 9px; opacity: 0.9;">${lifelineBadge.prioText}</span>
                     </div>
                   ` : ''}
+                  ${dtr.poles === 0 ? `
+                    <div style="font-size: 10px; font-weight: 700; color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; padding: 2.5px 6px; border-radius: 4px; margin-bottom: 4px;">
+                      ⚠️ Ground Plinth Mount • Inundation / Dewatering Risk
+                    </div>
+                  ` : (dtr.poles !== undefined && dtr.poles !== null && dtr.poles >= 1) ? `
+                    <div style="font-size: 10px; font-weight: 600; color: #15803d; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;">
+                      🛡️ Elevated Pole Structure (${dtr.poles}-Pole) • Storm Water Resilient
+                    </div>
+                  ` : ''}
+
+                  ${(dtr.htFeeders || 0) >= 2 ? `
+                    <div style="font-size: 10px; font-weight: 600; color: #0369a1; background: #f0f9ff; border: 1px solid #bae6fd; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px;">
+                      🔄 Dual HT Incomer (${dtr.htFeeders} Feeders) • Loop Switchable
+                    </div>
+                  ` : ''}
+
                   <div style="font-size: 11px; color: #475569; margin-bottom: 4px;">
                     <strong>Asset Code:</strong> ${dtr.id}<br>
-                    <strong>Step-Down:</strong> 11,000V → 240V / 415V
+                    <strong>Rating:</strong> ${dtr.kva ? `${dtr.kva} kVA` : 'Standard 11kV'} (11kV → 415V/240V)
+                    ${dtr.make ? `<br><strong>Make:</strong> ${dtr.make}` : ''}
+                    ${dtr.ltFeeders ? `<br><strong>Outgoing:</strong> ${dtr.ltFeeders} LT Circuits` : ''}
                   </div>
                   <div style="font-size: 11px; font-weight: 600; color: #0369a1; margin-bottom: 2px;">
                     👥 Feeds ~${(dtr.cons || 0).toLocaleString()} Metered Consumers
@@ -967,18 +1027,18 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             });
 
             dtrMarkersRef.current.push(marker);
+            classifiedMarkers.push({ marker, minZoom });
           });
 
-          // Zoom-Gated Level of Detail (LOD): Attach DTR pins only at street scale (zoom >= 13.8)
+          // Tiered Zoom-Gated Level of Detail (LOD)
           const syncDtrLod = () => {
             if (!mapRef.current) return;
             const currentZoom = mapRef.current.getZoom() || 11.5;
-            const isStreetLevel = currentZoom >= 13.8;
-            dtrMarkersRef.current.forEach(m => {
-              if (isStreetLevel) {
-                if (m.getMap() !== mapRef.current) m.setMap(mapRef.current);
+            classifiedMarkers.forEach(({ marker, minZoom }) => {
+              if (currentZoom >= minZoom) {
+                if (marker.getMap() !== mapRef.current) marker.setMap(mapRef.current);
               } else {
-                if (m.getMap() !== null) m.setMap(null);
+                if (marker.getMap() !== null) marker.setMap(null);
               }
             });
           };

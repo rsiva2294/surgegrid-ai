@@ -232,94 +232,123 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
       )}
 
       {/* 3-Month Breakdown Metric Badges */}
-      <div className="grid grid-cols-3 gap-1.5 text-center font-mono">
+      <div className="grid grid-cols-3 gap-2 text-center">
         <div
-          className={`py-1.5 px-1 rounded-lg border ${
-            isLight ? 'bg-emerald-50/60 border-emerald-100' : 'bg-emerald-950/30 border-emerald-800/60'
+          className={`py-2 px-1.5 rounded-lg border shadow-2xs flex flex-col justify-between ${
+            isLight ? 'bg-emerald-100/70 border-emerald-300 text-emerald-950' : 'bg-emerald-950/60 border-emerald-700 text-emerald-100'
           }`}
         >
-          <span className={`text-[10px] uppercase font-sans font-medium block ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
+          <span className={`text-[10px] uppercase font-semibold block ${isLight ? 'text-emerald-800' : 'text-emerald-300'}`}>
             🛠️ Scheduled PM
           </span>
-          <strong className={`text-xs font-bold block mt-0.5 ${isLight ? 'text-emerald-900' : 'text-emerald-300'}`}>
+          <strong className={`text-xs font-bold block my-0.5 tabular-nums ${isLight ? 'text-emerald-950' : 'text-emerald-200'}`}>
             {profile.periodicMaintenanceCount} {profile.periodicMaintenanceCount === 1 ? 'Run' : 'Runs'}
           </strong>
-          {(profile.yardCoreMaintenanceCount !== undefined || profile.feederMaintenanceCount !== undefined || profile.ltStreetMaintenanceCount !== undefined) && (
-            <span className={`text-[9px] block mt-0.5 opacity-80 ${isLight ? 'text-emerald-800' : 'text-emerald-400'}`}>
+          {(profile.yardCoreMaintenanceCount !== undefined || profile.feederMaintenanceCount !== undefined || profile.ltStreetMaintenanceCount !== undefined) ? (
+            <span className={`text-[9px] block opacity-85 leading-tight ${isLight ? 'text-emerald-800' : 'text-emerald-300'}`}>
               {profile.yardCoreMaintenanceCount || 0} Yard • {profile.feederMaintenanceCount || 0} Line {profile.ltStreetMaintenanceCount ? `• ${profile.ltStreetMaintenanceCount} St` : ''}
+            </span>
+          ) : (
+            <span className={`text-[9px] block opacity-75 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>
+              Preventive PM
             </span>
           )}
         </div>
 
         <div
-          className={`py-1.5 px-1 rounded-lg border ${
+          className={`py-2 px-1.5 rounded-lg border shadow-2xs flex flex-col justify-between ${
             profile.unscheduledTripsCount > 0
               ? isLight
-                ? 'bg-rose-50/60 border-rose-100'
-                : 'bg-rose-950/30 border-rose-800/60'
+                ? 'bg-rose-100/70 border-rose-300 text-rose-950'
+                : 'bg-rose-950/60 border-rose-700 text-rose-100'
               : isLight
-              ? 'bg-slate-100/60 border-slate-200'
-              : 'bg-slate-900/60 border-slate-700/80'
+              ? 'bg-slate-100 border-slate-300 text-slate-800'
+              : 'bg-slate-800/80 border-slate-700 text-slate-200'
           }`}
         >
           <span
-            className={`text-[10px] uppercase font-sans font-medium block ${
+            className={`text-[10px] uppercase font-semibold block ${
               profile.unscheduledTripsCount > 0
                 ? isLight
-                  ? 'text-rose-700'
-                  : 'text-rose-400'
+                  ? 'text-rose-800'
+                  : 'text-rose-300'
                 : isLight
-                ? 'text-slate-500'
+                ? 'text-slate-600'
                 : 'text-slate-400'
             }`}
           >
             ⚠️ Forced Trips
           </span>
           <strong
-            className={`text-xs font-bold block mt-0.5 ${
+            className={`text-xs font-bold block my-0.5 tabular-nums ${
               profile.unscheduledTripsCount > 0
                 ? isLight
-                  ? 'text-rose-900'
-                  : 'text-rose-300'
+                  ? 'text-rose-950'
+                  : 'text-rose-200'
                 : isLight
-                ? 'text-slate-700'
-                : 'text-slate-300'
+                ? 'text-slate-800'
+                : 'text-slate-200'
             }`}
           >
             {profile.unscheduledTripsCount} {profile.unscheduledTripsCount === 1 ? 'Trip' : 'Trips'}
           </strong>
-          {profile.cleanStreakDays !== undefined && (
-            <span className={`text-[9px] block mt-0.5 opacity-80 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+          {profile.cleanStreakDays !== undefined ? (
+            <span className={`text-[9px] block opacity-85 leading-tight ${
+              profile.unscheduledTripsCount > 0
+                ? isLight ? 'text-rose-800' : 'text-rose-300'
+                : isLight ? 'text-slate-600' : 'text-slate-400'
+            }`}>
               {profile.cleanStreakDays === 0 && (profile.activeLiveTripCount || 0) > 0 ? (
-                <span className="text-rose-500 font-bold">⚠️ Broken today</span>
+                <span className="text-rose-600 font-bold">⚠️ Broken today</span>
               ) : (
                 `${profile.cleanStreakDays}d clean run`
               )}
+            </span>
+          ) : (
+            <span className={`text-[9px] block opacity-75 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+              Incident record
             </span>
           )}
         </div>
 
         <div
-          className={`py-1.5 px-1 rounded-lg border ${
-            isLight ? 'bg-white/80 border-slate-200' : 'bg-slate-900/60 border-slate-700/80'
+          className={`py-2 px-1.5 rounded-lg border shadow-2xs flex flex-col justify-between ${
+            profile.disasterRiskMultiplier > 1.0
+              ? isLight
+                ? 'bg-amber-100/70 border-amber-300 text-amber-950'
+                : 'bg-amber-950/60 border-amber-700 text-amber-100'
+              : isLight
+              ? 'bg-slate-100 border-slate-300 text-slate-800'
+              : 'bg-slate-800/80 border-slate-700 text-slate-200'
           }`}
         >
-          <span className={`text-[10px] uppercase font-sans font-medium block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+          <span className={`text-[10px] uppercase font-semibold block ${
+            profile.disasterRiskMultiplier > 1.0
+              ? isLight ? 'text-amber-800' : 'text-amber-300'
+              : isLight ? 'text-slate-600' : 'text-slate-400'
+          }`}>
             Risk Factor
           </span>
           <strong
-            className={`text-xs font-bold block mt-0.5 ${
+            className={`text-xs font-bold block my-0.5 tabular-nums ${
               profile.disasterRiskMultiplier > 1.0
                 ? isLight
-                  ? 'text-amber-700'
-                  : 'text-amber-400'
+                  ? 'text-amber-900'
+                  : 'text-amber-200'
                 : isLight
-                ? 'text-emerald-700'
-                : 'text-emerald-400'
+                ? 'text-emerald-800'
+                : 'text-emerald-300'
             }`}
           >
             {profile.disasterRiskMultiplier.toFixed(2)}x Multiplier
           </strong>
+          <span className={`text-[9px] block opacity-85 leading-tight ${
+            profile.disasterRiskMultiplier > 1.0
+              ? isLight ? 'text-amber-800' : 'text-amber-300'
+              : isLight ? 'text-slate-600' : 'text-slate-400'
+          }`}>
+            {profile.disasterRiskMultiplier > 1.0 ? 'Disaster Impact' : 'Nominal Baseline'}
+          </span>
         </div>
       </div>
 

@@ -182,10 +182,10 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
               className={`px-2 py-0.5 rounded-md flex items-center gap-0.5 cursor-help border ${
                 isLight ? 'bg-sky-100/90 text-sky-900 border-sky-200' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
               }`}
-              title={`Ring Main Unit (RMU): Equipped with ${f.rmuCount} automated sectionalizing switches. Allows quick re-routing of power through loop circuits without trench digging.`}
+              title={`Ring Main Unit (RMU) Loop Capable: This feeder's underground/mixed topology supports automated sectionalizing switches for rapid fault isolation and back-feeding.`}
             >
               <span>🔄</span>
-              <span>{f.rmuCount} RMU</span>
+              <span>RMU Loop</span>
             </span>
           )}
 
@@ -200,6 +200,18 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
             >
               <span>📋</span>
               <span>Stage {f.restorationStage}</span>
+            </span>
+          )}
+
+          {f.ltLengthKm !== undefined && f.ltLengthKm > 0 && (
+            <span
+              className={`px-2 py-0.5 rounded-md flex items-center gap-0.5 cursor-help border ${
+                isLight ? 'bg-slate-100 text-slate-700 border-slate-200' : 'bg-slate-800 text-slate-300 border-slate-700'
+              }`}
+              title={`Lineman Foot-Patrol Corridor: ${f.ltLengthKm} km of street lines. Under TANGEDCO Disaster SOP, linemen must complete physical foot-patrol clearance across this low-tension network before re-energizing.`}
+            >
+              <span>🚶</span>
+              <span>{f.ltLengthKm} km Patrol</span>
             </span>
           )}
         </div>

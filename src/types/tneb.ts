@@ -32,6 +32,9 @@ export interface FeederDetail {
   clearancePending?: boolean; // Lineman physical foot-patrol clearance certificate required
   isCmwssbSps?: boolean; // Dedicated lifeline to CMWSSB Sewage Pumping Station
   isGccShelterFeed?: boolean; // Direct feed to designated GCC Disaster Relief Center / Shelter
+  ltLengthKm?: number; // Total low-tension street network length requiring lineman foot-patrol clearance before re-energizing
+  feedArea?: string; // "Urban" | "Semi-Urban" | "Rural"
+  feedOwn?: string; // "TANGEDCO" | "TANTRANSCO"
 }
 
 export type GridConfidenceTier = 'L1_VERIFIED' | 'L2_PROBABLE' | 'L3_UNVERIFIED';
