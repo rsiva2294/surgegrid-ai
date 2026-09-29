@@ -6,38 +6,54 @@ This document details the core spatial, meteorological, and electrical datasets 
 
 ## 1. Master Dataset Catalog
 
-| Dataset File | Size | Records | Source | Primary Schema Fields |
+Audited against `public/data/`, `data-archive/data/` and `src/` on 2026-09-29. Only the datasets in §1.1 are loaded by the running app.
+
+### 1.1 Shipped in `public/data/` (loaded at runtime)
+
+| Dataset File | Size | Records | Loaded by | Notes |
 |---|---|---|---|---|
-| `chennai_tneb_grid.json` | 5.41 MB | 286 substations, 352 sections | TNEB V5 Ground-Truth Rebuild Engine | `substations[]`, `sections[]`, `connections[]` (with `confidenceTier`, `scopingRole`, `verificationMethod`, `polygonVerified`, `feederCode`), `totalConsumers` |
-| `feeders/{circleCode}.json` | 27.2 MB (8 circles) | 3,438 feeder lines | TNEB GIS Vector Surveys | Keyed by `fdr_code`: `name`, `code`, `ss_code`, `volt`, `len`, `dts`, `cons`, `type`, `coords` (MultiLineString) |
-| `dtr/{circleCode}.json` | 6.27 MB (8 circles) | 65,557 DTR points | TNEB GIS Distribution Network | Keyed by `fdr_code`: `id`, `name`, `kva`, `cons`, `lat`, `lng` |
-| `weathernext3_chennai_cyclone_48h.json` | 28 KB | 61 hourly steps | Google DeepMind WeatherNext 3 | `timestep_hour`, `wind_speed_10m_kmh`, `imerg_tp_1hr_mm`, `mean_sea_level_pressure_hpa`, `simulated_storm_surge_msl_m`, `alert_phase` |
-| `gee_chennai_substations_risk.json` | 190 KB | 242 nodes | GEE (NASA SRTM, Dynamic World, GPM, ERA5) | `name`, `coordinates`, `elevation_m`, `distance_to_coastline_km`, `urban_impervious_built_pct`, `composite_risk_score`, `risk_category`, `anticipatory_sop` |
-| `gee_chennai_wards_vulnerability.json` | 60 KB | 200 wards | GEE Zonal Statistics | `ward_number`, `zone_number`, `elevation_mean_m`, `elevation_min_m`, `urban_impervious_built_pct`, `dynamic_world_water_prob_2024_2026_pct`, `flood_risk_category` |
-| `chennai_shelter_grid_drain_fusion.json` | 256 KB | 162 shelters | Spatial Fusion Engine | `shelter_id`, `zone`, `ward`, `address`, `officer_in_charge`, `emergency_contact`, `primary_substation`, `backup_safe_substation`, `evacuation_advisory` |
-| `chennai_drains.json` | 3.26 MB | 5,513 lines | GCC Stormwater Management | `id`, `slope`, `is_uphill`, `length_m`, `dimension`, `road_elevation_m`, `status`, `geometry` |
-| `chennai_drains_ward_summary.json` | 184 KB | 200 wards | Hydrological Aggregation | `total_drains`, `uphill_backflow_count`, `gravity_flow_count`, `total_length_km`, `backflow_risk_pct`, `min_road_elevation_m` |
-| `chennai_rivers.json` | 646 KB | 4 waterways | Chennai River Waterways | Adyar River, Cooum River, Kosasthalaiyar River, Buckingham Canal vector geometries |
-| `gcc_wards_polygons.json` | 432 KB | 200 wards | GCC Geographic Information System | Ward polygon boundaries (Wards 1–200) |
-| `gcc_zones.json` | 873 KB | 15 zones | GCC Geographic Information System | Zone polygon boundaries (Zones 1–15) |
-| `gcc_relief_centers.json` | 25 KB | 162 shelters | GCC Disaster Management | Relief shelter locations, ward mapping, officer contacts |
-| `chennai_shelters.json` | 2.5 KB | 7 sites | Civic High-Ground Network | Designated elevated vehicle parking ramps and safe pedestrian platforms |
-| `gcc_flood_hotspots.json` | 23 KB | Historical points | GCC Flood Archives | Ground-truth historical inundation hotspots |
-| `chennai_flood_depth_inches.json` | 63 KB | Historical benchmarks | Field Survey Benchmarks | Street-level flood depths in inches |
-| `chennai_resolved_outages.json` | 911 KB | 1,252 notices | TNEB Super Index V2 Engine | Resolved Q3 2026 Twitter outage notices with substation and feeder mapping |
-| `chennai_outage_gold_registry.json` | 8.8 KB | 43 mappings | SurgeGrid Ground-Truth Curation | Canonical gold standard registry mapping verified locality, section, and feeder names to exact TNEB switchyards |
-| `outages/twitter_notices_resolved.json` | ~15 KB | Dynamic | GCS / Firebase Storage | Real-time active breakdown notices from TANGEDCO field dispatches |
-| `outages/statewide.json` | ~30 KB | Dynamic | GCS / Firebase Storage | Real-time statewide scheduled maintenance shutdowns with district isolation |
-| `chennai_substations_vulnerability.json` | 239 KB | 242 nodes | Outage Intelligence Engine | Substation failure ranking and affected feeder counts |
-| `chennai_feeders_vulnerability.json` | 112 KB | 11kV lines | Outage Intelligence Engine | Feeder failure frequency and parent substation mapping |
-| `chennai_sections_vulnerability.json` | 67 KB | Section offices | Outage Intelligence Engine | TANGEDCO AE Section Office failure ranking |
-| `circle_boundary.geojson` | 4.39 MB | 45 circles | TNEB GIS Operational Maps | Official operational utility circle boundaries |
+| `chennai_tneb_grid.json` | 3.2 MB | 286 substations, 352 sections, 583 links, 2,678 embedded feeders, 1,213 outage-history events | `tnebGridService.ts` | v5.0.0. Substation fields include TNEB identity, `feeders[]`, `connections[]` (`confidenceTier`, `scopingRole`, `verificationMethod`, `polygonVerified`, `feederCode`), flood/climate enrichment (`elevationM`, `riskCategory`, `compositeRiskScore`, `distanceToCoastKm`, `anticipatorySop`), GCC/GEE ward fields (178 substations, 211 sections) and `healthProfile` / `outageHistory` (all 286). Sections carry boundary polygons (all 352). |
+| `feeders/{circleCode}.json` | 21 MB (8 circles: 0400, 0401, 0402, 0404, 0406, 0408, 0410, 0411) | 3,335 feeder geometries | `feederGeometryService.ts` (on demand, IndexedDB-cached) | Keyed by `fdr_code`: `name`, `code`, `ss_code`, `volt`, `len`, `dts`, `cons`, `type`, `coords` (MultiLineString, RDP-decimated). |
+| `dtr/{circleCode}.json` | 6.3 MB (same 8 circles) | 65,557 DTR points | `feederGeometryService.ts` (on demand, IndexedDB-cached) | Keyed by `fdr_code`: `id`, `name`, `kva`, `cons`, `lat`, `lng`. |
+| `chennai_outage_gold_registry.json` | 962 KB | 2,789 signatures, 10 localities, 2,298 verified instances (v2.0.0) | `liveOutageService.getGoldRegistry()` | Bundled fallback for the GCS-hosted copy (see doc 10). |
+
+**Runtime remote sources**
+
+| Source | Endpoint | Used for |
+|---|---|---|
+| Live outage notices | `https://outage.nammamap.in/api/v2/outages` (Vite dev proxy `/api/v2`) | Active breakdown and scheduled-maintenance notices; cached in IndexedDB (`sg_live_chennai_outages_v1`) |
+| Gold registry (cloud) | `https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/registry/chennai_outage_gold_registry.json` | Self-enriching registry, in-memory cached |
+| Weather | `https://weather.googleapis.com/v1/currentConditions:lookup` | Live conditions (Google Maps Platform Weather API) |
+
+`tnebGridService.ts` also contains a fallback that parses `/data/super_index_v2.compact.json`, but that file is not shipped, so the fallback only works if it is added.
+
+### 1.2 Archived in `data-archive/data/` (not loaded by the app)
+
+Kept for provenance and for the offline enrichment scripts (for example `scripts/enrich_substation_history.cjs` reads `chennai_resolved_outages.json` and `gee_chennai_substations_risk.json`). Record counts are from the archive's own README and were not re-verified.
+
+| Dataset File | Records | Source | Purpose |
+|---|---|---|---|
+| `weathernext3_chennai_cyclone_48h.json` | 61 hourly steps | WeatherNext 3 (simulated 48 h cyclone) | Design input for a forecast slider that is not built |
+| `gee_cyclone_surge_grid_simulation.json` | grid simulation | GEE | Surge simulation input |
+| `gee_chennai_substations_risk.json` | 242 nodes | GEE (SRTM, Dynamic World, GPM, ERA5) | Source of the elevation / risk fields now embedded in the grid file |
+| `gee_chennai_wards_vulnerability.json` | 200 wards | GEE zonal statistics | Source of `geeRunoffMm`, `geeImperviousPct`, `geeFloodCategory` |
+| `gcc_wards_polygons.json`, `gcc_zones.json` | 200 wards, 15 zones | GCC GIS | Used by `scripts/enrich_grid_with_gcc.py` for point-in-polygon joins |
+| `gcc_relief_centers.json`, `chennai_shelters.json`, `chennai_shelter_grid_drain_fusion.json` | 162 shelters / 7 sites | GCC Disaster Management | Shelter counts per ward (embedded as `wardReliefSheltersCount`) |
+| `chennai_drains.json`, `chennai_drains_ward_summary.json` | 5,513 lines / 200 wards | GCC stormwater | Not used at runtime |
+| `chennai_rivers.json` | 4 waterways | Adyar, Cooum, Kosasthalaiyar, Buckingham Canal | Not used at runtime |
+| `gcc_flood_hotspots.json`, `chennai_flood_depth_inches.json` | historical | GCC / field survey | Not used at runtime |
+| `chennai_resolved_outages.json` | 1,252 notices | Super Index V2 resolution | Source of the 90-day `outageHistory` embedded in the grid file |
+| `chennai_substations_vulnerability.json`, `chennai_feeders_vulnerability.json`, `chennai_sections_vulnerability.json` | 242 / – / – | Outage intelligence | Not used at runtime |
+| `circle_boundary.geojson` | 45 circles | TNEB GIS | Section boundary source |
+
+**Data-quality notes.** (1) `outageHistory` contains 840 periodic-maintenance, 371 forced-trip and 2 emergency-repair events, of which **119 are synthetic placeholder inspections** (`id` prefix `pm-routine-…`, one per substation with no logged Q3 incidents, created by `enrich_substation_history.cjs`); `computeHealthProfile` can also fabricate placeholder events from `historicalOutagesCount` when a substation has no events. (2) `riskCategory` takes five values in the data (`CRITICAL_SURGE_RISK` 5, `HIGH_WATERLOGGING_RISK` 40, `LOW_ELEVATION_RISK` 81, `MODERATE_RISK` 105, `SAFE` 55), but the `FloodRiskCategory` type in `src/types/tneb.ts` omits `LOW_ELEVATION_RISK`.
 
 ---
 
 ## 2. Coordinate Reference System
 * **Spatial Projection**: WGS 84 (`EPSG:4326`)
-* **Bounding Box**: Lat `[12.750, 13.350]`, Lon `[79.950, 80.350]`
+* **Map camera bounds** (`CHENNAI_METRO_BOUNDS`, strict): Lat `[12.750, 13.400]`, Lon `[79.850, 80.380]`
+* **Live-outage Chennai bbox** (`CHENNAI_BBOX`): Lat `[12.70, 13.40]`, Lon `[79.90, 80.40]`
 
 ---
 
@@ -86,8 +102,8 @@ Added in Release **1.3.0** per the **Tamil Nadu State Disaster Management Plan (
 | Field | Type | Engineering Benchmark | Description |
 | :--- | :--- | :--- | :--- |
 | `plinthElevationM` | number | TNEB Control Room Standards | Switchgear equipment and busbar plinth clearance above local ground level (`1.5 m`). |
-| `benchmarked2015FloodDepthM` | number | 2015 Floods Historical Ground Truth | Peak flood submersion depth recorded across 41 inundated Chennai yards (`1.8 m` / 6ft in river basins; `0.9 m` in moderate basins). |
-| `yardDewateringRequired` | boolean | TANGEDCO Substation Recovery SOP | Requires high-capacity mobile diesel pump deployment prior to busbar megger testing and re-energization (`true` if elevation $\le 3.0\text{ m}$). |
+| `benchmarked2015FloodDepthM` | number | 2015 Floods Historical Ground Truth | Derived from `elevationM` in `sanitizeGridData()` (`tnebGridService.ts`), not surveyed per yard: `1.8 m` (6 ft) if elevation ≤ 3.0 m, `0.9 m` if ≤ 6.0 m, `0.2 m` above that, `0.5 m` when elevation is unknown. |
+| `yardDewateringRequired` | boolean | TANGEDCO Substation Recovery SOP | Also derived in `sanitizeGridData()`: `true` only if elevation ≤ 3.0 m. Requires high-capacity mobile diesel pumps before busbar megger testing and re-energization. |
 | `statutoryDeenergized` | boolean | TNSDMA §5.6 State Order | Isolated by statutory mandate during severe weather to prevent mass public electrocution. |
 
 

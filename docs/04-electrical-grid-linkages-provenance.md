@@ -359,7 +359,7 @@ When applying this model to outage monitoring in SurgeGrid AI and NammaMap:
 SurgeGrid AI dynamically connects these layers into a unified real-time operations interface:
 
 ### 1. Inter-Substation Grid Mode (Transmission & Sub-Transmission View)
-* **Switchyard Visuals:** Substations are rendered as interactive nodes color-coded by voltage tier ($230\text{kV}$ Purple, $110\text{kV}$ Amber, $33\text{kV}$ Sky Blue).
+* **Switchyard Visuals:** Substations are rendered as interactive nodes color-coded by voltage tier (bulk 230/400 kV pink, 110 kV amber, 33/11 kV sky blue / cyan; section offices emerald).
 * **Circuit Isolation:** Selecting any substation (e.g. Kilpauk Water Works #2159) allows operators to click **"Isolate Electrical Circuit"**. The cockpit filters out unrelated city markers and zooms directly to the connected electrical circuit.
 * **Mapped Supply Hierarchy & Pulse:** Directional dashed pulses stream outward along verified interconnect paths from the $110\text{kV}$ hub to downstream $33\text{kV}$ substations, illustrating the **nominal physical step-down hierarchy** ($110\text{kV} \rightarrow 33\text{kV}$).
   > **Operational Caveat:** These visual pulses represent **mapped physical infrastructure connectivity**, not confirmed live electrical power flow (which requires real-time SCADA telemetry for breaker/energization state).
@@ -367,7 +367,7 @@ SurgeGrid AI dynamically connects these layers into a unified real-time operatio
 ### 2. Feeder & Distribution Mode (Neighborhood & DTR View)
 * **Substation Inspector Feeder Roster:** Selecting any substation opens the feeder roster showing all outgoing $11\text{kV}$ and $33\text{kV}$ lines.
 * **DTR Capacity Aggregation:** The cockpit sums all child DTRs (e.g., $19\text{ DTRs}$, $809\text{ consumers}$) and displays the registered consumer baseline.
-* **Outage Scoping:** When TNEB issues an outage for a specific feeder name or code, SurgeGrid AI highlights the precise 11kV cable vector, rings the affected DTR markers, and calculates the baseline registered consumer population. Dynamic switching transfers (e.g., RMU loop cut-overs) remain subject to field confirmation.
+* **Outage Scoping:** Live notices are matched to *substations and section offices* (not to individual feeder vectors or DTR markers) by the resolution gate in `liveOutageService.ts`. Feeder-level trip badges appear only where a feeder record carries `outageCount`. The registered consumer baseline is shown per feeder and per substation; a per-outage affected-consumer estimate is not computed.
 
 ### 3. Outgoing Feeder Roster Sorting & 5-Tier Electrical Hierarchy
 In emergency operations and cyclone load-shedding, un-sorted feeder rosters force dispatchers to scan through dozens of raw database entries. SurgeGrid AI implements a deterministic **5-Tier Electrical & Disaster Priority Sort Engine** across both the Drawer Feeder List and the Side-by-Side Split View Cockpit:
@@ -429,18 +429,11 @@ While the raw GIS archive in `tneb_gis_raw` provides the immutable source of tru
 ```
 public/data/
 ├── chennai_tneb_grid.json    # Master Grid Index (Substations, Capacities, Grid Links, Risk Scores)
-├── feeders/                  # Circle-partitioned 11kV/33kV feeder vector lines
-│   ├── 0400.json             # Chennai-South 1
-│   ├── 0401.json             # Chennai-South 2
-│   ├── 0402.json             # Chennai-Central
-│   ├── 0404.json             # Chennai-North
-│   └── 0406.json             # Chennai-West
-└── dtr/                      # Circle-partitioned DTR registries keyed by fdr_code
-    ├── 0400.json
-    ├── 0401.json
-    ├── 0402.json
-    ├── 0404.json
-    └── 0406.json
+├── chennai_outage_gold_registry.json  # Gold Standard Outage Registry v2.0 (bundled fallback for the GCS copy)
+├── feeders/                  # Circle-partitioned 11kV/33kV feeder vector lines (3,335 feeders, 21 MB)
+│   └── 0400, 0401, 0402, 0404, 0406, 0408, 0410, 0411 .json   # 0400 South 1, 0401 South 2, 0402 Central, 0404 North, 0406 West, 0408 Tiruvallur, 0410 Kanchipuram, 0411 Chengalpattu
+└── dtr/                      # Circle-partitioned DTR registries keyed by fdr_code (65,557 DTRs, 6.3 MB)
+    └── (same 8 circle codes)
 ```
 
 ---

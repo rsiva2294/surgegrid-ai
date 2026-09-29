@@ -5,6 +5,20 @@
 
 ---
 
+## 0. As-Built Status (audited against `gridHealthService.ts`, 2026-09-29)
+
+This dictionary is implemented by `evaluateOutageArchetype()` in [`src/services/gridHealthService.ts`](../src/services/gridHealthService.ts) (the function is named `evaluateOutageArchetype`, not `evaluateOutageReason`). Differences between the tables below and the code:
+
+1. **Rule order in code**: (1) severe failure regex, or an *Emergency Outage* notice containing rectification / repair / attend; (2) emergency repair (damaged pole, fallen, vehicle hit, shock, leakage, emergency repair); (3) civic; (4) vegetation; (5) hardening; (6) periodic maintenance; (7) weather; (8) notice-category fallback. Civic is checked *before* vegetation and maintenance.
+2. **Score impacts.** The "Score Impact" figures in this document (−35 / −20 / −10, −12, +2.5, +1.5 / +1.0 / +0.8, +0.5, −5) are the classifier's `severityWeight`. **The scorer does not use them.** Trip deductions are 25 (yard), 12 × feeder factor (feeder) and 5 (LT), scaled by recency; credits are +2 / +1.5 / +1 per scope and +2.5 per hardening event, capped at +15 in total. See doc 08 §2.2. The lifetime credit caps quoted below (+15 hardening, +10 maintenance) do not exist as separate caps.
+3. **Streak and live fields.** `resetsStreak` and `isLiveFault` are returned but not consumed; the clean streak resets whenever a live trip (`forced_trip`, `emergency_repair`, `environmental_event`) is present.
+4. **Dispatch statuses.** The code uses `NORMAL`, `ACTIVE_TRIP`, `EMERGENCY_REPAIR`, `PLANNED_MAINTENANCE`, `CIVIC_CLEARANCE` and `WEATHER_ALERT` (declared but never assigned). The `DISPATCH_FAULT`, `SCHEDULED_PM`, etc. labels below are conceptual.
+5. **Keyword coverage.** The regexes implement a subset of the phrases and Tamil terms listed; for example `Cut` alone is *not* a failure token (only jumper / leg / lug / line cut are), and `Line Extension`, `raising`, `heightening` and `elevation` trigger hardening.
+6. **Known misclassification risk.** The text scanned is `workType + reason + Tamil reason + feeder name`. Feeder names are therefore matched too, so a feeder called, for example, "…FIRE STATION…" matches the severe-failure regex (`fire`), and one containing "METRO" or "TEMPLE" matches the civic regex. `trip` also matches inside longer words. Treat lifeline-named feeders with care when reading scores.
+7. **Fallback (Rule 8)** matches the design: *Scheduled Maintenance* category → maintenance (+0.5 weight); *Emergency Outage* → forced trip; anything else → neutral advisory (`civic_clearance`, 0). Unknown text is never credited as maintenance.
+
+---
+
 ## 1. Executive Summary & Empirical Dataset Survey
 
 To eradicate the scoring blind spots in SurgeGrid (such as KK Nagar SS maintaining a 100/100 score during active feeder breakdowns), we performed an exhaustive linguistic and engineering audit across **1,499 TNEB Chennai outage records** comprising **666 distinct raw operational phrases** in English, Tamil, and departmental field shorthand.
@@ -163,6 +177,7 @@ graph TD
 To eliminate false classifications, the scoring parser must evaluate raw text in strict order of descending criticality:
 
 ```typescript
+// Design sketch. The shipped signature is evaluateOutageArchetype(workType, { feeder, noticeCategory, rawReason, rawTamil }): EvaluatedOutage
 export function evaluateOutageReason(raw: {
   workType?: string;
   categoryHint?: string;

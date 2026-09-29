@@ -81,7 +81,9 @@ Following **Cyclone Vardah (2016)**, which collapsed Chennai's grid demand from 
 ### Operational Benefit of RMU Sectionalizing in SurgeGrid AI:
 - Traditional radial overhead lines trip end-to-end if a single tree branch contacts the wire.
 - With automated RMUs on UG/Mixed feeders, operators isolate **only** the waterlogged ring segment while keeping the remainder of the loop energized.
-- SurgeGrid AI displays the computed RMU count on every feeder card (e.g. `[🔄 6 RMU Loops]`), reflecting this micro-loop sectionalizing capability.
+- SurgeGrid AI displays an **estimated** RMU count on feeder cards (e.g. `🔄 6 RMU`). The count is not surveyed: `classifyFeeder()` derives it from the feeder's `config` and DTR count (UG: `max(2, min(DTRs/3.2, km/1.5, 12))`; Mixed: `DTRs/4.5`; Overhead: 0), and cards show it only when > 0.
+- Feeder-level restoration stages are assigned only as 3 (P1 lifelines, 33 kV trunks), 4 (P2 essential, commercial HT) or 5 (everything else); stages 1–2 (bulk and substation recovery) are documented here but not modelled per feeder.
+- Feeder `circuitState` is always initialised to `LIVE` in data; the scenario-dependent status shown in the cockpit is computed on the fly by `getFeederDisasterStatus()` in `disasterUtils.ts`.
 
 ---
 
@@ -90,22 +92,22 @@ Following **Cyclone Vardah (2016)**, which collapsed Chennai's grid demand from 
 The SurgeGrid AI application reflects these operational realities across three synchronized cockpit surfaces:
 
 1. **Top Center Disaster Protocol Cockpit Bar:**
-   - Real-time scenario selector designed for zero-scroll instant access:
-     - `🌤️ Normal`: Standard clear-sky grid operations.
+   - Scenario selector (`DisasterCockpitBar.tsx`) designed for instant access:
+     - `🟢 Live` (internal scenario `NORMAL`): pulsing beacon plus the current temperature from the Weather API; no simulated trips.
      - `🟡 Alert`: Standby alert at $65\text{ km/h}$ with lineman foot-patrol mobilization.
      - `🌀 Severe >80k`: Executes TNSDMA §5.6 statutory pre-emptive trip on overhead lines ($>80\text{ km/h}$); underground cables remain live.
      - `🌊 Surge 3.2m`: Triggers coastal storm surge flooding sentinel exceeding the $3.0\text{ m MSL}$ regulatory threshold.
-   - **Zero-Scroll Ergonomics:** Configured with `whitespace-nowrap` and compact padding so all 4 buttons fit side-by-side across all viewports without horizontal scrolling or clipping.
+   - **Layout:** Buttons use `whitespace-nowrap`; on narrow screens the bar scrolls horizontally (`overflow-x-auto`). A second row holds the triage filters: `⚠️ Poor Stability (<75)`, `🌊 Waterlogging Risk` and `⚡ Live Outages`, each with a count.
    - **Unified Statutory Readout Banner:** Dynamic centered pill banner displaying regulatory mandates without ragged multi-line breaking (e.g. `⚠️ TNSDMA 3.0m Surge Mandate: Substation Inundation & Mobile Dewatering Active`).
 
 2. **Substation Info Card & Emergency Sentinel:**
-   - **Above-the-Fold Emergency Promotion:** Active switchyard inundation events (`CRITICAL: Switchyard Inundation Event`) are dynamically promoted to the **very top** of Tab `Info`, ensuring life-safety status is immediately visible without scrolling.
+   - **Inundation banner:** In the `Surge` scenario, substations with elevation ≤ 3.2 m MSL show a `CRITICAL: Switchyard Inundation Event` banner near the top of the `Plant & Specs` tab (below the live-outage banner and switchyard identity card).
    - **Consolidated Switchyard Specs:** Unifies administrative circle, region code, MVA capacity, transformer units, incoming feeders, and Google Maps GPS navigation into a compact, single-card header.
-   - **2×2 High-Density Climate & Flood Risk Matrix:** Displays terrain elevation (m MSL), distance to coast, composite risk score, 2015 Flood submersion benchmark, switchgear plinth clearance ($1.5\text{ m GL}$), and dewatering pump requirements in a clean, scannable grid completely visible above the fold.
+   - **Climate & Flood Risk Matrix:** Displays terrain elevation (m MSL), distance to coast, composite risk score, the 2015 flood benchmark, switchgear plinth clearance (1.5 m GL, a fixed constant) and the dewatering requirement. The 2015 depth and dewatering flag are derived from elevation, not surveyed per yard (see doc 02).
    - **Jurisdictional AE Depot:** Compact single-row contact strip with direct phone dialer and map locator.
 
 3. **Feeder Inspection Cards:**
-   - **Statutory ESF 15 SLA Badge:** `⏱️ ESF 15: 6h SLA` (P1) vs. `12h SLA` (P2/Trunk) vs. `24h SLA` (HT) vs. `48h SLA` (LT).
-   - **RMU Loop Sectionalizing Badge:** `🔄 {N} RMU Loops`.
-   - **Restoration Stage Badge:** `Stage 3: Sub-Transmission Trunk` or `Stage 4: Automated RMU`.
+   - **Statutory ESF 15 SLA Badge:** `⏱️ {N}h SLA`: 6 h (P1), 12 h (P2 / 33 kV trunk), 24 h (commercial HT), 48 h (LT).
+   - **RMU Badge:** `🔄 {N} RMU` (estimated, shown only when N > 0).
+   - **Restoration Stage Badge:** `📋 Stage {3|4|5}`.
    - **Disaster Status Callout:** Displays clear statutory justification (e.g., `⚠️ PRE-EMPTIVE TRIP (WIND) • TNSDMA Mandate §5.6: Wind > 80 km/h • Public Electrocution Prevention`).

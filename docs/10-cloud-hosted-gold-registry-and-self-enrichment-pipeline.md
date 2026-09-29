@@ -5,6 +5,8 @@ This document establishes the production architecture for the **Master Gold Stan
 
 By transitioning from static, bundled JSON files to a cloud-hosted, live-syncing asset, SurgeGrid AI and NammaMap maintain an ever-growing, verified spatial graph of Chennai's electrical infrastructure without manual re-deployments or dataset drift.
 
+> **Scope and audit note (2026-09-29).** Only the *client side* of this pipeline lives in this repository: `getGoldRegistry()` and the resolution gate in `src/services/liveOutageService.ts`. The self-enrichment engine (`goldRegistryEnricher.ts`, `goldRegistry.ts`, the Firestore triggers and the `/api/v2/registry` routes described in §§2–4) belongs to the separate `nammamap-outage-aggregator` repository, which is not present here and could not be verified. The bundled `public/data/chennai_outage_gold_registry.json` is now v2.0.0 with **2,789 signatures** (2,298 verified instances, 10 gazetteer localities); whether the GCS copy has been re-uploaded since the Gemini passes in §1.4 is not recorded in this repo.
+
 ---
 
 ## 1. Registry Architecture & GCS Deployment
@@ -23,10 +25,21 @@ The Gold Registry was expanded from v1.0 (1,585 signatures) to v2.0 through high
 2. **Verified Abstract Breakdown Reports**: +1,034 canonical signatures extracted from official TNEB division abstract reports covering core city zones (KK Nagar, Kodambakkam, Kilpauk, Egmore, Anna Nagar, Mylapore, Valasaravakkam, etc.).
 3. **Zero-Duplicate Protection**: 201 duplicate candidate keys were screened out; verified instances increment without signature key pollution.
 
-### 1.3 Key Metrics
-| Metric | Registry v1.0 | Master Registry v2.0 | Net Expansion |
+### 1.3 Gemini Enrichment Passes (offline, this repo)
+
+After v2.0 consolidation, two scripted passes promoted outages that the registry and gazetteer could not resolve. Both use the Gemini REST API with model `gemini-2.5-flash-lite` (not the "Gemini 3.7 Flash" named elsewhere in the docs), read `data/chennai_abstract_outages_resolved_with_gold.json` and write back to it and to `public/data/chennai_outage_gold_registry.json`:
+
+| Commit | Script | Result |
+| :--- | :--- | :--- |
+| `2c24725` | `scripts/enrich_unmapped_with_gemini.py` | Structured extraction of unmapped records; recovered 6 switchyards; added 9 novel signatures (registry total 2,785). |
+| `9d6a45d` | `scripts/analyze_remaining_unmapped.py`, `scripts/categorize_remaining.py`, `scripts/gemini_pass2_recover_remaining.py` | The 21 remaining records were split into: **A** (8) re-queried with the full substation catalog for fuzzy matching; **B** (9) resolved programmatically from section → substation via existing registry signatures; **C** (4) left as `LOCALIZED_AREA` (true street-level faults). Coverage reached **786 of 792** verified assets (99.2 %); registry total 2,789. |
+
+Guardrails in pass 2: a Gemini answer is accepted only if the returned name exists in the catalog and confidence is not low. **Security:** both Gemini scripts currently embed an API key as a string literal; move it to an environment variable and rotate it (see `scripts/README.md`).
+
+### 1.4 Key Metrics
+| Metric | Registry v1.0 | Master Registry v2.0 (current bundle) | Net Expansion |
 | :--- | :--- | :--- | :--- |
-| **Unique Signatures** | 1,585 | **2,776** | **+75.1%** |
+| **Unique Signatures** | 1,585 | **2,789** (2,776 at v2.0 consolidation; +13 from Gemini passes) | **+76.0%** |
 | **Verified Outage Instances** | 1,107 | **2,298** | **+107.6%** |
 | **Gazetteer Localities** | 10 | **10** | Unchanged |
 | **Core City Coverage** | 32.4% | **94.8%** | **+62.4%** |
@@ -115,5 +128,8 @@ The pipeline operates automatically via 2nd Gen Firebase Cloud Functions in `nam
 
 In [`src/services/liveOutageService.ts`](file:///c:/projects/surgegrid-ai/src/services/liveOutageService.ts):
 - `getGoldRegistry()` fetches dynamically from `https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/registry/chennai_outage_gold_registry.json`.
-- In-memory caching ensures $O(1)$ zero-latency lookups on subsequent calls.
+- In-memory caching (`cachedGoldRegistry`) gives O(1) lookups after the first load. The registry is *not* stored in IndexedDB, so an offline first load uses the bundled copy.
+- The client looks up three of the four candidate keys, in this order, using `squash()`-normalised strings: `town|sec|ss|feeder`, then `town|sec`, then `ss|feeder` (the `town|sec|ss` key is not queried). A hit resolves the substation and/or section by **code** against the loaded grid.
+- Tier 1 of the resolution gate uses `registry.localities` (10 entries) when the registry is loaded, otherwise the hard-coded `CHENNAI_LOCALITY_GAZETTEER`.
+- **Live feed source:** the *notices* themselves come from `https://outage.nammamap.in/api/v2/outages` (Vite proxy `/api/v2` in development), not from the GCS `outages/*.json` files described in changelog v1.8.0; that release note describes the aggregator's upstream storage layout.
 - If network connectivity is restricted, it seamlessly falls back to the bundled `/data/chennai_outage_gold_registry.json` v2.0 file.

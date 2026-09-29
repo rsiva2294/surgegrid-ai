@@ -20,6 +20,10 @@ SurgeGrid AI shifts disaster operations from post-landfall recovery to **pre-lan
 
 ---
 
+> **Status note (audited against the code, 2026-09-29).** This document describes the full design vision. What is implemented in `src/` today: Layer 1 as **live current conditions only** (Google Maps Weather API, not the 48-hour forecast file), Layer 3 (grid, feeders, DTRs, lifelines, live outages, health scoring), and the Layer 5 map cockpit with fixed disaster scenarios (Live / Alert / Severe / Surge). **Not implemented in the app:** the Layer 2 Earth Engine pipeline (its outputs are baked into `chennai_tneb_grid.json` as `elevationM`, `compositeRiskScore`, `geeRunoffMm`, etc.), the Layer 4 Gemini dispatch/timetable/insurance features (Gemini is used only in offline scripts), the WeatherNext hourly slider, inundation contour overlays, and shelter tie-line routing. The GCC drain, river, shelter and flood-hotspot datasets live in `data-archive/data/` and are not loaded at runtime. See the README's *Not in the app* list.
+
+---
+
 ## 2. System Architecture Diagram
 
 ```

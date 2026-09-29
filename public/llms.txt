@@ -1,11 +1,11 @@
 # SurgeGrid AI — Real-Time Electrical Grid & Flood Resiliency Console
 
-> Operational intelligence, real-time meteorological tracking via Google DeepMind WeatherNext 3, satellite flood inundation models, and automated line tripping defense protocols for Chennai's 75+ TNEB electrical substations.
+> Operational intelligence, real-time meteorological tracking via Google DeepMind WeatherNext 3, satellite flood inundation models, and automated line tripping defense protocols for Chennai's 286 TNEB electrical substations.
 
 SurgeGrid AI is an open-source, civic crisis-resilience platform for monitoring and mitigating electrical infrastructure hazards during severe weather, cyclones, and urban flooding across Greater Chennai.
 
 ## Web Console & Applications
-- [SurgeGrid AI Web Console](https://surgegrid.nammamap.in/): Interactive geospatial dashboard visualizing Chennai's 286 electrical substations, 2,893 11kV feeder lines, and 17,000+ distribution transformers (DTR).
+- [SurgeGrid AI Web Console](https://surgegrid.nammamap.in/): Interactive geospatial dashboard visualizing Chennai's 286 electrical substations, 2,678 feeder circuits (3,335 with surveyed street geometry), and 65,557 surveyed distribution transformers (DTRs).
 - [Full Technical Specification](https://surgegrid.nammamap.in/llms-full.txt): Comprehensive technical architecture, physical grid topology, and operational protocols for LLMs and autonomous agents.
 - [Sitemap](https://surgegrid.nammamap.in/sitemap.xml): Search engine and crawler index of console endpoints.
 

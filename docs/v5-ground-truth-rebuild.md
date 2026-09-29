@@ -2,7 +2,7 @@
 
 > **Version:** 1.2.0-v5-ground-truth  
 > **Date:** September 27, 2026  
-> **Status:** Production Verified  
+> **Status:** Production Verified (counts re-audited 2026-09-29; the V5 grid file has since been enriched with health/outage history and is 3.2 MB)  
 
 ---
 
@@ -26,7 +26,7 @@ Ground-Truth Grid V5 represents a foundational architectural overhaul of SurgeGr
 ---
 
 ### 2.2 Feeder Routing: Ground Truth Vectors vs. Zero Approximations
-* **Surveyed 11 kV MultiLineString Street Geometry:** Integrated asynchronous on-demand loading of digitized feeder street routes (`/data/feeders/{circleCode}.json`) across 8 circles (3,438 feeder lines). When a user selects a feeder, the system queries its physical surveyed geometry and plots the conductor cables directly along Chennai's street network.
+* **Surveyed 11 kV MultiLineString Street Geometry:** Integrated asynchronous on-demand loading of digitized feeder street routes (`/data/feeders/{circleCode}.json`) across 8 circles (3,335 feeder geometries; audited 2026-09-29). When a user selects a feeder, the system queries its physical surveyed geometry and plots the conductor cables directly along Chennai's street network.
 * **65,557 Surveyed Distribution Transformers (DTRs):** Ingested `/data/dtr/{circleCode}.json`, providing on-demand spatial plotting of real pole-mounted and plinth-mounted transformers. Each DTR displays:
   - Unique TNEB Asset Code
   - Step-down rating (e.g., $11\text{ kV} \rightarrow 240\text{V} / 415\text{V}$)
@@ -78,7 +78,7 @@ Ground-Truth Grid V5 represents a foundational architectural overhaul of SurgeGr
 | **GPS Locations** | Surveyed Physical Switchyard Coordinates | **0% Approximation (100% Ground Truth)** |
 | **Administrative EDC & Region** | Official TNEB Operational Hierarchy (352 Sections) | **0% Approximation (100% Ground Truth)** |
 | **Switchyard Hardware & Incomers** | TANTRANSCO SLDC Single-Line Diagrams (SLDs) | **0% Approximation (100% Ground Truth)** |
-| **Feeder Line Vectors (3,438)** | TNEB Surveyed MultiLineString Street Geometry | **0% Approximation (100% Ground Truth)** |
+| **Feeder Line Vectors (3,335)** | TNEB Surveyed MultiLineString Street Geometry | **0% Approximation (100% Ground Truth)** |
 | **Distribution Transformers (65,557 DTRs)** | Surveyed DTR Points with 5.19M Registered Consumer Baseline | **0% Approximation (100% Ground Truth)** |
 | **Elevation (MSL)** | NASA SRTM 30m Digital Elevation Model | **Physical Topography Telemetry** |
 | **Distance to Coast** | Geodesic Distance to OpenStreetMap Coastline | **Exact Mathematical Geodesic** |
