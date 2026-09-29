@@ -43,34 +43,21 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
     setCompletedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const getPriorityBadge = (priority: SopActionItem['priority']) => {
-    switch (priority) {
-      case 'P0_CRITICAL':
-        return {
-          container: isLight
-            ? 'bg-rose-100 text-rose-900 border-rose-300 font-bold'
-            : 'bg-rose-950/60 text-rose-200 border-rose-600/60 shadow-xs shadow-rose-900/20 font-bold',
-          dot: 'bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.9)] animate-pulse',
-          label: 'P0 CRITICAL',
-        };
-      case 'P1_LIFELINE':
-        return {
-          container: isLight
-            ? 'bg-teal-100 text-teal-950 border-teal-300 font-bold'
-            : 'bg-teal-950/60 text-teal-200 border-teal-600/60 shadow-xs shadow-teal-900/20 font-bold',
-          dot: 'bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.9)]',
-          label: 'P1 LIFELINE',
-        };
-      case 'P2_FIELD':
-      default:
-        return {
-          container: isLight
-            ? 'bg-blue-100 text-blue-950 border-blue-300 font-bold'
-            : 'bg-blue-950/60 text-blue-200 border-blue-600/60 shadow-xs shadow-blue-900/20 font-bold',
-          dot: 'bg-blue-500',
-          label: 'P2 FIELD',
-        };
-    }
+  const getCategoryBadge = (category: SopActionItem['category']) => {
+    const labels: Record<SopActionItem['category'], string> = {
+      DE_ENERGIZE: 'SUPPLY OFF',
+      LIFELINE_PROTECT: 'LIFELINE',
+      DEWATERING: 'DEWATERING',
+      SAFETY_LOCKOUT: 'SAFETY',
+      RESTORATION: 'RESTORATION',
+      FIELD: 'FIELD',
+    };
+    return {
+      container: isLight
+        ? 'bg-indigo-100 text-indigo-950 border-indigo-300 font-bold'
+        : 'bg-indigo-950/60 text-indigo-200 border-indigo-600/60 font-bold',
+      label: labels[category],
+    };
   };
 
   const getUrgencyTheme = (urgency: GeminiSopDirective['urgency']) => {
@@ -163,9 +150,9 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                 </span>
               </div>
               <div className="text-[11px] font-sans flex items-center gap-1.5 truncate mt-0.5">
-                <span className={`font-semibold shrink-0 ${isLight ? 'text-indigo-700' : 'text-indigo-300'}`}>Gemini 2.5 Flash</span>
+                <span className={`font-semibold shrink-0 ${isLight ? 'text-indigo-700' : 'text-indigo-300'}`}>{directive.geminiModelTag}</span>
                 <span className={isLight ? 'text-slate-400' : 'text-slate-500'}>•</span>
-                <span className={`font-mono text-[10px] font-medium truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{directive.statutoryReference}</span>
+                <span className={`font-mono text-[10px] font-medium truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{directive.sources.join(' · ')}</span>
               </div>
             </div>
           </div>
@@ -211,6 +198,9 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             <div>
               <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Surface Wind</div>
               <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{Math.abs(directive.weatherSnapshot.windKmh).toFixed(1)} km/h</div>
+              <div className={`text-[10px] font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`} title="IMD cyclone class (MoP Power-Sector DMP 2021, Table-4)">
+                {directive.weatherSnapshot.imdClass ? `IMD: ${directive.weatherSnapshot.imdClass}` : 'Below IMD Severe class (88 km/h)'}
+              </div>
             </div>
           </div>
 
@@ -234,7 +224,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             </div>
             <div>
               <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Storm Surge</div>
-              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.surgeM.toFixed(1)}m MSL</div>
+              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.surgeM === null ? 'Not modelled' : `${directive.weatherSnapshot.surgeM.toFixed(1)}m MSL`}</div>
             </div>
           </div>
         </div>
@@ -267,7 +257,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <div className="flex items-center justify-between gap-2 mb-2.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span>Today's Vulnerable Grid Focus (Health + Hazard)</span>
+                  <span>Vulnerable grid focus (SurgeGrid ranking, not from the plans)</span>
                 </div>
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold border ${
                   isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/60 text-amber-300 border-amber-700/60'
@@ -321,10 +311,10 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <AlertTriangle className={`w-4 h-4 shrink-0 ${isLight ? 'text-rose-600' : 'text-rose-400'}`} />
               <div>
                 <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-rose-950' : 'text-rose-100'}`}>
-                  {directive.impactMetrics.atRiskSubstations}
+                  {directive.exposure.flood}
                 </div>
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-rose-800' : 'text-rose-400'}`}>
-                  Substation Risk
+                  Modelled Flooding
                 </div>
               </div>
             </div>
@@ -335,10 +325,10 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Radio className={`w-4 h-4 shrink-0 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
               <div>
                 <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-amber-950' : 'text-amber-100'}`}>
-                  {directive.impactMetrics.trippedFeeders}
+                  {directive.exposure.overhead}
                 </div>
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
-                  Feeders Tripped
+                  Overhead Substations
                 </div>
               </div>
             </div>
@@ -349,10 +339,10 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <ShieldCheck className={`w-4 h-4 shrink-0 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
               <div>
                 <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-emerald-950' : 'text-emerald-100'}`}>
-                  {directive.impactMetrics.protectedLifelines}
+                  {directive.exposure.lifeline}
                 </div>
                 <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-emerald-800' : 'text-emerald-400'}`}>
-                  Lifelines Ringed
+                  Hospital/Water Feeders
                 </div>
               </div>
             </div>
@@ -364,7 +354,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <span className={`text-[11px] font-bold uppercase tracking-wider ${
                 isLight ? 'text-slate-700' : 'text-slate-300'
               }`}>
-                Statutory Execution Protocol ({totalCount} Directives)
+                Official Actions ({totalCount}), quoted from the plans
               </span>
               <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold border ${
                 doneCount === totalCount
@@ -378,7 +368,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             <div className="space-y-2">
               {directive.actionItems.map((item: SopActionItem) => {
                 const isDone = !!completedItems[item.id];
-                const prioBadge = getPriorityBadge(item.priority);
+                const catBadge = getCategoryBadge(item.category);
 
                 return (
                   <div
@@ -410,15 +400,24 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                           <span className={`font-bold text-xs tracking-tight ${isDone ? 'line-through text-slate-400' : (isLight ? 'text-slate-950 font-extrabold' : 'text-slate-100')}`}>
                             {item.title}
                           </span>
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border shrink-0 ${prioBadge.container}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${prioBadge.dot}`} />
-                            {prioBadge.label}
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border shrink-0 ${catBadge.container}`}>
+                            {catBadge.label}
                           </span>
                         </div>
 
-                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
-                          {item.description}
-                        </p>
+                        <blockquote className={`text-[11px] leading-relaxed italic border-l-2 pl-2.5 ${
+                          isLight ? 'text-slate-800 border-indigo-300' : 'text-slate-200 border-indigo-500/60'
+                        }`}>
+                          &ldquo;{item.quote}&rdquo;
+                          <span className={`block not-italic text-[10px] font-mono mt-0.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                            {item.citation}
+                          </span>
+                        </blockquote>
+                        {item.note && (
+                          <p className={`text-[11px] leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
+                            {item.note}
+                          </p>
+                        )}
 
                         {/* Interactive Clickable Target Substation Tags */}
                         {item.targetFeedersOrSubstations && item.targetFeedersOrSubstations.length > 0 && (

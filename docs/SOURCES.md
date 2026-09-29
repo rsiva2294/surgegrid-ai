@@ -90,8 +90,8 @@ TN SDMP 2023, Four Stage Warning System, PDF p. 148 (printed p. 146).
 - **`mop-mobile-dg-sets`** — "A sufficient number of mobile DG sets should be available and should be moved immediately to provide emergency relief and for operating the dewatering pumps."  
   MoP Power-Sector DMP 2021, PDF p. 233 (printed p. 232); Mobile DG sets
 
-- **`tangedco-pump-out-flood`** — "In case, flood enters the sub-station, it should be arranged to be pumped out quickly to safeguard electrical"  
-  TANGEDCO DMP 2017, PDF p. 77 (printed p. 73); Continues on the next page: "equipments. As temporary measures sand bags are kept to avoid water entry." (PDF p. 78)
+- **`tangedco-pump-out-flood`** — "In case, flood enters the sub-station, it should be arranged to be pumped out quickly to safeguard electrical equipments."  
+  TANGEDCO DMP 2017, PDF pp. 77-78 (printed pp. 73-74); 5.11 Operation coordination, Drills and exercises
 
 - **`tangedco-diesel-pumps-low-lying`** — "also diesel pumps for draining flood water from the Sub-stations which are located in low lying areas."  
   TANGEDCO DMP 2017, PDF p. 78 (printed p. 74)
@@ -121,10 +121,10 @@ TN SDMP 2023, Four Stage Warning System, PDF p. 148 (printed p. 146).
 - **`mop-restore-priority`** — "The power supply of vital installations e.g. Drainage pumping stations, drinking water supply plants, hospitals, post offices, banks, government offices and residential complexes should be restored on a priority basis."  
   MoP Power-Sector DMP 2021, PDF p. 240 (printed p. 239); 8.2.5.1.4 Restoration of Distribution Networks
 
-- **`mop-emergency-operation-centre`** — "Every distribution company must build up Emergency Operation Centre (EOC)"  
+- **`mop-emergency-operation-centre`** — "Every distribution company must build up Emergency Operation Centre (EOC) with full logistics, conventional and alternative communication systems and connectivity with external authorities for assistance and support."  
   MoP Power-Sector DMP 2021, PDF p. 240 (printed p. 239); 8.2.5.1.4 Restoration of Distribution Networks
 
-- **`mop-mobile-substation-12-24h`** — "it can be used to restore power supply in disaster affected areas in 12-24 hours, which otherwise may take several days to weeks."  
+- **`mop-mobile-substation-12-24h`** — "Mobile Substation deployment capability is a major advantage to utilities as it can be used to restore power supply in disaster affected areas in 12-24 hours, which otherwise may take several days to weeks."  
   MoP Power-Sector DMP 2021, PDF p. 240 (printed p. 239); Mobile Substation
 
 - **`tangedco-restore-priority`** — "The priority is for Hospitals, drinking water supply, public lighting, community centers where peoples have been safely accommodated."  

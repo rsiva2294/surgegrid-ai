@@ -1,21 +1,47 @@
 /**
  * geminiSopService.ts
- * 
- * Generates and streams autonomous, statutory Standard Operating Procedures (SOPs)
- * based on live electrical infrastructure state, storm telemetry, and GEE terrain metrics.
+ *
+ * Builds the city-wide Standard Operating Procedure (SOP) for a scenario hour.
+ * Every action is a word-for-word quote from an official disaster management plan
+ * (src/data/officialSources.ts, docs/SOURCES.md). Our grid data only decides which
+ * substations an action is applied to. Gemini may choose targets from lists we give
+ * it and word a short note; it never writes, changes or cites the quotes.
  */
 
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
-import type { TnebSubstation } from '../types/tneb';
+import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
+import {
+  OFFICIAL_SOURCES,
+  IMD_WARNING_STAGES,
+  formatCitation,
+  getImdCycloneClass,
+  getOfficialRule,
+  type OfficialRule,
+  type OfficialSourceId,
+} from '../data/officialSources';
+
+export type SopCategory =
+  | 'DE_ENERGIZE'
+  | 'LIFELINE_PROTECT'
+  | 'DEWATERING'
+  | 'SAFETY_LOCKOUT'
+  | 'RESTORATION'
+  | 'FIELD';
 
 export interface SopActionItem {
+  /** Id of the official rule in officialSources.ts. */
   id: string;
-  priority: 'P0_CRITICAL' | 'P1_LIFELINE' | 'P2_FIELD';
-  category: 'DE_ENERGIZE' | 'LIFELINE_PROTECT' | 'DEWATERING' | 'SAFETY_LOCKOUT' | 'RESTORATION' | 'FIELD';
+  category: SopCategory;
+  /** Short label (ours). The quote and citation below it are official. */
   title: string;
-  description: string;
+  /** Word-for-word quote from the official plan. */
+  quote: string;
+  /** Plan name and page. */
+  citation: string;
+  /** One sentence tying the action to our data. Numbers in it come from the data only. */
+  note?: string;
   targetFeedersOrSubstations?: string[];
   completed?: boolean;
 }
@@ -41,18 +67,24 @@ export interface GeminiSopDirective {
   title: string;
   urgency: 'WATCH' | 'CRITICAL' | 'RESTORATION';
   summaryEn: string;
-  summaryTa: string;
-  statutoryReference: string;
+  /** Short names of the official plans quoted in this directive. */
+  sources: string[];
+  /** Latest IMD warning stage already issued at this hour (cyclone scenario only). */
+  warningStage: string | null;
   weatherSnapshot: {
     windKmh: number;
     rainMm: number;
-    surgeM: number;
+    /** null when the scenario does not model storm surge. */
+    surgeM: number | null;
     distanceKm?: number;
+    /** IMD cyclone class for the wind speed, or null below the lowest class (88 km/h). */
+    imdClass: string | null;
   };
-  impactMetrics: {
-    atRiskSubstations: number;
-    trippedFeeders: number;
-    protectedLifelines: number;
+  /** Counts taken from our grid and scenario data, not estimates. */
+  exposure: {
+    flood: number;
+    overhead: number;
+    lifeline: number;
   };
   actionItems: SopActionItem[];
   geminiModelTag: string;
@@ -61,9 +93,9 @@ export interface GeminiSopDirective {
 }
 
 /**
- * Evaluates Chennai's active infrastructure health ("Today's State") against
- * active disaster physical hazards (surge depth, wind speed, inundation risk).
- * Returns the top degraded substations that face compounding disaster failure risk.
+ * SurgeGrid's own ranking of substations that combine poor health with flood exposure.
+ * The weights below are ours and are NOT taken from any official plan.
+ * (Scheduled for review in the "only official facts" clean-up, step 3.)
  */
 export function extractTopCompromisedInfra(
   substations: TnebSubstation[],
@@ -145,235 +177,314 @@ export function extractTopCompromisedInfra(
   return scored.slice(0, limit);
 }
 
-// Statutory directives calibrated with TNSDMA guidelines
-const MILESTONE_DIRECTIVES: Record<string, GeminiSopDirective> = {
-  // Michaung Cat-3: T-24h
-  'MICHAUNG_CAT3_-24': {
-    scenarioId: 'MICHAUNG_CAT3',
-    hour: -24,
-    label: 'T-24h Pre-Landfall Watch',
-    title: 'Pre-Emptive Radial Circuit Watch & Lifeline Islanding Mandate',
-    urgency: 'WATCH',
-    summaryEn: 'Cyclone Michaung approaching at 285 km SE. Winds reaching 68 km/h. Mandatory inspection of coastal tree canopies along 33kV overhead corridors. Diesel gensets locked at all Tier-1 hospital lifelines.',
-    summaryTa: 'புயல் எச்சரிக்கை: 33kV மின் வழித்தடங்களில் மரக்கிளைகளை அகற்றும் பணி முடுக்கிவிடப்பட்டுள்ளது. அவசர மருத்துவமனைகளுக்கு மாற்று டீசல் ஜெனரேட்டர் தயார்நிலையில் உள்ளது.',
-    statutoryReference: 'TNSDMA §5.2 · CEA Reg. 14',
-    weatherSnapshot: {
-      windKmh: 68.4,
-      rainMm: 12.5,
-      surgeM: 0.8,
-      distanceKm: 285,
-    },
-    impactMetrics: {
-      atRiskSubstations: 14,
-      trippedFeeders: 0,
-      protectedLifelines: 28,
-    },
-    actionItems: [
-      {
-        id: 'sop-24-1',
-        priority: 'P0_CRITICAL',
-        category: 'SAFETY_LOCKOUT',
-        title: 'Dispatch Lineman Foot Patrols to Coastal Corridors',
-        description: 'Deploy 42 foot-patrol gangs across Ennore, Royapuram, and Besant Nagar overhead spans to trim precariously hanging branches before wind breaches 75 km/h.',
-        targetFeedersOrSubstations: ['33KV ENNORE SS', '110KV BESANT NAGAR', '33KV ROYAPURAM'],
-      },
-      {
-        id: 'sop-24-2',
-        priority: 'P1_LIFELINE',
-        category: 'LIFELINE_PROTECT',
-        title: 'Lock Diesel Genset Transfers for Critical Hospitals',
-        description: 'Verify auto-transfer switches (ATS) at Apollo Greams Rd, Rajiv Gandhi Govt Hospital, and Kilpauk Medical College. Top up fuel tanks to 100% capacity (72-hour autonomy).',
-        targetFeedersOrSubstations: ['33KV APOLLO HOSPITALS', '110KV KILPAUK', '230KV PERAMBUR'],
-      },
-      {
-        id: 'sop-24-3',
-        priority: 'P2_FIELD',
-        category: 'DEWATERING',
-        title: 'Pre-Position Mobile Dewatering Diesel Pumps',
-        description: 'Position 50HP dewatering pumps at low-elevation switchyards (<2.5m MSL) including Velachery 110kV and Taramani 230kV.',
-        targetFeedersOrSubstations: ['110KV VELACHERY', '230KV TARAMANI'],
-      },
-      {
-        id: 'sop-24-4',
-        priority: 'P0_CRITICAL',
-        category: 'SAFETY_LOCKOUT',
-        title: 'Arm Remote Scada De-energization Interlocks',
-        description: 'Ensure SLDC operators have verified supervisory trip groups for all radial 11kV/33kV overhead lines to initiate rapid group isolation upon 80 km/h wind trigger.',
-      },
-    ],
-    geminiModelTag: 'Gemini 2.5 Flash · Grid Copilot',
-    timestamp: 'Phase-1 Trigger (T-24h)',
-  },
+// ---------------------------------------------------------------------------
+// Official-quote SOP
+// ---------------------------------------------------------------------------
 
-  // Michaung Cat-3: T-0h (Landfall Peak)
-  'MICHAUNG_CAT3_0': {
-    scenarioId: 'MICHAUNG_CAT3',
-    hour: 0,
-    label: 'T-0h Landfall Peak',
-    title: 'Statutory De-Energization & Flashover Containment Order',
-    urgency: 'CRITICAL',
-    summaryEn: 'Cyclone Eye Wall making landfall. Winds peaking at 112 km/h; storm surge 3.2m MSL. Mandatory trip of all coastal overhead lines to prevent electrocution. Island underground ring feeders to preserve critical city core.',
-    summaryTa: 'தீவிர எச்சரிக்கை: புயல் கரையை கடக்கிறது (காற்று 112 கி.மீ/மணி). மின் கசிவு விபத்துகளை தவிர்க்க கடற்கரையோர மின் இணைப்புகள் துண்டிக்கப்பட்டுள்ளன. நிலத்தடி கேபிள்கள் மூலம் மருத்துவமனைகளுக்கு மட்டும் மின்சாரம்.',
-    statutoryReference: 'TNSDMA §5.6 · CEA Safety Reg. 33',
-    weatherSnapshot: {
-      windKmh: 112.0,
-      rainMm: 58.2,
-      surgeM: 3.2,
-      distanceKm: 0,
-    },
-    impactMetrics: {
-      atRiskSubstations: 58,
-      trippedFeeders: 86,
-      protectedLifelines: 19,
-    },
-    actionItems: [
-      {
-        id: 'sop-0-1',
-        priority: 'P0_CRITICAL',
-        category: 'DE_ENERGIZE',
-        title: 'Statutory Overhead Radial De-Energization',
-        description: 'Immediately de-energize all 11kV and 33kV overhead radial lines in Zones 1–5 where sustained winds exceed 80 km/h to prevent fatal conductor snaps and public electrocution.',
-        targetFeedersOrSubstations: ['110KV VELACHERY', '33KV SHOLINGANALLUR', '110KV ENNORE'],
-      },
-      {
-        id: 'sop-0-2',
-        priority: 'P0_CRITICAL',
-        category: 'SAFETY_LOCKOUT',
-        title: 'Lock Out SCADA Auto-Reclose Relays',
-        description: 'Disable automatic circuit reclosers (ACR) across the entire coastal grid. Prevent repeated reclosure into waterlogged ground or fallen tree contacts.',
-      },
-      {
-        id: 'sop-0-3',
-        priority: 'P1_LIFELINE',
-        category: 'LIFELINE_PROTECT',
-        title: 'Isolate & Ring-Feed Critical Medical Centers',
-        description: 'Maintain power to Apollo Hospitals and Rajiv Gandhi GH exclusively via hardened 33kV Underground GIS ring feeders. Confirm secondary diesel backup readiness.',
-        targetFeedersOrSubstations: ['33KV APOLLO HOSPITALS', '110KV PARK TOWN GIS'],
-      },
-      {
-        id: 'sop-0-4',
-        priority: 'P2_FIELD',
-        category: 'DEWATERING',
-        title: 'Execute Inundation Cutoff at Low-Plinth Switchyards',
-        description: 'Switchyards at Velachery, Madipakkam, and Vyasarpadi inundated >0.6m. Trip bus couplers and start submersible dewatering units immediately.',
-        targetFeedersOrSubstations: ['110KV VELACHERY', '33KV VYASARPADI', '33KV MADIPAKKAM'],
-      },
-    ],
-    geminiModelTag: 'Gemini 2.5 Flash · Grid Copilot',
-    timestamp: 'Phase-2 Critical (T-0h Landfall)',
-  },
+type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
+type TargetGroup = 'flood' | 'overhead' | 'lifeline' | 'none';
+type ScenarioKey = 'MICHAUNG_CAT3' | 'FLOODS_2015';
 
-  // Michaung Cat-3: T+12h (Restoration Phase)
-  'MICHAUNG_CAT3_12': {
-    scenarioId: 'MICHAUNG_CAT3',
-    hour: 12,
-    label: 'T+12h Restoration & Re-Energization',
-    title: 'Post-Storm Phased Energization & Megger Testing Protocol',
-    urgency: 'RESTORATION',
-    summaryEn: 'Cyclone core moved inland; winds subsided to 38 km/h. Floodwaters receding in elevated zones. Begin statutory 3-stage re-energization: 1. Transmission Backbones; 2. Hospitals & CMWSSB Water Pumping; 3. Residential Distribution.',
-    summaryTa: 'மறுசீரமைப்பு பணி: புயல் வலுவிழந்தது. கட்டம்-1: பெருநகர குடிநீர் நிலையங்கள் மற்றும் அவசர மருத்துவமனைகளுக்கு முதலில் மின் விநியோகம் சீரமைக்கப்படுகிறது.',
-    statutoryReference: 'TANGEDCO SOP-401 · TNSDMA §8.2',
-    weatherSnapshot: {
-      windKmh: 38.5,
-      rainMm: 4.2,
-      surgeM: 1.1,
-      distanceKm: 140,
-    },
-    impactMetrics: {
-      atRiskSubstations: 22,
-      trippedFeeders: 42,
-      protectedLifelines: 32,
-    },
-    actionItems: [
-      {
-        id: 'sop-12-1',
-        priority: 'P1_LIFELINE',
-        category: 'RESTORATION',
-        title: 'Stage-1 Priority Restoration: Kilpauk & Chembarambakkam Water Pumps',
-        description: 'Perform visual patrol on 33kV dedicated underground lines feeding CMWSSB Kilpauk water treatment plant. Energize under strict operator clearance.',
-        targetFeedersOrSubstations: ['110KV KILPAUK', '230KV POONAMALLEE'],
-      },
-      {
-        id: 'sop-12-2',
-        priority: 'P0_CRITICAL',
-        category: 'SAFETY_LOCKOUT',
-        title: 'Mandatory 1000V Megger Insulation Check on Inundated DTRs',
-        description: 'For all ground-mounted distribution transformers (DTRs) submerged during the surge, prohibit energization until insulation resistance checks >50 MΩ.',
-        targetFeedersOrSubstations: ['110KV VELACHERY', '33KV SHOLINGANALLUR'],
-      },
-      {
-        id: 'sop-12-3',
-        priority: 'P1_LIFELINE',
-        category: 'RESTORATION',
-        title: 'Verify Hospital Feeder Redundancy',
-        description: 'Transfer hospital feeders from auxiliary emergency diesel back to synchronized grid utility supply, holding generator on warm standby.',
-      },
-      {
-        id: 'sop-12-4',
-        priority: 'P2_FIELD',
-        category: 'FIELD',
-        title: 'Authorize Lineman Pole Replacements in Wind Sectors',
-        description: 'Deploy 85 mobile crane units to erect pre-cast concrete poles along radial routes in Zone 3 where cross-arms snapped during peak gusts.',
-      },
-    ],
-    geminiModelTag: 'Gemini 2.5 Flash · Grid Copilot',
-    timestamp: 'Phase-3 Restoration (T+12h)',
-  },
+interface RuleMeta {
+  title: string;
+  category: SopCategory;
+  group: TargetGroup;
+}
 
-  // 2015 Megafloods: T-0h (Chembarambakkam Breach)
-  'FLOODS_2015_0': {
-    scenarioId: 'FLOODS_2015',
-    hour: 0,
-    label: 'T-0h Adyar River Spill',
-    title: 'Catastrophic Riverine Inundation & 230kV Backbone Defense Directive',
-    urgency: 'CRITICAL',
-    summaryEn: 'Chembarambakkam reservoir release exceeds 29,000 cusecs. Adyar and Cooum rivers in catastrophic spate. 230kV Taramani and 110kV Koyambedu switchyards partially submerged. Emergency bypass isolating vulnerable ground-mounted switchgear.',
-    summaryTa: 'செம்பரம்பாக்கம் ஏரி உபரி நீர் திறப்பு: அடையாறு ஆற்றில் வெள்ளப்பெருக்கு காரணமாக 230kV தரமணி மற்றும் கோயம்பேடு துணை மின் நிலையங்கள் பாதுகாப்புடன் தனிமைப்படுத்தப்படுகின்றன.',
-    statutoryReference: 'TNSDMA §8.4 · CMWSSB Flood SOP',
-    weatherSnapshot: {
-      windKmh: 42.0,
-      rainMm: 345.0,
-      surgeM: 0.4,
-    },
-    impactMetrics: {
-      atRiskSubstations: 74,
-      trippedFeeders: 112,
-      protectedLifelines: 15,
-    },
-    actionItems: [
-      {
-        id: 'sop-fl-1',
-        priority: 'P0_CRITICAL',
-        category: 'DE_ENERGIZE',
-        title: 'Emergency De-Energization of Riverine Low-Plinth Yards',
-        description: 'Adyar basin floodwaters breach 1.5m plinth elevation. Remotely trip 230kV Taramani low-bay bus to safeguard main power transformers from catastrophic water immersion short circuits.',
-        targetFeedersOrSubstations: ['230KV TARAMANI', '110KV GUINDY', '110KV SAIDAPET'],
-      },
-      {
-        id: 'sop-fl-2',
-        priority: 'P1_LIFELINE',
-        category: 'LIFELINE_PROTECT',
-        title: 'Maintain Dedicated Power to Royapettah & MIOT Relief Centers',
-        description: 'Deploy elevated mobile truck-mounted transformers (1000 kVA) to maintain supply to emergency triage medical wings above flood line.',
-      },
-      {
-        id: 'sop-fl-3',
-        priority: 'P2_FIELD',
-        category: 'DEWATERING',
-        title: 'Continuous High-Discharge Pumping at Central SLDC',
-        description: 'Operate 4x 100HP diesel pumps at SLDC Chennai headquarters control room basement to safeguard supervisory SCADA servers and optical communication links.',
-      },
+// Short labels are ours; the quote and citation shown beneath each one are official.
+const RULE_META: Record<string, RuleMeta> = {
+  'mop-diesel-7-days': { title: 'Keep diesel for substation generators', category: 'FIELD', group: 'flood' },
+  'mop-check-inventories': { title: 'Check and top up inventories near the likely area', category: 'FIELD', group: 'none' },
+  'mop-move-ers-towers': { title: 'Move ERS towers to the nearest substation', category: 'FIELD', group: 'flood' },
+  'mop-deploy-manpower': { title: 'Deploy expert manpower to the nearest station', category: 'FIELD', group: 'flood' },
+  'mop-identify-flood-prone': { title: 'Identify flood-prone substations', category: 'FIELD', group: 'flood' },
+  'mop-dewatering-pump-arranged': { title: 'Arrange dewatering pumps', category: 'DEWATERING', group: 'flood' },
+  'mop-trigger-mechanism': { title: 'Set the trigger that starts the action plan', category: 'FIELD', group: 'none' },
+  'mop-switch-off-if-required': { title: 'Switch supply off if required', category: 'DE_ENERGIZE', group: 'flood' },
+  'mop-mobile-dg-sets': { title: 'Move mobile DG sets to run the dewatering pumps', category: 'DEWATERING', group: 'flood' },
+  'mop-restore-priority': { title: 'Restore vital installations first', category: 'RESTORATION', group: 'lifeline' },
+  'mop-emergency-operation-centre': { title: 'Run an Emergency Operation Centre', category: 'RESTORATION', group: 'none' },
+  'mop-mobile-substation-12-24h': { title: 'Use mobile substations for temporary restoration', category: 'RESTORATION', group: 'flood' },
+  'tangedco-oh-lines-out-of-service': { title: 'Keep overhead lines out of service in flood-affected areas', category: 'DE_ENERGIZE', group: 'overhead' },
+  'tangedco-no-recharge-before-patrol': { title: 'Recharge only after the feeders are patrolled', category: 'SAFETY_LOCKOUT', group: 'none' },
+  'tangedco-retaining-wall': { title: 'Protect outdoor substations against flood entry', category: 'FIELD', group: 'flood' },
+  'tangedco-pump-out-flood': { title: 'Pump floodwater out of the substation', category: 'DEWATERING', group: 'flood' },
+  'tangedco-sandbags': { title: 'Keep sandbags to stop water entering', category: 'FIELD', group: 'flood' },
+  'tangedco-diesel-pumps-low-lying': { title: 'Keep diesel pumps for low-lying substations', category: 'DEWATERING', group: 'flood' },
+  'sdmp-disconnect-at-cyclone-strike': { title: 'Disconnect supply as the cyclone strikes', category: 'DE_ENERGIZE', group: 'none' },
+  'gcc-cut-off-during-flooding': { title: 'Cut supply off during flooding if required', category: 'DE_ENERGIZE', group: 'flood' },
+  'gcc-check-transformers-pillar-boxes': { title: 'Check transformers and pillar boxes', category: 'FIELD', group: 'none' },
+  'gcc-run-dg-set-relief-campus': { title: 'Run DG sets at relief campuses and offices', category: 'LIFELINE_PROTECT', group: 'none' },
+  'gcc-generators-sewage-pumping': { title: 'Keep generator sets in sewage pumping stations', category: 'LIFELINE_PROTECT', group: 'lifeline' },
+};
+
+// Which official actions appear in which phase. Every id exists in officialSources.ts.
+const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
+  MICHAUNG_CAT3: {
+    WATCH: [
+      'mop-diesel-7-days',
+      'mop-check-inventories',
+      'mop-move-ers-towers',
+      'mop-deploy-manpower',
+      'mop-identify-flood-prone',
+      'mop-dewatering-pump-arranged',
     ],
-    geminiModelTag: 'Gemini 2.5 Flash · Grid Copilot',
-    timestamp: 'Historic Flood Benchmark (T-0h)',
+    CRITICAL: [
+      'sdmp-disconnect-at-cyclone-strike',
+      'tangedco-oh-lines-out-of-service',
+      'mop-switch-off-if-required',
+      'tangedco-pump-out-flood',
+      'mop-mobile-dg-sets',
+      'gcc-run-dg-set-relief-campus',
+    ],
+    RESTORATION: [
+      'tangedco-no-recharge-before-patrol',
+      'mop-restore-priority',
+      'mop-mobile-substation-12-24h',
+      'mop-emergency-operation-centre',
+      'gcc-generators-sewage-pumping',
+    ],
+  },
+  FLOODS_2015: {
+    WATCH: [
+      'mop-identify-flood-prone',
+      'mop-trigger-mechanism',
+      'mop-dewatering-pump-arranged',
+      'tangedco-sandbags',
+      'tangedco-retaining-wall',
+      'gcc-check-transformers-pillar-boxes',
+    ],
+    CRITICAL: [
+      'mop-switch-off-if-required',
+      'gcc-cut-off-during-flooding',
+      'tangedco-oh-lines-out-of-service',
+      'tangedco-pump-out-flood',
+      'mop-mobile-dg-sets',
+      'tangedco-diesel-pumps-low-lying',
+    ],
+  },
+};
+
+const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
+  MICHAUNG_CAT3: {
+    WATCH: 'Cyclone approaching: standby actions from the official plans',
+    CRITICAL: 'Cyclone impact: safety and switch-off actions from the official plans',
+    RESTORATION: 'After the storm: safe recharge and restoration priority',
+  },
+  FLOODS_2015: {
+    WATCH: 'Flood watch: substation flood preparation from the official plans',
+    CRITICAL: 'Flood response: switch-off and dewatering actions from the official plans',
+    RESTORATION: 'After the flood: safe recharge and restoration priority',
   },
 };
 
 /**
- * Returns the relevant Gemini SOP directive for a given scenario and timestep,
- * dynamically synthesized using Chennai's active infrastructure condition ("Today's State"):
- * - Prioritizes Grade C/D substations, chronic trips, and low-plinth inundation bowls.
- * - Formulates statutory TNSDMA & CEA directives targeting those exact assets.
+ * Phase rules use only facts we can point to:
+ * - Cyclone: while wind is at or above the lowest IMD cyclone class (88 km/h) the phase is CRITICAL;
+ *   after landfall (hour > 0) with wind below that class it is RESTORATION; otherwise WATCH.
+ * - Flood: before the scenario's peak-rain hour (T-0) it is WATCH, from T-0 on it is CRITICAL.
+ *   The flood data ends 34 h after the peak and recovery is not modelled.
+ */
+function resolvePhase(scenarioKey: ScenarioKey, timestep: ScenarioTimestep): SopPhase {
+  const hour = timestep.timestep_hour;
+  if (scenarioKey === 'MICHAUNG_CAT3') {
+    if (getImdCycloneClass(timestep.wind_speed_10m_kmh)) return 'CRITICAL';
+    return hour > 0 ? 'RESTORATION' : 'WATCH';
+  }
+  return hour >= 0 ? 'CRITICAL' : 'WATCH';
+}
+
+/** Latest IMD warning stage that would already have been issued at this many hours before landfall. */
+function resolveWarningStage(hour: number): string | null {
+  if (hour >= 0) return null;
+  const hoursBefore = -hour;
+  let stage: string | null = null;
+  for (const st of IMD_WARNING_STAGES) {
+    if (st.hoursBefore >= hoursBefore) stage = st.name;
+  }
+  return stage;
+}
+
+// ---- Targets from our own data ------------------------------------------------
+
+interface SopTargets {
+  flood: string[];
+  overhead: string[];
+  lifeline: string[];
+  counts: { flood: number; overhead: number; lifeline: number };
+}
+
+const MAX_TARGETS = 4;
+
+function isOverheadFeeder(f: FeederDetail): boolean {
+  const cfg = (f.config || '').toUpperCase();
+  return cfg.includes('OH') || cfg.includes('OVERHEAD') || cfg.includes('MIXED');
+}
+
+function buildTargets(
+  substations: TnebSubstation[],
+  scenarioKey: ScenarioKey,
+  timestep: ScenarioTimestep,
+  phase: SopPhase
+): SopTargets {
+  const nameOf = (ss: TnebSubstation) => ss.cleanName || ss.name;
+  const surgeM = timestep.simulated_storm_surge_msl_m;
+
+  // Modelled flooding per substation (grid-file hydroRisk, derived from Earth Engine terrain data).
+  const depthOf = (ss: TnebSubstation) =>
+    (scenarioKey === 'FLOODS_2015' ? ss.hydroRisk?.flood2015DepthM : ss.hydroRisk?.cycloneMaxDepthM) ?? 0;
+  const modelled = substations.filter(ss => depthOf(ss) > 0).sort((a, b) => depthOf(b) - depthOf(a));
+
+  // While the cyclone is at impact, prefer substations whose yard elevation is at or below the current surge.
+  let floodNames = modelled.map(nameOf);
+  if (scenarioKey === 'MICHAUNG_CAT3' && phase === 'CRITICAL' && surgeM > 0) {
+    const underWater = substations
+      .filter(ss => ss.elevationM !== undefined && ss.elevationM <= surgeM)
+      .sort((a, b) => (a.elevationM as number) - (b.elevationM as number));
+    if (underWater.length > 0) floodNames = underWater.map(nameOf);
+  }
+
+  const overheadRanked = substations
+    .map(ss => ({ ss, n: (ss.feeders || []).filter(isOverheadFeeder).length }))
+    .filter(x => x.n > 0)
+    .sort((a, b) => b.n - a.n);
+
+  const lifelineRanked = substations
+    .map(ss => ({
+      ss,
+      n: (ss.feeders || []).filter(f => f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water').length,
+    }))
+    .filter(x => x.n > 0)
+    .sort((a, b) => b.n - a.n);
+
+  return {
+    flood: floodNames.slice(0, MAX_TARGETS),
+    overhead: overheadRanked.slice(0, MAX_TARGETS).map(x => nameOf(x.ss)),
+    lifeline: lifelineRanked.slice(0, MAX_TARGETS).map(x => nameOf(x.ss)),
+    counts: {
+      flood: modelled.length,
+      overhead: overheadRanked.length,
+      lifeline: lifelineRanked.reduce((sum, x) => sum + x.n, 0),
+    },
+  };
+}
+
+function targetsFor(group: TargetGroup, targets: SopTargets): string[] {
+  return group === 'none' ? [] : targets[group];
+}
+
+function fallbackNote(group: TargetGroup, targets: SopTargets): string | undefined {
+  switch (group) {
+    case 'flood':
+      return `${targets.counts.flood} substations show modelled flooding in this scenario's data.`;
+    case 'overhead':
+      return `${targets.counts.overhead} substations have overhead or mixed feeders in the grid data.`;
+    case 'lifeline':
+      return `${targets.counts.lifeline} hospital and water feeders in the grid data; the substations listed serve the most.`;
+    default:
+      return undefined;
+  }
+}
+
+// ---- Directive assembly ----------------------------------------------------------
+
+interface BuiltDirective {
+  directive: GeminiSopDirective;
+  targets: SopTargets;
+  ruleIds: string[];
+}
+
+function scenarioKeyOf(scenarioId: ScenarioId): ScenarioKey | null {
+  return scenarioId === 'MICHAUNG_CAT3' || scenarioId === 'FLOODS_2015' ? scenarioId : null;
+}
+
+function hourLabel(hour: number): string {
+  return `T${hour >= 0 ? '+' : ''}${hour}h`;
+}
+
+function buildDirective(
+  scenarioId: ScenarioId,
+  timestep: ScenarioTimestep,
+  substations: TnebSubstation[],
+  liveOutages: LiveOutage[]
+): BuiltDirective | null {
+  const scenarioKey = scenarioKeyOf(scenarioId);
+  if (!scenarioKey) return null;
+
+  const hour = timestep.timestep_hour;
+  const windKmh = Math.abs(timestep.wind_speed_10m_kmh);
+  const rainMm = timestep.total_precipitation_1hr_mm;
+  const isCyclone = scenarioKey === 'MICHAUNG_CAT3';
+  const surgeM = isCyclone ? timestep.simulated_storm_surge_msl_m : null;
+
+  const phase = resolvePhase(scenarioKey, timestep);
+  const warningStage = isCyclone ? resolveWarningStage(hour) : null;
+  const imdClass = getImdCycloneClass(windKmh);
+  const targets = buildTargets(substations, scenarioKey, timestep, phase);
+
+  const ruleIds = (PHASE_RULES[scenarioKey][phase] || []).filter(id => getOfficialRule(id) && RULE_META[id]);
+  // The data note is shown once per target group, on the first action that uses it, to avoid repeating it.
+  const groupsWithNote = new Set<TargetGroup>();
+  const actionItems: SopActionItem[] = ruleIds.map(id => {
+    const rule = getOfficialRule(id) as OfficialRule;
+    const meta = RULE_META[id];
+    const names = targetsFor(meta.group, targets);
+    const note = groupsWithNote.has(meta.group) ? undefined : fallbackNote(meta.group, targets);
+    if (note) groupsWithNote.add(meta.group);
+    return {
+      id,
+      category: meta.category,
+      title: meta.title,
+      quote: rule.quote,
+      citation: formatCitation(rule),
+      note,
+      targetFeedersOrSubstations: names.length > 0 ? names : undefined,
+    };
+  });
+
+  const sourceIds = new Set<OfficialSourceId>();
+  ruleIds.forEach(id => sourceIds.add((getOfficialRule(id) as OfficialRule).sourceId));
+  const sources = Array.from(sourceIds).map(sid => OFFICIAL_SOURCES[sid].shortName);
+
+  const weatherText = isCyclone
+    ? `wind ${windKmh.toFixed(0)} km/h${imdClass ? ` (IMD class: ${imdClass.name})` : ''}, rain ${rainMm.toFixed(0)} mm/h, surge ${(surgeM as number).toFixed(1)} m`
+    : `rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h`;
+  const summaryEn =
+    `${hourLabel(hour)}${warningStage ? ` (${warningStage})` : ''}: ${weatherText}. ` +
+    `${targets.counts.flood} substations show modelled flooding in this scenario's data. ` +
+    `The actions below are quoted from official disaster management plans.`;
+
+  const directive: GeminiSopDirective = {
+    scenarioId,
+    hour,
+    label: `${hourLabel(hour)}${warningStage ? ` · ${warningStage}` : ''}`,
+    title: PHASE_TITLES[scenarioKey][phase],
+    urgency: phase,
+    summaryEn,
+    sources,
+    warningStage,
+    weatherSnapshot: {
+      windKmh,
+      rainMm,
+      surgeM,
+      distanceKm: timestep.cyclone_distance_to_chennai_km,
+      imdClass: imdClass
+        ? `${imdClass.name} (${imdClass.minKmh}${imdClass.maxKmh ? `-${imdClass.maxKmh}` : '+'} km/h)`
+        : null,
+    },
+    exposure: targets.counts,
+    actionItems,
+    geminiModelTag: 'Official quotes · rule-based',
+    timestamp: `${hourLabel(hour)} ${timestep.label || ''}`.trim(),
+    compromisedAssets: extractTopCompromisedInfra(substations, liveOutages, timestep, 6),
+  };
+
+  return { directive, targets, ruleIds };
+}
+
+/**
+ * Returns the SOP for a scenario hour, built only from quoted official actions.
+ * Substation names and counts come from our grid data. No Gemini call is made here.
  */
 export function getDirectiveForTimestep(
   scenarioId: ScenarioId,
@@ -381,209 +492,37 @@ export function getDirectiveForTimestep(
   substations: TnebSubstation[] = [],
   liveOutages: LiveOutage[] = []
 ): GeminiSopDirective | null {
-  if (scenarioId === 'LIVE') return null;
-
-  const topCompromised = extractTopCompromisedInfra(substations, liveOutages, timestep, 6);
-
-  // Weather snapshot
-  const windKmh = Math.abs(timestep.wind_speed_10m_kmh);
-  const rainMm = timestep.total_precipitation_1hr_mm;
-  const surgeM = timestep.simulated_storm_surge_msl_m;
-  const distanceKm = timestep.cyclone_distance_to_chennai_km;
-
-  // Real at-risk substations count in Chennai grid for this timestep
-  const atRiskCount = substations.length > 0
-    ? substations.filter(ss => {
-        const p = getEnrichedHealthProfile(ss, liveOutages);
-        const elev = ss.elevationM !== undefined ? ss.elevationM : 6;
-        return (
-          p.healthGrade === 'D' ||
-          p.healthGrade === 'C' ||
-          elev <= surgeM + 0.3 ||
-          (windKmh >= 80 && (ss.distanceToCoastKm ?? 10) <= 6)
-        );
-      }).length
-    : 14;
-
-  const trippedEstimate = Math.min(
-    Math.round(atRiskCount * (windKmh > 80 ? 1.4 : windKmh > 60 ? 0.7 : 0.2) + (surgeM > 1.0 ? surgeM * 12 : 0)),
-    180
-  );
-
-  // Phase selection
-  const isMichaung = scenarioId === 'MICHAUNG_CAT3';
-  let phase: 'WATCH' | 'CRITICAL' | 'RESTORATION' = 'WATCH';
-  let directiveKey = isMichaung ? 'MICHAUNG_CAT3_-24' : 'FLOODS_2015_0';
-
-  if (isMichaung) {
-    if (timestep.timestep_hour >= 6) {
-      phase = 'RESTORATION';
-      directiveKey = 'MICHAUNG_CAT3_12';
-    } else if (timestep.timestep_hour >= -12) {
-      phase = 'CRITICAL';
-      directiveKey = 'MICHAUNG_CAT3_0';
-    } else {
-      phase = 'WATCH';
-      directiveKey = 'MICHAUNG_CAT3_-24';
-    }
-  } else {
-    // 2015 Megafloods
-    if (timestep.timestep_hour >= 12) {
-      phase = 'RESTORATION';
-    } else {
-      phase = 'CRITICAL';
-    }
-  }
-
-  const baseTemplate = MILESTONE_DIRECTIVES[directiveKey] || MILESTONE_DIRECTIVES['MICHAUNG_CAT3_-24'];
-
-  // If we have actual compromised assets from today's grid, dynamically synthesize tailored actions
-  let actionItems: SopActionItem[] = baseTemplate.actionItems;
-  let summaryEn = baseTemplate.summaryEn;
-
-  if (topCompromised.length >= 2) {
-    const primary = topCompromised[0];
-    const secondary = topCompromised[1];
-    const tertiary = topCompromised[2] || primary;
-    const quaternary = topCompromised[3] || secondary;
-    const quinary = topCompromised[4] || tertiary;
-
-    if (phase === 'WATCH') {
-      summaryEn = `Cyclone approaching at ${distanceKm ? `${distanceKm.toFixed(0)} km SE` : 'offshore'}. Winds at ${windKmh.toFixed(1)} km/h. Mandatory pre-emptive intervention for Chennai's most fragile infrastructure: ${primary.cleanName} (${primary.vulnerabilityReason}) and ${secondary.cleanName} (${secondary.vulnerabilityReason}).`;
-      actionItems = [
-        {
-          id: `sop-watch-1`,
-          priority: 'P0_CRITICAL',
-          category: 'SAFETY_LOCKOUT',
-          title: `Lineman Foot Patrols to Fragile Corridors (${primary.cleanName})`,
-          description: `Deploy 24 lineman squads across radial spans originating from ${primary.cleanName} (${primary.vulnerabilityReason}) and ${secondary.cleanName} to trim precariously hanging branches before wind breaches 75 km/h.`,
-          targetFeedersOrSubstations: [primary.cleanName, secondary.cleanName]
-        },
-        {
-          id: `sop-watch-2`,
-          priority: 'P1_LIFELINE',
-          category: 'DEWATERING',
-          title: `Pre-Position 50HP Pumps at Low-Plinth Switchyards (${tertiary.cleanName})`,
-          description: `Stage mobile high-discharge submersible dewatering pumps at low-elevation switchyards: ${tertiary.cleanName} (${tertiary.elevationM.toFixed(1)}m MSL) and ${quaternary.cleanName} to protect ground equipment before storm surge arrival.`,
-          targetFeedersOrSubstations: [tertiary.cleanName, quaternary.cleanName]
-        },
-        {
-          id: `sop-watch-3`,
-          priority: 'P0_CRITICAL',
-          category: 'SAFETY_LOCKOUT',
-          title: `Arm Remote SCADA Trip Groups for Strained Radials (${quinary.cleanName})`,
-          description: `Verify remote supervisory trip groups on all radial distribution lines at ${primary.cleanName} and ${quinary.cleanName} for instant group isolation once wind triggers 80 km/h.`,
-          targetFeedersOrSubstations: [primary.cleanName, quinary.cleanName]
-        },
-        {
-          id: `sop-watch-4`,
-          priority: 'P1_LIFELINE',
-          category: 'LIFELINE_PROTECT',
-          title: `Lock Diesel Genset Transfers on Vulnerable Lifeline Feeds`,
-          description: `Verify automatic transfer switches (ATS) and lock generator emergency fuel reserves for hospitals supplied along the ${secondary.cleanName} network corridor.`,
-          targetFeedersOrSubstations: [secondary.cleanName]
-        }
-      ];
-    } else if (phase === 'CRITICAL') {
-      summaryEn = `Landfall peak in progress: Winds ${windKmh.toFixed(1)} km/h, storm surge ${surgeM.toFixed(1)}m MSL. Immediate statutory de-energization ordered for compromised low-plinth yards ${primary.cleanName} (${primary.vulnerabilityReason}) and ${secondary.cleanName} to prevent catastrophic phase flashovers.`;
-      actionItems = [
-        {
-          id: `sop-crit-1`,
-          priority: 'P0_CRITICAL',
-          category: 'DE_ENERGIZE',
-          title: `Statutory De-Energization of Inundated Radials (${primary.cleanName})`,
-          description: `Immediately open bus breakers on all 11kV/33kV overhead radial lines at ${primary.cleanName} and ${secondary.cleanName}. Extreme wind and water ingress compound existing Grade ${primary.healthGrade} trip degradation.`,
-          targetFeedersOrSubstations: [primary.cleanName, secondary.cleanName]
-        },
-        {
-          id: `sop-crit-2`,
-          priority: 'P0_CRITICAL',
-          category: 'SAFETY_LOCKOUT',
-          title: `Isolate Low-Plinth Switchgear Bus Couplers (${tertiary.cleanName})`,
-          description: `Storm surge of ${surgeM.toFixed(1)}m MSL breaches equipment plinth at ${tertiary.cleanName} (${tertiary.elevationM.toFixed(1)}m MSL). Remotely open incoming circuit breakers to protect main power transformers.`,
-          targetFeedersOrSubstations: [tertiary.cleanName, quaternary.cleanName]
-        },
-        {
-          id: `sop-crit-3`,
-          priority: 'P1_LIFELINE',
-          category: 'LIFELINE_PROTECT',
-          title: `Ring-Fence Essential Hospital Supplies via Underground GIS`,
-          description: `Transfer vital hospital lifelines onto hardened 33kV GIS underground rings, severing overhead radial ties connected through ${quinary.cleanName}.`,
-          targetFeedersOrSubstations: [quinary.cleanName]
-        },
-        {
-          id: `sop-crit-4`,
-          priority: 'P0_CRITICAL',
-          category: 'SAFETY_LOCKOUT',
-          title: `Lock Out SCADA Automatic Circuit Reclosers (ACR)`,
-          description: `Inhibit automatic reclosing across all substations in the storm core to prevent repeated reclosures into submerged conductors or grounded trees.`,
-          targetFeedersOrSubstations: [primary.cleanName, tertiary.cleanName]
-        }
-      ];
-    } else {
-      // Restoration
-      summaryEn = `Storm core weakening; winds eased to ${windKmh.toFixed(1)} km/h. Floodwaters draining. Mandatory statutory insulation verification before re-energizing flood-affected transformers at ${primary.cleanName} and ${tertiary.cleanName}.`;
-      actionItems = [
-        {
-          id: `sop-rest-1`,
-          priority: 'P0_CRITICAL',
-          category: 'SAFETY_LOCKOUT',
-          title: `Mandatory 1000V Megger Insulation Testing (${primary.cleanName})`,
-          description: `Strictly prohibit re-energizing inundated ground-mounted transformers at ${primary.cleanName} (${primary.vulnerabilityReason}) and ${tertiary.cleanName} until line insulation resistance tests >50 MΩ.`,
-          targetFeedersOrSubstations: [primary.cleanName, tertiary.cleanName]
-        },
-        {
-          id: `sop-rest-2`,
-          priority: 'P1_LIFELINE',
-          category: 'RESTORATION',
-          title: `Stage-1 Lifeline Restoration: Water Pumping & Medical Centers`,
-          description: `Energize dedicated underground trunk feeders at ${secondary.cleanName} and ${quaternary.cleanName} under direct SLDC clearance once yard drainage is certified.`,
-          targetFeedersOrSubstations: [secondary.cleanName, quaternary.cleanName]
-        },
-        {
-          id: `sop-rest-3`,
-          priority: 'P2_FIELD',
-          category: 'FIELD',
-          title: `Dispatch Conductor & Pole Replacement Squads (${quinary.cleanName})`,
-          description: `Deploy mobile crane squads to re-erect snapped poles and string fallen spans along the ${quinary.cleanName} and ${secondary.cleanName} distribution corridors.`,
-          targetFeedersOrSubstations: [quinary.cleanName, secondary.cleanName]
-        }
-      ];
-    }
-  }
-
-  return {
-    scenarioId,
-    hour: timestep.timestep_hour,
-    label: timestep.label,
-    title: baseTemplate.title,
-    urgency: phase,
-    summaryEn,
-    summaryTa: '',
-    statutoryReference: baseTemplate.statutoryReference,
-    weatherSnapshot: {
-      windKmh,
-      rainMm,
-      surgeM,
-      distanceKm
-    },
-    impactMetrics: {
-      atRiskSubstations: atRiskCount,
-      trippedFeeders: trippedEstimate,
-      protectedLifelines: Math.max(12, 35 - Math.round(trippedEstimate / 6))
-    },
-    actionItems,
-    geminiModelTag: 'Gemini 2.5 Flash · Grid Copilot',
-    timestamp: `${timestep.label} (${timestep.timestep_hour >= 0 ? `+${timestep.timestep_hour}` : timestep.timestep_hour}h)`,
-    compromisedAssets: topCompromised
-  };
+  return buildDirective(scenarioId, timestep, substations, liveOutages)?.directive ?? null;
 }
 
+// ---- Gemini wording layer --------------------------------------------------------
+
 const geminiSopCache = new Map<string, GeminiSopDirective>();
+const MAX_NOTE_CHARS = 220;
+const MAX_SUMMARY_CHARS = 420;
+
+const SOP_SYSTEM_INSTRUCTION =
+  'You help a power-utility control room in Chennai during a cyclone or flood. You are given a fixed list of official actions ' +
+  '(each with an id and an exact quote) and lists of substation names taken from our own grid data. ' +
+  'For each action, choose which of the listed substations it applies to and write one short note that ties the action to the data provided. ' +
+  'Also write a two-sentence summary of the situation. ' +
+  'Rules: use only substation names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
+  'never restate, reword or cite the quotes; if an action has no list, return an empty applyTo.';
+
+function numbersIn(text: string): string[] {
+  return text.match(/\d+(?:\.\d+)?/g) || [];
+}
+
+/** A generated sentence is accepted only if every number in it already appears in the prompt. */
+function isGroundedText(text: unknown, promptNumbers: Set<string>, maxChars: number): text is string {
+  if (typeof text !== 'string' || text.trim() === '' || text.length > maxChars) return false;
+  return numbersIn(text).every(n => promptNumbers.has(n));
+}
 
 /**
- * Calls live Google Gemini 2.5 Flash API with today's compromised infrastructure
- * and active storm telemetry. Seamlessly falls back to deterministic grid synthesis.
+ * Asks Gemini 2.5 Flash to choose targets and word a short note for each quoted action.
+ * Gemini cannot change the quotes or citations. Any invalid or ungrounded output is
+ * discarded and the rule-based text stays. Falls back completely on any failure.
  */
 export async function fetchLiveGeminiDirective(
   scenarioId: ScenarioId,
@@ -591,37 +530,35 @@ export async function fetchLiveGeminiDirective(
   substations: TnebSubstation[] = [],
   liveOutages: LiveOutage[] = []
 ): Promise<GeminiSopDirective | null> {
-  const fallback = getDirectiveForTimestep(scenarioId, timestep, substations, liveOutages);
-  if (!fallback) return null;
+  const built = buildDirective(scenarioId, timestep, substations, liveOutages);
+  if (!built) return null;
+  const { directive: fallback, targets, ruleIds } = built;
 
   const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY;
-  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '') {
+  if (!apiKey || typeof apiKey !== 'string' || apiKey.trim() === '' || ruleIds.length === 0) {
     return fallback;
   }
 
-  const cacheKey = `${scenarioId}_${timestep.timestep_hour}_${(fallback.compromisedAssets || []).map(a => a.code).join('-')}`;
-  if (geminiSopCache.has(cacheKey)) {
-    return geminiSopCache.get(cacheKey)!;
-  }
+  const cacheKey = `${scenarioId}_${timestep.timestep_hour}_${targets.flood.join('-')}_${targets.overhead.join('-')}_${targets.lifeline.join('-')}`;
+  const cached = geminiSopCache.get(cacheKey);
+  if (cached) return cached;
 
-  // 1. Compact, token-saving pipe-delimited table format (65% token savings vs JSON)
-  const tableRows = (fallback.compromisedAssets || [])
-    .slice(0, 6)
-    .map(
-      a =>
-        `${a.cleanName}|${a.healthGrade}|${a.healthScore}|${a.elevationM.toFixed(1)}|${a.unscheduledTripsCount}|${a.riskCategory.replace(/_RISK$/, '')}`
-    )
+  const w = fallback.weatherSnapshot;
+  const actionLines = ruleIds
+    .map(id => `${id}|${RULE_META[id].group}|${(getOfficialRule(id) as OfficialRule).quote}`)
     .join('\n');
+  const prompt = `SCENARIO: ${scenarioId === 'MICHAUNG_CAT3' ? 'Cyclone Michaung (Category-3 benchmark)' : '2015 Chennai flood hindcast'}
+TIME: ${hourLabel(timestep.timestep_hour)}${fallback.warningStage ? ` | IMD warning stage: ${fallback.warningStage}` : ''}
+WEATHER: wind ${w.windKmh.toFixed(0)} km/h${w.imdClass ? ` (IMD class ${w.imdClass})` : ''} | rain ${w.rainMm.toFixed(1)} mm/h${w.surgeM !== null ? ` | surge ${w.surgeM.toFixed(1)} m` : ''}
+SUBSTATION LISTS (names from our grid data):
+flood: ${targets.flood.join(', ') || 'none'}
+overhead: ${targets.overhead.join(', ') || 'none'}
+lifeline: ${targets.lifeline.join(', ') || 'none'}
+COUNTS: ${targets.counts.flood} substations with modelled flooding; ${targets.counts.overhead} substations with overhead or mixed feeders; ${targets.counts.lifeline} hospital and water feeders
+ACTIONS (id|list to use|exact quote):
+${actionLines}`;
 
-  const compactPrompt = `SCENARIO: ${scenarioId === 'MICHAUNG_CAT3' ? 'Cyclone Michaung (Cat-3)' : '2015 Megaflood'}
-TIMESTEP: ${timestep.label} (Hour: ${timestep.timestep_hour})
-WEATHER: Wind ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(1)} km/h | Rain ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h | Surge ${timestep.simulated_storm_surge_msl_m.toFixed(1)}m MSL
-
-COMPROMISED ASSETS:
-SUBSTATION|GRADE|SCORE|ELEV_M|UNSCHEDULED_TRIPS|RISK_CAT
-${tableRows}
-
-Formulate statutory directives specifically targeting these compromised substations.`;
+  const promptNumbers = new Set(numbersIn(prompt));
 
   try {
     const res = await fetch(
@@ -630,51 +567,32 @@ Formulate statutory directives specifically targeting these compromised substati
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          // 2. Native systemInstruction (reusable, cache-friendly)
-          systemInstruction: {
-            parts: [
-              {
-                text: 'You are the TANGEDCO Senior Grid Commander & SLDC Operations Director in Chennai. Strictly adhere to TNSDMA Disaster Manual §5 and CEA Safety Regulations. Prioritize provided degraded substations (Grade C/D, low elevation, high unscheduled trips) for pre-emptive lockout, bus coupler isolation, mobile dewatering, and lifeline islanding. Return concise, actionable JSON.'
-              }
-            ]
-          },
-          contents: [{ parts: [{ text: compactPrompt }] }],
-          // 3. Constrained decoding via formal responseSchema (zero parsing retries, zero hallucinated fields)
+          systemInstruction: { parts: [{ text: SOP_SYSTEM_INSTRUCTION }] },
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
             responseMimeType: 'application/json',
             responseSchema: {
               type: 'OBJECT',
               properties: {
-                title: { type: 'STRING' },
                 summaryEn: { type: 'STRING' },
-                statutoryReference: { type: 'STRING' },
-                actionItems: {
+                actions: {
                   type: 'ARRAY',
                   items: {
                     type: 'OBJECT',
                     properties: {
-                      id: { type: 'STRING' },
-                      priority: { type: 'STRING', enum: ['P0_CRITICAL', 'P1_LIFELINE', 'P2_FIELD'] },
-                      category: {
-                        type: 'STRING',
-                        enum: ['DE_ENERGIZE', 'LIFELINE_PROTECT', 'DEWATERING', 'SAFETY_LOCKOUT', 'RESTORATION', 'FIELD']
-                      },
-                      title: { type: 'STRING' },
-                      description: { type: 'STRING' },
-                      targetFeedersOrSubstations: {
-                        type: 'ARRAY',
-                        items: { type: 'STRING' }
-                      }
+                      ruleId: { type: 'STRING', enum: ruleIds },
+                      applyTo: { type: 'ARRAY', items: { type: 'STRING' } },
+                      note: { type: 'STRING' },
                     },
-                    required: ['id', 'priority', 'category', 'title', 'description', 'targetFeedersOrSubstations']
-                  }
-                }
+                    required: ['ruleId', 'applyTo', 'note'],
+                  },
+                },
               },
-              required: ['title', 'summaryEn', 'statutoryReference', 'actionItems']
+              required: ['summaryEn', 'actions'],
             },
-            temperature: 0.2
-          }
-        })
+            temperature: 0.2,
+          },
+        }),
       }
     );
 
@@ -688,20 +606,38 @@ Formulate statutory directives specifically targeting these compromised substati
     if (!rawText) return fallback;
 
     const parsed = JSON.parse(rawText);
+    const byRule = new Map<string, { applyTo?: unknown; note?: unknown }>();
+    if (Array.isArray(parsed.actions)) {
+      for (const a of parsed.actions) {
+        if (a && typeof a.ruleId === 'string' && ruleIds.includes(a.ruleId)) byRule.set(a.ruleId, a);
+      }
+    }
+
+    const actionItems = fallback.actionItems.map(item => {
+      const g = byRule.get(item.id);
+      if (!g) return item;
+      const allowed = new Set(targetsFor(RULE_META[item.id].group, targets));
+      const chosen = Array.isArray(g.applyTo)
+        ? (g.applyTo as unknown[]).filter((n): n is string => typeof n === 'string' && allowed.has(n))
+        : [];
+      return {
+        ...item,
+        note: item.note !== undefined && isGroundedText(g.note, promptNumbers, MAX_NOTE_CHARS) ? g.note : item.note,
+        targetFeedersOrSubstations: chosen.length > 0 ? chosen : item.targetFeedersOrSubstations,
+      };
+    });
+
     const enriched: GeminiSopDirective = {
       ...fallback,
-      title: parsed.title || fallback.title,
-      summaryEn: parsed.summaryEn || fallback.summaryEn,
-      statutoryReference: parsed.statutoryReference || fallback.statutoryReference,
-      actionItems:
-        Array.isArray(parsed.actionItems) && parsed.actionItems.length > 0 ? parsed.actionItems : fallback.actionItems,
-      geminiModelTag: 'Gemini 2.5 Flash · Live Copilot'
+      summaryEn: isGroundedText(parsed.summaryEn, promptNumbers, MAX_SUMMARY_CHARS) ? parsed.summaryEn : fallback.summaryEn,
+      actionItems,
+      geminiModelTag: 'Gemini 2.5 Flash · wording only, quotes are official',
     };
 
     geminiSopCache.set(cacheKey, enriched);
     return enriched;
   } catch (err) {
-    console.warn('Gemini live call error, using deterministic grid synthesis fallback:', err);
+    console.warn('Gemini live call error, using rule-based text:', err);
     return fallback;
   }
 }

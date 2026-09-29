@@ -70,6 +70,9 @@ export interface OfficialRule {
   sourceId: OfficialSourceId;
   pdfPage: number;
   printedPage?: number;
+  /** Set when the quote runs onto the next page. */
+  endPdfPage?: number;
+  endPrintedPage?: number;
   /** Section or table heading in the source, where one applies. */
   section?: string;
 }
@@ -186,7 +189,8 @@ export const OFFICIAL_RULES: OfficialRule[] = [
   {
     id: 'mop-emergency-operation-centre',
     topic: 'RESTORATION_PRIORITY',
-    quote: 'Every distribution company must build up Emergency Operation Centre (EOC)',
+    quote:
+      'Every distribution company must build up Emergency Operation Centre (EOC) with full logistics, conventional and alternative communication systems and connectivity with external authorities for assistance and support.',
     sourceId: 'MOP_DMP_2021',
     pdfPage: 240,
     printedPage: 239,
@@ -196,7 +200,7 @@ export const OFFICIAL_RULES: OfficialRule[] = [
     id: 'mop-mobile-substation-12-24h',
     topic: 'RESTORATION_PRIORITY',
     quote:
-      'it can be used to restore power supply in disaster affected areas in 12-24 hours, which otherwise may take several days to weeks.',
+      'Mobile Substation deployment capability is a major advantage to utilities as it can be used to restore power supply in disaster affected areas in 12-24 hours, which otherwise may take several days to weeks.',
     sourceId: 'MOP_DMP_2021',
     pdfPage: 240,
     printedPage: 239,
@@ -266,11 +270,13 @@ export const OFFICIAL_RULES: OfficialRule[] = [
   {
     id: 'tangedco-pump-out-flood',
     topic: 'DEWATERING',
-    quote: 'In case, flood enters the sub-station, it should be arranged to be pumped out quickly to safeguard electrical',
+    quote: 'In case, flood enters the sub-station, it should be arranged to be pumped out quickly to safeguard electrical equipments.',
     sourceId: 'TANGEDCO_DMP_2017',
     pdfPage: 77,
     printedPage: 73,
-    section: 'Continues on the next page: "equipments. As temporary measures sand bags are kept to avoid water entry." (PDF p. 78)',
+    endPdfPage: 78,
+    endPrintedPage: 74,
+    section: '5.11 Operation coordination, Drills and exercises',
   },
   {
     id: 'tangedco-sandbags',
@@ -473,6 +479,13 @@ export function getRulesByTopic(topic: OfficialTopic): OfficialRule[] {
 /** Short citation for display, e.g. "MoP Power-Sector DMP 2021, PDF p. 246 (printed p. 245)". */
 export function formatCitation(rule: OfficialRule): string {
   const src = OFFICIAL_SOURCES[rule.sourceId];
-  const printed = rule.printedPage !== undefined ? ` (printed p. ${rule.printedPage})` : '';
-  return `${src.shortName}, PDF p. ${rule.pdfPage}${printed}`;
+  const spans = rule.endPdfPage !== undefined && rule.endPdfPage !== rule.pdfPage;
+  const pdf = spans ? `PDF pp. ${rule.pdfPage}-${rule.endPdfPage}` : `PDF p. ${rule.pdfPage}`;
+  let printed = '';
+  if (rule.printedPage !== undefined) {
+    printed = spans && rule.endPrintedPage !== undefined
+      ? ` (printed pp. ${rule.printedPage}-${rule.endPrintedPage})`
+      : ` (printed p. ${rule.printedPage})`;
+  }
+  return `${src.shortName}, ${pdf}${printed}`;
 }
