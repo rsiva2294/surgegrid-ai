@@ -348,29 +348,15 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               {selectedSubstation?.elevationM !== undefined && (
                 <span
                   className={`text-xs font-mono px-2 py-0.5 rounded-md font-bold flex items-center gap-1 ${
-                    selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                      ? isLight
-                        ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                      : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                      ? isLight
-                        ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                        : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-                      : isLight
+                    isLight
                       ? 'bg-slate-100 text-slate-700 border border-slate-200'
                       : 'bg-slate-800 text-slate-300 border border-slate-700'
                   }`}
-                  title={`Ground Elevation: ${selectedSubstation.elevationM}m MSL • Distance to Coast: ${
+                  title={`Ground elevation: ${selectedSubstation.elevationM} m MSL (SRTM terrain data). Distance to coast: ${
                     selectedSubstation.distanceToCoastKm || 0
-                  }km`}
+                  } km`}
                 >
                   <span>⛰️ {selectedSubstation.elevationM}m MSL</span>
-                  {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK' && (
-                    <span className="font-sans font-bold">• 🌊 Surge Risk</span>
-                  )}
-                  {selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK' && (
-                    <span className="font-sans font-bold">• ⚠️ Flood Risk</span>
-                  )}
                 </span>
               )}
             </div>
@@ -1007,45 +993,20 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       currentTimestep={currentTimestep}
                     />
 
-                    {/* Quick Flood & Climate Risk Indicator Pill (click to jump to Civic & Crisis tab) */}
+                    {/* Quick link to the flood exposure facts (click to jump to Civic & Crisis tab) */}
                     {selectedSubstation.elevationM !== undefined && (
                       <button
                         type="button"
                         onClick={() => setInspectorTab('civic')}
                         className={`w-full py-2.5 px-3 rounded-xl border text-xs flex items-center justify-between transition-all group shrink-0 ${
-                          selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                            ? isLight
-                              ? 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-950 shadow-sm'
-                              : 'bg-rose-950/40 hover:bg-rose-900/50 border-rose-800 text-rose-200'
-                            : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                            ? isLight
-                              ? 'bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-950 shadow-sm'
-                              : 'bg-amber-950/40 hover:bg-amber-900/50 border-amber-800 text-amber-200'
-                            : isLight
+                          isLight
                             ? 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-800 shadow-sm'
                             : 'bg-slate-900/60 hover:bg-slate-800 border-slate-800 text-slate-200'
                         }`}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-sm shrink-0">🌊</span>
-                          <span className="font-semibold text-xs truncate">
-                            Climate & Flood Hydro-Risk
-                          </span>
-                          <span
-                            className={`text-[10px] font-semibold px-2 py-0.5 rounded whitespace-nowrap ${
-                              selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                                ? isLight ? 'bg-rose-600 text-white' : 'bg-rose-500 text-slate-950 font-bold'
-                                : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                                ? isLight ? 'bg-amber-600 text-white' : 'bg-amber-400 text-slate-950 font-bold'
-                                : isLight ? 'bg-emerald-100 text-emerald-800' : 'bg-emerald-500/20 text-emerald-300'
-                            }`}
-                          >
-                            {selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
-                              ? 'CRITICAL SURGE'
-                              : selectedSubstation.riskCategory === 'HIGH_WATERLOGGING_RISK'
-                              ? 'WATERLOGGING RISK'
-                              : 'SAFE ELEVATION'}
-                          </span>
+                          <span className="font-semibold text-xs truncate">Flood exposure: official maps and plans</span>
                         </div>
                         <span className={`text-[11px] font-medium flex items-center gap-1 shrink-0 ${isLight ? 'text-slate-500 group-hover:text-slate-800' : 'text-slate-400 group-hover:text-slate-200'}`}>
                           <span>View in Civic & Crisis</span>

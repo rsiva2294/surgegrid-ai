@@ -402,12 +402,6 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
                           {ss.elevationM !== undefined ? `${ss.elevationM}m MSL` : 'Low Elevation'}
                         </span>
 
-                        {ss.benchmarked2015FloodDepthM && (
-                          <span className="text-slate-400">
-                            Modelled 2015: {ss.benchmarked2015FloodDepthM}m
-                          </span>
-                        )}
-
                         {ss.gccZoneName && (
                           <span className="text-slate-400">
                             Zone {ss.gccZone || ''} ({ss.gccZoneName})
