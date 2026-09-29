@@ -591,9 +591,24 @@ export function calculateDynamicRisk(
 /**
  * Merges real-time live outages into the 90-day history profile.
  */
+const NO_OUTAGES: LiveOutage[] = [];
+const enrichedProfileCache = new WeakMap<TnebSubstation, { outages: LiveOutage[]; profile: SubstationHealthProfile }>();
+
+/** Cached per substation and per live-outage list, because the triage counts, ranking and cards all ask for the same profiles. */
 export function getEnrichedHealthProfile(
   substation: TnebSubstation,
-  liveOutages: LiveOutage[] = []
+  liveOutages: LiveOutage[] = NO_OUTAGES
+): SubstationHealthProfile {
+  const hit = enrichedProfileCache.get(substation);
+  if (hit && hit.outages === liveOutages) return hit.profile;
+  const profile = computeEnrichedHealthProfile(substation, liveOutages);
+  enrichedProfileCache.set(substation, { outages: liveOutages, profile });
+  return profile;
+}
+
+function computeEnrichedHealthProfile(
+  substation: TnebSubstation,
+  liveOutages: LiveOutage[]
 ): SubstationHealthProfile {
   const existingEvents: OutageHistoryEvent[] = substation.healthProfile?.events || substation.outageHistory || [];
 

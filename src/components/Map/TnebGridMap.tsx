@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, lazy, Suspense } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import { getFeederGeometry, getFeederTransformers } from '../../services/feederGeometryService';
@@ -6,8 +6,6 @@ import { Shield } from 'lucide-react';
 import { DisasterCockpitBar, type DisasterScenario, type CrisisTriageFilter } from './DisasterCockpitBar';
 import { MapSearchBox } from './MapSearchBox';
 import { MapLayerControls } from './MapLayerControls';
-import { TriageSubstationRosterCard } from './TriageSubstationRosterCard';
-import { SubstationInspectorDrawer } from './SubstationInspectorDrawer';
 import { getLiveChennaiOutages, getGoldRegistry, getOutagesForSubstation, enrichLiveOutagesWithGrid, type LiveOutage } from '../../services/liveOutageService';
 import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import {
@@ -33,6 +31,7 @@ import {
 } from './disasterUtils';
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
 import { useReliefCentres } from '../../services/reliefCentres';
+import { useSectionBoundary } from '../../services/sectionBoundaries';
 import {
   fetchScenarioData,
   isSimulationScenario,
@@ -42,7 +41,27 @@ import {
   type ScenarioId
 } from '../../services/scenarioService';
 import { getDirectiveForTimestep, fetchLiveGeminiDirective, type GeminiSopDirective } from '../../services/geminiSopService';
-import { GeminiSopDialog } from './GeminiSopDialog';
+
+// Heavy panels load on demand so the map can appear first. They are pre-loaded when the browser is idle.
+const LazyDrawer = lazy(() => import('./SubstationInspectorDrawer').then(m => ({ default: m.SubstationInspectorDrawer })));
+const LazySopDialog = lazy(() => import('./GeminiSopDialog').then(m => ({ default: m.GeminiSopDialog })));
+const LazyRoster = lazy(() => import('./TriageSubstationRosterCard').then(m => ({ default: m.TriageSubstationRosterCard })));
+
+const SubstationInspectorDrawer = (props: React.ComponentProps<typeof LazyDrawer>) => (
+  <Suspense fallback={null}>
+    <LazyDrawer {...props} />
+  </Suspense>
+);
+const GeminiSopDialog = (props: React.ComponentProps<typeof LazySopDialog>) => (
+  <Suspense fallback={null}>
+    <LazySopDialog {...props} />
+  </Suspense>
+);
+const TriageSubstationRosterCard = (props: React.ComponentProps<typeof LazyRoster>) => (
+  <Suspense fallback={null}>
+    <LazyRoster {...props} />
+  </Suspense>
+);
 
 export type { DisasterScenario, FeederDisasterStatus };
 export { getFeederDisasterStatus, CHENNAI_METRO_BOUNDS };
@@ -112,6 +131,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [showDistribution, setShowDistribution] = useState(true);
   const [showSections, setShowSections] = useState(false);
   const [showReliefCentres, setShowReliefCentres] = useState(false);
+  const sectionBoundary = useSectionBoundary(selectedSection?.code);
   const reliefData = useReliefCentres();
   const reliefMarkersRef = useRef<google.maps.Marker[]>([]);
   const [isSatellite, setIsSatellite] = useState(false);
@@ -141,6 +161,20 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [scenarioData, setScenarioData] = useState<ScenarioData | null>(null);
   const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
   const seenMilestonesRef = useRef<Set<number>>(new Set());
+
+  // Pre-load the drawer, directive dialog and roster in the background once the browser is idle.
+  useEffect(() => {
+    const preload = () => {
+      import('./SubstationInspectorDrawer');
+      import('./GeminiSopDialog');
+      import('./TriageSubstationRosterCard');
+    };
+    if ('requestIdleCallback' in window) {
+      (window as unknown as { requestIdleCallback: (cb: () => void, o: { timeout: number }) => void }).requestIdleCallback(preload, { timeout: 4000 });
+    } else {
+      setTimeout(preload, 2500);
+    }
+  }, []);
 
   // Scenario Loader
   useEffect(() => {
@@ -207,9 +241,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       return;
     }
 
-    // No Gemini call while the timeline is playing, and wait briefly after the hour stops changing,
+    // No Gemini call before the grid has loaded,  and wait briefly after the hour stops changing,
     // so scrubbing or fast playback does not fire a request per step.
-    if (isPlaying) return;
+    if (isPlaying || substations.length === 0) return;
 
     let isSubscribed = true;
     const timer = setTimeout(() => {
@@ -787,7 +821,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     if (selectedSubstation && typeof selectedSubstation.lat === 'number' && typeof selectedSubstation.lng === 'number' && !isNaN(selectedSubstation.lat) && !isNaN(selectedSubstation.lng)) {
       mapRef.current.panTo({ lat: selectedSubstation.lat, lng: selectedSubstation.lng });
       mapRef.current.setZoom(14.2);
-    } else if (selectedSection && !selectedSection.boundary && typeof selectedSection.lat === 'number' && typeof selectedSection.lng === 'number' && !isNaN(selectedSection.lat) && !isNaN(selectedSection.lng)) {
+    } else if (selectedSection && !sectionBoundary && typeof selectedSection.lat === 'number' && typeof selectedSection.lng === 'number' && !isNaN(selectedSection.lat) && !isNaN(selectedSection.lng)) {
       mapRef.current.panTo({ lat: selectedSection.lat, lng: selectedSection.lng });
       mapRef.current.setZoom(14.5);
     }
@@ -831,13 +865,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     sectionBoundaryPolygonsRef.current.forEach(p => p.setMap(null));
     sectionBoundaryPolygonsRef.current = [];
 
-    if (!mapRef.current || !mapLoaded || !selectedSection || !selectedSection.boundary) {
+    if (!mapRef.current || !mapLoaded || !selectedSection || !sectionBoundary) {
       return;
     }
 
     const map = mapRef.current;
     const isLight = theme === 'light';
-    const boundary = selectedSection.boundary;
+    const boundary = sectionBoundary;
     const bounds = new google.maps.LatLngBounds();
 
     const createPolygonForRings = (rings: number[][][]) => {
@@ -881,7 +915,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       sectionBoundaryPolygonsRef.current.forEach(p => p.setMap(null));
       sectionBoundaryPolygonsRef.current = [];
     };
-  }, [selectedSection, mapLoaded, theme]);
+  }, [selectedSection, sectionBoundary, mapLoaded, theme]);
 
   // Render on-demand dotted connection lines for selected substation (strictly electrical substation links)
   useEffect(() => {

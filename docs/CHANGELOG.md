@@ -2,6 +2,16 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [3.1.0-performance] - 2026-09-30
+
+### Changed
+- **Map first:** the map mounts immediately and loads Google Maps in parallel with the grid data (a small "Loading Chennai grid data..." pill replaces the full-screen spinner). Preload and preconnect hints added in `index.html`.
+- **Slimmer data:** grid file 3.76 MB to 1.69 MB (`scripts/slim_grid_data.py`): section boundaries moved to `section_boundaries.json` (loaded on demand), unused `hydroRisk`/advisory fields and a duplicate `outageHistory` removed. IndexedDB cache key bumped (`v17_slim`) and the cache write moved to idle time.
+- **Code split:** substation drawer, AI Directive dialog and triage roster load on demand and are pre-loaded when idle (main bundle 487 KB to 321 KB, 139 to 98 KB gzip).
+- **Faster repeat work:** enriched health profiles are cached per substation and live-outage list.
+- **Accessibility:** amber chips darkened for contrast, small grey labels darkened, directive heading order fixed, cockpit step buttons enlarged (local Lighthouse accessibility 100).
+- **Public text made truthful:** page description, social cards, `manifest.json`, `llms.txt` and `llms-full.txt` no longer mention removed claims (per-substation WeatherNext forecasts, SAR inundation models, statutory SLAs, automated tripping).
+
 ## [3.0.0-official-facts-only] - 2026-09-30
 
 ### Changed (the app now shows only official quotes, real data with a source, map checks, and labelled own calculations)

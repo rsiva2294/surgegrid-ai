@@ -22,7 +22,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
 
   const box = isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-slate-100';
   const label = isLight ? 'text-slate-500' : 'text-slate-400';
-  const sub = isLight ? 'text-slate-400' : 'text-slate-500';
+  const sub = isLight ? 'text-slate-500' : 'text-slate-400';
   const value = isLight ? 'text-slate-900' : 'text-white';
 
   const renderQuote = (q: { quote: string; citation: string } | null) =>

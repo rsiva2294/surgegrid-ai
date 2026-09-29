@@ -73,5 +73,6 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 `firebase.json` and `.firebaserc`: Hosting site `surgegrid` on project `namma-map-407ca`. `/api/v2/**` goes to `outageApi` (source in another repo) and `/api/gemini` goes to `surgegridGemini` (`gemini-proxy/`). Build output is `dist/`.
 
 ## Leftovers worth knowing
-- `hydroRisk` fields remain in `chennai_tneb_grid.json` but nothing on screen shows them (they came from a model that did not validate; see log item 24).
+- The grid file is slimmed by `scripts/slim_grid_data.py` (section boundaries live in `section_boundaries.json`, loaded on demand by `src/services/sectionBoundaries.ts`; the unused `hydroRisk` fields were removed). Re-run it after regenerating the grid.
+- The substation drawer, AI Directive dialog and triage roster are code-split (`React.lazy` in `TnebGridMap.tsx`) and pre-loaded when the browser is idle.
 - `VITE_PROJECT_ID` in `.env.example` is unused. `src/components/Analytics/` is empty. `functions/` holds only `node_modules`.

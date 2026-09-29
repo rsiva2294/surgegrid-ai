@@ -148,7 +148,7 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
           </span>
           <span
             className={`px-2 py-0.5 rounded-md text-xs font-mono font-bold cursor-help ${
-              isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-500 text-slate-950 font-black'
+              isLight ? 'bg-amber-700 text-white font-bold' : 'bg-amber-500 text-slate-950 font-black'
             }`}
             title="Inter-Substation Link: Connects multiple TNEB substations in a loop network."
           >

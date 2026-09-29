@@ -11,6 +11,9 @@ import {
   DEFAULT_CHENNAI_LNG
 } from './services/liveWeatherService';
 
+const EMPTY_SUBSTATIONS: TnebSubstation[] = [];
+const EMPTY_SECTIONS: TnebSection[] = [];
+
 export default function App() {
   const [gridData, setGridData] = useState<ChennaiGridData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -161,16 +164,7 @@ export default function App() {
 
       {/* Main Map Viewport */}
       <main className="flex-1 relative w-full h-[calc(100vh-3.5rem)] overflow-hidden">
-        {loading ? (
-          <div className={`w-full h-full flex flex-col items-center justify-center gap-3 ${
-            isLight ? 'bg-slate-50' : 'bg-slate-950'
-          }`}>
-            <RefreshCw className={`w-8 h-8 animate-spin ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
-            <p className={`text-sm font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-              Extracting Chennai TNEB Grid Topology...
-            </p>
-          </div>
-        ) : error ? (
+        {error ? (
           <div className={`w-full h-full flex flex-col items-center justify-center p-6 text-center ${
             isLight ? 'bg-slate-50' : 'bg-slate-950'
           }`}>
@@ -181,16 +175,30 @@ export default function App() {
             <p className="text-xs text-red-500 max-w-md mb-4">{error}</p>
           </div>
         ) : (
-          <TnebGridMap
-            theme={theme}
-            substations={gridData?.substations || []}
-            sections={gridData?.sections || []}
-            selectedSubstation={selectedSubstation}
-            selectedSection={selectedSection}
-            onSelectSubstation={setSelectedSubstation}
-            onSelectSection={setSelectedSection}
-            liveWeather={liveWeather}
-          />
+          <>
+            {/* The map mounts at once and starts loading Google Maps while the grid data downloads; markers appear when it arrives. */}
+            <TnebGridMap
+              theme={theme}
+              substations={gridData?.substations ?? EMPTY_SUBSTATIONS}
+              sections={gridData?.sections ?? EMPTY_SECTIONS}
+              selectedSubstation={selectedSubstation}
+              selectedSection={selectedSection}
+              onSelectSubstation={setSelectedSubstation}
+              onSelectSection={setSelectedSection}
+              liveWeather={liveWeather}
+            />
+            {loading && (
+              <div
+                role="status"
+                className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium shadow-md ${
+                  isLight ? 'bg-white/95 border-slate-300 text-slate-700' : 'bg-slate-900/95 border-slate-700 text-slate-200'
+                }`}
+              >
+                <RefreshCw className={`w-3.5 h-3.5 animate-spin ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
+                <span>Loading Chennai grid data...</span>
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

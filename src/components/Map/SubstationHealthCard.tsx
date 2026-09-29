@@ -659,7 +659,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
                       onClick={() => setScopeFilter('lt_street')}
                       className={`px-2 py-0.5 rounded-md transition-all shrink-0 flex items-center gap-1 ${
                         scopeFilter === 'lt_street'
-                          ? 'bg-amber-600 text-white font-bold shadow-xs'
+                          ? 'bg-amber-700 text-white font-bold shadow-xs'
                           : isLight
                           ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200/60'
                           : 'bg-amber-950/40 text-amber-300 hover:bg-amber-900/60 border border-amber-800/40'

@@ -1,35 +1,25 @@
-# SurgeGrid AI — Comprehensive Technical Specification
+# SurgeGrid AI: Technical summary
 
-> Operational intelligence, real-time meteorological tracking via Google DeepMind WeatherNext 3, satellite flood inundation models, and automated line tripping defense protocols for Chennai's 286 TNEB electrical substations.
+> SurgeGrid AI replays three real Chennai rain events hour by hour, shows which of 286 TNEB substations are exposed, and lists the actions the official disaster plans call for, quoted with page numbers.
 
-SurgeGrid AI is an open-source, civic crisis-resilience platform for monitoring and mitigating electrical infrastructure hazards during severe weather, cyclones, and urban flooding across Greater Chennai.
+## 1. What it is
+A control-room console for Chennai's power network during heavy rain. Coverage is Greater Chennai and adjoining areas in the TNEB grid data: 286 substations, 352 section offices, 2,678 feeders (3,335 with surveyed street geometry) and 65,557 distribution transformers.
 
-## 1. System Overview
-SurgeGrid AI transforms complex power utility GIS data into an actionable, real-time operational dashboard for grid operators, disaster relief personnel, and municipal emergency response coordinators (GCC & TNSDMA).
+## 2. The rule: only truths
+Everything shown is one of: an official quote with plan name and page; real data with a source; a map check of a substation's location against an official flood layer (not a prediction); or our own calculation, labelled as ours (health score, ranking panel, backup suggestion).
 
-- **Canonical URL**: https://surgegrid.nammamap.in/
-- **Coverage**: Greater Chennai Corporation (GCC) & adjoining metropolitan districts (Tiruvallur, Kanchipuram, Chengalpattu).
-- **Grid Footprint**: 286 electrical substations, 2,678 feeder circuits (3,335 with surveyed street geometry), and 65,557 surveyed distribution transformers (DTRs).
+## 3. Scenarios (real hindcasts)
+NASA GPM IMERG rain and ERA5-Land wind, averaged over the Chennai area: Cyclone Michaung (Dec 2023), the 2015 floods, and an ordinary heavy monsoon spell (12-18 Nov 2020). Wind is an area average, not gusts. No storm surge is modelled. T-0 is the peak-rain hour.
 
-## 2. Electrical Grid Topology & Hierarchy
-Chennai's transmission and distribution network operates on a rigorous voltage-stepped hierarchy:
-1. **Bulk Supply / EHV Grid (400kV / 230kV)**: Transmission substations taking bulk generation from North Chennai Thermal Power Station (NCTPS), Vallur, and the Southern Regional Grid.
-2. **Sub-Transmission Grid (110kV / 33kV)**: Intermediate switching stations distributing bulk power to city zones.
-3. **Primary Distribution (33kV / 11kV)**: Neighborhood substations stepping down voltage for primary feeder networks.
-4. **Secondary Distribution (11kV / 415V DTR)**: Pole-mounted and plinth-mounted distribution transformers supplying 3-phase 415V / single-phase 230V to consumers.
+## 4. Official facts on each substation
+Yard elevation against Chennai's 2.0 m average (GCC plan); whether the location falls in the NRSC 2015 flood extent, the 5 to 100-year flood-hazard maps and GCC inundation zones; nearby 2015 stagnation points and 2020 hotspots; GCC relief centres listed for the ward (the list has no coordinates).
 
-## 3. Meteorological & Multi-Hazard Intelligence
-- **Google DeepMind WeatherNext 3**: Hyperlocal weather forecasting (precipitation rate, wind gust speed, barometric pressure) computed per substation location.
-- **Satellite Flood Inundation (Google Earth Engine)**: Synthetic Aperture Radar (SAR) InSAR flood extent layers combined with digital elevation models (DEM) to estimate waterlogging depth.
-- **Micro-Drainage & Basin Modeling**: Ward-level macro-canals (Adyar, Cooum, Kosasthalaiyar, Buckingham Canal) and stormwater drain capacity tracking.
+## 5. Gemini
+Gemini 2.5 Flash chooses names from lists we send and writes one short note. It never writes or cites the quoted plan text. Calls go through a Cloud Function, so no API key is in the app.
 
-## 4. Substation Health & Fragility Index
-Substations receive real-time composite health scores (0–100):
-- **Elevation Fragility**: Vulnerability based on height above mean sea level and historic 2015/2023 flood contours.
-- **Outage Aging**: Dynamic degradation based on active feeder tripping duration.
-- **Flood Proximity**: Real-time buffer analysis against reported waterlogged road sections.
+## 6. Limits
+Rain scenarios only, no surge or cyclone track, no flood forecast, Chennai only, relief centres have no exact locations.
 
-## 5. Public Documentation
-- **Summary for LLMs**: https://surgegrid.nammamap.in/llms.txt
-- **Console Application**: https://surgegrid.nammamap.in/
-
+## 7. Documentation
+- Summary for LLMs: https://surgegrid.web.app/llms.txt
+- Console: https://surgegrid.web.app/

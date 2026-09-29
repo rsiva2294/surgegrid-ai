@@ -28,6 +28,7 @@ import { SubstationHealthCard } from './SubstationHealthCard';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
+import { useSectionBoundary } from '../../services/sectionBoundaries';
 import { ReliefCentresCard } from './ReliefCentresCard';
 
 interface SubstationInspectorDrawerProps {
@@ -64,6 +65,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   currentTimestep
 }) => {
   const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
+  const sectionBoundary = useSectionBoundary(selectedSection?.code);
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
   const [showJargonGuide, setShowJargonGuide] = useState(false);
   const [feederFilter, setFeederFilter] = useState('');
@@ -1123,7 +1125,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
         {/* Section Specific Details (Full Height View for AE Section Offices) */}
         {selectedSection && (
           <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pt-3 text-xs">
-            {selectedSection.boundary && (
+            {sectionBoundary && (
               <div
                 className={`p-3 rounded-xl border flex items-center justify-between gap-2 ${
                   isLight

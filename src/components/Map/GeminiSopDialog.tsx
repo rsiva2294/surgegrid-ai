@@ -237,11 +237,11 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               ? 'bg-indigo-50/80 border-indigo-200 text-slate-900 shadow-xs'
               : 'bg-indigo-950/30 border-indigo-800/40 text-slate-100'
           }`}>
-            <h3 className={`font-extrabold text-sm tracking-tight mb-1.5 ${
+            <h2 className={`font-extrabold text-sm tracking-tight mb-1.5 ${
               isLight ? 'text-indigo-950' : 'text-indigo-300'
             }`}>
               {directive.title}
-            </h3>
+            </h2>
             <p className={`leading-relaxed text-xs ${
               isLight ? 'text-slate-800 font-medium' : 'text-slate-200'
             }`}>

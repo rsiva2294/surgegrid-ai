@@ -104,4 +104,5 @@ Copy `.env.example` to `.env` and set:
 **Data scripts** (not part of the app runtime):
 - `scripts/build_official_flood_layers.py` writes `public/data/official_flood_layers.json` from the OpenCity GCC flood layers (large KML files kept outside this repo).
 - `scripts/build_relief_centres.py` writes `public/data/relief_centres.json` (ward-level relief centres and backup suggestions).
+- `scripts/slim_grid_data.py` slims the grid file after it is regenerated (moves section boundaries to `section_boundaries.json`, drops the unused model fields and a duplicate history list; 3.76 MB to 1.69 MB).
 - Older scripts rebuild the grid, gold registry and enrichments. See [scripts/README.md](./scripts/README.md).

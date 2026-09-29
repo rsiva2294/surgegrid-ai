@@ -97,20 +97,20 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
 
 import { get, set } from 'idb-keyval';
 
-const IDB_GRID_KEY = 'surgegrid_chennai_grid_v16_official_facts_only';
+const IDB_GRID_KEY = 'surgegrid_chennai_grid_v17_slim';
 let cachedGrid: ChennaiGridData | null = null;
+
+/** Runs low-priority work (like writing the grid to IndexedDB) after the first render, not during startup. */
+function whenIdle(fn: () => void): void {
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    (window as unknown as { requestIdleCallback: (cb: () => void, opts: { timeout: number }) => void }).requestIdleCallback(fn, { timeout: 5000 });
+  } else {
+    setTimeout(fn, 2000);
+  }
+}
 
 function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
   data.substations.forEach(s => {
-    // Depth and isolation fields come only from the grid file's modelled hydroRisk block.
-    // Substations without it get no depth value (no elevation-based guesses).
-    if (s.hydroRisk) {
-      s.benchmarked2015FloodDepthM = s.hydroRisk.flood2015DepthM;
-      if (s.hydroRisk.advisoryEn) {
-        s.anticipatorySop = s.hydroRisk.advisoryEn;
-      }
-    }
-
     if (s.feeders) {
       s.feeders = s.feeders.map(classifyFeeder);
     }
@@ -141,7 +141,9 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
             if (fresh) {
               const sanitized = sanitizeGridData(fresh);
               cachedGrid = sanitized;
-              set(IDB_GRID_KEY, sanitized);
+              whenIdle(() => {
+                set(IDB_GRID_KEY, sanitized).catch(() => {});
+              });
             }
           })
           .catch(() => {
@@ -165,8 +167,10 @@ export async function loadChennaiGrid(): Promise<ChennaiGridData> {
     cachedGrid = sanitized;
 
     // Persist to IndexedDB for offline crisis survivability
-    set(IDB_GRID_KEY, sanitized).catch(err => {
-      console.warn('[tnebGridService] Failed to write grid to IndexedDB:', err);
+    whenIdle(() => {
+      set(IDB_GRID_KEY, sanitized).catch(err => {
+        console.warn('[tnebGridService] Failed to write grid to IndexedDB:', err);
+      });
     });
 
     return sanitized;

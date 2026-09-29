@@ -1,7 +1,7 @@
 {
   "name": "SurgeGrid AI — Chennai Grid Resiliency",
   "short_name": "SurgeGrid AI",
-  "description": "Real-time electrical grid tracking, flood inundation models, and substation trip protocols for Chennai.",
+  "description": "Chennai power-grid flood exposure console: real rain data, official flood maps and quoted disaster-plan actions.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",

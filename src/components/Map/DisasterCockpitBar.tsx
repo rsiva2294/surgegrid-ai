@@ -255,7 +255,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             onClick={() => setDisasterScenario('MICHAUNG_2023')}
             className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
               disasterScenario === 'MICHAUNG_2023'
-                ? (isLight ? 'bg-amber-600 text-white font-bold shadow-sm' : 'bg-amber-500 text-slate-950 font-bold shadow-sm')
+                ? (isLight ? 'bg-amber-700 text-white font-bold shadow-sm' : 'bg-amber-500 text-slate-950 font-bold shadow-sm')
                 : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
             }`}
             title="Cyclone Michaung, December 2023: real hindcast (NASA IMERG rain + ERA5-Land wind), 144 hourly steps"
@@ -420,7 +420,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 const currentIndex = availableHours.indexOf(simulationHour);
                 if (currentIndex > 0) setSimulationHour?.(availableHours[currentIndex - 1]);
               }}
-              className={`p-1 rounded transition-colors ${
+              className={`p-1.5 rounded transition-colors ${
                 isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-300'
               }`}
               title="Previous hour"
@@ -433,7 +433,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 const currentIndex = availableHours.indexOf(simulationHour);
                 if (currentIndex < availableHours.length - 1) setSimulationHour?.(availableHours[currentIndex + 1]);
               }}
-              className={`p-1 rounded transition-colors ${
+              className={`p-1.5 rounded transition-colors ${
                 isLight ? 'hover:bg-slate-100 text-slate-600' : 'hover:bg-slate-800 text-slate-300'
               }`}
               title="Next hour"
@@ -457,7 +457,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 const tone = m.phase === 'WATCH' ? 'amber' : m.phase === 'LANDFALL_PEAK' ? 'rose' : 'emerald';
                 const active = simulationHour === m.hour;
                 const activeCls = {
-                  amber: isLight ? 'bg-amber-600 text-white font-bold' : 'bg-amber-500 text-slate-950 font-bold',
+                  amber: isLight ? 'bg-amber-700 text-white font-bold' : 'bg-amber-500 text-slate-950 font-bold',
                   rose: isLight ? 'bg-rose-600 text-white font-bold' : 'bg-rose-500 text-slate-950 font-bold',
                   emerald: isLight ? 'bg-emerald-600 text-white font-bold' : 'bg-emerald-500 text-slate-950 font-bold',
                 }[tone];
@@ -540,7 +540,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             onClick={() => setCrisisTriageFilter(crisisTriageFilter === 'poor_stability' ? 'all' : 'poor_stability')}
             className={`px-2.5 py-0.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
               crisisTriageFilter === 'poor_stability'
-                ? (isLight ? 'bg-amber-600 text-white font-bold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
+                ? (isLight ? 'bg-amber-700 text-white font-bold shadow-xs' : 'bg-amber-500 text-slate-950 font-bold shadow-xs')
                 : (isLight 
                     ? 'bg-amber-50/70 hover:bg-amber-100 text-amber-900 border border-amber-300/70 font-semibold' 
                     : 'bg-amber-950/40 hover:bg-amber-900/50 text-amber-300 border border-amber-500/40 font-semibold shadow-2xs')

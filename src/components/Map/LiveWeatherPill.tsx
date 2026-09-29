@@ -146,7 +146,7 @@ export const LiveWeatherPill: React.FC<LiveWeatherPillProps> = ({
           <Wind className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
           <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
             {liveWeather.windSpeedKmh}
-            <span className="text-[10px] text-slate-400 font-sans ml-0.5">km/h</span>
+            <span className={`text-[10px] font-sans ml-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>km/h</span>
           </span>
           {shortWindDir && (
             <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 tracking-wider uppercase border border-slate-200/80 dark:border-slate-700/60 shrink-0">
