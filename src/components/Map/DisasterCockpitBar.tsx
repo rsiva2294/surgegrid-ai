@@ -20,10 +20,7 @@ export type DisasterScenario =
   | 'LIVE' 
   | 'MICHAUNG_2023' 
   | 'FLOODS_2015' 
-  | 'MONSOON_2020'
-  | 'CYCLONE_ALERT' 
-  | 'SEVERE_CYCLONE' 
-  | 'EXTREME_SURGE';
+  | 'MONSOON_2020';
 
 export type CrisisTriageFilter = 'all' | 'poor_stability' | 'waterlogging_risk' | 'outages';
 
@@ -211,8 +208,6 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
         <div className="hidden md:flex items-center gap-1.5 px-2 py-1 border-r shrink-0 border-current/10">
           <Wind className={`w-3.5 h-3.5 ${
             disasterScenario === 'NORMAL' ? (isLight ? 'text-emerald-600' : 'text-emerald-400') :
-            disasterScenario === 'CYCLONE_ALERT' ? (isLight ? 'text-yellow-600' : 'text-yellow-400') :
-            disasterScenario === 'SEVERE_CYCLONE' ? (isLight ? 'text-amber-600' : 'text-amber-400') :
             (isLight ? 'text-rose-600' : 'text-rose-400')
           }`} />
           <span className="text-xs font-bold uppercase tracking-wider">
@@ -259,7 +254,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             type="button"
             onClick={() => setDisasterScenario('MICHAUNG_2023')}
             className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
-              disasterScenario === 'MICHAUNG_2023' || disasterScenario === 'SEVERE_CYCLONE' || disasterScenario === 'CYCLONE_ALERT'
+              disasterScenario === 'MICHAUNG_2023'
                 ? (isLight ? 'bg-amber-600 text-white font-bold shadow-sm' : 'bg-amber-500 text-slate-950 font-bold shadow-sm')
                 : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
             }`}
@@ -281,7 +276,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
             type="button"
             onClick={() => setDisasterScenario('FLOODS_2015')}
             className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
-              disasterScenario === 'FLOODS_2015' || disasterScenario === 'EXTREME_SURGE'
+              disasterScenario === 'FLOODS_2015'
                 ? (isLight ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'bg-cyan-500 text-slate-950 font-bold shadow-sm')
                 : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
             }`}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { TnebSubstation, TnebSection } from '../../types/tneb';
+import { CHENNAI_AVERAGE_ELEVATION_M, getQuote } from '../../data/officialSources';
 
 interface CopyIncidentSmsButtonProps {
   node: TnebSubstation | TnebSection;
@@ -15,17 +16,18 @@ export const CopyIncidentSmsButton: React.FC<CopyIncidentSmsButtonProps> = ({
   const handleCopy = () => {
     const isSubstation = 'voltage' in node;
     const elev = isSubstation ? (node as TnebSubstation).elevationM : undefined;
-    const isSubmerged = elev !== undefined && elev <= 3.2;
-    const sop = isSubstation ? (node as TnebSubstation).anticipatorySop : undefined;
+    const isLowLying = elev !== undefined && elev <= CHENNAI_AVERAGE_ELEVATION_M;
+    // Action text is quoted from the official plans, with its source.
+    const action = getQuote(isLowLying ? 'mop-dewatering-pump-arranged' : 'gcc-check-transformers-pillar-boxes');
     const text = `[TNEB CRISIS DISPATCH]
 NODE: ${node.name} (Code: ${node.code})
-STATUS: ${isSubmerged ? 'CRITICAL - SWITCHYARD INUNDATION (Surge <= 3.2m MSL)' : 'ACTIVE STORM PATROL'}
+STATUS: ${isLowLying ? `LOW-LYING YARD (${elev} m MSL, at or below Chennai's ${CHENNAI_AVERAGE_ELEVATION_M} m average)` : 'STORM WATCH'}
 WARD: GCC Zone ${node.gccZone || 'NA'} • Ward ${node.gccWard || 'NA'} (${node.gccZoneName || 'CMA'})
 COUNCILLOR CUG: ${node.wardCouncillorMobile || 'NA'}
 CMWSSB WATER AE: ${node.wardCmwssbMobile || 'NA'}
 GCC CIVIL AE: ${node.wardGccAeMobile || 'NA'}
 RIPON CONTROL: 1913 (24x7)
-ACTION: ${sop || 'Maintain live telemetry and portable diesel dewatering pump standby.'}`;
+ACTION: "${action?.quote ?? ''}" (${action?.citation ?? ''})`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);

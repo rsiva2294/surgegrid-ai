@@ -1,5 +1,6 @@
 import type { TnebSubstation, OutageHistoryEvent, SubstationHealthProfile, OutageCategory, OutageArchetype, DispatchStatus } from '../types/tneb';
 import { type LiveOutage, getOutagesForSubstation } from './liveOutageService';
+import { CHENNAI_AVERAGE_ELEVATION_M } from '../data/officialSources';
 
 /**
  * Resiliency cut-off threshold (Health score < 75 denotes Strained/Fragile infrastructure)
@@ -12,15 +13,16 @@ export function isSubstationAtRisk(substation: TnebSubstation, liveOutages?: Liv
 }
 
 /**
- * Evaluates whether a substation is at risk from waterlogging / inundation
- * because its elevation isn't high enough or it sits in a high waterlogging / surge zone.
+ * Flags a substation for the waterlogging filter when either:
+ * - its yard is at or below Chennai's average elevation of 2.0 m (GCC City DMP 2023, Preface), or
+ * - it falls in one of SurgeGrid's own flood-risk categories (our model, not from the official plans).
  */
 export function isSubstationWaterloggingRisk(substation: TnebSubstation): boolean {
   if (!substation) return false;
   return (
     substation.riskCategory === 'HIGH_WATERLOGGING_RISK' ||
     substation.riskCategory === 'CRITICAL_SURGE_RISK' ||
-    (substation.elevationM !== undefined && substation.elevationM <= 3.2)
+    (substation.elevationM !== undefined && substation.elevationM <= CHENNAI_AVERAGE_ELEVATION_M)
   );
 }
 

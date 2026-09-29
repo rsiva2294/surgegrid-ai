@@ -13,6 +13,7 @@ import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
 import {
+  CHENNAI_AVERAGE_ELEVATION_M,
   OFFICIAL_SOURCES,
   formatCitation,
   getImdCycloneClass,
@@ -89,20 +90,17 @@ export interface GeminiSopDirective {
 }
 
 /**
- * SurgeGrid's own ranking of substations that combine poor health with flood exposure.
- * The weights below are ours and are NOT taken from any official plan.
- * (Scheduled for review in the "only official facts" clean-up, step 3.)
+ * SurgeGrid's own ranking of substations that combine poor health with low elevation.
+ * The weights below are ours and are NOT taken from any official plan. Inputs are limited to
+ * measurable facts: health grade and score, unscheduled trips, yard elevation, our flood-risk
+ * category, and whether the substation has overhead or mixed feeders. No wind or surge thresholds.
  */
 export function extractTopCompromisedInfra(
   substations: TnebSubstation[],
   liveOutages: LiveOutage[] = [],
-  timestep?: ScenarioTimestep | null,
   limit = 6
 ): CompromisedSubstationSummary[] {
   if (!substations || substations.length === 0) return [];
-
-  const surgeM = timestep ? timestep.simulated_storm_surge_msl_m : 0;
-  const windKmh = timestep ? Math.abs(timestep.wind_speed_10m_kmh) : 25;
 
   const scored: CompromisedSubstationSummary[] = substations.map((ss) => {
     const profile = getEnrichedHealthProfile(ss, liveOutages);
@@ -110,7 +108,7 @@ export function extractTopCompromisedInfra(
 
     let disasterScore = 0;
 
-    // 1. Health Grade & Trip degradation ("Today's" chronic status)
+    // 1. Health grade and trip history ("Today's" chronic status)
     if (profile.healthGrade === 'D') {
       disasterScore += 70;
     } else if (profile.healthGrade === 'C') {
@@ -121,37 +119,27 @@ export function extractTopCompromisedInfra(
     disasterScore += (100 - profile.healthScore) * 1.2;
     disasterScore += Math.min(profile.unscheduledTripsCount * 5, 50);
 
-    // 2. Physical terrain & storm surge inundation compounding
-    if (elevation <= surgeM + 0.3) {
-      disasterScore += 65; // Direct water breach into switchyard equipment
-    } else if (elevation <= 3.2) {
-      disasterScore += 30; // Critical low-lying flood bowl
+    // 2. Low elevation: at or below Chennai's average elevation (GCC City DMP 2023)
+    if (elevation <= CHENNAI_AVERAGE_ELEVATION_M) {
+      disasterScore += 65;
     }
-
     if (ss.riskCategory === 'CRITICAL_SURGE_RISK') {
       disasterScore += 35;
     } else if (ss.riskCategory === 'HIGH_WATERLOGGING_RISK') {
       disasterScore += 25;
     }
 
-    // 3. High-wind corridor vulnerability
-    if (windKmh >= 75) {
-      const distCoast = ss.distanceToCoastKm ?? 10;
-      if (distCoast <= 6) disasterScore += 30;
-      const hasOverhead = ss.feeders?.some(
-        f => f.config?.toLowerCase().includes('overhead') || f.config?.toLowerCase().includes('mixed')
-      );
-      if (hasOverhead) disasterScore += 20;
+    // 3. Exposure of overhead or mixed feeders
+    if ((ss.feeders || []).some(isOverheadFeeder)) {
+      disasterScore += 20;
     }
 
     const cleanName = ss.cleanName || ss.name.replace(/^(110\/33-11KV|230\/110KV|33\/11 KV|110\/11 KV SS|33\/11KV|110KV|230KV|33KV)\s*/i, '').trim();
 
     const vulnerabilityReason = [
       `Grade ${profile.healthGrade} (${profile.healthScore}/100)`,
-      elevation <= 3.2 ? `${elevation.toFixed(1)}m MSL Plinth` : null,
+      elevation <= CHENNAI_AVERAGE_ELEVATION_M ? `${elevation.toFixed(1)} m MSL yard` : null,
       profile.unscheduledTripsCount > 0 ? `${profile.unscheduledTripsCount} Trips` : null,
-      ss.riskCategory === 'CRITICAL_SURGE_RISK' ? 'Coastal Surge Zone' : null,
-      ss.riskCategory === 'HIGH_WATERLOGGING_RISK' ? 'Flood Basin' : null
     ].filter(Boolean).join(' • ');
 
     return {
@@ -327,7 +315,6 @@ function isOverheadFeeder(f: FeederDetail): boolean {
  * The scenarios model no storm surge, so "flood" targets are the lowest-lying substations by the
  * elevation stored in the grid data (Earth Engine terrain data).
  */
-const AVERAGE_ELEVATION_M = 2.0;
 
 function buildTargets(substations: TnebSubstation[]): SopTargets {
   const nameOf = (ss: TnebSubstation) => ss.cleanName || ss.name;
@@ -335,7 +322,7 @@ function buildTargets(substations: TnebSubstation[]): SopTargets {
   const withElevation = substations
     .filter(ss => ss.elevationM !== undefined)
     .sort((a, b) => (a.elevationM as number) - (b.elevationM as number));
-  const lowLying = withElevation.filter(ss => (ss.elevationM as number) <= AVERAGE_ELEVATION_M);
+  const lowLying = withElevation.filter(ss => (ss.elevationM as number) <= CHENNAI_AVERAGE_ELEVATION_M);
 
   const overheadRanked = substations
     .map(ss => ({ ss, n: (ss.feeders || []).filter(isOverheadFeeder).length }))
@@ -369,7 +356,7 @@ function targetsFor(group: TargetGroup, targets: SopTargets): string[] {
 function fallbackNote(group: TargetGroup, targets: SopTargets): string | undefined {
   switch (group) {
     case 'flood':
-      return `${targets.counts.flood} substations sit at or below ${AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai; the lowest-lying are listed.`;
+      return `${targets.counts.flood} substations sit at or below ${CHENNAI_AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai; the lowest-lying are listed.`;
     case 'overhead':
       return `${targets.counts.overhead} substations have overhead or mixed feeders in the grid data.`;
     case 'lifeline':
@@ -437,7 +424,7 @@ function buildDirective(
 
   const summaryEn =
     `${hourLabel(hour)}: area-mean rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h${imdClass ? ` (IMD class: ${imdClass.name})` : ''}. ` +
-    `${targets.counts.flood} substations sit at or below ${AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai. ` +
+    `${targets.counts.flood} substations sit at or below ${CHENNAI_AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai. ` +
     `The actions below are quoted from official disaster management plans.`;
 
   const directive: GeminiSopDirective = {
@@ -460,7 +447,7 @@ function buildDirective(
     actionItems,
     geminiModelTag: 'Official quotes · rule-based',
     timestamp: `${hourLabel(hour)} ${timestep.label || ''}`.trim(),
-    compromisedAssets: extractTopCompromisedInfra(substations, liveOutages, timestep, 6),
+    compromisedAssets: extractTopCompromisedInfra(substations, liveOutages, 6),
   };
 
   return { directive, targets, ruleIds };

@@ -15,7 +15,6 @@ import {
   ChevronUp,
   Info,
   Building2,
-  AlertTriangle,
   Maximize2,
   Minimize2
 } from 'lucide-react';
@@ -28,6 +27,7 @@ import { GridJargonCheatSheet } from './GridJargonCheatSheet';
 import { SubstationHealthCard } from './SubstationHealthCard';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
+import { CHENNAI_AVERAGE_ELEVATION_M } from '../../data/officialSources';
 
 interface SubstationInspectorDrawerProps {
   selectedSubstation: TnebSubstation | null;
@@ -268,11 +268,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
             </span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            {disasterScenario !== 'NORMAL' && selectedSubstation.hydroRisk?.cycloneIsolateRecommended && (
-              <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded bg-rose-600 text-white animate-pulse whitespace-nowrap">
-                ⚠️ ISOLATION MANDATE
-              </span>
-            )}
             <span
               className={`text-[10px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap ${
                 selectedSubstation.riskCategory === 'CRITICAL_SURGE_RISK'
@@ -457,17 +452,17 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               <span className={`text-[10px] uppercase font-semibold block ${
                 isLight ? 'text-slate-500' : 'text-slate-400'
               }`}>
-                TNSDMA Mandate
+                City average
               </span>
               <strong className={`text-xs font-bold block mt-0.5 ${
                 isLight ? 'text-blue-700' : 'text-cyan-300'
               }`}>
-                3.0m MSL Standard
+                2.0 m MSL
               </strong>
               <span className={`text-[10px] block mt-0.5 ${
                 isLight ? 'text-slate-400' : 'text-slate-500'
               }`}>
-                Statutory Datum
+                GCC City DMP 2023
               </span>
             </div>
 
@@ -480,12 +475,12 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               <strong className={`text-xs font-bold block mt-0.5 truncate ${
                 isLight ? 'text-slate-900' : 'text-white'
               }`}>
-                {selectedSubstation.yardDewateringRequired ? '⚠️ Mobile Pumps' : '✅ Gravity Drain'}
+                {(selectedSubstation.elevationM ?? 99) <= CHENNAI_AVERAGE_ELEVATION_M ? '⚠️ Pumps to be arranged' : 'Not flagged'}
               </strong>
               <span className={`text-[10px] block mt-0.5 ${
                 isLight ? 'text-slate-400' : 'text-slate-500'
               }`}>
-                {selectedSubstation.yardDewateringRequired ? 'Pre-staged diesel DG' : 'Natural run-off'}
+                {(selectedSubstation.elevationM ?? 99) <= CHENNAI_AVERAGE_ELEVATION_M ? 'Low-lying yard (MoP DMP 2021)' : 'Above 2.0 m average'}
               </span>
             </div>
           </div>
@@ -1466,24 +1461,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       );
                     })()}
-
-                    {/* Active Inundation Alert */}
-                    {disasterScenario === 'EXTREME_SURGE' &&
-                      selectedSubstation.elevationM !== undefined &&
-                      selectedSubstation.elevationM <= 3.2 && (
-                        <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold leading-tight flex items-start gap-2 shadow-lg animate-pulse shrink-0 border border-rose-400/40">
-                          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-200" />
-                          <div className="min-w-0 flex-1">
-                            <span className="uppercase tracking-wider font-black text-xs block text-white">
-                              CRITICAL: Switchyard Inundation Event
-                            </span>
-                            <p className="font-normal opacity-95 text-xs mt-1 leading-snug">
-                              Yard elevation ({selectedSubstation.elevationM}m MSL) submerged by 3.2m surge.
-                              Switchyard pre-emptively isolated & de-energized.
-                            </p>
-                          </div>
-                        </div>
-                      )}
 
                     {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
                     <SubstationHealthCard

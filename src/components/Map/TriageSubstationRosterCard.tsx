@@ -123,7 +123,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
       case 'poor_stability':
         return {
           title: 'Poor Stability Infra',
-          badgeLabel: '<75 Health Score',
+          badgeLabel: '<75 SurgeGrid health score',
           icon: AlertTriangle,
           themeBg: isLight ? 'bg-amber-500' : 'bg-amber-500',
           themeText: isLight ? 'text-amber-700' : 'text-amber-400',
@@ -133,12 +133,12 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
       case 'waterlogging_risk':
         return {
           title: 'Waterlogging Risk Infra',
-          badgeLabel: '≤3.2m MSL / Surge',
+          badgeLabel: '≤ 2.0 m MSL or SurgeGrid flood category',
           icon: Waves,
           themeBg: isLight ? 'bg-cyan-600' : 'bg-cyan-500',
           themeText: isLight ? 'text-cyan-700' : 'text-cyan-400',
           badgeBg: isLight ? 'bg-cyan-100 text-cyan-900 border-cyan-300' : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
-          description: 'Low-elevation switchyards vulnerable to storm surge backflow and yard inundation.'
+          description: 'Yards at or below Chennai\'s average elevation of 2.0 m (GCC City DMP 2023), plus those in SurgeGrid\'s own flood-risk categories (our model, not from the plans).'
         };
       case 'outages':
         return {
@@ -404,7 +404,7 @@ export const TriageSubstationRosterCard: React.FC<TriageSubstationRosterCardProp
 
                         {ss.benchmarked2015FloodDepthM && (
                           <span className="text-slate-400">
-                            2015: {ss.benchmarked2015FloodDepthM}m Flood
+                            Modelled 2015: {ss.benchmarked2015FloodDepthM}m
                           </span>
                         )}
 

@@ -217,22 +217,28 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
         </div>
       )}
 
-      {/* Disaster Scenario Live/Tripped Callout Box */}
+      {/* Scenario flags: facts from our data plus the relevant official quote (no trip states) */}
       {disasterScenario !== 'NORMAL' && (() => {
         const dStatus = getFeederDisasterStatus(f, selectedSubstation, disasterScenario, isLight);
         return (
           <div className={`mt-1.5 p-2 rounded-xl text-xs leading-relaxed border flex items-start gap-2 ${dStatus.badgeBg} ${dStatus.badgeTextCol} ${dStatus.badgeBorder}`}>
             <span className="shrink-0 mt-0.5">{dStatus.icon}</span>
             <div className="min-w-0 flex-1">
-              <div className="font-bold flex items-center justify-between gap-1">
+              <div className="font-bold">
                 <span>{dStatus.badgeText}</span>
-                {dStatus.isTripped && (
-                  <span className="text-xs uppercase font-mono font-bold px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10">
-                    ISOLATED
-                  </span>
-                )}
               </div>
-              <p className="opacity-90 mt-1 font-sans leading-relaxed">{dStatus.reason}</p>
+              {dStatus.details.map((d, i) => (
+                <div key={i} className="mt-1 font-sans leading-relaxed">
+                  <p className="opacity-90">{d.text}</p>
+                  {d.quote && (
+                    <blockquote className="mt-0.5 italic border-l-2 border-current/30 pl-2 opacity-90">
+                      &ldquo;{d.quote}&rdquo;
+                      {d.citation && <span className="block not-italic text-[10px] font-mono opacity-80">{d.citation}</span>}
+                    </blockquote>
+                  )}
+                  {!d.quote && d.citation && <span className="block text-[10px] font-mono opacity-80">{d.citation}</span>}
+                </div>
+              ))}
             </div>
           </div>
         );

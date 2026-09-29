@@ -126,30 +126,19 @@ export function classifyFeeder(feeder: FeederDetail): FeederDetail {
 
 import { get, set } from 'idb-keyval';
 
-const IDB_GRID_KEY = 'surgegrid_chennai_grid_v14_real_hydrorisk_advisories';
+const IDB_GRID_KEY = 'surgegrid_chennai_grid_v15_no_guessed_depths';
 let cachedGrid: ChennaiGridData | null = null;
 
 function sanitizeGridData(data: ChennaiGridData): ChennaiGridData {
   data.substations.forEach(s => {
-    // Standard TNEB Switchgear equipment plinth clearance (1.5m above local GL)
-    s.plinthElevationM = 1.5;
-
-    // Ground-truth Hydrodynamic Inundation & Dewatering Requirements
+    // Depth and isolation fields come only from the grid file's modelled hydroRisk block.
+    // Substations without it get no depth value (no elevation-based guesses).
     if (s.hydroRisk) {
       s.benchmarked2015FloodDepthM = s.hydroRisk.flood2015DepthM;
-      s.yardDewateringRequired = s.hydroRisk.cycloneMaxDepthM > 0.3 || s.hydroRisk.flood2015DepthM > 0.3;
       s.statutoryDeenergized = s.hydroRisk.cycloneIsolateRecommended;
       if (s.hydroRisk.advisoryEn) {
         s.anticipatorySop = s.hydroRisk.advisoryEn;
       }
-    } else if (s.elevationM !== undefined) {
-      s.benchmarked2015FloodDepthM = s.elevationM <= 3.0 ? 1.8 : s.elevationM <= 6.0 ? 0.9 : 0.0;
-      s.yardDewateringRequired = s.elevationM <= 3.0;
-      s.statutoryDeenergized = false;
-    } else {
-      s.benchmarked2015FloodDepthM = 0.0;
-      s.yardDewateringRequired = false;
-      s.statutoryDeenergized = false;
     }
 
     if (s.feeders) {

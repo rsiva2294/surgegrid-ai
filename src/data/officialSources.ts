@@ -489,3 +489,15 @@ export function formatCitation(rule: OfficialRule): string {
   }
   return `${src.shortName}, ${pdf}${printed}`;
 }
+
+/**
+ * Chennai's average elevation in metres above mean sea level.
+ * GCC City DMP 2023, Preface (rule id gcc-average-elevation).
+ */
+export const CHENNAI_AVERAGE_ELEVATION_M = 2.0;
+
+/** Quote and citation for a rule id, or null if the id is unknown. */
+export function getQuote(id: string): { quote: string; citation: string } | null {
+  const rule = getOfficialRule(id);
+  return rule ? { quote: rule.quote, citation: formatCitation(rule) } : null;
+}

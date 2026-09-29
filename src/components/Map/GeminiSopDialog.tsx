@@ -262,7 +262,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                 <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold border ${
                   isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/60 text-amber-300 border-amber-700/60'
                 }`}>
-                  Grade C/D & Low Plinth
+                  Health grade + low elevation
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
