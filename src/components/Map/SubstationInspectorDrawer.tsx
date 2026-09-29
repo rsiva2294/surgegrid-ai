@@ -27,6 +27,7 @@ import { FeederCardItem } from './FeederCardItem';
 import { GridJargonCheatSheet } from './GridJargonCheatSheet';
 import { SubstationHealthCard } from './SubstationHealthCard';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
+import type { ScenarioTimestep } from '../../services/scenarioService';
 
 interface SubstationInspectorDrawerProps {
   selectedSubstation: TnebSubstation | null;
@@ -42,6 +43,7 @@ interface SubstationInspectorDrawerProps {
   disasterScenario: DisasterScenario;
   liveOutages?: LiveOutage[];
   isLight: boolean;
+  currentTimestep?: ScenarioTimestep | null;
 }
 
 export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps> = ({
@@ -57,7 +59,8 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   setSelectedFeeder,
   disasterScenario,
   liveOutages = [],
-  isLight
+  isLight,
+  currentTimestep
 }) => {
   const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
@@ -1488,6 +1491,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       isLight={isLight}
                       disasterScenario={disasterScenario}
                       liveOutages={activeSubstationOutages}
+                      currentTimestep={currentTimestep}
                     />
 
                     {/* Quick Flood & Climate Risk Indicator Pill (click to jump to Civic & Crisis tab) */}

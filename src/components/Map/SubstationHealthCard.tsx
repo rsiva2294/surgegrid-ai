@@ -1,26 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, ShieldCheck, AlertCircle, Wrench, ChevronDown, ChevronUp, Clock, Zap } from 'lucide-react';
+import { Activity, ShieldCheck, AlertCircle, Wrench, ChevronDown, ChevronUp, Clock, Zap, Sparkles, RefreshCw } from 'lucide-react';
 import type { TnebSubstation, OutageHistoryEvent } from '../../types/tneb';
 import type { DisasterScenario } from './DisasterCockpitBar';
 import { getEnrichedHealthProfile, calculateDynamicRisk, formatDisplayDate } from '../../services/gridHealthService';
 import type { LiveOutage } from '../../services/liveOutageService';
+import type { ScenarioTimestep } from '../../services/scenarioService';
+import {
+  fetchSubstationTacticalAdvisory,
+  generateDeterministicTacticalAdvisory,
+  type SubstationCopilotAdvisory
+} from '../../services/geminiSubstationCopilotService';
 
 interface SubstationHealthCardProps {
   substation: TnebSubstation;
   isLight: boolean;
   disasterScenario: DisasterScenario;
   liveOutages?: LiveOutage[];
+  currentTimestep?: ScenarioTimestep | null;
 }
 
 export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
   substation,
   isLight,
   disasterScenario,
-  liveOutages = []
+  liveOutages = [],
+  currentTimestep
 }) => {
   const [showEmptyLog, setShowEmptyLog] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [scopeFilter, setScopeFilter] = useState<'all' | 'yard_core' | 'feeder_corridor' | 'lt_street'>('all');
+  const [copilotAdvisory, setCopilotAdvisory] = useState<SubstationCopilotAdvisory | null>(null);
+  const [isLoadingCopilot, setIsLoadingCopilot] = useState(false);
+
+  useEffect(() => {
+    if (disasterScenario === 'NORMAL' || disasterScenario === 'LIVE') {
+      setCopilotAdvisory(null);
+      return;
+    }
+    setIsLoadingCopilot(true);
+    let isSubscribed = true;
+    fetchSubstationTacticalAdvisory(substation, disasterScenario, currentTimestep, liveOutages)
+      .then((advisory) => {
+        if (isSubscribed) {
+          setCopilotAdvisory(advisory);
+          setIsLoadingCopilot(false);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load substation copilot:', err);
+        if (isSubscribed) {
+          setCopilotAdvisory(generateDeterministicTacticalAdvisory(substation, disasterScenario, currentTimestep, liveOutages));
+          setIsLoadingCopilot(false);
+        }
+      });
+    return () => {
+      isSubscribed = false;
+    };
+  }, [substation.code, disasterScenario, currentTimestep?.timestep_hour, liveOutages]);
 
   useEffect(() => {
     setShowEmptyLog(false);
@@ -376,6 +412,137 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
               <span className="font-mono">{baseRisk} → {dynamicRisk.finalRisk} / 100</span>
             </div>
             <p className="text-[11px] mt-0.5 opacity-90">{dynamicRisk.rationale}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Tier-2 Gemini Substation Tactical Advisory Card */}
+      {disasterScenario !== 'NORMAL' && copilotAdvisory && (
+        <div
+          className={`rounded-xl border p-3 transition-all shadow-xs ${
+            isLight
+              ? 'bg-gradient-to-br from-indigo-50/80 via-white to-purple-50/60 border-indigo-200 text-slate-900'
+              : 'bg-gradient-to-br from-indigo-950/40 via-slate-900/90 to-purple-950/30 border-indigo-500/40 text-slate-100'
+          }`}
+        >
+          {/* Card Header */}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="w-5 h-5 rounded-md bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center shrink-0">
+                <Sparkles className="w-3 h-3 text-indigo-400" />
+              </div>
+              <span className="font-bold text-xs tracking-tight text-indigo-950 dark:text-indigo-200 truncate">
+                GEMINI ASSET COPILOT
+              </span>
+              <span className="text-[9px] px-1 py-0.2 rounded font-mono font-semibold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
+                TIER-2
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {isLoadingCopilot && (
+                <RefreshCw className="w-2.5 h-2.5 text-indigo-400 animate-spin" />
+              )}
+              {copilotAdvisory.cached && (
+                <span className="text-[9px] px-1 py-0.2 rounded font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+                  Cached
+                </span>
+              )}
+              <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                {currentTimestep ? `T${currentTimestep.timestep_hour >= 0 ? '+' : ''}${currentTimestep.timestep_hour}h` : 'LIVE'}
+              </span>
+            </div>
+          </div>
+
+          {/* Operational Posture Banner */}
+          <div className="flex items-center justify-between gap-2 p-1.5 rounded-lg bg-white/70 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 mb-2">
+            <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+              Operational Posture:
+            </span>
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border ${
+                copilotAdvisory.posture === 'PRE_EMPTIVE_ISOLATE'
+                  ? isLight
+                    ? 'bg-rose-100 text-rose-950 border-rose-300'
+                    : 'bg-rose-500/20 text-rose-200 border-rose-500/40'
+                  : copilotAdvisory.posture === 'DEWATERING_PUMP'
+                  ? isLight
+                    ? 'bg-cyan-100 text-cyan-950 border-cyan-300'
+                    : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40'
+                  : copilotAdvisory.posture === 'LOAD_SHED_SELECTIVE'
+                  ? isLight
+                    ? 'bg-amber-100 text-amber-950 border-amber-300'
+                    : 'bg-amber-500/20 text-amber-200 border-amber-500/40'
+                  : isLight
+                  ? 'bg-emerald-100 text-emerald-950 border-emerald-300'
+                  : 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40'
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  copilotAdvisory.posture === 'PRE_EMPTIVE_ISOLATE'
+                    ? 'bg-rose-500 animate-ping'
+                    : copilotAdvisory.posture === 'DEWATERING_PUMP'
+                    ? 'bg-cyan-400'
+                    : copilotAdvisory.posture === 'LOAD_SHED_SELECTIVE'
+                    ? 'bg-amber-400'
+                    : 'bg-emerald-400'
+                }`}
+              />
+              {copilotAdvisory.posture.replace(/_/g, ' ')}
+            </span>
+          </div>
+
+          {/* Rationale text */}
+          <p className="text-[11px] leading-relaxed mb-2.5 text-slate-700 dark:text-slate-300 bg-indigo-500/5 dark:bg-indigo-950/20 p-2 rounded border border-indigo-500/10">
+            {copilotAdvisory.postureRationale}
+          </p>
+
+          {/* Tactical Directives List */}
+          <div className="space-y-1.5">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1 flex items-center justify-between">
+              <span>Switchyard Directives</span>
+              <span>({copilotAdvisory.actions.length})</span>
+            </div>
+            {copilotAdvisory.actions.map((act, idx) => (
+              <div
+                key={act.id || idx}
+                className="p-2 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 flex items-start gap-2 shadow-xs"
+              >
+                <span
+                  className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold shrink-0 mt-0.5 ${
+                    act.urgency === 'IMMEDIATE'
+                      ? 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30'
+                      : act.urgency === 'WATCH'
+                      ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
+                      : 'bg-slate-500/20 text-slate-700 dark:text-slate-300 border border-slate-500/30'
+                  }`}
+                >
+                  {act.urgency}
+                </span>
+                <span className="text-xs text-slate-800 dark:text-slate-100 font-medium leading-relaxed flex-1">
+                  {act.action}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-200/70 dark:border-slate-800 text-[10px] text-slate-500 dark:text-slate-400">
+            <span className="truncate">{copilotAdvisory.modelTag}</span>
+            <button
+              type="button"
+              onClick={() => {
+                setIsLoadingCopilot(true);
+                fetchSubstationTacticalAdvisory(substation, disasterScenario, currentTimestep, liveOutages).then((res) => {
+                  setCopilotAdvisory(res);
+                  setIsLoadingCopilot(false);
+                });
+              }}
+              className="hover:underline flex items-center gap-1 shrink-0 text-indigo-600 dark:text-indigo-400 font-medium cursor-pointer"
+            >
+              <RefreshCw className="w-2.5 h-2.5" /> Re-evaluate
+            </button>
           </div>
         </div>
       )}
