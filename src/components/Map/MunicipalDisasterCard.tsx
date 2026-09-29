@@ -109,7 +109,12 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
         {/* 2G SMS / Wireless Incident Dispatch Generator */}
         <CopyIncidentSmsButton node={node} isLight={isLight} />
 
-        {/* GCC zone and ward, with the plan's TANGEDCO role */}
+        {/* Plan notes: collapsed by default */}
+        <details className={`rounded-xl border text-xs ${
+          isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-300'
+        }`}>
+          <summary className="cursor-pointer p-3 font-semibold">Plan notes (zone role, before re-energizing)</summary>
+          <div className="px-3 pb-3 space-y-2.5">
         <div className={`p-3 rounded-xl border text-xs space-y-1 ${
           isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
         }`}>
@@ -132,6 +137,8 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
             “{getQuote('tangedco-no-recharge-before-patrol')?.quote}” ({getQuote('tangedco-no-recharge-before-patrol')?.citation}).
           </p>
         </div>
+          </div>
+        </details>
       </div>
     );
   }

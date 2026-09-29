@@ -95,3 +95,16 @@ export function isOfficiallyFloodFlagged(elevationM: number | undefined, flood: 
     flood?.returnPeriod === 'MODERATE'
   );
 }
+
+const title = (r: string) => r.charAt(0) + r.slice(1).toLowerCase();
+
+/** The official flood-map checks that are true for a substation, as plain fact sentences (empty list if none). */
+export function describeOfficialFlood(flood: SubstationOfficialFlood): string[] {
+  const out: string[] = [];
+  if (flood.nrsc2015) out.push('inside the 2015 flood extent (NRSC satellite map)');
+  if (flood.returnPeriod) out.push(`${title(flood.returnPeriod)} rating on the official flood-hazard maps`);
+  if (flood.inundationZone) out.push(`GCC flood inundation zone: ${flood.inundationZone}`);
+  if (flood.stagnation2015Within500m > 0) out.push(`${flood.stagnation2015Within500m} 2015 water-stagnation points within 500 m`);
+  if (flood.hotspots2020Within500m > 0) out.push(`${flood.hotspots2020Within500m} 2020 monsoon flood hotspots within 500 m`);
+  return out;
+}

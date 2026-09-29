@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
   Info,
+  Sparkles,
   Building2,
   Maximize2,
   Minimize2
@@ -25,6 +26,8 @@ import { FeederCardItem } from './FeederCardItem';
 import { GridJargonCheatSheet } from './GridJargonCheatSheet';
 import { SubstationHealthCard } from './SubstationHealthCard';
 import { SubstationCopilotCard } from './SubstationCopilotCard';
+import { SubstationLiveBriefCard } from './SubstationLiveBriefCard';
+import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
@@ -48,6 +51,7 @@ interface SubstationInspectorDrawerProps {
   liveOutages?: LiveOutage[];
   isLight: boolean;
   currentTimestep?: ScenarioTimestep | null;
+  liveWeather?: LiveWeatherConditions | null;
 }
 
 export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps> = ({
@@ -64,9 +68,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   disasterScenario,
   liveOutages = [],
   isLight,
-  currentTimestep
+  currentTimestep,
+  liveWeather
 }) => {
-  const [inspectorTab, setInspectorTab] = useState<'specs' | 'circuits' | 'civic'>('specs');
+  const [inspectorTab, setInspectorTab] = useState<'overview' | 'feeders' | 'respond'>('overview');
   const sectionBoundary = useSectionBoundary(selectedSection?.code);
   const { flood: officialFlood } = useOfficialFlood(selectedSubstation?.code);
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
@@ -169,7 +174,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   // Reset internal tab and filters on substation change
   useEffect(() => {
     setFeederCategoryFilter('all');
-    setInspectorTab('specs');
+    setInspectorTab('overview');
     setIsLinksListExpanded(false);
     setShowJargonGuide(false);
     setFeederFilter('');
@@ -234,16 +239,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
       return a.name.localeCompare(b.name);
     });
   }, [selectedSubstation, feederFilter, feederCategoryFilter]);
-
-  const renderHydroRiskSection = () => {
-    if (!selectedSubstation) return null;
-    return (
-      <>
-        {selectedSubstation.elevationM !== undefined && <FloodExposureCard substation={selectedSubstation} isLight={isLight} />}
-        <ReliefCentresCard substation={selectedSubstation} isLight={isLight} />
-      </>
-    );
-  };
 
   if (!selectedSubstation && !selectedSection) return null;
 
@@ -509,9 +504,9 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 >
                   <button
                     type="button"
-                    onClick={() => setInspectorTab('specs')}
+                    onClick={() => setInspectorTab('overview')}
                     className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-xs ${
-                      inspectorTab === 'specs'
+                      inspectorTab === 'overview'
                         ? isLight
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
                           : 'bg-slate-800 text-white shadow-sm border border-slate-600/70'
@@ -525,9 +520,9 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setInspectorTab('circuits')}
+                    onClick={() => setInspectorTab('feeders')}
                     className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-xs ${
-                      inspectorTab === 'circuits'
+                      inspectorTab === 'feeders'
                         ? isLight
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
                           : 'bg-slate-800 text-white shadow-sm border border-slate-600/70'
@@ -541,22 +536,22 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setInspectorTab('civic')}
+                    onClick={() => setInspectorTab('respond')}
                     className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-xs ${
-                      inspectorTab === 'civic'
+                      inspectorTab === 'respond'
                         ? 'bg-indigo-600 text-white shadow-sm'
                         : isLight
                         ? 'text-slate-600 hover:text-slate-900'
                         : 'text-slate-300 hover:text-white'
                     }`}
                   >
-                    <Shield className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">Crisis & Contacts</span>
+                    <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">Respond</span>
                   </button>
                 </div>
 
                 {/* Tab 2: Circuits & Grid Content */}
-                {inspectorTab === 'circuits' && (
+                {inspectorTab === 'feeders' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2">
                     {/* Feeders Heading, Filter & Jargon Explainer Button */}
                     <div className="flex flex-col gap-1.5 shrink-0 pt-1">
@@ -846,7 +841,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 )}
 
                 {/* Tab 1: Plant & Technical Specs */}
-                {inspectorTab === 'specs' && (
+                {inspectorTab === 'overview' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
                     {/* Live Outage / Maintenance Alert Banner */}
                     {activeSubstationOutages.length > 0 && (
@@ -885,6 +880,18 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       </div>
                     )}
+                    {/* Flood exposure: facts and official map checks */}
+                    {selectedSubstation.elevationM !== undefined && (
+                      <FloodExposureCard substation={selectedSubstation} isLight={isLight} />
+                    )}
+
+                    {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
+                    <SubstationHealthCard
+                      substation={selectedSubstation}
+                      isLight={isLight}
+                      liveOutages={activeSubstationOutages}
+                    />
+
                     {/* Consolidated Administrative & Switchyard Capacity Overview */}
                     {(() => {
                       const validIncomers = (selectedSubstation.incomingFeederNames || []).filter((n) => {
@@ -1001,18 +1008,11 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       );
                     })()}
-
-                    {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
-                    <SubstationHealthCard
-                      substation={selectedSubstation}
-                      isLight={isLight}
-                      liveOutages={activeSubstationOutages}
-                    />
                   </div>
                 )}
 
-                {/* Tab 3: Dedicated GCC Municipal & Satellite Disaster Stack */}
-                {inspectorTab === 'civic' && (
+                {/* Tab 3: Respond (AI card, relief centres, contacts, plan notes) */}
+                {inspectorTab === 'respond' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
                     <SubstationCopilotCard
                       substation={selectedSubstation}
@@ -1021,7 +1021,14 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       liveOutages={activeSubstationOutages}
                       currentTimestep={currentTimestep}
                     />
-                    {renderHydroRiskSection()}
+                    <SubstationLiveBriefCard
+                      substation={selectedSubstation}
+                      isLight={isLight}
+                      disasterScenario={disasterScenario}
+                      liveOutages={activeSubstationOutages}
+                      liveWeather={liveWeather}
+                    />
+                    <ReliefCentresCard substation={selectedSubstation} isLight={isLight} />
                     {/* Section office contact (grouped with the ward contacts below) */}
                     {jurisdictionalSections.length > 0 && (
                       <div

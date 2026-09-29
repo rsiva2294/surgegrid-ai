@@ -48,7 +48,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 *Note:* We deleted our earlier synthetic cyclone. Everything replayed is real rain and wind.
 
 ## 7. The AI: what Gemini does, and does not do
-- **Does:** choose substation and feeder names from lists we send; write one short note; runs on Google Cloud's Gemini Enterprise Agent Platform (formerly Vertex AI) with no API key in the app.
+- **Does:** choose substation and feeder names from lists we send; write one short note, and on a live day a short summary of our data (facts shown under the card); runs on Google Cloud's Gemini Enterprise Agent Platform (formerly Vertex AI) with no API key in the app.
 - **Does not:** write, reword or cite the plan quotes.
 - **Guardrails:** fixed answer format; names filtered to our lists; a note with a number that was not in the prompt is discarded; if Gemini is down, the same quoted actions appear with rule-based notes.
 *Note:* Meaningful AI work, with a safety design judges can inspect in `gemini-proxy/` and `geminiSopService.ts`.
@@ -56,7 +56,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 ## 8. Live demo (about 3 minutes)
 1. Open the site; Michaung starts at T-24h. Show the AI Directive: 6 quoted actions with page numbers.
 2. Press play at 4x; the directive moves to impact, then restoration.
-3. Open a low-lying substation (ETL, -1 m): status line, then Crisis & Contacts: copilot's quoted actions, flood facts, official flood maps, relief centre and backup.
+3. Open a low-lying substation (ETL, -1 m): status line, Overview (flood facts, official flood maps), then Respond: copilot's quoted actions, relief centre and backup.
 4. Open a substation not inside any layer: it stays quiet, no false alarms.
 5. Switch to the 2015 scenario; toggle the relief-centre layer.
 *Note:* End on the quote and page number: "this is the plan's own text".

@@ -245,7 +245,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 ? (isLight ? 'bg-emerald-900 text-white' : 'bg-emerald-900/80 text-emerald-100 border border-emerald-600/50')
                 : (isLight ? 'bg-slate-200 text-slate-800' : 'bg-slate-800 text-slate-200')
             }`}>
-              {liveWeather ? `${Math.round(liveWeather.temperatureC)}°C` : '--°C'}
+              {liveWeather && liveWeather.temperatureC !== null ? `${Math.round(liveWeather.temperatureC)}°C` : '--°C'}
             </span>
           </button>
 

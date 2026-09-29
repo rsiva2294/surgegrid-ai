@@ -19,7 +19,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [liveWeather, setLiveWeather] = useState<LiveWeatherConditions | null>(null);
-  const [isLoadingWeather, setIsLoadingWeather] = useState(false);
+  const [isLoadingWeather, setIsLoadingWeather] = useState(true);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('sg_theme') as 'light' | 'dark') || 'light';
@@ -48,10 +48,12 @@ export default function App() {
     const useLat = lat ?? selectedSubstation?.lat ?? DEFAULT_CHENNAI_LAT;
     const useLng = lng ?? selectedSubstation?.lng ?? DEFAULT_CHENNAI_LNG;
     try {
+      // null means the Weather API was unavailable: show that, never a made-up reading
       const weather = await fetchLiveWeatherConditions(useLat, useLng);
       setLiveWeather(weather);
     } catch (err) {
       console.warn('Weather fetch error in App:', err);
+      setLiveWeather(null);
     } finally {
       setIsLoadingWeather(false);
     }
@@ -126,15 +128,13 @@ export default function App() {
         {/* Telemetry Controls & Live Weather */}
         <div className="flex items-center gap-2 sm:gap-3 text-xs">
           {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
-          {liveWeather && (
-            <LiveWeatherPill
-              liveWeather={liveWeather}
-              selectedSubstation={selectedSubstation}
-              isLoadingWeather={isLoadingWeather}
-              onRefresh={() => handleRefreshWeather()}
-              isLight={isLight}
-            />
-          )}
+          <LiveWeatherPill
+            liveWeather={liveWeather}
+            selectedSubstation={selectedSubstation}
+            isLoadingWeather={isLoadingWeather}
+            onRefresh={() => handleRefreshWeather()}
+            isLight={isLight}
+          />
 
           {/* Light / Dark Mode Toggle Button */}
           <button

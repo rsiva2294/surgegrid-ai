@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 interface LiveWeatherPillProps {
-  liveWeather: LiveWeatherConditions;
+  liveWeather: LiveWeatherConditions | null;
   selectedSubstation: TnebSubstation | null;
   isLoadingWeather: boolean;
   onRefresh: () => void;
@@ -23,7 +23,7 @@ interface LiveWeatherPillProps {
 }
 
 // Convert cardinal word (e.g. "SOUTHEAST") to compact abbreviation ("SE")
-function formatWindDirection(cardinal: string): string {
+function formatWindDirection(cardinal: string | null): string {
   if (!cardinal) return '';
   const trimmed = cardinal.trim().toUpperCase();
   const map: Record<string, string> = {
@@ -48,8 +48,8 @@ function formatWindDirection(cardinal: string): string {
 }
 
 // Select matching modern weather icon based on current condition string
-function getWeatherIcon(conditionText: string = '', isDaytime: boolean = true) {
-  const text = conditionText.toLowerCase();
+function getWeatherIcon(conditionText: string | null, isDaytime: boolean | null) {
+  const text = (conditionText ?? '').toLowerCase();
 
   if (text.includes('thunder') || text.includes('lightning') || text.includes('storm')) {
     return <CloudLightning className="w-3.5 h-3.5 text-amber-500 shrink-0" />;
@@ -67,7 +67,7 @@ function getWeatherIcon(conditionText: string = '', isDaytime: boolean = true) {
     return <Cloud className="w-3.5 h-3.5 text-slate-400 shrink-0" />;
   }
   if (text.includes('clear') || text.includes('sunny')) {
-    return isDaytime ? (
+    return isDaytime !== false ? (
       <SunMedium className="w-3.5 h-3.5 text-amber-500 shrink-0" />
     ) : (
       <CloudSun className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -84,7 +84,7 @@ export const LiveWeatherPill: React.FC<LiveWeatherPillProps> = ({
   onRefresh,
   isLight
 }) => {
-  const shortWindDir = formatWindDirection(liveWeather.windDirectionCardinal);
+  const shortWindDir = formatWindDirection(liveWeather?.windDirectionCardinal ?? null);
   const locationLabel = selectedSubstation ? selectedSubstation.name : 'Chennai Central';
   const locationTitle = selectedSubstation
     ? `Hyperlocal Switchyard Weather for ${selectedSubstation.name} (${selectedSubstation.lat.toFixed(4)}°N, ${selectedSubstation.lng.toFixed(4)}°E)`
@@ -124,58 +124,70 @@ export const LiveWeatherPill: React.FC<LiveWeatherPillProps> = ({
       {/* Hairline Divider */}
       <span className="w-px h-3.5 bg-slate-200 dark:bg-slate-700/80 shrink-0" />
 
-      {/* 2. Dynamic Weather Metric Cluster */}
-      <div className="flex items-center gap-2 sm:gap-2.5">
-        {/* Temperature & Dynamic Icon */}
-        <div
-          className="flex items-center gap-1.5 cursor-default"
-          title={`Temperature ${liveWeather.temperatureC.toFixed(1)}°C (Feels like ${liveWeather.feelsLikeC.toFixed(1)}°C)`}
-        >
-          {getWeatherIcon(liveWeather.conditionText, liveWeather.isDaytime)}
-          <span className="font-semibold font-mono text-xs text-slate-900 dark:text-slate-100 tracking-tight">
-            {liveWeather.temperatureC.toFixed(1)}
-            <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400 ml-0.5">°C</span>
-          </span>
-        </div>
+      {/* 2. Weather readings: only values the Weather API returned are shown */}
+      {!liveWeather ? (
+        <span className={`text-xs ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{isLoadingWeather ? 'Loading weather...' : 'Weather unavailable'}</span>
+      ) : (
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {liveWeather.temperatureC !== null && (
+            <div
+              className="flex items-center gap-1.5 cursor-default"
+              title={`Temperature ${liveWeather.temperatureC.toFixed(1)}°C${
+                liveWeather.feelsLikeC !== null ? ` (feels like ${liveWeather.feelsLikeC.toFixed(1)}°C)` : ''
+              }`}
+            >
+              {getWeatherIcon(liveWeather.conditionText, liveWeather.isDaytime)}
+              <span className="font-semibold font-mono text-xs text-slate-900 dark:text-slate-100 tracking-tight">
+                {liveWeather.temperatureC.toFixed(1)}
+                <span className="text-[10px] font-normal text-slate-500 dark:text-slate-400 ml-0.5">°C</span>
+              </span>
+            </div>
+          )}
 
-        {/* Wind Speed & Cardinal Direction (Responsive) */}
-        <div
-          className="hidden sm:flex items-center gap-1 cursor-default"
-          title={`Wind Speed: ${liveWeather.windSpeedKmh} km/h ${liveWeather.windDirectionCardinal} • Gusts: ${liveWeather.windGustKmh} km/h`}
-        >
-          <Wind className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-          <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
-            {liveWeather.windSpeedKmh}
-            <span className={`text-[10px] font-sans ml-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>km/h</span>
-          </span>
-          {shortWindDir && (
-            <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 tracking-wider uppercase border border-slate-200/80 dark:border-slate-700/60 shrink-0">
-              {shortWindDir}
+          {liveWeather.windSpeedKmh !== null && (
+            <div
+              className="hidden sm:flex items-center gap-1 cursor-default"
+              title={`Wind ${liveWeather.windSpeedKmh} km/h${
+                liveWeather.windDirectionCardinal ? ` ${liveWeather.windDirectionCardinal}` : ''
+              }${liveWeather.windGustKmh !== null ? ` • Gusts ${liveWeather.windGustKmh} km/h` : ''}`}
+            >
+              <Wind className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
+              <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
+                {liveWeather.windSpeedKmh}
+                <span className={`text-[10px] font-sans ml-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>km/h</span>
+              </span>
+              {shortWindDir && (
+                <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 tracking-wider uppercase border border-slate-200/80 dark:border-slate-700/60 shrink-0">
+                  {shortWindDir}
+                </span>
+              )}
+            </div>
+          )}
+
+          {liveWeather.humidityPercent !== null && (
+            <div
+              className="hidden md:flex items-center gap-1 cursor-default"
+              title={`Relative humidity ${liveWeather.humidityPercent}%${
+                liveWeather.dewPointC !== null ? ` • Dew point ${liveWeather.dewPointC.toFixed(1)}°C` : ''
+              }`}
+            >
+              <Droplets className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400 shrink-0" />
+              <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
+                {liveWeather.humidityPercent}%
+              </span>
+            </div>
+          )}
+
+          {liveWeather.conditionText && (
+            <span
+              className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium tracking-tight bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 shadow-2xs shrink-0"
+              title={`${liveWeather.conditionText} • Google Maps Platform Weather API`}
+            >
+              {liveWeather.conditionText}
             </span>
           )}
         </div>
-
-        {/* Relative Humidity (Responsive) */}
-        <div
-          className="hidden md:flex items-center gap-1 cursor-default"
-          title={`Relative Humidity: ${liveWeather.humidityPercent}% • Dew Point: ${liveWeather.dewPointC?.toFixed(1) ?? '--'}°C`}
-        >
-          <Droplets className="w-3.5 h-3.5 text-sky-500 dark:text-sky-400 shrink-0" />
-          <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">
-            {liveWeather.humidityPercent}%
-          </span>
-        </div>
-
-        {/* Weather Condition Badge */}
-        {liveWeather.conditionText && (
-          <span
-            className="hidden lg:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium tracking-tight bg-slate-100 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700/60 shadow-2xs shrink-0"
-            title={`${liveWeather.conditionText} • Google WeatherNext 3 Model`}
-          >
-            {liveWeather.conditionText}
-          </span>
-        )}
-      </div>
+      )}
 
       {/* Hairline Divider */}
       <span className="w-px h-3.5 bg-slate-200 dark:bg-slate-700/80 shrink-0" />

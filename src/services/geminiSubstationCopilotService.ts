@@ -12,6 +12,7 @@ import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { LiveOutage } from './liveOutageService';
 import { getEnrichedHealthProfile } from './gridHealthService';
+import { getCachedOfficialFlood, describeOfficialFlood } from './officialFloodLayers';
 import { generateJson } from './geminiClient';
 import {
   CHENNAI_AVERAGE_ELEVATION_M,
@@ -256,12 +257,17 @@ export async function fetchSubstationTacticalAdvisory(
   const actionLines = fallback.actions
     .map(a => `${a.id}|${(a.feeders || []).join('; ') || 'none'}|${(getOfficialRule(a.id) as OfficialRule).quote}`)
     .join('\n');
+  const officialFlood = getCachedOfficialFlood(substation.code);
+  const officialFloodLines = officialFlood ? describeOfficialFlood(officialFlood) : null;
+  const officialFloodText = officialFloodLines === null ? 'not loaded' : officialFloodLines.length > 0 ? officialFloodLines.join('; ') : 'not inside any of the official flood layers checked';
   const prompt = `SCENARIO: ${scenarioLabel(scenarioId as ScenarioId)}
 TIME: T${timestep.timestep_hour >= 0 ? '+' : ''}${timestep.timestep_hour}h (T-0 is the peak-rain hour) | PHASE: ${fallback.phase}
 WEATHER (area mean): wind ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(0)} km/h${imd ? ` (IMD class ${imd.name})` : ''} | rain ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h
 SUBSTATION: ${fallback.substationName} (${substation.voltage}) | yard elevation ${facts.elevation !== undefined ? `${facts.elevation} m MSL` : 'unknown'} | health grade ${profile.healthGrade} (${profile.healthScore}/100) | ${profile.unscheduledTripsCount} unscheduled trips in 90 days
 FEEDERS: ${facts.total} total | ${facts.overhead.length} overhead or mixed | ${facts.underground} underground | ${facts.lifeline.length} hospital or water
 FLAGS: ${fallback.flags.map(f => f.label).join(', ') || 'none'}
+HEALTH (SurgeGrid's own rating): ${profile.periodicMaintenanceCount} scheduled maintenance runs and ${profile.unscheduledTripsCount} unscheduled trips in the last 90 days | live outage notices matched today: ${liveOutages.length}
+OFFICIAL FLOOD MAPS (location check): ${officialFloodText}
 ACTIONS (id|feeder names to use|exact quote):
 ${actionLines}`;
   const promptNumbers = new Set(numbersIn(prompt));

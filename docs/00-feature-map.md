@@ -35,7 +35,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Cloud Function proxy to Gemini (own service account) | `gemini-proxy/` (`index.js`, `README.md`) |
 | Architecture write-up | `docs/DISASTER_SIMULATION_AND_GEMINI_ARCHITECTURE.md` |
 
-## Substation card (Crisis & Contacts tab)
+## Substation card (Overview and Respond tabs)
 | What | File |
 |---|---|
 | Flood exposure: grid facts, official flood-map checks, plan quote when it applies | `src/components/Map/FloodExposureCard.tsx` |
@@ -45,8 +45,10 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Built by | `scripts/build_relief_centres.py` |
 | Map layer "Relief centres (by ward)" | `TnebGridMap.tsx`, `MapLayerControls.tsx` |
 | GCC zone/ward card, hotlines, quoted TANGEDCO role, copy-SMS dispatch (quoted action) | `MunicipalDisasterCard.tsx`, `CopyIncidentSmsButton.tsx` |
-| Drawer: header with a status line (health grade, live outage notice, 2015 flood extent) and three tabs: Overview (specs, health score, 90-day log), Feeders (feeder list first, circuit isolation below), Crisis & Contacts (Copilot, flood exposure, relief centres, all contacts, quotes) | `SubstationInspectorDrawer.tsx` |
+| Drawer: header with a status line (health grade, live outage notice, 2015 flood extent) and three tabs: Overview (outage banner, flood exposure, health score and 90-day log, plant specs), Feeders (feeder list first, circuit isolation below), Respond (AI card, relief centres, all contacts, collapsed plan notes) | `SubstationInspectorDrawer.tsx` |
 | Substation Copilot (quoted actions, shown only while a scenario plays) | `SubstationCopilotCard.tsx` |
+| Live-day AI summary (facts only, shown when no scenario plays), with its prompt facts, rule-based fallback and grounding checks | `SubstationLiveBriefCard.tsx`, `src/services/geminiLiveBriefService.ts` |
+| Live weather: real Weather API readings only; a missing field is null and a failed call returns null ("Weather unavailable"), never made-up values | `src/services/liveWeatherService.ts`, `LiveWeatherPill.tsx` |
 
 ## Grid data and topology
 | What | File |

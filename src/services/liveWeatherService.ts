@@ -7,28 +7,33 @@
  * Endpoint: https://weather.googleapis.com/v1/currentConditions:lookup
  */
 
+/**
+ * Real readings from the Weather API only. A field the API did not return is null. We never fill in a value,
+ * and when the API cannot be reached the fetch returns null (weather unavailable).
+ */
 export interface LiveWeatherConditions {
-  temperatureC: number;
-  feelsLikeC: number;
-  dewPointC: number;
-  humidityPercent: number;
-  windSpeedKmh: number;
-  windGustKmh: number;
-  windDirectionCardinal: string;
-  windDirectionDegrees: number;
-  conditionText: string;
-  conditionType: string;
-  iconUri: string;
-  cloudCoverPercent: number;
-  precipitationProbability: number;
-  thunderstormProbability: number;
-  airPressureHpa: number;
-  visibilityKm: number;
-  currentTime: string;
-  isDaytime: boolean;
+  temperatureC: number | null;
+  feelsLikeC: number | null;
+  dewPointC: number | null;
+  humidityPercent: number | null;
+  windSpeedKmh: number | null;
+  windGustKmh: number | null;
+  windDirectionCardinal: string | null;
+  conditionText: string | null;
+  cloudCoverPercent: number | null;
+  precipitationProbability: number | null;
+  thunderstormProbability: number | null;
+  airPressureHpa: number | null;
+  visibilityKm: number | null;
+  currentTime: string | null;
+  isDaytime: boolean | null;
   model: 'WeatherNext 3 (Google Maps Platform)';
-  isSimulatedFallback?: boolean;
+  /** Coordinates the reading was requested for, rounded to 2 decimals (same key as the cache). */
+  locationKey: string;
 }
+
+const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() ? v : null);
 
 // Default Chennai Central coordinates (Ripon Building / Central Switchyard)
 export const DEFAULT_CHENNAI_LAT = 13.0827;
@@ -44,13 +49,14 @@ const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 const weatherCache = new Map<string, CacheEntry>();
 
 /**
- * Fetch current weather conditions for given coordinates via Google Maps Weather API
+ * Fetch current weather conditions for given coordinates via Google Maps Weather API.
+ * Returns null when the weather is unavailable (no key, network error, quota).
  */
 export async function fetchLiveWeatherConditions(
   lat: number = DEFAULT_CHENNAI_LAT,
   lng: number = DEFAULT_CHENNAI_LNG
-): Promise<LiveWeatherConditions> {
-  // Round coordinates to 2 decimal places (~1.1km) for intelligent cache pooling across city nodes
+): Promise<LiveWeatherConditions | null> {
+  // Round coordinates to 2 decimal places (~1.1km) for cache pooling across city nodes
   const cacheKey = `${lat.toFixed(2)},${lng.toFixed(2)}`;
   const cached = weatherCache.get(cacheKey);
 
@@ -59,83 +65,44 @@ export async function fetchLiveWeatherConditions(
   }
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
   if (!apiKey) {
-    console.warn('[liveWeatherService] VITE_GOOGLE_MAPS_API_KEY missing, using fallback telemetry');
-    return getFallbackWeather();
+    console.warn('[liveWeatherService] VITE_GOOGLE_MAPS_API_KEY missing, weather unavailable');
+    return null;
   }
 
   try {
     const url = `https://weather.googleapis.com/v1/currentConditions:lookup?key=${apiKey}&location.latitude=${lat}&location.longitude=${lng}&unitsSystem=METRIC`;
     const response = await fetch(url);
-
     if (!response.ok) {
-      const errText = await response.text();
-      console.warn(`[liveWeatherService] Google Maps Weather API error (${response.status}):`, errText);
-      return getFallbackWeather();
+      console.warn(`[liveWeatherService] Google Maps Weather API error (${response.status})`);
+      return null;
     }
-
     const json = await response.json();
 
     const liveConditions: LiveWeatherConditions = {
-      temperatureC: json.temperature?.degrees ?? 30.0,
-      feelsLikeC: json.feelsLikeTemperature?.degrees ?? 36.0,
-      dewPointC: json.dewPoint?.degrees ?? 25.0,
-      humidityPercent: json.relativeHumidity ?? 75,
-      windSpeedKmh: json.wind?.speed?.value ?? 6,
-      windGustKmh: json.wind?.gust?.value ?? 8,
-      windDirectionCardinal: json.wind?.direction?.cardinal || 'EAST',
-      windDirectionDegrees: json.wind?.direction?.degrees ?? 90,
-      conditionText: json.weatherCondition?.description?.text || 'Clear with periodic clouds',
-      conditionType: json.weatherCondition?.type || 'MOSTLY_CLEAR',
-      iconUri: json.weatherCondition?.iconBaseUri || 'https://maps.gstatic.com/weather/v1/mostly_clear',
-      cloudCoverPercent: json.cloudCover ?? 25,
-      precipitationProbability: json.precipitation?.probability?.percent ?? 0,
-      thunderstormProbability: json.thunderstormProbability ?? 0,
-      airPressureHpa: json.airPressure?.meanSeaLevelMillibars ?? 1009,
-      visibilityKm: json.visibility?.distance ?? 16,
-      currentTime: json.currentTime || new Date().toISOString(),
-      isDaytime: json.isDaytime ?? false,
+      temperatureC: num(json.temperature?.degrees),
+      feelsLikeC: num(json.feelsLikeTemperature?.degrees),
+      dewPointC: num(json.dewPoint?.degrees),
+      humidityPercent: num(json.relativeHumidity),
+      windSpeedKmh: num(json.wind?.speed?.value),
+      windGustKmh: num(json.wind?.gust?.value),
+      windDirectionCardinal: str(json.wind?.direction?.cardinal),
+      conditionText: str(json.weatherCondition?.description?.text),
+      cloudCoverPercent: num(json.cloudCover),
+      precipitationProbability: num(json.precipitation?.probability?.percent),
+      thunderstormProbability: num(json.thunderstormProbability),
+      airPressureHpa: num(json.airPressure?.meanSeaLevelMillibars),
+      visibilityKm: num(json.visibility?.distance),
+      currentTime: str(json.currentTime),
+      isDaytime: typeof json.isDaytime === 'boolean' ? json.isDaytime : null,
       model: 'WeatherNext 3 (Google Maps Platform)',
-      isSimulatedFallback: false
+      locationKey: cacheKey
     };
 
-    weatherCache.set(cacheKey, {
-      data: liveConditions,
-      timestamp: Date.now()
-    });
-
+    weatherCache.set(cacheKey, { data: liveConditions, timestamp: Date.now() });
     return liveConditions;
   } catch (err) {
     console.error('[liveWeatherService] Fetch exception:', err);
-    return getFallbackWeather();
+    return null;
   }
-}
-
-/**
- * Fallback telemetry for offline resilience
- */
-function getFallbackWeather(): LiveWeatherConditions {
-  return {
-    temperatureC: 30.2,
-    feelsLikeC: 37.5,
-    dewPointC: 26.1,
-    humidityPercent: 78,
-    windSpeedKmh: 5,
-    windGustKmh: 7,
-    windDirectionCardinal: 'EAST_SOUTHEAST',
-    windDirectionDegrees: 107,
-    conditionText: 'Clear with periodic clouds',
-    conditionType: 'MOSTLY_CLEAR',
-    iconUri: 'https://maps.gstatic.com/weather/v1/mostly_clear',
-    cloudCoverPercent: 26,
-    precipitationProbability: 0,
-    thunderstormProbability: 0,
-    airPressureHpa: 1009.24,
-    visibilityKm: 16,
-    currentTime: new Date().toISOString(),
-    isDaytime: false,
-    model: 'WeatherNext 3 (Google Maps Platform)',
-    isSimulatedFallback: true
-  };
 }

@@ -1505,6 +1505,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         liveOutages={liveOutages}
         isLight={isLight}
         currentTimestep={currentTimestep}
+        liveWeather={liveWeather}
       />
     </div>
   );
