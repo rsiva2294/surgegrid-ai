@@ -13,6 +13,7 @@ Every rule, warning and action the app attributes to an official plan is listed 
 | TANGEDCO DMP 2017 | TANGEDCO Disaster Management Plan (Version 3.0) (2017) | Tamil Nadu Generation and Distribution Corporation Limited |
 | TN SDMP 2023 | State Disaster Management Plan 2023 (Volume II) (2023) | Tamil Nadu State Disaster Management Authority |
 | GCC City DMP 2023 | City Disaster Management Perspective Plan 2023 (2023) | Greater Chennai Corporation |
+| GCC City DMP 2024 | City Disaster Management Perspective Plan 2024 (2024, 806 pages) | Greater Chennai Corporation (later edition of the same plan; see "GCC City DMP 2024" below) |
 
 ## What the plans do not contain
 We searched the full text of all four plans and found none of the following, so the app must not present them as official: a wind-speed level at which overhead lines must be switched off; a surge or flood depth that triggers substation shutdown; a plinth height; restoration times of 6, 12, 24 or 48 hours; a five-stage restoration protocol; counts of patrol gangs, cranes or pumps; pump sizes; a megger insulation limit. Where the plans speak on these topics they say switch off "if required" (see *Switching supply off*).
@@ -74,6 +75,48 @@ We matched 18 stations (17 inside our cells) to the report's daily lists by exac
 - 5 Dec, 10 stations: medians 170 against 114.5; ratio median 0.59 (0.38 to 1.05).
 Values were read with `scripts/build_gauge_points.py`, which ends a station's group at the number followed by "each" or ";" (IMD chains several stations after one "each"); an earlier hand-written parse mis-assigned three values (Ayanavaram 4 Dec, Thamaraipakkam 5 Dec, Tambaram 5 Dec) and was replaced, and every matched value was re-checked against the report text. "Ambattur" is IMD's state-network station; the GCC's "Zone 07 Ambattur" is a different station and is not used. The same script writes the layer's data file `public/data/scenarios/michaung2023_gauges.json`.
 Example: Avadi 280 mm on 4 Dec against 111 mm in its cell; Poonamallee 340 mm on 5 Dec against 130 mm. The satellite estimate reads below the gauges on every day; the app says so and does not rescale it.
+
+## GCC City DMP 2024: what we use from the later edition
+"City Disaster Management Perspective Plan 2024", Greater Chennai Corporation, 806 PDF pages (file `chennai Gcc ddmp 2024.pdf`, not stored in the repo; checksum below). The text has a broken font map (ligatures such as "fl" and "ffi" come out as CJK characters), so it is repaired before comparing.
+
+**1. Our GCC quotes are unchanged in the 2024 edition.** All 8 GCC quotes in the bank appear word for word in it, about two PDF pages later than in the 2023 edition (`python scripts/verify_gcc_quotes_2024.py` re-checks this): cut-off during flooding 165 -> 167; check transformers and pillar boxes 165 -> 167; run DG set at relief campus 156 -> 158; generators at sewage pumping stations 164 -> 166; rectify low-lying cables 156 -> 158; Vardah fallen trees 54 -> 55; TANGEDCO role 163 -> 165; average elevation 5 -> 5 (and 790). The quote bank keeps the 2023 page numbers; the 2024 pages are listed here.
+
+**2. Inundation registers by ward** (`public/data/gcc_plan_2024.json`, built by `scripts/build_gcc_plan_2024.py`). The plan lists named streets with a depth class per north-east monsoon: very high (above 5 ft), high (3 to 5 ft), medium (2 to 3 ft), low (under 2 ft). Each register was read with a table-aware parser and equals the plan's own printed total, row count and class split (the script stops if not):
+
+| Register | Locations | Very high / high / medium / low | PDF pages |
+|---|---|---|---|
+| 2015 | 306 | 37 / 84 / 1 / 184 | 62-74 |
+| 2017 | 205 | 0 / 0 / 23 / 182 | 76-82 |
+| 2018 | 53 | 0 / 0 / 1 / 52 | 84-85 |
+| 2019 | 19 | 0 / 0 / 0 / 19 | 87 |
+| 2020 | 23 | 0 / 0 / 0 / 23 | 89-90 |
+| 2021 | 561 | 0 / 18 / 61 / 482 | 92-106 |
+| 2022 | 37 | 0 / 1 / 8 / 28 | 108-109 |
+
+There is no 2016 register. The 2022 register is headed "Depth of Inundation During Monsoon -2021" in the plan, but its 37 rows equal the plan's 2022 summary table (page 107), so it is used as 2022. A location listed under several wards counts once in each (7 of the 1,204 rows), and one 2017 row has no ward and is not counted for any ward. The plan gives street names and ward numbers, not coordinates, so the app shows these as facts about a ward ("2015 register: 5 locations in this ward, deepest above 5 ft"), never as points. 178 of our 286 substations have a GCC ward; 53 of them are in wards with a 2015 location at 3 ft or deeper.
+
+**3. The 2023 north-east monsoon list** (page 110): 35 inundated locations in 30 wards, by zone and ward, with no depth classes. The plan does not say how many were caused by Michaung, so the app words it as "north-east monsoon 2023 (includes Michaung)".
+
+**4. Relief centres: capacity and facilities.** Each zone has a table (ward, capacity, name and address, streets to be shifted, drinking water, toilets, cooking, officers) and its own statement ("There are N relief centres to a total capacity of C"). The tables come in several layouts (rotated text, merged cells, extra columns), and our parse of the tables and the plan's statements differ in 12 of 15 zones, in both directions (zone 2: table capacity 3,440 against 3,040 stated; zone 4: 11 centres in the table against 18 stated; zone 15: 11 against 10 and 2,400 against 8,850). The plan disagrees with itself, so the app shows capacity and facilities only for the zones where the parsed table equals the statement: zones 1, 9 and 11 (25 centres, capacity 9,250). The other zones and every difference are recorded in the data file (`reliefZoneDiscrepancies`). The plan's statements add up to 169 relief centres and 73,920 capacity; our OpenCity list has 162 centres in 120 wards.
+
+**5. Michaung in the 2024 plan** (section 4.3, page 120, two paragraphs and photos): "moved very close to Chennai before Landing Andhra Pradesh Coast caused continuous rainfall for 24 hrs with wind speed of about 80kmph"; "In Perungudi, Velachery, Shozinganallur, Kodambakkam, Valasaravakkam, Thiru.vi.kaNagar recorded historically highest rainfall (78 cm, 47cm etc., respectively)". The 78 cm gives no period and does not match IMD's gauge lists (Perungudi's highest 24-hour reading was 29 cm on 4 December), so the app does not use it. The 80 km/h fits IMD's gusts. Also in the plan for the 2023 monsoon: boats stationed for the 2023 flood (page 216), NDRF stationing (706), 230 trees and branches fallen in the Adyar zone (703).
+
+**6. Not used:** a TANGEDCO Junior Engineer contact per ward (200 ward tables; not compared with the contacts the app already shows), zone centroids (15 latitude and longitude pairs), park, playground and pump-set tables.
+
+## Source files kept outside the repo (checksums)
+These are the files behind the ward records, the IMD material and the gauge points. They are not in git (the 2024 plan is 56 MB); keep the originals, and use the checksums to confirm a re-downloaded copy is the same file.
+
+| File | Bytes | SHA-256 | Used for |
+|---|---|---|---|
+| `chennai Gcc ddmp 2024.pdf` (GCC City DMP 2024) | 56,100,653 | `d8540435c42ff64f5fe5c26698b9ecc0cf73d65fc598df76a984c5f8441c0920` | ward inundation registers, 2023 list, relief-centre table, quote check |
+| `26_0580dd_Michaung Report_Final_Sir.pdf` (IMD final report) | 3,442,876 | `c3d86a513eeed97888f8ec77d903df26848a925d27f11b47a6b6838c7b1df51d` | best track, gauge lists, observed wind, landfall |
+| `rain guage statiosn.pdf` (Tamil Nadu gauge list, as on 2026-09-30) | 2,206,622 | `f1b00b8622c0fd1852e0500ede3cb2d642bb9bf991c6e143cea4fe382c6bd40b` | gauge coordinates |
+| `20231203_pr_2669.pdf` (IMD press release, 3 Dec) | 1,544,247 | `63dc7e217b83e9386af26fcfdde9d688ca67524a6ceb6cd5128ca98c5c538fa7` | "IMD at the time" quotes |
+| `20231204_pr_2671.pdf` (Press Release 4, 4 Dec) | 2,985,651 | `b17af3490e023064d85db9972b681dae606d5fdcda3c1263770eba51f39404ef` | "IMD at the time" quotes |
+| `20231205_pr_2674.pdf` (Press Release 5, 5 Dec) | 3,094,181 | `d6c193cee145630987fe9315294260519a1c24f70bab3c6755c8b0b6889f4754` | "IMD at the time" quotes |
+| `20231206_pr_2677.pdf` (Press Release 6, 6 Dec) | 515,841 | `b5b0463753053ab2ff861a12f0623211d9ac0eb1cc1995856bb83d7f3230d2a2` | later-bulletin reference |
+
+The four IMD bulletins are at `https://internal.imd.gov.in/press_release/<file>`. Not yet recorded here: the OpenCity flood KML files in `surgegrid-ai-v2/data/external` (their checksums and download dates were never noted).
 
 ## IMD four-stage warning system
 TN SDMP 2023, Four Stage Warning System, PDF p. 148 (printed p. 146).
