@@ -30,7 +30,19 @@ These rules govern agent behavior, interaction patterns, and execution disciplin
 
 ---
 
-## 4. Verification & Milestone Communication
+## 4. Commit First, Do Not Deploy Without Explicit Request
+- **Commit Upon Completion**: Once changes pass compilation, typecheck, and local testing, immediately commit the changes with a clean, descriptive message.
+- **Never Deploy Unsolicited**: Do NOT deploy to hosting, production, or remote environments (e.g. `firebase deploy`) unless the user explicitly requests deployment (e.g., *"deploy to hosting"*, *"deploy this"*).
+
+---
+
+## 5. Maintain Project Changelog
+- **Keep Changelog Updated**: Always document completed milestones, architectural changes, deployments, and test results in `docs/PROJECT_LOG.md`.
+- **Maintain Chronological History**: Number each log item sequentially, note the files touched and commit hashes, and keep the log synchronized with every milestone.
+
+---
+
+## 6. Verification & Milestone Communication
 - **Compile & Typecheck**: Ensure production build (`npm run build` or `flutter analyze`) compiles cleanly with zero errors before reporting completion.
-- **Concise Reporting**: Report exactly what was completed, key file paths, and live status.
+- **Concise Reporting**: Report exactly what was completed, key file paths, and status.
 - **Wait for Direction**: Pause after each milestone and ask the user for confirmation and next steps.

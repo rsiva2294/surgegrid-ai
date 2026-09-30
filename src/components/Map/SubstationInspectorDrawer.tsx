@@ -24,6 +24,7 @@ import type { ConnectedGridNode } from './TnebGridMap';
 import { MunicipalDisasterCard } from './MunicipalDisasterCard';
 import { FeederCardItem } from './FeederCardItem';
 import { GridJargonCheatSheet } from './GridJargonCheatSheet';
+import { getSubstationCircuitPolicySummary } from './disasterUtils';
 import { SubstationHealthCard } from './SubstationHealthCard';
 import { SubstationCopilotCard } from './SubstationCopilotCard';
 import { SubstationLiveBriefCard } from './SubstationLiveBriefCard';
@@ -210,6 +211,12 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
     if (!selectedSubstation || !selectedSubstation.feeders) return 0;
     return selectedSubstation.feeders.filter(f => Boolean(f.lifelineCategory)).length;
   }, [selectedSubstation]);
+
+  const circuitPolicy = useMemo(() => {
+    return disasterScenario !== 'NORMAL' && disasterScenario !== 'LIVE' && selectedSubstation?.feeders
+      ? getSubstationCircuitPolicySummary(selectedSubstation.feeders)
+      : null;
+  }, [selectedSubstation, disasterScenario]);
 
   const filteredFeeders = useMemo(() => {
     if (!selectedSubstation || !selectedSubstation.feeders) return [];
@@ -645,6 +652,124 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         <GridJargonCheatSheet onClose={() => setShowJargonGuide(false)} isLight={isLight} />
                       )}
                     </div>
+
+                    {/* Simulation: Substation-level Distribution Circuit Policy Banner */}
+                    {circuitPolicy && (
+                      <div className="shrink-0 mb-1">
+                        {circuitPolicy.isAllUnderground ? (
+                          <div
+                            className={`p-2.5 rounded-xl border text-[12.5px] leading-relaxed flex items-start gap-2.5 ${
+                              isLight
+                                ? 'bg-emerald-50/80 border-emerald-300 text-emerald-950'
+                                : 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+                            }`}
+                          >
+                            <span className="text-base shrink-0 mt-0.5">⚡</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-[13px] flex items-center justify-between">
+                                <span>All {circuitPolicy.totalCount} Circuits Underground</span>
+                                <span className="text-[11px] font-mono px-1.5 py-0.5 rounded font-bold bg-emerald-500/20 border border-emerald-500/30">
+                                  100% UG
+                                </span>
+                              </div>
+                              <p className="mt-1 opacity-90 text-[12px]">
+                                Underground cable network, built to the national disaster management recommendation for cyclone resilience:
+                              </p>
+                              {circuitPolicy.ugQuote?.quote && (
+                                <blockquote className="mt-1 italic border-l-2 border-emerald-500/50 pl-2 text-[12px] opacity-90">
+                                  &ldquo;{circuitPolicy.ugQuote.quote}&rdquo;
+                                  {circuitPolicy.ugQuote.citation && (
+                                    <span className="block not-italic text-[11px] font-mono opacity-80 mt-0.5">
+                                      {circuitPolicy.ugQuote.citation}
+                                    </span>
+                                  )}
+                                </blockquote>
+                              )}
+                            </div>
+                          </div>
+                        ) : circuitPolicy.isAllOverheadOrMixed ? (
+                          <div
+                            className={`p-2.5 rounded-xl border text-[12.5px] leading-relaxed flex items-start gap-2.5 ${
+                              isLight
+                                ? 'bg-amber-50/80 border-amber-300 text-amber-950'
+                                : 'bg-amber-950/40 border-amber-500/40 text-amber-200'
+                            }`}
+                          >
+                            <span className="text-base shrink-0 mt-0.5">⚠️</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-[13px] flex items-center justify-between">
+                                <span>All {circuitPolicy.totalCount} Circuits Overhead / Mixed</span>
+                                <span className="text-[11px] font-mono px-1.5 py-0.5 rounded font-bold bg-amber-500/20 border border-amber-500/30">
+                                  OPERATOR DECISION
+                                </span>
+                              </div>
+                              <p className="mt-1 opacity-90 text-[12px]">
+                                Overhead distribution lines. Official disaster plans leave switching supply off to operator discretion:
+                              </p>
+                              {circuitPolicy.ohQuote?.quote && (
+                                <blockquote className="mt-1 italic border-l-2 border-amber-500/50 pl-2 text-[12px] opacity-90">
+                                  &ldquo;{circuitPolicy.ohQuote.quote}&rdquo;
+                                  {circuitPolicy.ohQuote.citation && (
+                                    <span className="block not-italic text-[11px] font-mono opacity-80 mt-0.5">
+                                      {circuitPolicy.ohQuote.citation}
+                                    </span>
+                                  )}
+                                </blockquote>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={`p-2.5 rounded-xl border text-[12.5px] leading-relaxed ${
+                              isLight
+                                ? 'bg-slate-50 border-slate-300 text-slate-900'
+                                : 'bg-slate-900/60 border-slate-700 text-slate-200'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between font-bold text-[13px] mb-1.5 pb-1 border-b border-current/15">
+                              <span>Circuit Policy Summary ({circuitPolicy.totalCount} Circuits)</span>
+                              <span className="text-[11px] font-mono opacity-80">
+                                {circuitPolicy.ugCount} UG · {circuitPolicy.ohCount} Mixed/OH
+                              </span>
+                            </div>
+                            <div className="space-y-1.5">
+                              <div className="flex items-start gap-2">
+                                <span className="text-sm shrink-0 mt-0.5">⚡</span>
+                                <div className="flex-1 min-w-0 text-[12px]">
+                                  <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                                    {circuitPolicy.ugCount} Underground:{' '}
+                                  </span>
+                                  <span className="opacity-90">
+                                    MoP cyclone-hardening recommendation (&ldquo;{circuitPolicy.ugQuote?.quote}&rdquo;{' '}
+                                    &mdash;{' '}
+                                    <span className="font-mono text-[11px] opacity-80">
+                                      {circuitPolicy.ugQuote?.citation}
+                                    </span>
+                                    ).
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-start gap-2">
+                                <span className="text-sm shrink-0 mt-0.5">⚠️</span>
+                                <div className="flex-1 min-w-0 text-[12px]">
+                                  <span className="font-bold text-amber-700 dark:text-amber-300">
+                                    {circuitPolicy.ohCount} Overhead / Mixed:{' '}
+                                  </span>
+                                  <span className="opacity-90">
+                                    De-energization left to operator discretion during floods (&ldquo;
+                                    {circuitPolicy.ohQuote?.quote}&rdquo; &mdash;{' '}
+                                    <span className="font-mono text-[11px] opacity-80">
+                                      {circuitPolicy.ohQuote?.citation}
+                                    </span>
+                                    ).
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Feeders Scroll List */}
                     <div className="flex-1 overflow-y-auto space-y-1.5 pr-1 min-h-0">

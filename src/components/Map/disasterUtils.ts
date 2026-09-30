@@ -109,3 +109,64 @@ export function getFeederDisasterStatus(
     icon: isLowLying ? '🌊' : isOverhead ? '⚠️' : '⚡'
   };
 }
+
+export interface SubstationCircuitPolicySummary {
+  totalCount: number;
+  ugCount: number;
+  ohCount: number;
+  isAllUnderground: boolean;
+  isAllOverheadOrMixed: boolean;
+  isSplit: boolean;
+  ugQuote: FeederDisasterDetail | null;
+  ohQuote: FeederDisasterDetail | null;
+}
+
+/**
+ * Computes a single substation-level summary of distribution circuits by configuration (Underground vs. Overhead/Mixed),
+ * along with the official disaster-plan quotes (MoP 2021 & TANGEDCO 2017).
+ * Avoids repeating identical blockquotes on every feeder card.
+ */
+export function getSubstationCircuitPolicySummary(
+  feeders: FeederDetail[]
+): SubstationCircuitPolicySummary | null {
+  if (!feeders || feeders.length === 0) return null;
+
+  let ugCount = 0;
+  let ohCount = 0;
+
+  for (const f of feeders) {
+    const cfg = (f.config || '').toUpperCase();
+    const isOverhead = cfg.includes('OH') || cfg.includes('OVERHEAD') || cfg.includes('MIXED');
+    if (isOverhead) {
+      ohCount++;
+    } else {
+      ugCount++;
+    }
+  }
+
+  const totalCount = feeders.length;
+  const isAllUnderground = ugCount === totalCount;
+  const isAllOverheadOrMixed = ohCount === totalCount;
+  const isSplit = ugCount > 0 && ohCount > 0;
+
+  const ugQuote: FeederDisasterDetail = {
+    text: 'Underground feeder, the option the national plan recommends in cyclone-prone areas.',
+    ...(getQuote('mop-underground-in-cyclone-areas') ?? {})
+  };
+
+  const ohQuote: FeederDisasterDetail = {
+    text: 'Overhead or mixed feeder. The plans leave switching supply off to the operator.',
+    ...(getQuote('tangedco-oh-lines-out-of-service') ?? {})
+  };
+
+  return {
+    totalCount,
+    ugCount,
+    ohCount,
+    isAllUnderground,
+    isAllOverheadOrMixed,
+    isSplit,
+    ugQuote,
+    ohQuote
+  };
+}

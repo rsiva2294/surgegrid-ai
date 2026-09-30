@@ -2,7 +2,6 @@ import React from 'react';
 import type { FeederDetail, TnebSubstation } from '../../types/tneb';
 import type { DisasterScenario } from './DisasterCockpitBar';
 import { getFeederLifelineBadge } from './mapIcons';
-import { getFeederDisasterStatus } from './disasterUtils';
 import { getQuote } from '../../data/officialSources';
 
 interface FeederCardItemProps {
@@ -17,7 +16,7 @@ interface FeederCardItemProps {
 export const FeederCardItem: React.FC<FeederCardItemProps> = ({
   feeder: f,
   isFeederActive,
-  selectedSubstation,
+  selectedSubstation: _selectedSubstation,
   disasterScenario,
   isLight,
   onSelectFeeder
@@ -95,9 +94,13 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
           </span>
           <span
             className={`px-2 py-0.5 rounded-md text-xs font-mono font-semibold cursor-help ${
-              isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300'
+              disasterScenario !== 'NORMAL' && disasterScenario !== 'LIVE'
+                ? f.config === 'UG'
+                  ? (isLight ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/40')
+                  : (isLight ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-amber-950/60 text-amber-300 border border-amber-500/40')
+                : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
             }`}
-            title={f.config === 'UG' ? 'Underground cable. The national power-sector plan recommends underground cable in cyclone-prone areas (MoP DMP 2021, p. 111).' : 'Overhead or mixed line'}
+            title={f.config === 'UG' ? 'Underground cable. The national power-sector plan recommends underground cable in cyclone-prone areas (MoP DMP 2021, p. 111).' : 'Overhead or mixed line. Disaster plans leave switching supply off to operator discretion (TANGEDCO DMP 2017, p. 73).'}
           >
             {f.config}
           </span>
@@ -174,32 +177,6 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
         </div>
       )}
 
-      {/* Scenario flags: facts from our data plus the relevant official quote (no trip states) */}
-      {disasterScenario !== 'NORMAL' && (() => {
-        const dStatus = getFeederDisasterStatus(f, selectedSubstation, disasterScenario, isLight);
-        return (
-          <div className={`mt-1.5 p-2 rounded-xl text-[12.5px] leading-relaxed border flex items-start gap-2 ${dStatus.badgeBg} ${dStatus.badgeTextCol} ${dStatus.badgeBorder}`}>
-            <span className="shrink-0 mt-0.5">{dStatus.icon}</span>
-            <div className="min-w-0 flex-1">
-              <div className="font-bold">
-                <span>{dStatus.badgeText}</span>
-              </div>
-              {dStatus.details.map((d, i) => (
-                <div key={i} className="mt-1 font-sans leading-relaxed">
-                  <p className="opacity-90">{d.text}</p>
-                  {d.quote && (
-                    <blockquote className="mt-0.5 italic border-l-2 border-current/30 pl-2 opacity-90">
-                      &ldquo;{d.quote}&rdquo;
-                      {d.citation && <span className="block not-italic text-xs opacity-80">{d.citation}</span>}
-                    </blockquote>
-                  )}
-                  {!d.quote && d.citation && <span className="block text-xs opacity-80">{d.citation}</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
 
       {/* Row 3: Consumers, DTRs, Length & Map Action */}
       <div className={`flex items-center justify-between text-xs font-mono mt-1.5 ${
