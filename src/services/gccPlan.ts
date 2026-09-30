@@ -88,10 +88,12 @@ const ORDER: DepthClass[] = ['veryHigh', 'high', 'medium', 'low'];
 
 export interface WardFacts {
   /** The 2015 register for the ward, or null when the ward has no location in it. */
-  reg2015: { n: number; deepest: DepthClass; deepNames: string[] } | null;
+  reg2015: { n: number; deepest: DepthClass; deepNames: string[]; counts: Record<DepthClass, number> } | null;
   /** Register years (of those in the plan) in which the ward has at least one location. */
   yearsListed: string[];
   registerYears: number;
+  /** Every register year in the plan, sorted. */
+  allYears: string[];
   in2023: string[];
   relief: PlanReliefCentre[];
 }
@@ -103,9 +105,10 @@ export function wardFacts(data: GccPlanData | null, ward: number | string | unde
   const y15 = w.inundation['2015'];
   const deepest = y15 ? ORDER.find(c => y15[c] > 0) : undefined;
   return {
-    reg2015: y15 && deepest ? { n: y15.n, deepest, deepNames: y15.deep } : null,
+    reg2015: y15 && deepest ? { n: y15.n, deepest, deepNames: y15.deep, counts: { veryHigh: y15.veryHigh, high: y15.high, medium: y15.medium, low: y15.low } } : null,
     yearsListed: Object.keys(w.inundation).sort(),
     registerYears: Object.keys(data.registers).length,
+    allYears: Object.keys(data.registers).sort(),
     in2023: w.in2023,
     relief: w.relief,
   };
