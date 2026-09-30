@@ -37,11 +37,12 @@ import {
   fetchScenarioData,
   isSimulationScenario,
   SCENARIO_MILESTONES,
-  SCENARIO_START_HOUR,
+  STEP_DWELL_MS,
   type ScenarioData,
   type ScenarioId
 } from '../../services/scenarioService';
-import { getDirectiveForTimestep, fetchLiveGeminiDirective, type GeminiSopDirective } from '../../services/geminiSopService';
+import { getDirectiveForTimestep, fetchLiveGeminiDirective, resolvePhase, type GeminiSopDirective } from '../../services/geminiSopService';
+import type { TimelineStep } from './DisasterCockpitBar';
 
 // Heavy panels load on demand so the map can appear first. They are pre-loaded when the browser is idle.
 const LazyDrawer = lazy(() => import('./SubstationInspectorDrawer').then(m => ({ default: m.SubstationInspectorDrawer })));
@@ -156,12 +157,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   // Disaster Simulation & Timeline State
   const [simulationHour, setSimulationHour] = useState<number>(-24);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  // Playback speed multiplier: the hindcasts have 120-144 hourly steps, so faster speeds keep a demo short.
-  const [playbackSpeed, setPlaybackSpeed] = useState<number>(4);
-  const cyclePlaybackSpeed = () => setPlaybackSpeed(sp => (sp >= 8 ? 1 : sp * 2));
   const [scenarioData, setScenarioData] = useState<ScenarioData | null>(null);
   const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
-  const seenMilestonesRef = useRef<Set<number>>(new Set());
 
   // Pre-load the drawer, directive dialog and roster in the background once the browser is idle.
   useEffect(() => {
@@ -183,8 +180,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const id = disasterScenario;
       fetchScenarioData(id).then(data => {
         setScenarioData(data);
-        setSimulationHour(SCENARIO_START_HOUR[id]);
-        seenMilestonesRef.current.clear();
+        setSimulationHour(SCENARIO_MILESTONES[id][0].hour);
       });
     } else {
       setScenarioData(null);
@@ -193,36 +189,32 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     }
   }, [disasterScenario]);
 
-  // Scenario Playback Loop (Auto-advances through timesteps when playing)
+  // Scenario Playback: stay on each of the five steps for STEP_DWELL_MS, then move on; stop after the last one.
   useEffect(() => {
-    if (!isPlaying || !scenarioData || scenarioData.timesteps.length === 0) return;
+    if (!isPlaying || !isSimulationScenario(disasterScenario)) return;
+    const stepHours = SCENARIO_MILESTONES[disasterScenario].map(m => m.hour);
 
-    const interval = setInterval(() => {
-      setSimulationHour(current => {
-        const hours = scenarioData.timesteps.map(t => t.timestep_hour);
-        const currentIndex = hours.indexOf(current);
-        if (currentIndex === -1 || currentIndex >= hours.length - 1) {
-          setIsPlaying(false);
-          return current;
-        }
-        return hours[currentIndex + 1];
-      });
-    }, 2200 / playbackSpeed);
+    const timer = setTimeout(() => {
+      const idx = stepHours.indexOf(simulationHour);
+      if (idx >= 0 && idx < stepHours.length - 1) {
+        setSimulationHour(stepHours[idx + 1]);
+      } else {
+        setIsPlaying(false);
+      }
+    }, STEP_DWELL_MS);
 
-    return () => clearInterval(interval);
-  }, [isPlaying, scenarioData, playbackSpeed]);
+    return () => clearTimeout(timer);
+  }, [isPlaying, simulationHour, disasterScenario]);
 
-  // Autonomous Gemini Directive Pop-up at crucial milestone hours
-  useEffect(() => {
-    if (!isSimulationScenario(disasterScenario)) return;
-
-    const milestoneHours = SCENARIO_MILESTONES[disasterScenario].map(m => m.hour);
-    if (milestoneHours.includes(simulationHour) && !seenMilestonesRef.current.has(simulationHour)) {
-      seenMilestonesRef.current.add(simulationHour);
-      setIsGeminiSopOpen(true);
-      setIsPlaying(false); // Proactively pause so the user can inspect the directive checklist
+  // Play from the first step when the last step was reached (or the hour is not one of the steps).
+  const togglePlay = () => {
+    if (!isPlaying && isSimulationScenario(disasterScenario)) {
+      const stepHours = SCENARIO_MILESTONES[disasterScenario].map(m => m.hour);
+      const idx = stepHours.indexOf(simulationHour);
+      if (idx === -1 || idx === stepHours.length - 1) setSimulationHour(stepHours[0]);
     }
-  }, [simulationHour, disasterScenario]);
+    setIsPlaying(p => !p);
+  };
 
   const currentTimestep = useMemo(() => {
     if (!scenarioData || disasterScenario === 'NORMAL' || disasterScenario === 'LIVE') return null;
@@ -242,9 +234,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       return;
     }
 
-    // No Gemini call before the grid has loaded,  and wait briefly after the hour stops changing,
-    // so scrubbing or fast playback does not fire a request per step.
-    if (isPlaying || substations.length === 0) return;
+    // No Gemini call before the grid has loaded, and wait briefly after the step changes so clicking through
+    // the steps quickly does not fire a request per click. Playback asks for each step as it arrives.
+    if (substations.length === 0) return;
 
     let isSubscribed = true;
     const timer = setTimeout(() => {
@@ -263,7 +255,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       isSubscribed = false;
       clearTimeout(timer);
     };
-  }, [currentTimestep, disasterScenario, substations, liveOutages, isPlaying]);
+  }, [currentTimestep, disasterScenario, substations, liveOutages]);
 
   // Use the Gemini-worded directive only if it belongs to the hour on screen.
   const matchingLiveDirective =
@@ -275,10 +267,14 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       : null;
   const activeDirective = matchingLiveDirective || baseDirective;
 
-  const availableHours = useMemo(() => {
-    if (!scenarioData) return [-48, -24, -12, 0, 6, 12];
-    return scenarioData.timesteps.map(t => t.timestep_hour);
-  }, [scenarioData]);
+  // The five timeline steps, each with the phase our own rule gives that hour (not a hard-coded colour).
+  const timelineSteps = useMemo<TimelineStep[]>(() => {
+    if (!scenarioData || !isSimulationScenario(disasterScenario)) return [];
+    return SCENARIO_MILESTONES[disasterScenario].flatMap(m => {
+      const ts = scenarioData.timesteps.find(t => t.timestep_hour === m.hour);
+      return ts ? [{ ...m, phase: resolvePhase(ts) }] : [];
+    });
+  }, [scenarioData, disasterScenario]);
 
   // Left control panel (Search + Layers + Triage) width state & persistence (default 360px, min 280px, max 580px / 45vw)
   const DEFAULT_LEFT_PANEL_WIDTH = 360;
@@ -1364,13 +1360,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         simulationHour={simulationHour}
         setSimulationHour={setSimulationHour}
         isPlaying={isPlaying}
-        onTogglePlay={() => setIsPlaying(p => !p)}
+        onTogglePlay={togglePlay}
         currentTimestep={currentTimestep}
         activeDirective={activeDirective}
         onOpenGeminiSop={() => setIsGeminiSopOpen(prev => !prev)}
-        availableHours={availableHours}
-        playbackSpeed={playbackSpeed}
-        onCyclePlaybackSpeed={cyclePlaybackSpeed}
+        steps={timelineSteps}
       />
 
       {/* Floating AI Directive dialog (official-quote SOP) */}
@@ -1379,7 +1373,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         isOpen={isGeminiSopOpen}
         onClose={() => setIsGeminiSopOpen(false)}
         isPlaying={isPlaying}
-        onTogglePlay={() => setIsPlaying(p => !p)}
+        onTogglePlay={togglePlay}
         isLight={isLight}
         onSelectSubstation={(name) => {
           const query = name.toUpperCase().trim();

@@ -16,13 +16,6 @@ export const SCENARIO_FILES: Record<SimulationScenarioId, string> = {
   MONSOON_2020: 'monsoon2020.json',
 };
 
-/** Hour the timeline starts at when a scenario is opened. */
-export const SCENARIO_START_HOUR: Record<SimulationScenarioId, number> = {
-  MICHAUNG_2023: -24,
-  FLOODS_2015: -48,
-  MONSOON_2020: -24,
-};
-
 export function isSimulationScenario(id: string): id is SimulationScenarioId {
   return Object.prototype.hasOwnProperty.call(SCENARIO_FILES, id);
 }
@@ -51,27 +44,39 @@ export interface ScenarioData {
 export interface MilestoneInfo {
   hour: number;
   label: string;
-  phase: 'WATCH' | 'LANDFALL_PEAK' | 'RESTORATION';
   description: string;
 }
 
-// T-0h is the hour of peak rain in each hindcast (not a landfall time). Descriptions state only what the data shows.
+/** How long playback stays on each step before moving to the next. */
+export const STEP_DWELL_MS = 6000;
+
+// The five steps the timeline plays through: two before the peak-rain hour, the peak, two after.
+// T-0h is the hour of peak rain in each hindcast (not a landfall time). Each hour exists in the scenario file.
+// The last step is the first hour where rain stays below 0.1 mm/h for six hours (Michaung, 2020 spell), or the last
+// hour of the data (2015 floods, where rain never drops below 0.1 mm/h after the peak). Descriptions state only what
+// the data shows. The phase of each step comes from `resolvePhase`, not from this list.
 export const SCENARIO_MILESTONES: Record<ScenarioId, MilestoneInfo[]> = {
   LIVE: [],
   MICHAUNG_2023: [
-    { hour: -24, label: 'T-24h', phase: 'WATCH', description: '24 hours before the peak-rain hour' },
-    { hour: 0, label: 'T-0h Peak rain', phase: 'LANDFALL_PEAK', description: 'Peak-rain hour of the hindcast' },
-    { hour: 12, label: 'T+12h', phase: 'RESTORATION', description: '12 hours after the peak-rain hour' },
+    { hour: -24, label: 'T-24h', description: '24 hours before the peak-rain hour' },
+    { hour: -6, label: 'T-6h', description: '6 hours before the peak-rain hour' },
+    { hour: 0, label: 'T-0h Peak rain', description: 'Peak-rain hour of the hindcast' },
+    { hour: 12, label: 'T+12h', description: '12 hours after the peak-rain hour' },
+    { hour: 36, label: 'T+36h', description: 'From here hourly rain stays below 0.1 mm for six hours' },
   ],
   FLOODS_2015: [
-    { hour: -48, label: 'T-48h', phase: 'WATCH', description: '48 hours before the peak-rain hour' },
-    { hour: 0, label: 'T-0h Peak rain', phase: 'LANDFALL_PEAK', description: 'Peak-rain hour of the hindcast' },
-    { hour: 12, label: 'T+12h', phase: 'RESTORATION', description: '12 hours after the peak-rain hour' },
+    { hour: -48, label: 'T-48h', description: '48 hours before the peak-rain hour' },
+    { hour: -12, label: 'T-12h', description: '12 hours before the peak-rain hour' },
+    { hour: 0, label: 'T-0h Peak rain', description: 'Peak-rain hour of the hindcast' },
+    { hour: 12, label: 'T+12h', description: '12 hours after the peak-rain hour' },
+    { hour: 34, label: 'T+34h', description: 'Last hour of the hindcast data' },
   ],
   MONSOON_2020: [
-    { hour: -24, label: 'T-24h', phase: 'WATCH', description: '24 hours before the peak-rain hour' },
-    { hour: 0, label: 'T-0h Peak rain', phase: 'LANDFALL_PEAK', description: 'Peak-rain hour of the hindcast' },
-    { hour: 12, label: 'T+12h', phase: 'RESTORATION', description: '12 hours after the peak-rain hour' },
+    { hour: -24, label: 'T-24h', description: '24 hours before the peak-rain hour' },
+    { hour: -6, label: 'T-6h', description: '6 hours before the peak-rain hour' },
+    { hour: 0, label: 'T-0h Peak rain', description: 'Peak-rain hour of the hindcast' },
+    { hour: 12, label: 'T+12h', description: '12 hours after the peak-rain hour' },
+    { hour: 48, label: 'T+48h', description: 'From here hourly rain stays below 0.1 mm for six hours' },
   ],
 };
 
