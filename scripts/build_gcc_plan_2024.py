@@ -114,9 +114,11 @@ def read_relief(pdf):
         text = ' '.join((pdf.pages[start - 1].extract_text() or '').split())
         m = re.search(r'There (?:are|is) (\d+) relief centres? (?:to )?(?:a )?total capacity of (\d[\d,]*)', text, re.I)
         stated = (int(m.group(1)), int(m.group(2).replace(',', ''))) if m else None
-        rows, found_any = [], False
+        rows, serials, unverified, found_any = [], [], 0, False
         for p in range(start, end):
             page_rows = 0
+            ptext = ' '.join((pdf.pages[p - 1].extract_text() or '').split())
+            pdigits = re.sub(r'\D', '', ptext)
             for tb in pdf.pages[p - 1].extract_tables():
                 if not tb or len(tb[0]) < 9 or not re.search(r'yticapac|capacity', re.sub(r'[^a-z]', '', ' '.join((c or '') for c in tb[0]).lower())):
                     continue
@@ -124,6 +126,10 @@ def read_relief(pdf):
                     r = [(c or '').replace('\n', ' ').strip() for c in r]
                     if len(r) >= 8 and re.fullmatch(r'\d{1,3}', r[0]) and wards_of(r[1]) and re.fullmatch(r'\d{0,5}', r[2]):
                         yn = lambda c: True if re.match(r'yes', c, re.I) else (False if re.match(r'no', c, re.I) else None)
+                        phones = re.findall(r'\d{10}', re.sub(r'[\s-]', '', ' '.join(r[8:])))
+                        ok = all(ph in pdigits for ph in phones) and (not r[2] or r[2] in ptext) and all(str(w) in ptext for w in wards_of(r[1]))
+                        unverified += not ok
+                        serials.append(int(r[0]))
                         rows.append({'zone': z, 'wards': wards_of(r[1]), 'capacity': int(r[2]) if r[2] else None, 'name': clean(r[3]), 'streets': clean(r[4]),
                                      'water': yn(r[5]), 'toilets': yn(r[6]), 'cooking': yn(r[7])})
                         page_rows += 1
@@ -134,12 +140,15 @@ def read_relief(pdf):
         got = (len(rows), sum(r['capacity'] or 0 for r in rows))
         same = stated == got
         blanks = sum(1 for r in rows if r['capacity'] is None)
-        print(f"zone {z:2}: table {got[0]} centres, capacity {got[1]}{f' ({blanks} blank)' if blanks else ''}; zone statement {stated} -> {'same' if same else 'DIFFERENT (recorded)'}")
+        contiguous = bool(serials) and serials == list(range(1, len(serials) + 1))
+        ship = contiguous and unverified == 0
+        print(f"zone {z:2}: table {got[0]} centres, capacity {got[1]}{f' ({blanks} blank)' if blanks else ''}; zone statement {stated} -> "
+              f"{'same' if same else 'differs'}; serials {'1..n' if contiguous else 'GAP ' + str(serials)}; unverified rows {unverified}; {'SHIPPED' if ship else 'NOT shipped'}")
         if not same:
             checks.append({'zone': z, 'tableCentres': got[0], 'tableCapacity': got[1], 'blankCapacities': blanks,
                            'statedCentres': stated[0] if stated else None, 'statedCapacity': stated[1] if stated else None})
-        if same:
-            centres += rows      # shipped: the parsed table equals the plan's own statement for this zone
+        if ship:
+            centres += rows      # shipped: serials run 1..n and every row's ward, capacity and phones are on the page text too
     return centres, checks
 
 
@@ -170,7 +179,7 @@ def main():
         'note': 'Street names with ward numbers, not coordinates, so everything is per ward. A location listed under several wards counts once in each. Depth classes: veryHigh above 5 ft, high 3 to 5 ft, medium 2 to 3 ft, low under 2 ft.',
         'registers': {y: {'pages': f'{a}-{b}', 'locations': sum(t)} for y, (a, b, t) in REGISTERS.items()},
         'list2023': {'page': LIST_2023_PAGE, 'locations': len(l2023), 'label': '2023 north-east monsoon (no depth classes)'},
-        'reliefNote': "Capacity and facilities are shipped only for zones where the parsed relief-centre table equals the zone's own statement of centres and capacity; the plan's tables and statements disagree in the other zones and its tables come in several layouts.",
+        'reliefNote': "Capacity and facilities are the table rows as printed. A zone ships when its serial numbers run 1..n and every row's ward, capacity and phone numbers are also in the page text; the plan's own zone statements often differ from its tables (see reliefZoneDiscrepancies).",
         'reliefTotals': {'centres': len(relief), 'capacity': sum(r['capacity'] or 0 for r in relief), 'withoutCapacity': sum(1 for r in relief if r['capacity'] is None)},
         'reliefZoneDiscrepancies': relief_checks,
         'wards': {str(w): v for w, v in sorted(wards.items())},

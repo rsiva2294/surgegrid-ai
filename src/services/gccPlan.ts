@@ -6,7 +6,7 @@
  *  - the plan's inundation registers, "Depth of Inundation During Monsoon" 2015, 2017 to 2022: named streets with a depth
  *    class (above 5 ft, 3 to 5 ft, 2 to 3 ft, under 2 ft), counted per ward (each register matches the plan's printed total);
  *  - the 2023 north-east monsoon list of inundated locations (names, no depth classes);
- *  - relief-centre capacity and facilities, only for zones where our parse of the plan's table equals the plan's own statement.
+ *  - relief-centre capacity and facilities, as printed in the plan's table, for zones where the parse passed its row checks (12 of 15).
  * The plan gives street names and ward numbers, not coordinates, so these are facts about a ward, not about a point.
  */
 
