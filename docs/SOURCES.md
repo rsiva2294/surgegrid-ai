@@ -27,6 +27,22 @@ MoP Power-Sector DMP 2021, Table-4, PDF p. 73 (printed p. 72). Wind speed in km/
 | Extra Severe | 168-221 | Up to 10-15 km | Extensive |
 | Super | 222 and above | Up to 40 km | Catastrophic |
 
+## IMD rainfall classes
+IMD brochure "Heavy Rain Warning Services" (mausam.imd.gov.in, `imd_latest/contents/pdf/pubbrochures/Heavy Rainfall Warning Services.pdf`), page 2, "Classification of Rainfall". The table is headed "24 hour rainfall over a station ending at 0830 hours IST". Checked by reading the page image (the PDF has no text layer).
+
+| Class | 24-hour rain (mm) |
+|---|---|
+| Very Light Rain | Trace - 2.4 |
+| Light Rain | 2.5 - 15.5 |
+| Moderate Rain | 15.6 - 64.4 |
+| Heavy rain | 64.5 - 115.5 |
+| Very heavy rain | 115.6 - 204.4 |
+| Extremely heavy rain | 204.5 and above |
+
+**How the app uses it.** The class names and ranges are IMD's. The measurement is ours and differs from IMD's: a rolling 24-hour total (not the 0830 IST day) of NASA GPM IMERG satellite rain averaged over a ~11 km cell (not a rain-gauge station). The app says so wherever the classes appear.
+
+**Another IMD document disagrees.** IMD's older glossary (`imdpune.gov.in/Reports/glossary.pdf`, "Intensity of Rainfall") gives Heavy 64.5-124.4, Very Heavy 124.5-244.4 and Extremely Heavy 244.5 and above. We use the warning-services brochure above, which matches IMD's current warning bulletins.
+
 ## IMD four-stage warning system
 TN SDMP 2023, Four Stage Warning System, PDF p. 148 (printed p. 146).
 

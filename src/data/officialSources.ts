@@ -462,6 +462,39 @@ export function getImdCycloneClass(windKmh: number): ImdCycloneClass | null {
   return null;
 }
 
+/**
+ * IMD rainfall classes: "Classification of Rainfall", IMD brochure "Heavy Rain Warning Services", page 2.
+ * The table is headed "24 hour rainfall over a station ending at 0830 hours IST". We apply the same ranges to a
+ * rolling 24-hour total of satellite rain averaged over a ~11 km cell, so the class names are IMD's but the
+ * measurement is not IMD's (rolling window, cell average, satellite estimate). The lower classes are listed for legends.
+ * IMD's older glossary (imdpune.gov.in/Reports/glossary.pdf) lists different heavy / very heavy / extremely heavy
+ * limits (64.5-124.4, 124.5-244.4, 244.5 and above); we use the warning-services brochure.
+ */
+export interface ImdRainClass {
+  name: 'Very light' | 'Light' | 'Moderate' | 'Heavy' | 'Very heavy' | 'Extremely heavy';
+  /** Lowest 24-hour rain (mm) in the class. */
+  minMm: number;
+}
+
+export const IMD_RAIN_CLASSES: ImdRainClass[] = [
+  { name: 'Very light', minMm: 0 },
+  { name: 'Light', minMm: 2.5 },
+  { name: 'Moderate', minMm: 15.6 },
+  { name: 'Heavy', minMm: 64.5 },
+  { name: 'Very heavy', minMm: 115.6 },
+  { name: 'Extremely heavy', minMm: 204.5 },
+];
+
+export const IMD_RAIN_CITATION = 'IMD brochure "Heavy Rain Warning Services", p. 2, Classification of Rainfall (24 hour rainfall over a station ending at 0830 hours IST)';
+
+/** IMD rainfall class for a 24-hour rain total in mm. */
+export function getImdRainClass(mm24: number): ImdRainClass {
+  for (let i = IMD_RAIN_CLASSES.length - 1; i >= 0; i--) {
+    if (mm24 >= IMD_RAIN_CLASSES[i].minMm) return IMD_RAIN_CLASSES[i];
+  }
+  return IMD_RAIN_CLASSES[0];
+}
+
 /** IMD four-stage cyclone warning system, TN SDMP 2023 (PDF p. 148, printed p. 146). */
 export interface WarningStage {
   name: 'Pre-Cyclone Watch' | 'Cyclone Alert' | 'Cyclone Warning' | 'Post Landfall Outlook';
