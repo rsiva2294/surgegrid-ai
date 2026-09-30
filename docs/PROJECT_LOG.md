@@ -257,6 +257,8 @@
 
 58. **Flood exposure card redesigned (owner: the data was easy to ignore).** `FloodExposureCard.tsx` now goes in order of importance: a coloured headline (rose when the site is inside the 2015 extent and its ward had locations at 3 ft or deeper), then the ward's flood history (a strip of dots for the 2015 and 2017 to 2022 registers plus the 2023 list, and a stacked depth bar for the 2015 register), then three plain rows (yard elevation, inside the 2015 extent, hazard map rating), with stagnation points, coast distance and the sources footnote in a "More detail and sources" fold. `gccPlan.ts` `wardFacts` now also returns the 2015 depth counts and the register years. Checked in the browser in light and dark mode with a Low ward (ward 184); not yet seen with a deep-ward example or at phone width.
 
+59. **Pushed and deployed (owner asked).** `feature/spatial-simulation` pushed to origin (first push of the branch). `npm run build`, then `firebase deploy --only hosting:surgegrid --project namma-map-407ca` at commit bafe1a2 -> https://surgegrid.web.app. Live checks: home, `gcc_plan_2024.json`, `michaung2023.json` and `michaung2023_gauges.json` return 200; the Michaung button loads; the only console error is the known Gold Registry CORS block (item 31). Master not touched or merged. Not checked on the live site: phone width.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat
