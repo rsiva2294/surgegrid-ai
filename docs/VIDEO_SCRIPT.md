@@ -2,7 +2,7 @@
 
 Record the live site (https://surgegrid.web.app), desktop, 1080p, with a voiceover. Speak slowly. About 130 words per minute. Check each on-screen step against the live site before recording, since the numbers below come from the deck.
 
-Before recording: open the site fresh, dark or light theme (pick one), close other tabs, zoom the browser to 100%, and do one dry run so the Gemini note is cached.
+Before recording: open the site fresh, dark or light theme (pick one), close other tabs, zoom the browser to 100%.
 
 ---
 
@@ -31,11 +31,11 @@ Before recording: open the site fresh, dark or light theme (pick one), close oth
 **Say:** "Open a low-lying substation, ETL in Pallikaranai. The Overview has the flood facts: its yard elevation of minus one metre against Chennai's official two-metre average, and the official flood maps this spot falls in. On the Respond tab, the copilot's quoted actions come first. Below them: the Greater Chennai Corporation relief centres for the ward, a nearby substation with none of the flood flags as a backup, and the nearest sewerage pumping station, next to the power-sector plan's own line: restore pumping stations on a priority basis."
 
 ## 3:30 - 4:05  From plan to phone call
-**Screen:** Switch on Relief centres, click a diamond: capacity, amenities, officer contacts, Directions. Then open a section office: Call Section AE, Email, View on Google Maps, feeding substations, ward shelters.
-**Say:** "Every relief centre shows capacity, cooking, water and toilets, the officers to call, and directions. Open a section office, and the next step is one tap: call the section engineer, email the office, open it on the map. With the feeding substations and the ward's shelters beside it. From the plan's words to the person who acts."
+**Screen:** Switch on Relief centres, click a diamond: capacity, amenities, officer contacts, View Place (opens the map). Then open a section office: Call Section AE, Email, View on Google Maps, feeding substations, ward shelters.
+**Say:** "Every relief centre shows capacity, cooking, water and toilets, the officers to call, and a link to open the place on the map. Open a section office, and the next step is one tap: call the section engineer, email the office, open it on the map. With the feeding substations and the ward's shelters beside it. From the plan's words to the person who acts."
 
 ## 4:05 - 4:25  Gemini, with limits
-**Screen:** Slide 7, or the Directive with a Gemini note visible.
+**Screen:** Slide 7. (The Directive at the peak step showed no Gemini note in the dry run, so do not rely on it.)
 **Say:** "Gemini 2.5 Flash on Google Cloud picks the names and writes one short note. It never writes or changes a quote. The answer format is fixed, names are filtered to our lists, and a note with a number that was not in the prompt is thrown away. There is no API key in the app."
 
 ## 4:25 - 4:40  Close
