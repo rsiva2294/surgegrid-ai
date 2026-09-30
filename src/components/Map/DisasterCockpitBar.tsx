@@ -44,6 +44,8 @@ export interface DisasterCockpitBarProps {
   activeDirective?: GeminiSopDirective | null;
   onOpenGeminiSop?: () => void;
   steps?: TimelineStep[];
+  /** Extra content shown under the timeline, inside the draggable stack. */
+  footer?: React.ReactNode;
 }
 
 export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
@@ -63,7 +65,8 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
   currentTimestep,
   activeDirective,
   onOpenGeminiSop,
-  steps = []
+  steps = [],
+  footer
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ x: number; y: number } | null>(() => {
@@ -550,6 +553,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
           )}
         </div>
       )}
+      {footer}
     </div>
   );
 };

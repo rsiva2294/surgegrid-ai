@@ -85,8 +85,10 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
         <p className={`text-[10px] leading-snug ${muted}`}>
           Rain is a NASA IMERG satellite estimate averaged over cells of about 11 km, so every substation in a cell gets that cell&apos;s
           value. Class names and limits are IMD&apos;s, applied here to a rolling 24-hour total. Wind is the ERA5-Land area mean (no data over
-          coastal cells), smoothed and not gusts: IMD&apos;s 4 December bulletin reported 60-70 km/h gusting 80 along the Chennai coast. The
-          flood maps are fixed official layers, not this hour.
+          coastal cells), smoothed and not gusts: IMD&apos;s 4 December bulletin reported 60-70 km/h gusting 80 along the Chennai coast. IMD&apos;s
+          rain gauges read higher than these cells: in the 24 hours to 08:30 IST on 3 December, 16 Chennai stations listed 70-100 mm (cells:
+          13-37 mm); to 08:30 IST on 4 December, 50 stations listed 70-290 mm (cells: 106-184 mm). The flood maps are fixed official layers,
+          not this hour.
         </p>
       )}
 
@@ -95,7 +97,7 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
           <div className="space-y-1">
             <label className={row}>
               <input type="checkbox" checked={showRain} onChange={e => setShowRain(e.target.checked)} className="accent-blue-600" />
-              <span className="font-semibold">Rain, last 24 hours</span>
+              <span className="font-semibold">Rain, last 24 hours <span className={`font-normal ${muted}`}>(satellite estimate)</span></span>
             </label>
             <div className="pl-5">
               <div className="h-2 rounded-full border border-slate-400/40" style={{ background: rampGradient() }} aria-hidden />

@@ -104,7 +104,7 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
         <p className={`text-[10px] leading-snug shrink-0 ${muted}`}>
           Flood-flagged means the yard is at or below 2.0 m, or the site is inside the 2015 flood extent, or it is rated Moderate or High on
           the official hazard maps. Exposed means flood-flagged and the site&apos;s rain cell has {HEAVY_RAIN_MIN_MM} mm or more in the last 24
-          hours (IMD&apos;s Heavy class). Two facts side by side, not a prediction of flooding or of any outage.
+          hours (IMD&apos;s Heavy class). Two facts side by side, not a prediction of flooding or of any outage. The rain is a satellite estimate that reads below IMD&apos;s gauges, so counts at the early steps are probably too low.
         </p>
       )}
 
