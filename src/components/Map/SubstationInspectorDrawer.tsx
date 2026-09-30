@@ -34,7 +34,6 @@ import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
 import { SiteBriefingCard } from './SiteBriefingCard';
 import { FloodPlanNotes } from './FloodPlanNotes';
-import { useSectionBoundary } from '../../services/sectionBoundaries';
 import { ReliefCentresCard } from './ReliefCentresCard';
 import { useOfficialFlood } from '../../services/officialFloodLayers';
 import { getEnrichedHealthProfile } from '../../services/gridHealthService';
@@ -80,7 +79,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 }) => {
   const [inspectorTab, setInspectorTab] = useState<'overview' | 'feeders' | 'respond'>('overview');
   const isReplay = disasterScenario !== 'NORMAL' && disasterScenario !== 'LIVE';
-  const sectionBoundary = useSectionBoundary(selectedSection?.code);
   const { flood: officialFlood } = useOfficialFlood(selectedSubstation?.code);
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
   const [showJargonGuide, setShowJargonGuide] = useState(false);
@@ -498,7 +496,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
             {/* Status line: what a user needs first, visible on every tab */}
             {(() => {
               const profile = getEnrichedHealthProfile(selectedSubstation, activeSubstationOutages);
-              const chip = 'px-2 py-0.5 rounded-md text-xs font-semibold border';
+              const chip = 'px-1.5 py-0.5 rounded-md text-[11px] font-semibold border whitespace-nowrap shrink-0';
               const grade = {
                 A: isLight ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
                 B: isLight ? 'bg-sky-100 text-sky-900 border-sky-300' : 'bg-sky-500/20 text-cyan-300 border-sky-500/40',
@@ -508,7 +506,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               // During a replay, today's health score and outage notices do not describe December 2023, so they step aside.
               if (isReplay && !officialFlood?.nrsc2015) return null;
               return (
-                <div className="flex items-center gap-1.5 flex-wrap pt-2 shrink-0 text-xs">
+                <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto no-scrollbar pt-2 shrink-0">
                   {!isReplay && <span className={`${chip} ${grade}`} title="SurgeGrid health score, our own model from 90-day outage history">
                     Health {profile.healthGrade} · {profile.healthScore}/100
                   </span>}
@@ -1274,26 +1272,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
         {/* Section Specific Details (Full Height View for AE Section Offices) */}
         {selectedSection && (
           <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pt-3 text-xs">
-            {sectionBoundary && (
-              <div
-                className={`p-3 rounded-xl border flex items-center justify-between gap-2 ${
-                  isLight
-                    ? 'bg-amber-50/80 border-amber-200 text-amber-950'
-                    : 'bg-amber-950/25 border-amber-800/60 text-amber-200'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-amber-600 shrink-0" />
-                  <div>
-                    <span className="font-bold text-xs block leading-tight">Jurisdictional Boundary</span>
-                    <span className={`text-xs block ${isLight ? 'text-amber-800/80' : 'text-amber-400/80'}`}>
-                      Area shown on the map
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Section Active Outage Alert Banner */}
             {activeSectionOutages.length > 0 && (
               <div className={`p-2.5 rounded-xl border text-[12.5px] shrink-0 flex items-start gap-2 ${
@@ -1400,9 +1378,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
             </div>
 
-            {/* GCC Municipal & Ward Ground Truth */}
-            <MunicipalDisasterCard node={selectedSection} isLight={isLight} />
-
             {/* Section Office Rapid Contact & Quick Action Hub */}
             <div
               className={`p-3 rounded-xl border space-y-2.5 text-xs ${
@@ -1434,10 +1409,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     <div className="flex items-center justify-between gap-1 mt-1">
                       <div className="flex items-center gap-1.5 font-mono font-bold text-xs truncate">
                         <Phone className="w-3 h-3 text-emerald-600 group-hover:scale-110 transition-transform shrink-0" />
-                        <span>{selectedSection.mobile}</span>
+                        <span className="truncate">{selectedSection.mobile}</span>
                       </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-200/70 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-200 shrink-0">
-                        Dial ↗
+                      <span className="text-xs font-bold opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0">
+                        ↗
                       </span>
                     </div>
                   </a>
@@ -1459,8 +1434,8 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         <Mail className="w-3 h-3 text-sky-600 group-hover:scale-110 transition-transform shrink-0" />
                         <span className="truncate">{selectedSection.email}</span>
                       </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-200/70 dark:bg-sky-800/60 text-sky-900 dark:text-sky-200 shrink-0">
-                        Email ↗
+                      <span className="text-xs font-bold opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0">
+                        ↗
                       </span>
                     </div>
                   </a>
@@ -1483,10 +1458,10 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   <div className="flex items-center justify-between gap-1 mt-1">
                     <div className="flex items-center gap-1.5 font-bold text-xs truncate">
                       <MapPin className="w-3 h-3 text-indigo-600 group-hover:scale-110 transition-transform shrink-0" />
-                      <span>Office Location</span>
+                      <span className="truncate">Office Location</span>
                     </div>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-200/70 dark:bg-indigo-800/60 text-indigo-900 dark:text-indigo-200 shrink-0">
-                      View Place ↗
+                    <span className="text-xs font-bold opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0">
+                      ↗
                     </span>
                   </div>
                 </a>
@@ -1506,8 +1481,8 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       <Zap className="w-3 h-3 text-amber-600 group-hover:scale-110 transition-transform shrink-0" />
                       <span>1912 Hotline</span>
                     </div>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-200/70 dark:bg-amber-800/60 text-amber-900 dark:text-amber-200 shrink-0">
-                      Call ↗
+                    <span className="text-xs font-bold opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform shrink-0">
+                      ↗
                     </span>
                   </div>
                 </a>
