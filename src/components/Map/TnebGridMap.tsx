@@ -1060,21 +1060,30 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             const cleanPhone = c.contact ? c.contact.replace(/[^0-9+]/g, '') : '';
             return `
               <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:4px;">
                   <div style="font-weight:700;font-size:12px;color:#0f172a;line-height:1.35;">
                     ${escapeHtml(c.address || 'Address not listed')}
                   </div>
-                  ${
-                    cleanPhone
-                      ? `
-                    <a href="tel:${escapeHtml(cleanPhone)}" 
-                       style="display:inline-flex;align-items:center;gap:3px;background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:2px 6px;border-radius:4px;font-size:11px;font-family:monospace;font-weight:700;text-decoration:none;flex-shrink:0;"
-                       title="Call In-Charge Officer">
-                      📞 ${escapeHtml(c.contact)}
+                  <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                    ${
+                      cleanPhone
+                        ? `
+                      <a href="tel:${escapeHtml(cleanPhone)}" 
+                         style="display:inline-flex;align-items:center;gap:3px;background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:2px 6px;border-radius:4px;font-size:11px;font-family:monospace;font-weight:700;text-decoration:none;"
+                         title="Call In-Charge Officer">
+                        📞 ${escapeHtml(c.contact)}
+                      </a>
+                    `
+                        : ''
+                    }
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=${w.lat},${w.lng}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       style="display:inline-flex;align-items:center;gap:3px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;text-decoration:none;"
+                       title="Open Google Maps Directions">
+                      🧭 Directions
                     </a>
-                  `
-                      : ''
-                  }
+                  </div>
                 </div>
                 <div style="font-size:11.5px;color:#475569;margin-bottom:2px;">
                   👤 <strong>Officer:</strong> ${escapeHtml(c.officer || 'Not listed')}
@@ -1090,8 +1099,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             .map(
               (p, i) => `
               <div style="margin-bottom:5px;padding-bottom:5px;${i < planRelief.length - 1 ? 'border-bottom:1px dashed #e2e8f0;' : ''}">
-                <div style="font-weight:600;font-size:11.5px;color:#1e293b;">
-                  ${escapeHtml(p.name)}
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
+                  <div style="font-weight:600;font-size:11.5px;color:#1e293b;">
+                    ${escapeHtml(p.name)}
+                  </div>
+                  <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + ', Chennai')}"
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     style="display:inline-flex;align-items:center;gap:2px;color:#0284c7;font-size:10px;font-weight:600;text-decoration:none;flex-shrink:0;"
+                     title="Search shelter building on Google Maps">
+                    Search ↗
+                  </a>
                 </div>
                 <div style="font-size:11px;color:#475569;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;">
                   <span>👥 Capacity: <strong>${p.capacity !== null ? `${p.capacity} people` : 'not given'}</strong></span>

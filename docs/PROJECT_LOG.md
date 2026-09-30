@@ -312,6 +312,8 @@
 
 85. **Interactive Relief Centre Details on Map Marker Click (owner approved).** Clicking any purple diamond relief centre marker on the map now smoothly centers the marker and opens a custom-styled Google Maps InfoWindow displaying: (1) Ward & Zone header with count of listed centres; (2) Each designated relief centre with address/school name, in-charge nodal officer, and a 1-click `tel:` call button; (3) GCC City Disaster Management Perspective Plan 2024 shelter capacity (number of people) and essential amenities (drinking water, sanitation/toilets, community cooking); (4) Ward historical inundation vulnerability context (2023 Cyclone Michaung inundated streets list and 2015 extreme monsoon flood depth register); (5) Official spatial accuracy notice (marker placed at ward polygon centroid; directory assigns shelters by ward without discrete coordinates). Build passes; committed to git without deployment.
 
+86. **Google Maps Turn-by-Turn Directions & Shelter Search Added to Relief Popup (owner approved).** In `TnebGridMap.tsx`, added navigation hyperlinks directly inside the relief centre InfoWindow: (1) Added a `🧭 Directions` button next to the phone call link for each centre, opening turn-by-turn driving and transit directions to the ward location in Google Maps (`https://www.google.com/maps/dir/?api=1&destination=${w.lat},${w.lng}`); (2) Added a `Search ↗` query link alongside each GCC Plan 2024 shelter facility name for direct building lookup on Google Maps. Build passes; committed to git without deployment.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat
