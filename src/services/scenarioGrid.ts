@@ -27,6 +27,10 @@ export interface ScenarioGrid {
   hours: number[];
   /** rainMm[cellIndex][hourIndex]: rain in that hour, mm. */
   rainMm: number[][];
+  /** Wind speed per cell and hour, km/h. Null over coastal cells: ERA5-Land has no data there. */
+  windSpeedKmh: (number | null)[][];
+  /** Direction the wind blows FROM, degrees clockwise from north. Null where the speed is null. */
+  windFromDeg: (number | null)[][];
 }
 
 const cache = new Map<SimulationScenarioId, ScenarioGrid>();
@@ -65,6 +69,36 @@ export function rolling24hRain(grid: ScenarioGrid, cellIndex: number, hour: numb
   let sum = 0;
   for (let k = Math.max(0, end - WINDOW_HOURS + 1); k <= end; k++) sum += row[k] ?? 0;
   return sum;
+}
+
+const COMPASS_16 = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+
+export function compassName(deg: number): string {
+  return COMPASS_16[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
+}
+
+/**
+ * Direction the wind blows from over the land cells at one hour (vector mean, so opposing winds cancel instead of
+ * averaging to a wrong direction). Null when no cell has wind data. Speed is not returned: the city-wide speed is the
+ * area-mean value in the scenario file, shown elsewhere.
+ */
+export function cityWindFromDeg(grid: ScenarioGrid, hour: number): { fromDeg: number; landCells: number } | null {
+  const j = grid.hours.indexOf(hour);
+  if (j === -1) return null;
+  let x = 0;
+  let y = 0;
+  let n = 0;
+  grid.windFromDeg.forEach((row, i) => {
+    const deg = row[j];
+    const speed = grid.windSpeedKmh[i]?.[j];
+    if (deg === null || deg === undefined || speed === null || speed === undefined) return;
+    const rad = (deg * Math.PI) / 180;
+    x += speed * Math.sin(rad);
+    y += speed * Math.cos(rad);
+    n++;
+  });
+  if (n === 0 || (x === 0 && y === 0)) return null;
+  return { fromDeg: ((Math.atan2(x, y) * 180) / Math.PI + 360) % 360, landCells: n };
 }
 
 export interface CellRainState {

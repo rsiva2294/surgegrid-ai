@@ -43,6 +43,30 @@ import {
 } from '../../services/scenarioService';
 import { getDirectiveForTimestep, fetchLiveGeminiDirective, resolvePhase, type GeminiSopDirective } from '../../services/geminiSopService';
 import type { TimelineStep } from './DisasterCockpitBar';
+import {
+  fetchScenarioGrid,
+  cellIndexFor,
+  rolling24hRain,
+  cityWindFromDeg,
+  type ScenarioGrid
+} from '../../services/scenarioGrid';
+import { getImdRainClass } from '../../data/officialSources';
+import { rainFill, type HazardYears } from './rainScale';
+import { SimulationMapPanel, type HoverCell } from './SimulationMapPanel';
+
+// Official flood maps (fixed layers), fetched when first switched on.
+const floodMapCache = new Map<string, Promise<object | null>>();
+function loadFloodMap(file: string): Promise<object | null> {
+  let p = floodMapCache.get(file);
+  if (!p) {
+    p = fetch(`/data/flood_maps/${file}`)
+      .then(r => (r.ok ? (r.json() as Promise<object>) : null))
+      .catch(() => null);
+    floodMapCache.set(file, p);
+  }
+  return p;
+}
+const HAZARD_COLOURS: Record<string, string> = { LOW: '#facc15', MODERATE: '#f97316', HIGH: '#dc2626' };
 
 // Heavy panels load on demand so the map can appear first. They are pre-loaded when the browser is idle.
 const LazyDrawer = lazy(() => import('./SubstationInspectorDrawer').then(m => ({ default: m.SubstationInspectorDrawer })));
@@ -158,7 +182,17 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [simulationHour, setSimulationHour] = useState<number>(-24);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [scenarioData, setScenarioData] = useState<ScenarioData | null>(null);
+  const [scenarioGrid, setScenarioGrid] = useState<ScenarioGrid | null>(null);
   const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
+  // Storm layers (only while a hindcast scenario is selected)
+  const [showRain, setShowRain] = useState(true);
+  const [showFlood2015, setShowFlood2015] = useState(false);
+  const [showHazard, setShowHazard] = useState(false);
+  const [hazardYears, setHazardYears] = useState<HazardYears>(100);
+  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const rainRectsRef = useRef<google.maps.Rectangle[]>([]);
+  const flood2015LayerRef = useRef<google.maps.Data | null>(null);
+  const hazardLayerRef = useRef<google.maps.Data | null>(null);
 
   // Pre-load the drawer, directive dialog and roster in the background once the browser is idle.
   useEffect(() => {
@@ -182,8 +216,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         setScenarioData(data);
         setSimulationHour(SCENARIO_MILESTONES[id][0].hour);
       });
+      setScenarioGrid(null);
+      fetchScenarioGrid(id).then(setScenarioGrid);
     } else {
       setScenarioData(null);
+      setScenarioGrid(null);
       setIsPlaying(false);
       setIsGeminiSopOpen(false);
     }
@@ -860,6 +897,113 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [showReliefCentres, reliefData, mapLoaded]);
 
+  // Storm layer 1: one rectangle per ~11 km rain cell, coloured by the rain of the last 24 hours at the current step.
+  useEffect(() => {
+    rainRectsRef.current.forEach(r => r.setMap(null));
+    rainRectsRef.current = [];
+    if (!mapRef.current || !mapLoaded || !scenarioGrid || !isSimulationScenario(disasterScenario)) return;
+    const d = scenarioGrid.cellSizeDeg;
+    rainRectsRef.current = scenarioGrid.cells.map(
+      c =>
+        new google.maps.Rectangle({
+          map: mapRef.current,
+          clickable: false,
+          zIndex: 1,
+          bounds: { south: c.lat0, north: c.lat0 + d, west: c.lng0, east: c.lng0 + d },
+          strokeColor: '#1e3a8a',
+          strokeOpacity: 0.25,
+          strokeWeight: 1,
+          fillOpacity: 0
+        })
+    );
+    return () => {
+      rainRectsRef.current.forEach(r => r.setMap(null));
+      rainRectsRef.current = [];
+    };
+  }, [scenarioGrid, mapLoaded, disasterScenario]);
+
+  useEffect(() => {
+    if (!scenarioGrid) return;
+    rainRectsRef.current.forEach((rect, i) => {
+      const mm = rolling24hRain(scenarioGrid, i, simulationHour);
+      const f = mm === null ? { color: '#000000', opacity: 0 } : rainFill(mm);
+      rect.setOptions({ visible: showRain, fillColor: f.color, fillOpacity: f.opacity });
+    });
+  }, [scenarioGrid, simulationHour, showRain, mapLoaded, disasterScenario]);
+
+  // Read a cell by pointing at it (a listener on the map, so the rectangles never swallow marker clicks).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !scenarioGrid || !showRain) return;
+    const move = map.addListener('mousemove', (e: google.maps.MapMouseEvent) => {
+      if (!e.latLng) return;
+      const idx = cellIndexFor(scenarioGrid, e.latLng.lat(), e.latLng.lng());
+      setHoverIdx(idx === -1 ? null : idx);
+    });
+    const out = map.addListener('mouseout', () => setHoverIdx(null));
+    return () => {
+      move.remove();
+      out.remove();
+    };
+  }, [scenarioGrid, showRain, mapLoaded]);
+
+  const hoverCell = useMemo<HoverCell | null>(() => {
+    if (!scenarioGrid || !showRain || hoverIdx === null) return null;
+    const mm24 = rolling24hRain(scenarioGrid, hoverIdx, simulationHour);
+    const c = scenarioGrid.cells[hoverIdx];
+    if (mm24 === null || !c) return null;
+    const d = scenarioGrid.cellSizeDeg;
+    return {
+      label: `${c.lat0.toFixed(1)}-${(c.lat0 + d).toFixed(1)}°N ${c.lng0.toFixed(1)}-${(c.lng0 + d).toFixed(1)}°E`,
+      mm24,
+      className: getImdRainClass(mm24).name,
+      substations: c.substations
+    };
+  }, [scenarioGrid, showRain, hoverIdx, simulationHour]);
+
+  // Storm layer 2 and 3: the official flood maps, drawn as fixed backdrops (not what is flooded at this hour).
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !showFlood2015 || !isSimulationScenario(disasterScenario)) return;
+    let cancelled = false;
+    loadFloodMap('nrsc2015.json').then(gj => {
+      if (cancelled || !gj) return;
+      const layer = new google.maps.Data({ map });
+      layer.addGeoJson(gj);
+      layer.setStyle({ fillColor: '#0891b2', fillOpacity: 0.35, strokeWeight: 0, clickable: false, zIndex: 2 });
+      flood2015LayerRef.current = layer;
+    });
+    return () => {
+      cancelled = true;
+      flood2015LayerRef.current?.setMap(null);
+      flood2015LayerRef.current = null;
+    };
+  }, [showFlood2015, mapLoaded, disasterScenario]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !showHazard || !isSimulationScenario(disasterScenario)) return;
+    let cancelled = false;
+    loadFloodMap(`hazard_${hazardYears}yr.json`).then(gj => {
+      if (cancelled || !gj) return;
+      const layer = new google.maps.Data({ map });
+      layer.addGeoJson(gj);
+      layer.setStyle(feature => ({
+        fillColor: HAZARD_COLOURS[String(feature.getProperty('class'))] || '#94a3b8',
+        fillOpacity: 0.4,
+        strokeWeight: 0,
+        clickable: false,
+        zIndex: 3
+      }));
+      hazardLayerRef.current = layer;
+    });
+    return () => {
+      cancelled = true;
+      hazardLayerRef.current?.setMap(null);
+      hazardLayerRef.current = null;
+    };
+  }, [showHazard, hazardYears, mapLoaded, disasterScenario]);
+
   // 9. On-Demand Jurisdictional Boundary Polygon for Selected Section Office
   useEffect(() => {
     // Clear previous polygons
@@ -1366,6 +1510,24 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         onOpenGeminiSop={() => setIsGeminiSopOpen(prev => !prev)}
         steps={timelineSteps}
       />
+
+      {isSimulationScenario(disasterScenario) && scenarioGrid && (
+        <SimulationMapPanel
+          isLight={isLight}
+          stepLabel={currentTimestep?.label || `T${simulationHour >= 0 ? '+' : ''}${simulationHour}h`}
+          showRain={showRain}
+          setShowRain={setShowRain}
+          showFlood2015={showFlood2015}
+          setShowFlood2015={setShowFlood2015}
+          showHazard={showHazard}
+          setShowHazard={setShowHazard}
+          hazardYears={hazardYears}
+          setHazardYears={setHazardYears}
+          hover={hoverCell}
+          windSpeedKmh={currentTimestep ? Math.abs(currentTimestep.wind_speed_10m_kmh) : null}
+          windFromDeg={cityWindFromDeg(scenarioGrid, simulationHour)?.fromDeg ?? null}
+        />
+      )}
 
       {/* Floating AI Directive dialog (official-quote SOP) */}
       <GeminiSopDialog
