@@ -304,6 +304,8 @@
 
 81. **Panel text one notch smaller (owner: a little bigger than preferred).** Across the substation panel's three tabs (the files in item 80 plus the replay's `SiteBriefingCard` and `SubstationCopilotCard`): titles, tab labels and key values 14 to 13 px; body 13 to 12.5 px; chips, labels and citations stay 12 px (the floor). Measured in the browser, live mode, 110/33 kV GIS SS: Overview 9 pieces at 13 px, 9 at 12.5, 39 at 12; Feeders 9 / 1 / 65; Respond 5 / 13 / 38; the large figures (consumers, DTRs) unchanged. Build passes. The AI Directive dialog and the left panels were not changed.
 
+82. **Deployed to Firebase Hosting from `feature/spatial-simulation` (owner asked).** `npm run build` then `firebase deploy --only hosting:surgegrid --project namma-map-407ca` at commit 1fb4c21 (418 files) -> https://surgegrid.web.app. Live check: returns HTTP 200 OK. Master not touched or merged.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat
