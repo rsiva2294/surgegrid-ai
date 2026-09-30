@@ -3,6 +3,7 @@ import { Waves } from 'lucide-react';
 import type { TnebSubstation } from '../../types/tneb';
 import { CHENNAI_AVERAGE_ELEVATION_M } from '../../data/officialSources';
 import { useOfficialFlood } from '../../services/officialFloodLayers';
+import { DEPTH_TEXT, useGccPlan, wardFacts } from '../../services/gccPlan';
 
 interface FloodExposureCardProps {
   substation: TnebSubstation;
@@ -20,6 +21,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
   const elevation = substation.elevationM as number;
   const atOrBelowAverage = elevation <= CHENNAI_AVERAGE_ELEVATION_M;
   const { flood } = useOfficialFlood(substation.code);
+  const facts = wardFacts(useGccPlan(), substation.gccWard);
 
   const layerHit = Boolean(flood && (flood.nrsc2015 || flood.returnPeriod || flood.inundationZone));
 
@@ -110,8 +112,34 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
         </div>
       )}
 
+      {facts && (facts.reg2015 || facts.yearsListed.length > 0 || facts.in2023.length > 0) && (
+        <div className="space-y-1">
+          <div className={`text-[10px] uppercase tracking-wider font-semibold ${neutralLabel}`}>GCC records for ward {substation.gccWard}</div>
+          <div className="flex flex-wrap gap-1.5">
+            {facts.reg2015 && (
+              <span
+                className={chipCls}
+                title={`GCC plan 2024, depth of inundation register for 2015${facts.reg2015.deepNames.length ? `. Deepest: ${facts.reg2015.deepNames.join('; ')}` : ''}`}
+              >
+                2015 register: {facts.reg2015.n} location{facts.reg2015.n > 1 ? 's' : ''}, deepest {DEPTH_TEXT[facts.reg2015.deepest]}
+              </span>
+            )}
+            {facts.yearsListed.length > 0 && (
+              <span className={chipCls} title={`Years with a location in this ward: ${facts.yearsListed.join(', ')}`}>
+                In {facts.yearsListed.length} of {facts.registerYears} GCC monsoon registers
+              </span>
+            )}
+            {facts.in2023.length > 0 && (
+              <span className={chipCls} title={`Listed for the 2023 north-east monsoon: ${facts.in2023.join('; ')}`}>
+                Listed for the 2023 north-east monsoon (includes Michaung)
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       <span className={`text-[10px] block ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-        Official maps (OpenCity, GCC). A map check of this location, not a prediction. Outside a map is not proven safe.
+        Official maps (OpenCity, GCC). A map check of this location, not a prediction. Outside a map is not proven safe. Ward records are GCC plan 2024 street lists by ward, not exact points.
       </span>
     </div>
   );

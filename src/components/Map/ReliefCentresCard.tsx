@@ -4,6 +4,7 @@ import type { TnebSubstation } from '../../types/tneb';
 import { CHENNAI_AVERAGE_ELEVATION_M } from '../../data/officialSources';
 import { useOfficialFlood, isOfficiallyFloodFlagged } from '../../services/officialFloodLayers';
 import { useReliefCentres } from '../../services/reliefCentres';
+import { useGccPlan, wardFacts } from '../../services/gccPlan';
 
 interface ReliefCentresCardProps {
   substation: TnebSubstation;
@@ -14,9 +15,12 @@ interface ReliefCentresCardProps {
  * GCC relief centres listed for this substation's ward, and a backup-substation suggestion.
  * The GCC list has ward and address only (no coordinates), so we cannot say which substation feeds which centre.
  */
+const yn = (v: boolean | null) => (v === null ? 'not stated' : v ? 'yes' : 'no');
+
 export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation, isLight }) => {
   const data = useReliefCentres();
   const { flood } = useOfficialFlood(substation.code);
+  const planRelief = wardFacts(useGccPlan(), substation.gccWard)?.relief ?? [];
   const [showCriteria, setShowCriteria] = useState(false);
 
   const box = isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-slate-100';
@@ -87,6 +91,25 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
               </div>
             ))}
           </div>
+          {planRelief.length > 0 && (
+            <div className={`pt-2 border-t space-y-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+              <div
+                className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}
+                title="GCC plan 2024 relief-centre table. Shown only for zones where our parse of the table equals the plan's own totals (zones 1, 9 and 11)."
+              >
+                Capacity and facilities (GCC plan 2024)
+              </div>
+              {planRelief.map((c, i) => (
+                <p key={`${c.name}-${i}`} className="text-[11px] leading-snug">
+                  <span className="font-semibold">{c.name}</span>: {c.capacity !== null ? `${c.capacity} people` : 'capacity not given'}
+                  <span className={label}>
+                    {' '}
+                    · water {yn(c.water)}, toilets {yn(c.toilets)}, cooking {yn(c.cooking)}
+                  </span>
+                </p>
+              ))}
+            </div>
+          )}
         </>
       )}
 
