@@ -28,7 +28,7 @@ Chennai's power grid and flood console. Live grid, real rain, official maps, quo
 ## 4. What SurgeGrid does
 - **Live grid view:** 286 substations, 352 section offices, 2,678 feeders and 65,557 transformers on one map, with live TANGEDCO outage notices matched to assets, a health grade per substation, live weather, and the Chennai reservoirs' storage in the app bar.
 - **Storm replay:** Cyclone Michaung (Dec 2023) in five steps. The map shows the last 24 hours of rain by area (about 11 km cells) on IMD's own classes, IMD's rain gauges, and the storm's real track to landfall.
-- **Exposure:** yard elevation, official flood-map checks and an "Exposed now" list at each step, for every substation.
+- **Exposure:** yard elevation, official flood-map checks and a "Sites to check" list at each step (sites with a flood record and heavy rain or worse).
 - **AI Directive and Copilot:** the official actions for this hour, each a quote with plan and page, and the substations they apply to. Gemini words one short note.
 - **Responder hub:** for any substation or section office: relief centres with directions and officer contacts, a nearby backup substation, nearest sewerage pumping station, and one-tap call, email and map.
 *Note:* Show them in that order: live, replay, exposure, directive, responders.
@@ -47,7 +47,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 | Whole event, area mean | 273 mm (peak 14.0 mm/h) | not reported |
 - **We checked our satellite rain against IMD's own gauges, station by station, and show the comparison on the map.** The IMD gauges appear as squares beside the satellite cell's value. We do not scale the satellite up: what you see is what NASA measured.
 - Rain classes are IMD's (Heavy 64.5 mm, Very heavy 115.6 mm, Extremely heavy 204.5 mm), applied to a rolling 24-hour total averaged over about 11 km cells.
-- Substations exposed on the satellite rain (flood-flagged and heavy rain or worse): 0 at T-24h and T-6h, 86 at the peak, 87 at T+12h, 74 at T+36h, of 87 flood-flagged.
+- Sites to check (a flood record and heavy rain or worse, satellite or nearest IMD gauge): 0 at T-24h, 88 at T-6h, 111 at the peak and at T+12h, 106 at T+36h, of 111 sites with a flood record (94 check first and 17 check next at the peak). The separate waterlogging filter counts 87, a stricter rule.
 - Grid: 286 substations, 2,678 feeders, 65,557 transformers, about 4.9 million consumers on mapped transformers.
 - Official layers: 48 substations sit inside the 2015 flood extent; 114 inside the 100-year flood-hazard map; 162 GCC relief centres in 120 wards; 124 CMWSSB sewerage pumping stations (TNGIS).
 *Note:* Judges reward the honest comparison with IMD's gauges. Everything replayed is real rain and wind.
@@ -61,7 +61,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 ## 8. Live demo (about 4 minutes)
 1. **Live.** Open the site. Point at the weather pill and the reservoir pill (combined storage, click for each reservoir, source CMWSSB). Show live outage notices and a substation's health grade.
 2. **Replay.** Pick Cyclone Michaung. The rain layer is nearly clear at T-24h (IMD's gauges had already recorded 70 to 100 mm; say so). Open the AI Directive: 6 quoted actions with page numbers.
-3. **Time moves.** Press play: five steps, 6 seconds each (T-24h, T-6h, peak rain, T+12h, T+36h). The rain fills in by cell, red rings appear on exposed substations, the "Exposed now" list grows from 0 to 87 and back to 74. The storm marker slides along IMD's track to landfall; "IMD at the time" shows its bulletin.
+3. **Time moves.** Press play: five steps, 6 seconds each (T-24h, T-6h, peak rain, T+12h, T+36h). The rain fills in by cell, red and orange rings appear on sites to check, the "Sites to check" list grows from 0 to 111 and eases to 106. The storm marker slides along IMD's track to landfall; "IMD at the time" shows its bulletin.
 4. **Official flood maps.** Switch on the 2015 extent and the 100-year hazard map.
 5. **One substation.** Open a low-lying one (ETL, -1 m): Overview (flood facts), then Respond: the copilot's quoted actions, relief centres, backup substation, nearest sewerage pumping station with the MoP line on restoring pumping stations first.
 6. **Responders.** Switch on Relief centres and click a diamond: capacity, cooking, water, toilets, officer contacts, directions. Open a section office: call the Section AE, email, open the office on Google Maps, see the feeding substations and the ward's shelters.
