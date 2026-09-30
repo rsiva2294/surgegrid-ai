@@ -20,6 +20,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Rain colour scale and legend breaks | `src/components/Map/rainScale.ts` |
 | Storm legend and switches: 24 h rain, wind, fixed flood maps | `src/components/Map/SimulationMapPanel.tsx` |
 | Simplified official flood maps (2015 extent, 5 to 100-year hazard maps), drawn on demand | `public/data/flood_maps/`; built by `scripts/build_flood_polygons.py` |
+| Cyclone track on the map (IMD best track, storm marker, landfall), glide between steps, Show whole storm, Animate switch | `src/services/bestTrack.ts`, `TnebGridMap.tsx` (`paintStorm`, glide effect), `SimulationMapPanel.tsx`; data by `scripts/build_best_track.py` |
 | IMD at the time: quotes from IMD's press releases and final report, observed best track, distance from Chennai, per step | `src/data/imdBulletins.ts`, `src/components/Map/ImdAtTheTimeCard.tsx`; quotes checked by `scripts/verify_imd_quotes.py` |
 | GCC ward records: 2015 to 2022 depth-of-inundation registers per ward, the 2023 north-east monsoon list, relief-centre capacity for verified zones | `src/services/gccPlan.ts`, `public/data/gcc_plan_2024.json`; built by `scripts/build_gcc_plan_2024.py`; shown in `FloodExposureCard.tsx` and `ReliefCentresCard.tsx` |
 | Check that our GCC quotes also appear in the 2024 plan | `scripts/verify_gcc_quotes_2024.py` |

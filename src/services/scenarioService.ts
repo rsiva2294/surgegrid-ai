@@ -48,6 +48,10 @@ export interface MilestoneInfo {
 /** How long playback stays on each step before moving to the next. */
 export const STEP_DWELL_MS = 6000;
 
+/** The map plays the real hours between two steps over this long: while playing, and when a step is clicked. */
+export const GLIDE_PLAY_MS = 2500;
+export const GLIDE_CLICK_MS = 1200;
+
 // The five steps the timeline plays through: two before the peak-rain hour, the peak, two after.
 // T-0h is the hour of peak rain in each hindcast (not a landfall time). Each hour exists in the scenario file.
 // The last step is the first hour where rain stays below 0.1 mm/h for six hours (Michaung), or the last

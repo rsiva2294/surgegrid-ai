@@ -257,7 +257,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 ? (isLight ? 'bg-amber-700 text-white font-bold shadow-sm' : 'bg-amber-500 text-slate-950 font-bold shadow-sm')
                 : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
             }`}
-            title="Cyclone Michaung, December 2023: real hindcast (NASA IMERG rain + ERA5-Land wind), 144 hourly steps"
+            title="Cyclone Michaung, December 2023: real hindcast (NASA IMERG rain + ERA5-Land wind), five steps"
           >
             <span>🌀</span>
             <span>Cyclone Michaung</span>

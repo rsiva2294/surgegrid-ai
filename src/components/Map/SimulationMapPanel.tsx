@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Info, Navigation2 } from 'lucide-react';
 import { HAZARD_YEARS, RAIN_LEGEND_BREAKS, RAIN_SCALE_MAX_MM, RAIN_STOPS, rainFill, type HazardYears } from './rainScale';
 import { compassName } from '../../services/scenarioGrid';
+import { GRADE_COLOR } from '../../services/bestTrack';
+import { TRACK_GRADE_NAMES, type TrackGrade } from '../../data/imdBulletins';
 
 export interface HoverCell {
   label: string;
@@ -28,6 +30,18 @@ interface SimulationMapPanelProps {
   gaugeInfo: { label: string | null; listed: number } | null;
   windSpeedKmh: number | null;
   windFromDeg: number | null;
+  /** IMD's observed track: null when the file is not loaded. */
+  track: {
+    show: boolean;
+    setShow: (v: boolean) => void;
+    onFit: () => void;
+    /** Where the centre is at the step, in words (grade, wind, distance to Chennai); null outside the track's dates. */
+    now: string | null;
+  } | null;
+  /** The time the map is showing (moves while the hours glide between steps). */
+  clockLabel: string | null;
+  /** Play the hours between steps (a switch; off by default when the device asks for reduced motion). */
+  animate: { on: boolean; set: (v: boolean) => void; reducedMotion: boolean };
 }
 
 const rampGradient = () => {
@@ -59,6 +73,9 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
   gaugeInfo,
   windSpeedKmh,
   windFromDeg,
+  track,
+  clockLabel,
+  animate,
 }) => {
   const [open, setOpen] = useState(true);
   const [showNote, setShowNote] = useState(false);
@@ -87,6 +104,21 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
           </button>
         </div>
       </div>
+
+      {clockLabel && (
+        <div className="flex items-center justify-between gap-2">
+          <span className={`font-mono text-[10px] ${muted}`}>
+            Map time: <span className={`font-semibold ${isLight ? 'text-slate-800' : 'text-slate-100'}`}>{clockLabel}</span>
+          </span>
+          <label
+            className="inline-flex items-center gap-1 text-[10px] cursor-pointer select-none"
+            title={animate.reducedMotion ? 'Your device asks for reduced motion, so this starts off. Tick it to play the hours between steps.' : 'Play the real hours between steps'}
+          >
+            <input type="checkbox" checked={animate.on} onChange={e => animate.set(e.target.checked)} className="accent-blue-600" />
+            Animate between steps
+          </label>
+        </div>
+      )}
 
       {showNote && (
         <p className={`text-[10px] leading-snug ${muted}`}>
@@ -133,6 +165,41 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
               </div>
             </div>
           </div>
+
+          {track && (
+            <div className={`pt-1.5 border-t space-y-1 ${isLight ? 'border-slate-200' : 'border-slate-700'}`}>
+              <div className="flex items-center justify-between gap-2">
+                <label className={row}>
+                  <input type="checkbox" checked={track.show} onChange={e => track.setShow(e.target.checked)} className="accent-red-600" />
+                  <span className="font-semibold">Cyclone track <span className={`font-normal ${muted}`}>(IMD, observed)</span></span>
+                </label>
+                <button
+                  type="button"
+                  onClick={track.onFit}
+                  className={`px-1.5 py-0.5 rounded border text-[10px] font-semibold ${
+                    isLight ? 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50' : 'bg-slate-800 border-slate-600 text-slate-200 hover:bg-slate-700'
+                  }`}
+                >
+                  Show whole storm
+                </button>
+              </div>
+              <div className="pl-5 space-y-0.5">
+                <div className="text-[10px] leading-snug">{track.now ?? <span className={muted}>The storm is outside IMD&apos;s track dates at this step.</span>}</div>
+                <div className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] ${muted}`}>
+                  {(['D', 'DD', 'CS', 'SCS'] as TrackGrade[]).map(g => (
+                    <span key={g} className="inline-flex items-center gap-1" title={TRACK_GRADE_NAMES[g]}>
+                      <span className="inline-block w-2 h-2 rounded-full" style={{ background: GRADE_COLOR[g] }} />
+                      {g}
+                    </span>
+                  ))}
+                  <span>solid = travelled, dotted = still to come</span>
+                </div>
+                <p className={`text-[10px] leading-snug ${muted}`}>
+                  IMD gives a position every 3 hours; between two of them the marker moves on a straight line (our interpolation).
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className={`pt-1.5 border-t space-y-0.5 ${isLight ? 'border-slate-200' : 'border-slate-700'}`}>
             <label className={row}>

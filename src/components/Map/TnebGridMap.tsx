@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo, lazy, Suspense } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import { setOptions, importLibrary } from '@googlemaps/js-api-loader';
 import type { TnebSubstation, TnebSection, FeederDetail } from '../../types/tneb';
 import { getFeederGeometry, getFeederTransformers } from '../../services/feederGeometryService';
@@ -38,6 +38,8 @@ import {
   isSimulationScenario,
   SCENARIO_MILESTONES,
   STEP_DWELL_MS,
+  GLIDE_PLAY_MS,
+  GLIDE_CLICK_MS,
   type ScenarioData,
   type ScenarioId
 } from '../../services/scenarioService';
@@ -55,7 +57,8 @@ import { rainFill, type HazardYears } from './rainScale';
 import { SimulationMapPanel, type HoverCell } from './SimulationMapPanel';
 import { ExposedSubstationsCard } from './ExposedSubstationsCard';
 import { ImdAtTheTimeCard } from './ImdAtTheTimeCard';
-import { IMD_BEST_TRACK, IMD_STEP_NOTES, istLabel } from '../../data/imdBulletins';
+import { IMD_BEST_TRACK, IMD_STEP_NOTES, TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel } from '../../data/imdBulletins';
+import { GRADE_COLOR, stormAt, useBestTrack } from '../../services/bestTrack';
 import { computeExposure } from '../../services/simulationExposure';
 import { fetchGaugePoints, gaugeWindowFor, type GaugePoints } from '../../services/gaugePoints';
 
@@ -248,7 +251,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       } else {
         setIsPlaying(false);
       }
-    }, STEP_DWELL_MS);
+    }, STEP_DWELL_MS + GLIDE_PLAY_MS);
 
     return () => clearTimeout(timer);
   }, [isPlaying, simulationHour, disasterScenario]);
@@ -944,14 +947,191 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [scenarioGrid, mapLoaded, disasterScenario]);
 
+  // IMD's observed track: the whole path dotted underneath, the part travelled solid, a marker at the storm centre, and the landfall point.
+  const bestTrack = useBestTrack();
+  const [showTrack, setShowTrack] = useState(true);
+  const [clockHour, setClockHour] = useState<number | null>(null);
+  // Glide between steps: follows the device's reduced-motion setting until the viewer ticks the switch.
+  const reducedMotion = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
+  const [animate, setAnimate] = useState(!reducedMotion);
+  const trackAheadRef = useRef<google.maps.Polyline | null>(null);
+  const trackDoneRef = useRef<google.maps.Polyline | null>(null);
+  const stormMarkerRef = useRef<google.maps.Marker | null>(null);
+  const landfallMarkerRef = useRef<google.maps.Marker | null>(null);
+  const stormLookRef = useRef('');
+  const displayedHourRef = useRef<number>(-24);
+
+  // The scenario hour 0 as a time (the hourly files hold UTC without a zone mark).
+  const hourZeroMs = useMemo(() => {
+    const t = scenarioData?.timesteps.find(x => x.timestep_hour === 0)?.utc;
+    if (!t) return null;
+    const ms = Date.parse(t.endsWith('Z') ? t : `${t}Z`);
+    return Number.isNaN(ms) ? null : ms;
+  }, [scenarioData]);
+
   useEffect(() => {
-    if (!scenarioGrid) return;
-    rainRectsRef.current.forEach((rect, i) => {
-      const mm = rolling24hRain(scenarioGrid, i, simulationHour);
-      const f = mm === null ? { color: '#000000', opacity: 0 } : rainFill(mm);
-      rect.setOptions({ visible: showRain, fillColor: f.color, fillOpacity: f.opacity });
+    if (!mapRef.current || !mapLoaded || !bestTrack || !isSimulationScenario(disasterScenario)) return;
+    const map = mapRef.current;
+    const full = bestTrack.points.map(p => ({ lat: p.lat, lng: p.lng }));
+    trackAheadRef.current = new google.maps.Polyline({
+      map,
+      path: full,
+      clickable: false,
+      zIndex: 3,
+      strokeOpacity: 0,
+      icons: [{ icon: { path: 'M 0,-1 0,1', strokeOpacity: 0.6, strokeColor: '#475569', scale: 2.5 }, offset: '0', repeat: '9px' }]
     });
-  }, [scenarioGrid, simulationHour, showRain, mapLoaded, disasterScenario]);
+    trackDoneRef.current = new google.maps.Polyline({ map, path: [], clickable: false, zIndex: 4, strokeColor: '#dc2626', strokeOpacity: 0.9, strokeWeight: 3 });
+    stormMarkerRef.current = new google.maps.Marker({ map, position: full[0], clickable: false, zIndex: 1500, visible: false });
+    landfallMarkerRef.current = new google.maps.Marker({
+      map,
+      position: { lat: bestTrack.landfall.lat, lng: bestTrack.landfall.lng },
+      zIndex: 1400,
+      title: `IMD: ${bestTrack.landfall.text}`,
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 5,
+        fillColor: '#ffffff',
+        fillOpacity: 1,
+        strokeColor: '#7f1d1d',
+        strokeWeight: 2.5,
+        labelOrigin: new google.maps.Point(0, -2.6)
+      },
+      label: { text: 'Landfall', fontSize: '11px', fontWeight: '700', color: '#7f1d1d' }
+    });
+    stormLookRef.current = '';
+    return () => {
+      [trackAheadRef, trackDoneRef, stormMarkerRef, landfallMarkerRef].forEach(r => {
+        r.current?.setMap(null);
+        r.current = null;
+      });
+    };
+  }, [bestTrack, mapLoaded, disasterScenario]);
+
+  // Paint the rain cells and the storm for one moment. `hour` is a scenario hour; between steps it is a fraction.
+  const paintStorm = useCallback(
+    (hour: number) => {
+      if (scenarioGrid) {
+        const h = Math.round(hour);
+        rainRectsRef.current.forEach((rect, i) => {
+          const mm = rolling24hRain(scenarioGrid, i, h);
+          const f = mm === null ? { color: '#000000', opacity: 0 } : rainFill(mm);
+          rect.setOptions({ visible: showRain, fillColor: f.color, fillOpacity: f.opacity });
+        });
+      }
+      const ahead = trackAheadRef.current;
+      const done = trackDoneRef.current;
+      const marker = stormMarkerRef.current;
+      const landfall = landfallMarkerRef.current;
+      if (!ahead || !done || !marker || !landfall || !bestTrack || hourZeroMs === null) return;
+      ahead.setVisible(showTrack);
+      landfall.setVisible(showTrack);
+      const ms = hourZeroMs + hour * 3600 * 1000;
+      const pts = bestTrack.points;
+      const s = showTrack ? stormAt(pts, ms) : null;
+      if (!showTrack || (!s && ms < pts[0].ms)) {
+        done.setVisible(false);
+        marker.setVisible(false);
+        return;
+      }
+      done.setVisible(true);
+      if (!s) {
+        done.setPath(pts.map(p => ({ lat: p.lat, lng: p.lng }))); // past IMD's last fix: the whole path travelled, no marker
+        marker.setVisible(false);
+        return;
+      }
+      done.setPath(s.path);
+      marker.setPosition({ lat: s.lat, lng: s.lng });
+      const look = `${s.last.grade}-${s.last.windKt}`;
+      if (stormLookRef.current !== look) {
+        stormLookRef.current = look;
+        marker.setIcon({
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 9,
+          fillColor: GRADE_COLOR[s.last.grade],
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2.5,
+          labelOrigin: new google.maps.Point(0, -2.6)
+        });
+        marker.setLabel({ text: `${s.last.grade} ${s.last.windKt} kt`, fontSize: '11px', fontWeight: '700', color: '#7f1d1d' });
+      }
+      marker.setVisible(true);
+    },
+    [scenarioGrid, showRain, showTrack, bestTrack, hourZeroMs]
+  );
+
+  // Show the current step. When the step changes, play the real hours in between (the hourly satellite values, and the storm along
+  // IMD's track) over GLIDE_PLAY_MS while playing or GLIDE_CLICK_MS after a click; with reduced motion, jump.
+  useEffect(() => {
+    if (!mapLoaded || !scenarioGrid || !isSimulationScenario(disasterScenario)) {
+      displayedHourRef.current = simulationHour;
+      return;
+    }
+    const from = displayedHourRef.current;
+    const to = simulationHour;
+    if (from === to || !animate) {
+      displayedHourRef.current = to;
+      paintStorm(to);
+      setClockHour(null);
+      return;
+    }
+    const dur = isPlaying ? GLIDE_PLAY_MS : GLIDE_CLICK_MS;
+    const t0 = performance.now();
+    let raf = 0;
+    let shown = NaN;
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      const h = p >= 1 ? to : from + (to - from) * e;
+      displayedHourRef.current = h;
+      paintStorm(h);
+      const r = Math.round(h);
+      if (r !== shown) {
+        shown = r;
+        setClockHour(p >= 1 ? null : r);
+      }
+      if (p < 1) raf = requestAnimationFrame(tick);
+      else setClockHour(null);
+    };
+    setClockHour(Math.round(from)); // start the clock where the map is, not at the new step
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [simulationHour, paintStorm, mapLoaded, disasterScenario, scenarioGrid, isPlaying, animate]);
+
+  const clockLabel = useMemo(() => {
+    if (hourZeroMs === null || !isSimulationScenario(disasterScenario)) return null;
+    return istLabel(new Date(hourZeroMs + (clockHour ?? simulationHour) * 3600 * 1000).toISOString());
+  }, [hourZeroMs, clockHour, simulationHour, disasterScenario]);
+
+  const stormNowText = useMemo(() => {
+    if (!bestTrack || hourZeroMs === null) return null;
+    const s = stormAt(bestTrack.points, hourZeroMs + (clockHour ?? simulationHour) * 3600 * 1000);
+    if (!s) return null;
+    const km = Math.round(distanceToChennaiKm(s.lat, s.lng) / 5) * 5;
+    return `${TRACK_GRADE_NAMES[s.last.grade]}, ${s.last.windKt} kt, about ${km} km from Chennai (our distance). Last IMD fix ${istLabel(s.last.utc)}.`;
+  }, [bestTrack, hourZeroMs, clockHour, simulationHour]);
+
+  // The map is normally held to Chennai. While a hindcast plays it may zoom out over the Bay of Bengal so the whole storm can be seen.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapLoaded) return;
+    const wide = isSimulationScenario(disasterScenario) && Boolean(bestTrack);
+    map.setOptions(
+      wide
+        ? { minZoom: 6, restriction: { latLngBounds: { north: 18.5, south: 8.0, west: 78.5, east: 87.5 }, strictBounds: false } }
+        : { minZoom: 10.5, restriction: { latLngBounds: CHENNAI_METRO_BOUNDS, strictBounds: true } }
+    );
+  }, [mapLoaded, disasterScenario, bestTrack]);
+
+  const fitStorm = useCallback(() => {
+    const map = mapRef.current;
+    if (!map || !bestTrack) return;
+    const b = new google.maps.LatLngBounds();
+    bestTrack.points.forEach(p => b.extend({ lat: p.lat, lng: p.lng }));
+    b.extend({ lat: 13.0827, lng: 80.2707 });
+    map.fitBounds(b, { top: 90, bottom: 90, left: 380, right: 90 });
+  }, [bestTrack]);
 
   // Read a cell by pointing at it (a listener on the map, so the rectangles never swallow marker clicks).
   useEffect(() => {
@@ -1736,6 +1916,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           }
             windSpeedKmh={currentTimestep ? Math.abs(currentTimestep.wind_speed_10m_kmh) : null}
             windFromDeg={cityWindFromDeg(scenarioGrid, simulationHour)?.fromDeg ?? null}
+            track={bestTrack ? { show: showTrack, setShow: setShowTrack, onFit: fitStorm, now: stormNowText } : null}
+            clockLabel={clockLabel}
+            animate={{ on: animate, set: setAnimate, reducedMotion }}
           />
         )}
       </div>
