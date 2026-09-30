@@ -579,7 +579,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         map,
         title: `${ss.name} (${ss.voltage} kV) • ${ss.totalConsumers ? ss.totalConsumers.toLocaleString() + ' consumers' : ss.tier === 'bulk' ? 'Bulk EHV Node' : 'Substation'}`,
         zIndex: isSelected ? 100 : ss.tier === 'bulk' ? 30 : ss.tier === 'subtransmission' ? 20 : 10,
-        icon: getSubstationMarkerIcon(ss, isSelected, isLight),
+        icon: getSubstationMarkerIcon(ss, isSelected, isLight, crisisTriageFilter !== 'all'),
         optimized: true
       });
 
@@ -674,7 +674,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       }
     });
     if (!b.isEmpty()) {
-      mapRef.current.fitBounds(b, { top: 90, right: 460, bottom: 90, left: 90 });
+      // On wide screens the left search/outage panel is ~470px, so keep markers clear of it.
+      const wide = mapRef.current.getDiv().clientWidth > 1100;
+      mapRef.current.fitBounds(b, { top: 90, right: 460, bottom: 90, left: wide ? 520 : 90 });
     }
   }, [crisisTriageFilter, mapLoaded, substations, liveOutages, substationsWithOutages, floodLayersLoaded]);
 
@@ -709,7 +711,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const prevMarker = markersRef.current[prevSelectedSubstationCodeRef.current];
       const prevSS = substationsByCode.get(prevSelectedSubstationCodeRef.current);
       if (prevMarker && prevSS) {
-        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight));
+        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight, crisisTriageFilter !== 'all'));
         prevMarker.setZIndex(prevSS.tier === 'bulk' ? 30 : prevSS.tier === 'subtransmission' ? 20 : 10);
       }
     }
@@ -750,15 +752,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     prevSelectedSectionCodeRef.current = selectedSection?.code || null;
   }, [selectedSection, theme, mapLoaded]);
 
-  // 7. In-Place Theme Icon Update without marker recreation
+  // 7. In-Place Theme / Triage-Filter Icon Update without marker recreation
   useEffect(() => {
     if (!mapLoaded) return;
     const isLight = theme === 'light';
+    const highlight = crisisTriageFilter !== 'all';
     substations.forEach(ss => {
       const marker = markersRef.current[ss.code];
       if (marker) {
         const isSelected = selectedSubstation?.code === ss.code;
-        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight));
+        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight, highlight));
       }
     });
     sections.forEach(sec => {
@@ -768,7 +771,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         marker.setIcon(getSectionMarkerIcon(isSelected, isLight));
       }
     });
-  }, [theme, mapLoaded]);
+  }, [theme, mapLoaded, crisisTriageFilter]);
 
   // 8. Dedicated Selection Beacon Halo Ring (Visual Highlighting in Light & Dark modes)
   useEffect(() => {

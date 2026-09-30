@@ -191,25 +191,27 @@ export function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
   }
 }
 
-export function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean, isLight: boolean): google.maps.Symbol {
+// `highlight` is true while a triage filter is on: every marker still shown is one the user is looking for.
+export function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean, isLight: boolean, highlight = false): google.maps.Symbol {
   let color = isLight ? '#0284C7' : '#06B6D4';
-  let scale = 5;
+  let scale = 6;
+  const boost = highlight && !isSelected ? 3 : 0;
 
   if (ss.tier === 'bulk') {
     color = isLight ? '#BE185D' : '#EC4899';
-    scale = isSelected ? 13 : 8;
+    scale = (isSelected ? 15 : 10) + boost;
   } else if (ss.tier === 'subtransmission') {
     color = isLight ? '#D97706' : '#F59E0B';
-    scale = isSelected ? 11 : 6.5;
+    scale = (isSelected ? 13 : 8) + boost;
   } else {
-    scale = isSelected ? 9 : 4.5;
+    scale = (isSelected ? 11 : 6) + boost;
   }
 
   const strokeColor = isSelected
     ? (isLight ? '#0F172A' : '#FFFFFF')
     : (isLight ? '#FFFFFF' : '#083344');
 
-  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : 1.5;
+  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : 2.5;
 
   return {
     path: google.maps.SymbolPath.CIRCLE,
@@ -224,12 +226,12 @@ export function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean,
 export function getSectionMarkerIcon(isSelected: boolean, isLight: boolean): google.maps.Symbol {
   return {
     path: google.maps.SymbolPath.CIRCLE,
-    scale: isSelected ? 8 : 3.5,
+    scale: isSelected ? 10 : 5,
     fillColor: isLight ? '#059669' : '#10B981',
     fillOpacity: 0.95,
     strokeColor: isSelected
       ? (isLight ? '#0F172A' : '#FFFFFF')
       : '#FFFFFF',
-    strokeWeight: isSelected ? (isLight ? 4 : 3.5) : 1.5
+    strokeWeight: isSelected ? (isLight ? 4 : 3.5) : 2.5
   };
 }
