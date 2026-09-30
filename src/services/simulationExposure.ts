@@ -1,58 +1,74 @@
 /**
  * simulationExposure.ts
  *
- * Which substations are "exposed now" at one step of a hindcast: the app's one flood-flag rule (yard at or below
- * Chennai's 2.0 m average, inside the NRSC 2015 flood extent, or Moderate/High on the official flood-hazard maps)
- * AND a rain cell at IMD's Heavy class or worse over the last 24 hours. Both parts are facts: an official map check
- * and the satellite rain estimate for the cell. This is not a prediction of flooding or of any outage.
+ * The "Exposed now" list at one step of a hindcast, using the same facts and order as the site briefing card
+ * (`computeBriefing` in siteBriefing.ts), so the list and the card always agree:
+ * - "Rain here" is the higher of the satellite 24-hour value over the site's cell and the nearest IMD gauge reading of the
+ *   latest IMD day that had ended at the step.
+ * - Check first: rain here at IMD's Heavy class or worse, and a strong flood fact (inside the 2015 extent, High on the
+ *   hazard maps, or a ward location at 3 ft or deeper in the GCC 2015 register).
+ * - Check next: Heavy or worse, and a weaker flood fact (Moderate hazard rating, or yard at or below 2 m).
+ * The order is ours, not an official rule. It is not a prediction of flooding or of any outage.
  */
 
 import type { TnebSubstation } from '../types/tneb';
-import { CHENNAI_AVERAGE_ELEVATION_M, IMD_RAIN_CLASSES, type ImdRainClass } from '../data/officialSources';
-import { getCachedOfficialFlood, isOfficiallyFloodFlagged, type SubstationOfficialFlood } from './officialFloodLayers';
-import { rainStateAt, type ScenarioGrid } from './scenarioGrid';
+import { IMD_RAIN_CLASSES, getImdRainClass, type ImdRainClass } from '../data/officialSources';
+import { getCachedOfficialFlood, type SubstationOfficialFlood } from './officialFloodLayers';
+import { wardFacts, type GccPlanData } from './gccPlan';
+import type { ScenarioGrid } from './scenarioGrid';
+import type { ScenarioTimestep } from './scenarioService';
+import type { GaugePoints } from './gaugePoints';
+import { computeBriefing, type BriefingTier } from './siteBriefing';
 
 /** Lowest 24-hour rain (mm) that counts as heavy rain: IMD's "Heavy" class limit. */
 export const HEAVY_RAIN_MIN_MM = (IMD_RAIN_CLASSES.find(c => c.name === 'Heavy') as ImdRainClass).minMm;
 
 export interface ExposedSubstation {
   substation: TnebSubstation;
+  tier: Extract<BriefingTier, 'first' | 'next'>;
+  /** Rain here, mm, and where it came from. */
   mm24: number;
+  source: 'gauge' | 'satellite';
   rainClass: ImdRainClass;
   flood: SubstationOfficialFlood | null;
-  /** Why the site is flood-flagged, as short facts. */
+  /** Short flood facts for the row. */
   reasons: string[];
 }
 
 export interface SimulationExposure {
   exposed: ExposedSubstation[];
-  /** Substations that are flood-flagged at any rain level. */
+  firstCount: number;
+  /** Substations with any flood fact in our data, at any rain level. */
   floodFlaggedCount: number;
   total: number;
 }
 
-function floodReasons(elevationM: number | undefined, flood: SubstationOfficialFlood | null): string[] {
-  const out: string[] = [];
-  if (elevationM !== undefined && elevationM <= CHENNAI_AVERAGE_ELEVATION_M) out.push(`Yard ${elevationM} m`);
-  if (flood?.nrsc2015) out.push('2015 flood extent');
-  if (flood?.returnPeriod === 'HIGH' || flood?.returnPeriod === 'MODERATE') {
-    out.push(`Hazard map: ${flood.returnPeriod === 'HIGH' ? 'High' : 'Moderate'}`);
-  }
-  return out;
-}
-
-export function computeExposure(substations: TnebSubstation[], grid: ScenarioGrid, hour: number): SimulationExposure {
+export function computeExposure(
+  substations: TnebSubstation[],
+  grid: ScenarioGrid,
+  timestep: ScenarioTimestep | null | undefined,
+  gauges: GaugePoints | null,
+  gccPlan: GccPlanData | null
+): SimulationExposure {
   const exposed: ExposedSubstation[] = [];
   let floodFlaggedCount = 0;
   for (const s of substations) {
     if (typeof s.lat !== 'number' || typeof s.lng !== 'number') continue;
     const flood = getCachedOfficialFlood(s.code);
-    if (!isOfficiallyFloodFlagged(s.elevationM, flood)) continue;
+    const b = computeBriefing(s, timestep, grid, gauges, flood, wardFacts(gccPlan, s.gccWard));
+    if (b.tier === 'none') continue;
     floodFlaggedCount++;
-    const rain = rainStateAt(grid, s.lat, s.lng, hour);
-    if (!rain || rain.mm24 < HEAVY_RAIN_MIN_MM) continue;
-    exposed.push({ substation: s, mm24: rain.mm24, rainClass: rain.rainClass, flood, reasons: floodReasons(s.elevationM, flood) });
+    if ((b.tier !== 'first' && b.tier !== 'next') || b.hereMm === null || !b.hereSource) continue;
+    exposed.push({
+      substation: s,
+      tier: b.tier,
+      mm24: b.hereMm,
+      source: b.hereSource,
+      rainClass: getImdRainClass(b.hereMm),
+      flood,
+      reasons: b.chips,
+    });
   }
-  exposed.sort((a, b) => b.mm24 - a.mm24);
-  return { exposed, floodFlaggedCount, total: substations.length };
+  exposed.sort((a, b) => (a.tier === b.tier ? b.mm24 - a.mm24 : a.tier === 'first' ? -1 : 1));
+  return { exposed, firstCount: exposed.filter(e => e.tier === 'first').length, floodFlaggedCount, total: substations.length };
 }

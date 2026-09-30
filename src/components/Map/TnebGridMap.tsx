@@ -23,7 +23,8 @@ import {
   classifyDtrPoint,
   getFeederLifelineBadge,
   getSubstationMarkerIcon,
-  getSectionMarkerIcon
+  getSectionMarkerIcon,
+  getReplayHaloIcon
 } from './mapIcons';
 import {
   type FeederDisasterStatus,
@@ -47,19 +48,17 @@ import { getDirectiveForTimestep, fetchLiveGeminiDirective, resolvePhase, type G
 import type { TimelineStep } from './DisasterCockpitBar';
 import {
   fetchScenarioGrid,
-  cellIndexFor,
-  rolling24hRain,
   cityWindFromDeg,
   type ScenarioGrid
 } from '../../services/scenarioGrid';
-import { getImdRainClass } from '../../data/officialSources';
 import { rainFill, type HazardYears } from './rainScale';
-import { SimulationMapPanel, type HoverCell } from './SimulationMapPanel';
+import { SimulationMapPanel } from './SimulationMapPanel';
 import { ExposedSubstationsCard } from './ExposedSubstationsCard';
 import { ImdAtTheTimeCard } from './ImdAtTheTimeCard';
 import { IMD_BEST_TRACK, IMD_STEP_NOTES, TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel } from '../../data/imdBulletins';
 import { GRADE_COLOR, stormAt, useBestTrack } from '../../services/bestTrack';
 import { computeExposure } from '../../services/simulationExposure';
+import { useGccPlan } from '../../services/gccPlan';
 import { fetchGaugePoints, gaugeWindowFor, type GaugePoints } from '../../services/gaugePoints';
 
 // Official flood maps (fixed layers), fetched when first switched on.
@@ -109,6 +108,8 @@ interface TnebGridMapProps {
   onSelectSubstation: (ss: TnebSubstation | null) => void;
   onSelectSection: (sec: TnebSection | null) => void;
   liveWeather?: LiveWeatherConditions | null;
+  /** Told when the viewer switches between live mode and a hindcast, so the header can hide today's weather during a replay. */
+  onScenarioChange?: (scenario: DisasterScenario) => void;
 }
 
 export interface ConnectedGridNode {
@@ -138,7 +139,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   selectedSection,
   onSelectSubstation,
   onSelectSection,
-  liveWeather
+  liveWeather,
+  onScenarioChange
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -182,6 +184,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     }
     return 'NORMAL';
   });
+  useEffect(() => {
+    onScenarioChange?.(disasterScenario);
+  }, [disasterScenario, onScenarioChange]);
   const [crisisTriageFilter, setCrisisTriageFilter] = useState<CrisisTriageFilter>('all');
   const [showLayersDuringTriage, setShowLayersDuringTriage] = useState(false);
   const [liveOutages, setLiveOutages] = useState<LiveOutage[]>([]);
@@ -193,15 +198,13 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [scenarioGrid, setScenarioGrid] = useState<ScenarioGrid | null>(null);
   const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
   // Storm layers (only while a hindcast scenario is selected)
-  const [showRain, setShowRain] = useState(true);
-  const [showFlood2015, setShowFlood2015] = useState(false);
+  // The 2015 flood extent is the map's water layer during a replay (fixed, not Michaung; see the storm panel).
+  const [showFlood2015, setShowFlood2015] = useState(true);
   const [showHazard, setShowHazard] = useState(false);
   const [hazardYears, setHazardYears] = useState<HazardYears>(100);
-  const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [gaugePoints, setGaugePoints] = useState<GaugePoints | null>(null);
   const [showGauges, setShowGauges] = useState(true);
   const gaugeMarkersRef = useRef<google.maps.Marker[]>([]);
-  const rainRectsRef = useRef<google.maps.Rectangle[]>([]);
   const flood2015LayerRef = useRef<google.maps.Data | null>(null);
   const hazardLayerRef = useRef<google.maps.Data | null>(null);
 
@@ -442,17 +445,15 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
   const floodLayersLoaded = useOfficialFloodLoaded();
 
-  // Substations exposed at this step: flood-flagged and in a rain cell at Heavy or worse over the last 24 hours.
+  // Substations to check at this step, by the same rule as the site briefing card (see simulationExposure.ts).
+  const gccPlan = useGccPlan();
   const exposure = useMemo(
     () =>
       scenarioGrid && isSimulationScenario(disasterScenario) && substations.length > 0
-        ? computeExposure(substations, scenarioGrid, simulationHour)
+        ? computeExposure(substations, scenarioGrid, currentTimestep, gaugePoints, gccPlan)
         : null,
-    [scenarioGrid, disasterScenario, substations, simulationHour, floodLayersLoaded]
+    [scenarioGrid, disasterScenario, substations, currentTimestep, gaugePoints, gccPlan, floodLayersLoaded]
   );
-  const exposedCodes = useMemo(() => new Set(exposure ? exposure.exposed.map(e => e.substation.code) : []), [exposure]);
-  const exposedCodesRef = useRef(exposedCodes);
-  exposedCodesRef.current = exposedCodes;
   const waterloggingRiskCount = useMemo(() => {
     return substations.filter(s => isSubstationWaterloggingRisk(s)).length;
   }, [substations, floodLayersLoaded]);
@@ -769,7 +770,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const prevMarker = markersRef.current[prevSelectedSubstationCodeRef.current];
       const prevSS = substationsByCode.get(prevSelectedSubstationCodeRef.current);
       if (prevMarker && prevSS) {
-        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight, crisisTriageFilter !== 'all', exposedCodesRef.current.has(prevSS.code)));
+        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight, crisisTriageFilter !== 'all'));
         prevMarker.setZIndex(prevSS.tier === 'bulk' ? 30 : prevSS.tier === 'subtransmission' ? 20 : 10);
       }
     }
@@ -819,7 +820,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const marker = markersRef.current[ss.code];
       if (marker) {
         const isSelected = selectedSubstation?.code === ss.code;
-        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight, highlight, exposedCodes.has(ss.code)));
+        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight, highlight));
       }
     });
     sections.forEach(sec => {
@@ -829,7 +830,36 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         marker.setIcon(getSectionMarkerIcon(isSelected, isLight));
       }
     });
-  }, [theme, mapLoaded, crisisTriageFilter, exposedCodes]);
+  }, [theme, mapLoaded, crisisTriageFilter]);
+
+  // During a replay, sites to check get a halo behind their dot (red = check first, orange = check next); the dots keep their
+  // voltage colours. Only for dots that are on the map (layer switches and filters still apply).
+  const haloMarkersRef = useRef<google.maps.Marker[]>([]);
+  useEffect(() => {
+    haloMarkersRef.current.forEach(m => m.setMap(null));
+    haloMarkersRef.current = [];
+    const map = mapRef.current;
+    if (!map || !mapLoaded || !exposure || !isSimulationScenario(disasterScenario)) return;
+    const isLight = theme === 'light';
+    exposure.exposed.forEach(e => {
+      const dot = markersRef.current[e.substation.code];
+      if (!dot || dot.getMap() !== map) return;
+      haloMarkersRef.current.push(
+        new google.maps.Marker({
+          map,
+          position: dot.getPosition() as google.maps.LatLng,
+          icon: getReplayHaloIcon(e.tier, isLight),
+          clickable: false,
+          zIndex: e.tier === 'first' ? 6 : 5,
+          optimized: true
+        })
+      );
+    });
+    return () => {
+      haloMarkersRef.current.forEach(m => m.setMap(null));
+      haloMarkersRef.current = [];
+    };
+  }, [exposure, mapLoaded, disasterScenario, theme, showBulk, showSubTrans, showDistribution, isolatedNodeIds, crisisTriageFilter, substationsWithOutages]);
 
   // 8. Dedicated Selection Beacon Halo Ring (Visual Highlighting in Light & Dark modes)
   useEffect(() => {
@@ -922,31 +952,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [showReliefCentres, reliefData, mapLoaded]);
 
-  // Storm layer 1: one rectangle per ~11 km rain cell, coloured by the rain of the last 24 hours at the current step.
-  useEffect(() => {
-    rainRectsRef.current.forEach(r => r.setMap(null));
-    rainRectsRef.current = [];
-    if (!mapRef.current || !mapLoaded || !scenarioGrid || !isSimulationScenario(disasterScenario)) return;
-    const d = scenarioGrid.cellSizeDeg;
-    rainRectsRef.current = scenarioGrid.cells.map(
-      c =>
-        new google.maps.Rectangle({
-          map: mapRef.current,
-          clickable: false,
-          zIndex: 1,
-          bounds: { south: c.lat0, north: c.lat0 + d, west: c.lng0, east: c.lng0 + d },
-          strokeColor: '#1e3a8a',
-          strokeOpacity: 0.25,
-          strokeWeight: 1,
-          fillOpacity: 0
-        })
-    );
-    return () => {
-      rainRectsRef.current.forEach(r => r.setMap(null));
-      rainRectsRef.current = [];
-    };
-  }, [scenarioGrid, mapLoaded, disasterScenario]);
-
   // IMD's observed track: the whole path dotted underneath, the part travelled solid, a marker at the storm centre, and the landfall point.
   const bestTrack = useBestTrack();
   const [showTrack, setShowTrack] = useState(true);
@@ -1008,17 +1013,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [bestTrack, mapLoaded, disasterScenario]);
 
-  // Paint the rain cells and the storm for one moment. `hour` is a scenario hour; between steps it is a fraction.
+  // Paint the storm for one moment. `hour` is a scenario hour; between steps it is a fraction.
   const paintStorm = useCallback(
     (hour: number) => {
-      if (scenarioGrid) {
-        const h = Math.round(hour);
-        rainRectsRef.current.forEach((rect, i) => {
-          const mm = rolling24hRain(scenarioGrid, i, h);
-          const f = mm === null ? { color: '#000000', opacity: 0 } : rainFill(mm);
-          rect.setOptions({ visible: showRain, fillColor: f.color, fillOpacity: f.opacity });
-        });
-      }
       const ahead = trackAheadRef.current;
       const done = trackDoneRef.current;
       const marker = stormMarkerRef.current;
@@ -1058,7 +1055,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       }
       marker.setVisible(true);
     },
-    [scenarioGrid, showRain, showTrack, bestTrack, hourZeroMs]
+    [showTrack, bestTrack, hourZeroMs]
   );
 
   // Show the current step. When the step changes, play the real hours in between (the hourly satellite values, and the storm along
@@ -1119,7 +1116,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     const wide = isSimulationScenario(disasterScenario) && Boolean(bestTrack);
     map.setOptions(
       wide
-        ? { minZoom: 6, restriction: { latLngBounds: { north: 18.5, south: 8.0, west: 78.5, east: 87.5 }, strictBounds: false } }
+        ? { minZoom: 6, restriction: { latLngBounds: { north: 22.0, south: 4.0, west: 70.0, east: 92.0 }, strictBounds: false } }
         : { minZoom: 10.5, restriction: { latLngBounds: CHENNAI_METRO_BOUNDS, strictBounds: true } }
     );
   }, [mapLoaded, disasterScenario, bestTrack]);
@@ -1132,36 +1129,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     b.extend({ lat: 13.0827, lng: 80.2707 });
     map.fitBounds(b, { top: 90, bottom: 90, left: 380, right: 90 });
   }, [bestTrack]);
-
-  // Read a cell by pointing at it (a listener on the map, so the rectangles never swallow marker clicks).
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !mapLoaded || !scenarioGrid || !showRain) return;
-    const move = map.addListener('mousemove', (e: google.maps.MapMouseEvent) => {
-      if (!e.latLng) return;
-      const idx = cellIndexFor(scenarioGrid, e.latLng.lat(), e.latLng.lng());
-      setHoverIdx(idx === -1 ? null : idx);
-    });
-    const out = map.addListener('mouseout', () => setHoverIdx(null));
-    return () => {
-      move.remove();
-      out.remove();
-    };
-  }, [scenarioGrid, showRain, mapLoaded]);
-
-  const hoverCell = useMemo<HoverCell | null>(() => {
-    if (!scenarioGrid || !showRain || hoverIdx === null) return null;
-    const mm24 = rolling24hRain(scenarioGrid, hoverIdx, simulationHour);
-    const c = scenarioGrid.cells[hoverIdx];
-    if (mm24 === null || !c) return null;
-    const d = scenarioGrid.cellSizeDeg;
-    return {
-      label: `${c.lat0.toFixed(1)}-${(c.lat0 + d).toFixed(1)}°N ${c.lng0.toFixed(1)}-${(c.lng0 + d).toFixed(1)}°E`,
-      mm24,
-      className: getImdRainClass(mm24).name,
-      substations: c.substations
-    };
-  }, [scenarioGrid, showRain, hoverIdx, simulationHour]);
 
   // IMD rain gauges: the readings of the latest 24-hour window that had ended at this step, as squares coloured on the rain scale.
   const gaugeWindow = useMemo(
@@ -1210,7 +1177,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       if (cancelled || !gj) return;
       const layer = new google.maps.Data({ map });
       layer.addGeoJson(gj);
-      layer.setStyle({ fillColor: '#0891b2', fillOpacity: 0.35, strokeWeight: 0, clickable: false, zIndex: 2 });
+      layer.setStyle({ fillColor: '#0891b2', fillOpacity: 0.18, strokeWeight: 0, clickable: false, zIndex: 2 });
       flood2015LayerRef.current = layer;
     });
     return () => {
@@ -1786,7 +1753,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
       {/* Top Left Floating Search & Quick Filters */}
       <div
-        className={`absolute top-[5.25rem] md:top-4 left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] max-h-[calc(100%-6.25rem)] md:max-h-[calc(100%-2rem)] ${
+        className={`absolute left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] md:top-4 md:bottom-auto md:max-h-[calc(100%-2rem)] ${
+          // On phones during a replay the cockpit (directive, timeline, IMD card) fills the top, so these panels sit at the bottom.
+          isSimulationScenario(disasterScenario) ? 'bottom-2 max-h-[45%]' : 'top-[5.25rem] max-h-[calc(100%-6.25rem)]'
+        } ${
           isResizingLeftPanel ? 'transition-none select-none' : 'transition-[width] duration-200'
         } pointer-events-none`}
         style={{
@@ -1895,15 +1865,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           <SimulationMapPanel
             isLight={isLight}
             stepLabel={currentTimestep?.label || `T${simulationHour >= 0 ? '+' : ''}${simulationHour}h`}
-            showRain={showRain}
-            setShowRain={setShowRain}
             showFlood2015={showFlood2015}
             setShowFlood2015={setShowFlood2015}
             showHazard={showHazard}
             setShowHazard={setShowHazard}
             hazardYears={hazardYears}
             setHazardYears={setHazardYears}
-            hover={hoverCell}
           showGauges={showGauges}
           setShowGauges={setShowGauges}
           gaugeInfo={

@@ -20,6 +20,9 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [liveWeather, setLiveWeather] = useState<LiveWeatherConditions | null>(null);
   const [isLoadingWeather, setIsLoadingWeather] = useState(true);
+  // True while a past storm is replayed: today's weather is hidden so it does not sit beside the storm.
+  const [isReplay, setIsReplay] = useState(false);
+  const handleScenarioChange = useCallback((s: string) => setIsReplay(s !== 'NORMAL' && s !== 'LIVE'), []);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('sg_theme') as 'light' | 'dark') || 'light';
@@ -128,13 +131,13 @@ export default function App() {
         {/* Telemetry Controls & Live Weather */}
         <div className="flex items-center gap-2 sm:gap-3 text-xs">
           {/* Live Weather Widget (Google Maps Platform Weather API - WeatherNext 3) */}
-          <LiveWeatherPill
+          {!isReplay && <LiveWeatherPill
             liveWeather={liveWeather}
             selectedSubstation={selectedSubstation}
             isLoadingWeather={isLoadingWeather}
             onRefresh={() => handleRefreshWeather()}
             isLight={isLight}
-          />
+          />}
 
           {/* Light / Dark Mode Toggle Button */}
           <button
@@ -186,6 +189,7 @@ export default function App() {
               onSelectSubstation={setSelectedSubstation}
               onSelectSection={setSelectedSection}
               liveWeather={liveWeather}
+              onScenarioChange={handleScenarioChange}
             />
             {loading && (
               <div

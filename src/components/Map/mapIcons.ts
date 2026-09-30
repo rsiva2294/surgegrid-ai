@@ -192,17 +192,16 @@ export function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
 }
 
 // `highlight` is true while a triage filter is on: every marker still shown is one the user is looking for.
-// `exposed` marks a substation that is flood-flagged and in heavy rain at the current simulation step.
+// During a hindcast the dots keep these colours; sites to check get a halo behind them (getReplayHaloIcon).
 export function getSubstationMarkerIcon(
   ss: TnebSubstation,
   isSelected: boolean,
   isLight: boolean,
-  highlight = false,
-  exposed = false
+  highlight = false
 ): google.maps.Symbol {
   let color = isLight ? '#0284C7' : '#06B6D4';
   let scale = 6;
-  const boost = (highlight || exposed) && !isSelected ? 3 : 0;
+  const boost = highlight && !isSelected ? 3 : 0;
 
   if (ss.tier === 'bulk') {
     color = isLight ? '#BE185D' : '#EC4899';
@@ -214,13 +213,8 @@ export function getSubstationMarkerIcon(
     scale = (isSelected ? 11 : 6) + boost;
   }
 
-  const strokeColor = isSelected
-    ? (isLight ? '#0F172A' : '#FFFFFF')
-    : exposed
-    ? '#DC2626'
-    : (isLight ? '#FFFFFF' : '#083344');
-
-  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : exposed ? 3.5 : 2.5;
+  const strokeColor = isSelected ? (isLight ? '#0F172A' : '#FFFFFF') : (isLight ? '#FFFFFF' : '#083344');
+  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : 2.5;
 
   return {
     path: google.maps.SymbolPath.CIRCLE,
@@ -229,6 +223,24 @@ export function getSubstationMarkerIcon(
     fillOpacity: 1.0,
     strokeColor,
     strokeWeight
+  };
+}
+
+/**
+ * A soft halo drawn behind a substation dot during a hindcast, for the site card's order: a wide red glow for "check first",
+ * a smaller orange one for "check next". The dot itself keeps its voltage colour.
+ */
+export function getReplayHaloIcon(tier: 'first' | 'next', isLight: boolean): google.maps.Symbol {
+  const first = tier === 'first';
+  const color = first ? (isLight ? '#DC2626' : '#EF4444') : isLight ? '#EA580C' : '#FB923C';
+  return {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale: first ? 17 : 13,
+    fillColor: color,
+    fillOpacity: first ? 0.3 : 0.25,
+    strokeColor: color,
+    strokeOpacity: first ? 0.7 : 0.55,
+    strokeWeight: first ? 2 : 1.5
   };
 }
 

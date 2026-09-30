@@ -11,7 +11,6 @@
 import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { LiveOutage } from './liveOutageService';
-import { getEnrichedHealthProfile } from './gridHealthService';
 import { getCachedOfficialFlood, describeOfficialFlood } from './officialFloodLayers';
 import { generateJson } from './geminiClient';
 import {
@@ -95,7 +94,7 @@ const FLAG_ACTIONS: Record<FlagKey, Record<SopPhase, string[]>> = {
 
 const MAX_ACTIONS = 4;
 const MAX_FEEDER_NAMES = 3;
-const MAX_NOTE_CHARS = 240;
+const MAX_NOTE_CHARS = 340;
 
 const copilotCache = new Map<string, SubstationCopilotAdvisory>();
 
@@ -181,10 +180,8 @@ interface BuiltAdvisory {
 
 function buildAdvisory(
   substation: TnebSubstation,
-  timestep: ScenarioTimestep | null | undefined,
-  liveOutages: LiveOutage[]
+  timestep: ScenarioTimestep | null | undefined
 ): BuiltAdvisory {
-  const profile = getEnrichedHealthProfile(substation, liveOutages);
   const phase: SopPhase = timestep ? resolvePhase(timestep) : 'WATCH';
   const facts = gatherFacts(substation);
   const flags = buildFlags(facts);
@@ -219,7 +216,8 @@ function buildAdvisory(
     phase,
     flags,
     actions,
-    note: `Health grade ${profile.healthGrade} (${profile.healthScore}/100), ${profile.unscheduledTripsCount} unscheduled trips in the last 90 days.`,
+    // No rule-based note: today's health score and trips do not describe the replayed storm. Gemini may add one.
+    note: undefined,
     modelTag: 'Official quotes · rule-based',
     cached: false,
     timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -232,15 +230,18 @@ export function generateDeterministicTacticalAdvisory(
   substation: TnebSubstation,
   _scenarioId: ScenarioId | string,
   timestep?: ScenarioTimestep | null,
-  liveOutages: LiveOutage[] = []
+  _liveOutages: LiveOutage[] = []
 ): SubstationCopilotAdvisory {
-  return buildAdvisory(substation, timestep, liveOutages).advisory;
+  return buildAdvisory(substation, timestep).advisory;
 }
 
 const COPILOT_SYSTEM_INSTRUCTION =
   'You help a substation engineer in Chennai during a cyclone or flood. You are given facts about one substation from our grid data ' +
   'and a fixed list of official actions (each with an id and an exact quote). ' +
-  'For each action, choose which of the listed feeder names it applies to, and write one short note (one sentence) that ties the actions to the facts provided. ' +
+  'For each action, choose which of the listed feeder names it applies to, and write a note of at most two short sentences: ' +
+  'first, the rain reading as given (for a gauge, say its name, its distance from the site and the IMD day it covers; for the satellite, say it is an 11 km average; never say the rain fell at the site itself), ' +
+  'then the flood facts given and that the listed actions apply. ' +
+  'Keep the whole note under 280 characters. A fact about a ward stays about the ward, never the site. ' +
   'Rules: use only feeder names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
   'never restate, reword or cite the quotes; if an action has no feeder list, return an empty feeders array. ' +
   'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so. ' +
@@ -258,20 +259,19 @@ export async function fetchSubstationTacticalAdvisory(
   substation: TnebSubstation,
   scenarioId: ScenarioId | string,
   timestep?: ScenarioTimestep | null,
-  liveOutages: LiveOutage[] = [],
-  options: { force?: boolean } = {}
+  _liveOutages: LiveOutage[] = [],
+  options: { force?: boolean; rain?: { lines: string; key: string } } = {}
 ): Promise<SubstationCopilotAdvisory> {
-  const built = buildAdvisory(substation, timestep, liveOutages);
+  const built = buildAdvisory(substation, timestep);
   const { advisory: fallback, facts, allowedFeeders } = built;
   if (!timestep || scenarioId === 'LIVE' || scenarioId === 'NORMAL' || fallback.actions.length === 0) return fallback;
 
-  const cacheKey = `${substation.code}_${scenarioId}_${timestep.timestep_hour}_${built.facts.floodMapLines.length}`;
+  const cacheKey = `${substation.code}_${scenarioId}_${timestep.timestep_hour}_${built.facts.floodMapLines.length}_${options.rain?.key ?? 'norain'}`;
   if (!options.force) {
     const cached = copilotCache.get(cacheKey);
     if (cached) return { ...cached, cached: true };
   }
 
-  const profile = getEnrichedHealthProfile(substation, liveOutages);
   const imd = getImdCycloneClass(timestep.wind_speed_10m_kmh);
   const actionLines = fallback.actions
     .map(a => `${a.id}|${(a.feeders || []).join('; ') || 'none'}|${(getOfficialRule(a.id) as OfficialRule).quote}`)
@@ -282,12 +282,12 @@ export async function fetchSubstationTacticalAdvisory(
   const prompt = `SCENARIO: ${scenarioLabel(scenarioId as ScenarioId)}
 TIME: T${timestep.timestep_hour >= 0 ? '+' : ''}${timestep.timestep_hour}h (T-0 is the peak-rain hour) | PHASE: ${fallback.phase}
 WEATHER (area mean): wind ${Math.abs(timestep.wind_speed_10m_kmh).toFixed(0)} km/h${imd ? ` (IMD class ${imd.name})` : ''} | rain ${timestep.total_precipitation_1hr_mm.toFixed(1)} mm/h
-SUBSTATION: ${fallback.substationName} (${substation.voltage}) | yard elevation ${facts.elevation !== undefined ? `${facts.elevation} m MSL` : 'unknown'} | health grade ${profile.healthGrade} (${profile.healthScore}/100) | ${profile.unscheduledTripsCount} unscheduled trips in 90 days
+SUBSTATION: ${fallback.substationName} (${substation.voltage}) | yard elevation ${facts.elevation !== undefined ? `${facts.elevation} m MSL` : 'unknown'}
 FEEDERS: ${facts.total} total | ${facts.overhead.length} overhead or mixed | ${facts.underground} underground | ${facts.lifeline.length} hospital or water
 FLAGS: ${fallback.flags.map(f => f.label).join(', ') || 'none'}
-HEALTH (SurgeGrid's own rating): ${profile.periodicMaintenanceCount} scheduled maintenance runs and ${profile.unscheduledTripsCount} unscheduled trips in the last 90 days | live outage notices matched today: ${liveOutages.length}
 OFFICIAL FLOOD MAPS (location check): ${officialFloodText}
-ACTIONS (id|feeder names to use|exact quote):
+${options.rain ? `${options.rain.lines}
+` : ''}ACTIONS (id|feeder names to use|exact quote):
 ${actionLines}`;
   const promptNumbers = new Set(numbersIn(prompt));
   const ruleIds = fallback.actions.map(a => a.id);
@@ -332,12 +332,14 @@ ${actionLines}`;
       return chosen.length > 0 ? { ...act, feeders: chosen } : act;
     });
 
-    const noteOk = isGroundedText(parsed.note, promptNumbers, MAX_NOTE_CHARS);
+    // Keep at most two sentences, then check them.
+    const note = typeof parsed.note === 'string' ? parsed.note.trim().split(/(?<=[.!?])\s+/).slice(0, 2).join(' ') : parsed.note;
+    const noteOk = isGroundedText(note, promptNumbers, MAX_NOTE_CHARS);
 
     const enriched: SubstationCopilotAdvisory = {
       ...fallback,
       actions,
-      note: noteOk ? (parsed.note as string) : fallback.note,
+      note: noteOk ? (note as string) : fallback.note,
       modelTag: 'Gemini 2.5 Flash · wording only, quotes are official',
     };
     copilotCache.set(cacheKey, enriched);

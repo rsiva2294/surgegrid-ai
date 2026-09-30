@@ -31,6 +31,7 @@ import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import { type LiveOutage, getOutagesForSubstation, getOutagesForSection } from '../../services/liveOutageService';
 import type { ScenarioTimestep } from '../../services/scenarioService';
 import { FloodExposureCard } from './FloodExposureCard';
+import { SiteBriefingCard } from './SiteBriefingCard';
 import { FloodPlanNotes } from './FloodPlanNotes';
 import { useSectionBoundary } from '../../services/sectionBoundaries';
 import { ReliefCentresCard } from './ReliefCentresCard';
@@ -73,6 +74,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   liveWeather
 }) => {
   const [inspectorTab, setInspectorTab] = useState<'overview' | 'feeders' | 'respond'>('overview');
+  const isReplay = disasterScenario !== 'NORMAL' && disasterScenario !== 'LIVE';
   const sectionBoundary = useSectionBoundary(selectedSection?.code);
   const { flood: officialFlood } = useOfficialFlood(selectedSubstation?.code);
   const [isLinksListExpanded, setIsLinksListExpanded] = useState(false);
@@ -471,12 +473,14 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 C: isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-500/20 text-amber-300 border-amber-500/40',
                 D: isLight ? 'bg-rose-100 text-rose-900 border-rose-300' : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
               }[profile.healthGrade];
+              // During a replay, today's health score and outage notices do not describe December 2023, so they step aside.
+              if (isReplay && !officialFlood?.nrsc2015) return null;
               return (
                 <div className="flex items-center gap-1.5 flex-wrap pt-2 shrink-0 text-xs">
-                  <span className={`${chip} ${grade}`} title="SurgeGrid health score, our own model from 90-day outage history">
+                  {!isReplay && <span className={`${chip} ${grade}`} title="SurgeGrid health score, our own model from 90-day outage history">
                     Health {profile.healthGrade} · {profile.healthScore}/100
-                  </span>
-                  {activeSubstationOutages.length > 0 ? (
+                  </span>}
+                  {isReplay ? null : activeSubstationOutages.length > 0 ? (
                     <span className={`${chip} ${isLight ? 'bg-red-100 text-red-800 border-red-300' : 'bg-red-500/20 text-red-300 border-red-500/40'}`}>
                       {activeSubstationOutages.length} live outage notice{activeSubstationOutages.length > 1 ? 's' : ''}
                     </span>
@@ -844,8 +848,22 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 {/* Tab 1: Plant & Technical Specs */}
                 {inspectorTab === 'overview' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
+                    {/* During a replay: what is true for this site at the step on screen */}
+                    {isReplay && currentTimestep && (
+                      <SiteBriefingCard substation={selectedSubstation} isLight={isLight} currentTimestep={currentTimestep} />
+                    )}
+                    {/* During a replay: the official plan actions for this site at this step */}
+                    {isReplay && (
+                      <SubstationCopilotCard
+                        substation={selectedSubstation}
+                        isLight={isLight}
+                        disasterScenario={disasterScenario}
+                        liveOutages={activeSubstationOutages}
+                        currentTimestep={currentTimestep}
+                      />
+                    )}
                     {/* Live Outage / Maintenance Alert Banner */}
-                    {activeSubstationOutages.length > 0 && (
+                    {!isReplay && activeSubstationOutages.length > 0 && (
                       <div className={`p-2.5 rounded-xl border text-xs shrink-0 flex items-start gap-2 ${
                         isLight
                           ? 'bg-red-50 border-red-200 text-red-800'
@@ -999,11 +1017,13 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     })()}
 
                     {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
-                    <SubstationHealthCard
-                      substation={selectedSubstation}
-                      isLight={isLight}
-                      liveOutages={activeSubstationOutages}
-                    />
+                    {!isReplay && (
+                      <SubstationHealthCard
+                        substation={selectedSubstation}
+                        isLight={isLight}
+                        liveOutages={activeSubstationOutages}
+                      />
+                    )}
 
                     {/* Flood exposure: facts and official map checks */}
                     {selectedSubstation.elevationM !== undefined && (
@@ -1015,13 +1035,6 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                 {/* Tab 3: Respond (AI card, relief centres, contacts, plan notes) */}
                 {inspectorTab === 'respond' && (
                   <div className="flex flex-col flex-1 min-h-0 space-y-2.5 overflow-y-auto pr-1">
-                    <SubstationCopilotCard
-                      substation={selectedSubstation}
-                      isLight={isLight}
-                      disasterScenario={disasterScenario}
-                      liveOutages={activeSubstationOutages}
-                      currentTimestep={currentTimestep}
-                    />
                     <SubstationLiveBriefCard
                       substation={selectedSubstation}
                       isLight={isLight}

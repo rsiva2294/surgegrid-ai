@@ -239,13 +239,13 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
               }`}></span>
             </span>
             <span className="tracking-wide uppercase font-bold">Live</span>
-            <span className={`min-w-[34px] inline-flex items-center justify-center text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
+            {(disasterScenario === 'NORMAL' || disasterScenario === 'LIVE') && <span className={`min-w-[34px] inline-flex items-center justify-center text-[10px] font-mono px-1.5 py-0.5 rounded font-bold ${
               disasterScenario === 'NORMAL' || disasterScenario === 'LIVE'
                 ? (isLight ? 'bg-emerald-900 text-white' : 'bg-emerald-900/80 text-emerald-100 border border-emerald-600/50')
                 : (isLight ? 'bg-slate-200 text-slate-800' : 'bg-slate-800 text-slate-200')
             }`}>
               {liveWeather && liveWeather.temperatureC !== null ? `${Math.round(liveWeather.temperatureC)}°C` : '--°C'}
-            </span>
+            </span>}
           </button>
 
           {/* 2. Cyclone Michaung (Dec 2023) hindcast */}
@@ -290,15 +290,17 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
 
       {/* Tertiary: Dynamic Gemini AI Directive Strip during Simulation */}
       {disasterScenario !== 'NORMAL' && disasterScenario !== 'LIVE' && (
-        <div className={`pointer-events-auto px-3.5 py-1.5 rounded-2xl text-[11px] sm:text-xs shadow-md border flex items-center justify-between gap-3 backdrop-blur-md max-w-2xl transition-all ${
+        <div
+          title={activeDirective?.summaryEn || undefined}
+          className={`pointer-events-auto px-3.5 py-1.5 rounded-2xl text-[11px] sm:text-xs shadow-md border flex items-center justify-between gap-3 backdrop-blur-md max-w-full md:max-w-2xl transition-all ${
           activeDirective?.urgency === 'CRITICAL'
             ? (isLight ? 'bg-rose-50/95 border-rose-300 text-rose-950 shadow-rose-500/10' : 'bg-rose-950/85 border-rose-700/80 text-rose-200 shadow-black/40')
             : activeDirective?.urgency === 'RESTORATION'
             ? (isLight ? 'bg-emerald-50/95 border-emerald-300 text-emerald-950 shadow-emerald-500/10' : 'bg-emerald-950/85 border-emerald-700/80 text-emerald-200 shadow-black/40')
             : (isLight ? 'bg-amber-50/95 border-amber-300 text-amber-950 shadow-amber-500/10' : 'bg-amber-950/85 border-amber-700/80 text-amber-200 shadow-black/40')
         }`}>
-          <div className="flex items-start gap-2 min-w-0">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
+          <div className="flex items-center gap-2 min-w-0">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
             <div className="min-w-0">
               <div className="flex items-center gap-2 truncate">
                 <span className="font-bold tracking-tight shrink-0">
@@ -308,9 +310,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                   {activeDirective ? activeDirective.title : 'Actions quoted from the official plans'}
                 </span>
               </div>
-              {activeDirective?.summaryEn && (
-                <p className="text-[11px] leading-snug opacity-90 line-clamp-2 whitespace-normal">{activeDirective.summaryEn}</p>
-              )}
+              {/* One line only during a replay; the summary is in the tooltip and the AI Directive dialog. */}
             </div>
           </div>
           <button

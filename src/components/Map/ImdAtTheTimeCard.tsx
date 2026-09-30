@@ -16,7 +16,8 @@ interface ImdAtTheTimeCardProps {
  * src/data/imdBulletins.ts). IMD's statements at the time, in its forecast wording: context, not our claims.
  */
 export const ImdAtTheTimeCard: React.FC<ImdAtTheTimeCardProps> = ({ isLight, stepTime, note, track }) => {
-  const [open, setOpen] = useState(() => (typeof window === 'undefined' ? true : window.innerWidth >= 768));
+  // Folded by default: the site card carries IMD's statement for the step; open it for the full set.
+  const [open, setOpen] = useState(false);
 
   const card = isLight
     ? 'bg-white/95 border-slate-300/90 text-slate-800 shadow-[0_8px_25px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10'

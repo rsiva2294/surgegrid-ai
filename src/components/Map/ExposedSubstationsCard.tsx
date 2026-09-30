@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Info, Navigation, Search } from 'lucide-react';
 import type { TnebSubstation } from '../../types/tneb';
-import { IMD_RAIN_CLASSES } from '../../data/officialSources';
 import { HEAVY_RAIN_MIN_MM, type ExposedSubstation, type SimulationExposure } from '../../services/simulationExposure';
+import { TIER_TITLE } from '../../services/siteBriefing';
 
 interface ExposedSubstationsCardProps {
   exposure: SimulationExposure;
@@ -12,17 +12,19 @@ interface ExposedSubstationsCardProps {
   onSelect: (s: TnebSubstation) => void;
 }
 
-type SortKey = 'rain' | 'elevation' | 'consumers';
+type SortKey = 'order' | 'rain' | 'elevation' | 'consumers';
 
 const SORTS: Record<SortKey, { label: string; cmp: (a: ExposedSubstation, b: ExposedSubstation) => number }> = {
+  order: { label: 'Check first', cmp: (a, b) => (a.tier === b.tier ? b.mm24 - a.mm24 : a.tier === 'first' ? -1 : 1) },
   rain: { label: 'Most rain', cmp: (a, b) => b.mm24 - a.mm24 },
   elevation: { label: 'Lowest yard', cmp: (a, b) => (a.substation.elevationM ?? 99) - (b.substation.elevationM ?? 99) },
   consumers: { label: 'Most consumers', cmp: (a, b) => (b.substation.totalConsumers ?? 0) - (a.substation.totalConsumers ?? 0) },
 };
 
 /**
- * Every substation that is exposed at the current step: flood-flagged and in a rain cell at Heavy or worse over the last
- * 24 hours. It lists them all (no top-N), sortable and searchable; clicking one opens it and flies to it.
+ * Every substation to check at the current step, by the same rule as the site briefing card: rain here at Heavy or worse
+ * (satellite or nearest IMD gauge) and a flood fact. It lists them all (no top-N), sortable and searchable; clicking one
+ * opens it and flies to it.
  */
 export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
   exposure,
@@ -31,9 +33,10 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
   selectedSubstation,
   onSelect,
 }) => {
-  const [collapsed, setCollapsed] = useState(false);
+  // Folded on phones so the map and the timeline stay visible.
+  const [collapsed, setCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
   const [showRule, setShowRule] = useState(false);
-  const [sort, setSort] = useState<SortKey>('rain');
+  const [sort, setSort] = useState<SortKey>('order');
   const [query, setQuery] = useState('');
 
   const rows = useMemo(() => {
@@ -46,12 +49,7 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
     return list.sort(SORTS[sort].cmp);
   }, [exposure, sort, query]);
 
-  // How many of the exposed sites sit in each IMD rain class, worst first.
-  const byClass = useMemo(() => {
-    const counts = new Map<string, number>();
-    exposure.exposed.forEach(e => counts.set(e.rainClass.name, (counts.get(e.rainClass.name) ?? 0) + 1));
-    return [...counts.entries()].sort((a, b) => IMD_RAIN_CLASSES.findIndex(c => c.name === b[0]) - IMD_RAIN_CLASSES.findIndex(c => c.name === a[0]));
-  }, [exposure]);
+  const nextCount = exposure.exposed.length - exposure.firstCount;
 
   const card = isLight
     ? 'bg-white/98 border-slate-300/90 text-slate-800 shadow-[0_10px_35px_-4px_rgba(15,23,42,0.18)] ring-1 ring-slate-900/10'
@@ -62,16 +60,16 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
 
   return (
     <div
-      className={`pointer-events-auto rounded-xl border p-3 text-xs flex flex-col gap-2 backdrop-blur-md min-h-0 shrink ${card}`}
+      className={`pointer-events-auto rounded-xl border p-3 text-[13px] flex flex-col gap-2 backdrop-blur-md min-h-0 shrink ${card}`}
     >
       <div className="flex items-center justify-between gap-2 shrink-0">
         <div className="min-w-0">
-          <div className="font-bold text-xs truncate">
-            Exposed now <span className={`font-mono font-semibold ${muted}`}>· {stepLabel}</span>
+          <div className="font-bold text-sm truncate">
+            Sites to check <span className={`font-mono font-semibold ${muted}`}>· {stepLabel}</span>
           </div>
-          <div className={`text-[10px] ${muted}`}>
+          <div className={`text-xs ${muted}`}>
             <strong className={isLight ? 'text-slate-900' : 'text-slate-100'}>{exposure.exposed.length}</strong> of {exposure.floodFlaggedCount}{' '}
-            flood-flagged sites in heavy rain or worse
+            sites with a flood record have heavy rain or worse
           </div>
         </div>
         <div className="flex items-center gap-0.5 shrink-0">
@@ -90,21 +88,28 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
         </div>
       </div>
 
-      {byClass.length > 0 && (
+      {exposure.exposed.length > 0 && (
         <div className="flex flex-wrap gap-1 shrink-0">
-          {byClass.map(([name, n]) => (
-            <span key={name} className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${chip}`}>
-              {n} {name.toLowerCase()}
+          {exposure.firstCount > 0 && (
+            <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${isLight ? 'bg-rose-100 text-rose-900' : 'bg-rose-500/20 text-rose-200'}`}>
+              {exposure.firstCount} {TIER_TITLE.first.toLowerCase()}
             </span>
-          ))}
+          )}
+          {nextCount > 0 && (
+            <span className={`px-1.5 py-0.5 rounded text-xs font-semibold ${isLight ? 'bg-orange-100 text-orange-900' : 'bg-orange-500/20 text-orange-200'}`}>
+              {nextCount} {TIER_TITLE.next.toLowerCase()}
+            </span>
+          )}
         </div>
       )}
 
       {showRule && (
-        <p className={`text-[10px] leading-snug shrink-0 ${muted}`}>
-          Flood-flagged means the yard is at or below 2.0 m, or the site is inside the 2015 flood extent, or it is rated Moderate or High on
-          the official hazard maps. Exposed means flood-flagged and the site&apos;s rain cell has {HEAVY_RAIN_MIN_MM} mm or more in the last 24
-          hours (IMD&apos;s Heavy class). Two facts side by side, not a prediction of flooding or of any outage. The rain is a satellite estimate that reads below IMD&apos;s gauges, so counts at the early steps are probably too low.
+        <p className={`text-xs leading-snug shrink-0 ${muted}`}>
+          Our order, the same as the site card. Rain here is the higher of the satellite 24-hour value and the nearest IMD gauge
+          reading (latest IMD day); listed sites have {HEAVY_RAIN_MIN_MM} mm or more (IMD&apos;s Heavy class). Check first: also inside the
+          2015 flood extent, High on the hazard maps, or the ward had a spot 3 ft or deeper in 2015 (GCC). Check next: a weaker flood fact
+          (Moderate hazard rating, or yard at or below 2 m). Facts side by side, not a prediction of flooding or of any
+          outage; the plans set no rain level for action.
         </p>
       )}
 
@@ -129,7 +134,7 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
               value={sort}
               onChange={e => setSort(e.target.value as SortKey)}
               aria-label="Sort the list"
-              className={`rounded-lg border px-1.5 py-1 text-[11px] ${
+              className={`rounded-lg border px-1.5 py-1 text-xs ${
                 isLight ? 'bg-white border-slate-300 text-slate-800' : 'bg-slate-800 border-slate-600 text-slate-100'
               }`}
             >
@@ -143,9 +148,9 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
 
           <div className="overflow-y-auto space-y-1.5 pr-0.5 min-h-0 flex-1 scrollbar-thin">
             {rows.length === 0 ? (
-              <p className={`py-3 text-center text-[11px] ${muted}`}>
+              <p className={`py-3 text-center text-xs ${muted}`}>
                 {exposure.exposed.length === 0
-                  ? 'No flood-flagged substation is in heavy rain at this step.'
+                  ? 'No site with a flood record has heavy rain at this step.'
                   : 'No substation matches the filter.'}
               </p>
             ) : (
@@ -168,8 +173,14 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
                     }`}
                   >
                     <div className="min-w-0 flex-1 space-y-1">
-                      <div className="font-bold text-xs truncate">{s.name}</div>
-                      <div className="flex items-center gap-1 flex-wrap text-[10px]">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full shrink-0 ${e.tier === 'first' ? 'bg-red-600' : 'bg-orange-500'}`}
+                          title={TIER_TITLE[e.tier]}
+                        />
+                        <span className="font-bold text-[13px] truncate">{s.name}</span>
+                      </div>
+                      <div className="flex items-center gap-1 flex-wrap text-xs">
                         <span
                           className={`px-1.5 rounded font-mono font-bold ${
                             e.rainClass.name === 'Extremely heavy'
@@ -183,7 +194,9 @@ export const ExposedSubstationsCard: React.FC<ExposedSubstationsCardProps> = ({
                         >
                           {e.mm24.toFixed(0)} mm
                         </span>
-                        <span className={muted}>{e.rainClass.name}</span>
+                        <span className={muted}>
+                          {e.rainClass.name} · {e.source === 'gauge' ? 'gauge' : 'sat.'}
+                        </span>
                         {e.reasons.map(r => (
                           <span key={r} className={`px-1.5 rounded ${chip}`}>
                             {r}
