@@ -7,11 +7,11 @@ Before recording: open the site fresh, dark or light theme (pick one), close oth
 ---
 
 ## 0:00 - 0:25  Hook
-**Screen:** The Chennai map, held while the voiceover plays (no slides).
+**Screen:** Not recorded live. Lay a screenshot of the Chennai map (or any still) under the voiceover in the edit. The live run begins at 0:45 after a 5 second hold on the map.
 **Say:** "Chennai sits about two metres above sea level. In 2015, water reached six feet inside substations, and 41 were switched off. The disaster plans exist. But in the middle of a storm, a control room has minutes to find the right line for the right substation, and the right person to call. SurgeGrid AI does that lookup."
 
 ## 0:25 - 0:45  The rule
-**Screen:** The Chennai map, unchanged.
+**Screen:** The same still. Not recorded live.
 **Say:** "The official plans say supply may be switched off 'if required'. They never give a wind speed or flood depth. Most tools invent one. We use only what the four plans say. Everything you'll see is a word-for-word quote with a page number, real data with a source, or our own calculation, labelled as ours."
 
 ## 0:45 - 1:15  Live Chennai
