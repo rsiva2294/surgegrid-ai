@@ -85,7 +85,8 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
         <p className={`text-[10px] leading-snug ${muted}`}>
           Rain is a NASA IMERG satellite estimate averaged over cells of about 11 km, so every substation in a cell gets that cell&apos;s
           value. Class names and limits are IMD&apos;s, applied here to a rolling 24-hour total. Wind is the ERA5-Land area mean (no data over
-          coastal cells). The flood maps are fixed official layers, not this hour.
+          coastal cells), smoothed and not gusts: IMD&apos;s 4 December bulletin reported 60-70 km/h gusting 80 along the Chennai coast. The
+          flood maps are fixed official layers, not this hour.
         </p>
       )}
 
