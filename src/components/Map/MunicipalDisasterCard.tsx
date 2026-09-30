@@ -20,11 +20,11 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
 }) => {
   if (!node.gccZone) {
     return (
-      <div className={`p-3 rounded-xl border text-xs shrink-0 space-y-1 ${
+      <div className={`p-3 rounded-xl border text-[13px] shrink-0 space-y-1 ${
         isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-300'
       }`}>
-        <span className="font-bold text-xs block">Outside the 200 GCC wards</span>
-        <p className="text-xs leading-relaxed opacity-85">
+        <span className="font-bold text-sm block">Outside the 200 GCC wards</span>
+        <p className="text-[13px] leading-relaxed opacity-85">
           No GCC zone, ward or ward contact is listed for this location in our GCC data.
         </p>
       </div>
@@ -119,25 +119,25 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
           <summary className="cursor-pointer p-3 font-semibold">Plan notes (flood actions, zone role, before re-energizing)</summary>
           <div className="px-3 pb-3 space-y-2.5">
             {planNotesExtra}
-        <div className={`p-3 rounded-xl border text-xs space-y-1 ${
+        <div className={`p-3 rounded-xl border text-[13px] space-y-1 ${
           isLight ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950' : 'bg-indigo-950/30 border-indigo-800/70 text-indigo-200'
         }`}>
           <span className="font-semibold block">
             GCC Zone {node.gccZone} ({node.gccZoneName}), Ward {node.gccWard}
           </span>
-          <p className="text-xs leading-relaxed opacity-90">
+          <p className="text-[13px] leading-relaxed opacity-90">
             The GCC City Disaster Management Perspective Plan 2023 gives TANGEDCO this role: “{getQuote('gcc-tangedco-role')?.quote}” ({getQuote('gcc-tangedco-role')?.citation}).
           </p>
         </div>
 
         {/* Multi-Agency Standing Operating Protocol Guidance */}
-        <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+        <div className={`p-3 rounded-xl border text-[13px] space-y-1.5 ${
           isLight ? 'bg-slate-50 border-slate-200 text-slate-700' : 'bg-slate-950/40 border-slate-800 text-slate-400'
         }`}>
           <span className={`font-semibold block ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
             ⚡ Before re-energizing (TANGEDCO DMP 2017):
           </span>
-          <p className="text-xs leading-relaxed">
+          <p className="text-[13px] leading-relaxed">
             “{getQuote('tangedco-no-recharge-before-patrol')?.quote}” ({getQuote('tangedco-no-recharge-before-patrol')?.citation}).
           </p>
         </div>
@@ -148,11 +148,11 @@ export const MunicipalDisasterCard: React.FC<MunicipalDisasterCardProps> = ({
   }
 
   return (
-    <div className={`p-2.5 rounded-xl border text-xs shrink-0 space-y-2 ${
+    <div className={`p-2.5 rounded-xl border text-[13px] shrink-0 space-y-2 ${
       isLight ? 'bg-indigo-50/70 border-indigo-100 text-indigo-950 shadow-xs' : 'bg-indigo-950/30 border-indigo-800/60 text-indigo-200 shadow-xs'
     }`}>
       <div className="flex items-center justify-between gap-1.5 flex-wrap">
-        <div className="flex items-center gap-1.5 font-bold text-xs">
+        <div className="flex items-center gap-1.5 font-bold text-sm">
           <span>🏛️</span>
           <span>GCC Zone {node.gccZone} ({node.gccZoneName})</span>
           <span className={`px-1.5 py-0.5 rounded-md font-mono text-xs font-bold ${

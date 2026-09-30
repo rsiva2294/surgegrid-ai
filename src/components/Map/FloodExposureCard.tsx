@@ -57,17 +57,17 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
 
   const label = isLight ? 'text-slate-600' : 'text-slate-400';
   const rule = isLight ? 'border-slate-200' : 'border-slate-800';
-  const chipCls = `px-2 py-0.5 rounded-md text-[10px] font-medium border ${
+  const chipCls = `px-2 py-0.5 rounded-md text-xs font-medium border ${
     isLight ? 'bg-white border-slate-200 text-slate-700' : 'bg-slate-900 border-slate-700 text-slate-300'
   }`;
 
   const row = (name: string, value: string, sub: string, warn = false) => (
     <div className="flex items-baseline justify-between gap-3 py-1.5">
       <div className="min-w-0">
-        <div className="text-[11px] font-semibold">{name}</div>
-        <div className={`text-[10px] leading-tight ${label}`}>{sub}</div>
+        <div className="text-[13px] font-semibold">{name}</div>
+        <div className={`text-xs leading-tight ${label}`}>{sub}</div>
       </div>
-      <strong className={`text-xs tabular-nums shrink-0 ${warn ? (isLight ? 'text-amber-700' : 'text-amber-300') : ''}`}>{value}</strong>
+      <strong className={`text-[13px] tabular-nums shrink-0 ${warn ? (isLight ? 'text-amber-700' : 'text-amber-300') : ''}`}>{value}</strong>
     </div>
   );
 
@@ -85,25 +85,25 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
 
   return (
     <div
-      className={`p-3 rounded-xl border space-y-2.5 text-xs shrink-0 ${
+      className={`p-3 rounded-xl border space-y-2.5 text-[13px] shrink-0 ${
         isLight ? 'bg-slate-50/90 border-slate-200 text-slate-900' : 'bg-slate-950/70 border-slate-700/80 shadow-xs text-slate-100'
       }`}
     >
       <div className="flex items-center gap-1.5 min-w-0">
         <Waves className="w-3.5 h-3.5 text-cyan-600 shrink-0" />
-        <span className="font-bold text-xs truncate">Flood exposure</span>
+        <span className="font-bold text-sm truncate">Flood exposure</span>
       </div>
 
       <div className={`px-2.5 py-2 rounded-lg border ${barTone}`}>
-        <div className="text-[13px] font-bold leading-snug">{headline}</div>
-        {headlineSub && <div className="text-[11px] leading-snug mt-0.5 opacity-90">{headlineSub}</div>}
+        <div className="text-sm font-bold leading-snug">{headline}</div>
+        {headlineSub && <div className="text-[13px] leading-snug mt-0.5 opacity-90">{headlineSub}</div>}
       </div>
 
       {facts && listedCount > 0 && (
         <div className={`pt-2 border-t space-y-2 ${rule}`}>
           <div className="flex items-baseline justify-between gap-2">
-            <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>Ward {substation.gccWard} flood history (GCC lists)</div>
-            <span className={`text-[10px] ${label}`}>{listedCount} of {years.length} years</span>
+            <div className={`text-xs uppercase tracking-wider font-semibold ${label}`}>Ward {substation.gccWard} flood history (GCC lists)</div>
+            <span className={`text-xs ${label}`}>{listedCount} of {years.length} years</span>
           </div>
           <div className="flex items-end justify-between gap-1">
             {years.map(y => {
@@ -114,7 +114,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
               return (
                 <div key={y} className="flex flex-col items-center gap-1 flex-1" title={tip}>
                   <span className={`w-3.5 h-3.5 rounded-full border-2 ${on ? 'bg-cyan-600 border-cyan-600' : isLight ? 'border-slate-300' : 'border-slate-600'}`} />
-                  <span className={`text-[9px] tabular-nums ${on ? '' : label}`}>{y === '2023' ? '2023*' : `'${y.slice(2)}`}</span>
+                  <span className={`text-xs tabular-nums ${on ? '' : label}`}>{y === '2023' ? '2023*' : `'${y.slice(2)}`}</span>
                 </div>
               );
             })}
@@ -126,7 +126,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
                   <div key={c} className={DEPTH_BAR[c]} style={{ width: `${(counts[c] / total) * 100}%` }} title={`${counts[c]} ${DEPTH_TEXT[c]}`} />
                 ))}
               </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px]">
+              <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
                 <span className={label}>2015 depths, {total} locations:</span>
                 {DEPTH_ORDER.filter(c => counts[c] > 0).map(c => (
                   <span key={c} className="inline-flex items-center gap-1">
@@ -151,7 +151,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
         {row('Official hazard map rating', rating ? title(rating) : flood ? 'None' : 'n/a', 'across the 5 to 100-year maps', rating === 'HIGH' || rating === 'MODERATE')}
       </div>
 
-      <details className={`text-[10px] ${label}`}>
+      <details className={`text-xs ${label}`}>
         <summary className="cursor-pointer font-semibold select-none">More detail and sources</summary>
         {details.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-1.5">
