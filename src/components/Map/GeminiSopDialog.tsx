@@ -249,60 +249,6 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             </p>
           </div>
 
-          {/* Today's Compromised Grid Focus (Real Graded Infrastructure) */}
-          {directive.compromisedAssets && directive.compromisedAssets.length > 0 && (
-            <div className={`p-3.5 rounded-xl border ${
-              isLight ? 'bg-amber-50/90 border-amber-300 text-slate-900 shadow-xs' : 'bg-amber-950/20 border-amber-800/40 text-slate-200'
-            }`}>
-              <div className="flex items-center justify-between gap-2 mb-2.5">
-                <div className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <span>Vulnerable grid focus (SurgeGrid ranking, not from the plans)</span>
-                </div>
-                <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold border ${
-                  isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/60 text-amber-300 border-amber-700/60'
-                }`}>
-                  Health grade + low elevation
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {directive.compromisedAssets.slice(0, 6).map((asset) => (
-                  <button
-                    key={asset.code}
-                    type="button"
-                    onClick={() => onSelectSubstation?.(asset.cleanName)}
-                    className={`p-2.5 rounded-lg border text-left transition-all group ${
-                      isLight
-                        ? 'bg-white hover:bg-amber-50/80 border-slate-300 hover:border-amber-500 shadow-xs'
-                        : 'bg-slate-900/90 hover:bg-amber-950/40 border-slate-700/70 hover:border-amber-500/50 shadow-xs'
-                    }`}
-                    title={`Focus on ${asset.cleanName} in map`}
-                  >
-                    <div className="flex items-center justify-between gap-1 mb-1">
-                      <span className={`font-bold text-xs truncate transition-colors ${
-                        isLight ? 'text-slate-900 group-hover:text-indigo-900' : 'text-white group-hover:text-amber-300'
-                      }`}>
-                        {asset.cleanName}
-                      </span>
-                      <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-extrabold shrink-0 border ${
-                        asset.healthGrade === 'D'
-                          ? (isLight ? 'bg-rose-100 text-rose-800 border-rose-300' : 'bg-rose-950/80 text-rose-300 border-rose-600/60')
-                          : (isLight ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-amber-950/80 text-amber-300 border-amber-600/60')
-                      }`}>
-                        {asset.healthGrade}
-                      </span>
-                    </div>
-                    <div className={`text-[10px] font-mono truncate font-medium ${
-                      isLight ? 'text-slate-600' : 'text-slate-400'
-                    }`}>
-                      {asset.healthScore}/100 • {asset.elevationM.toFixed(1)}m MSL
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Impact Overview Metrics */}
           <div className="grid grid-cols-3 gap-2.5">
             <div className={`p-2.5 rounded-xl border flex items-center gap-2.5 ${

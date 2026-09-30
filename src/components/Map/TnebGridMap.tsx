@@ -265,8 +265,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
   const baseDirective = useMemo(() => {
     if (!currentTimestep || !isSimulationScenario(disasterScenario)) return null;
-    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages);
-  }, [currentTimestep, disasterScenario, substations, liveOutages]);
+    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations);
+  }, [currentTimestep, disasterScenario, substations]);
 
   useEffect(() => {
     if (!currentTimestep || !isSimulationScenario(disasterScenario)) {
@@ -280,7 +280,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
     let isSubscribed = true;
     const timer = setTimeout(() => {
-      fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations, liveOutages)
+      fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations)
         .then((res) => {
           if (isSubscribed && res) {
             setLiveGeminiDirective(res);
@@ -295,7 +295,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       isSubscribed = false;
       clearTimeout(timer);
     };
-  }, [currentTimestep, disasterScenario, substations, liveOutages]);
+  }, [currentTimestep, disasterScenario, substations]);
 
   // Use the Gemini-worded directive only if it belongs to the hour on screen.
   const matchingLiveDirective =

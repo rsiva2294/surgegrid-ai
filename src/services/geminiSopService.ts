@@ -10,9 +10,6 @@
 
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { TnebSubstation, FeederDetail } from '../types/tneb';
-import type { LiveOutage } from './liveOutageService';
-import { getEnrichedHealthProfile } from './gridHealthService';
-import { getCachedOfficialFlood } from './officialFloodLayers';
 import { generateJson } from './geminiClient';
 import {
   CHENNAI_AVERAGE_ELEVATION_M,
@@ -48,19 +45,6 @@ export interface SopActionItem {
   completed?: boolean;
 }
 
-export interface CompromisedSubstationSummary {
-  name: string;
-  cleanName: string;
-  code: string;
-  voltage: string;
-  healthGrade: 'A' | 'B' | 'C' | 'D';
-  healthScore: number;
-  unscheduledTripsCount: number;
-  elevationM: number;
-  vulnerabilityReason: string;
-  disasterScore: number;
-}
-
 export interface GeminiSopDirective {
   scenarioId: ScenarioId;
   hour: number;
@@ -87,80 +71,6 @@ export interface GeminiSopDirective {
   actionItems: SopActionItem[];
   geminiModelTag: string;
   timestamp: string;
-  compromisedAssets?: CompromisedSubstationSummary[];
-}
-
-/**
- * SurgeGrid's own ranking of substations that combine poor health with low elevation.
- * The weights below are ours and are NOT taken from any official plan. Inputs are limited to
- * measurable facts: health grade and score, unscheduled trips, yard elevation, official flood-map checks, and whether the substation has overhead or mixed feeders. No wind or surge thresholds.
- */
-export function extractTopCompromisedInfra(
-  substations: TnebSubstation[],
-  liveOutages: LiveOutage[] = [],
-  limit = 6
-): CompromisedSubstationSummary[] {
-  if (!substations || substations.length === 0) return [];
-
-  const scored: CompromisedSubstationSummary[] = substations.map((ss) => {
-    const profile = getEnrichedHealthProfile(ss, liveOutages);
-    const elevation = ss.elevationM !== undefined ? ss.elevationM : 6.0;
-
-    let disasterScore = 0;
-
-    // 1. Health grade and trip history ("Today's" chronic status)
-    if (profile.healthGrade === 'D') {
-      disasterScore += 70;
-    } else if (profile.healthGrade === 'C') {
-      disasterScore += 45;
-    } else if (profile.healthGrade === 'B') {
-      disasterScore += 15;
-    }
-    disasterScore += (100 - profile.healthScore) * 1.2;
-    disasterScore += Math.min(profile.unscheduledTripsCount * 5, 50);
-
-    // 2. Low elevation: at or below Chennai's average elevation (GCC City DMP 2023)
-    if (elevation <= CHENNAI_AVERAGE_ELEVATION_M) {
-      disasterScore += 65;
-    }
-    // Official map checks (OpenCity, GCC): inside the 2015 flood extent, or rated Moderate/High
-    const officialFlood = getCachedOfficialFlood(ss.code);
-    if (officialFlood?.nrsc2015) {
-      disasterScore += 35;
-    }
-    if (officialFlood?.returnPeriod === 'HIGH' || officialFlood?.returnPeriod === 'MODERATE') {
-      disasterScore += 25;
-    }
-
-    // 3. Exposure of overhead or mixed feeders
-    if ((ss.feeders || []).some(isOverheadFeeder)) {
-      disasterScore += 20;
-    }
-
-    const cleanName = ss.cleanName || ss.name.replace(/^(110\/33-11KV|230\/110KV|33\/11 KV|110\/11 KV SS|33\/11KV|110KV|230KV|33KV)\s*/i, '').trim();
-
-    const vulnerabilityReason = [
-      `Grade ${profile.healthGrade} (${profile.healthScore}/100)`,
-      elevation <= CHENNAI_AVERAGE_ELEVATION_M ? `${elevation.toFixed(1)} m MSL yard` : null,
-      profile.unscheduledTripsCount > 0 ? `${profile.unscheduledTripsCount} Trips` : null,
-    ].filter(Boolean).join(' • ');
-
-    return {
-      name: ss.name,
-      cleanName,
-      code: ss.code,
-      voltage: ss.voltage,
-      healthGrade: profile.healthGrade,
-      healthScore: profile.healthScore,
-      unscheduledTripsCount: profile.unscheduledTripsCount,
-      elevationM: elevation,
-      vulnerabilityReason,
-      disasterScore,
-    };
-  });
-
-  scored.sort((a, b) => b.disasterScore - a.disasterScore);
-  return scored.slice(0, limit);
 }
 
 // ---------------------------------------------------------------------------
@@ -348,8 +258,7 @@ function hourLabel(hour: number): string {
 function buildDirective(
   scenarioId: ScenarioId,
   timestep: ScenarioTimestep,
-  substations: TnebSubstation[],
-  liveOutages: LiveOutage[]
+  substations: TnebSubstation[]
 ): BuiltDirective | null {
   const scenarioKey = scenarioKeyOf(scenarioId);
   if (!scenarioKey) return null;
@@ -410,7 +319,6 @@ function buildDirective(
     actionItems,
     geminiModelTag: 'Official quotes · rule-based',
     timestamp: `${hourLabel(hour)} ${timestep.label || ''}`.trim(),
-    compromisedAssets: extractTopCompromisedInfra(substations, liveOutages, 6),
   };
 
   return { directive, targets, ruleIds };
@@ -423,10 +331,9 @@ function buildDirective(
 export function getDirectiveForTimestep(
   scenarioId: ScenarioId,
   timestep: ScenarioTimestep,
-  substations: TnebSubstation[] = [],
-  liveOutages: LiveOutage[] = []
+  substations: TnebSubstation[] = []
 ): GeminiSopDirective | null {
-  return buildDirective(scenarioId, timestep, substations, liveOutages)?.directive ?? null;
+  return buildDirective(scenarioId, timestep, substations)?.directive ?? null;
 }
 
 // ---- Gemini wording layer --------------------------------------------------------
@@ -480,10 +387,9 @@ export function isGroundedText(text: unknown, promptNumbers: Set<string>, maxCha
 export async function fetchLiveGeminiDirective(
   scenarioId: ScenarioId,
   timestep: ScenarioTimestep,
-  substations: TnebSubstation[] = [],
-  liveOutages: LiveOutage[] = []
+  substations: TnebSubstation[] = []
 ): Promise<GeminiSopDirective | null> {
-  const built = buildDirective(scenarioId, timestep, substations, liveOutages);
+  const built = buildDirective(scenarioId, timestep, substations);
   if (!built) return null;
   const { directive: fallback, targets, ruleIds } = built;
 
