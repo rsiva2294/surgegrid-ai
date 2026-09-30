@@ -55,7 +55,7 @@ import { rainFill, type HazardYears } from './rainScale';
 import { TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel } from '../../data/imdBulletins';
 import { GRADE_COLOR, stormAt, useBestTrack } from '../../services/bestTrack';
 import { computeExposure } from '../../services/simulationExposure';
-import { useGccPlan } from '../../services/gccPlan';
+import { useGccPlan, wardFacts, DEPTH_TEXT } from '../../services/gccPlan';
 import { fetchGaugePoints, gaugeWindowFor, type GaugePoints } from '../../services/gaugePoints';
 
 // Official flood maps (fixed layers), fetched when first switched on.
@@ -138,6 +138,15 @@ export interface ConnectedGridNode {
   verificationMethod?: string;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 let isGoogleMapsLoaderConfigured = false;
 
 export const TnebGridMap: React.FC<TnebGridMapProps> = ({
@@ -179,6 +188,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const sectionBoundary = useSectionBoundary(selectedSection?.code);
   const reliefData = useReliefCentres();
   const reliefMarkersRef = useRef<google.maps.Marker[]>([]);
+  const reliefInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const [isSatellite, setIsSatellite] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showConnections, setShowConnections] = useState(false);
@@ -979,6 +989,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   useEffect(() => {
     reliefMarkersRef.current.forEach(m => m.setMap(null));
     reliefMarkersRef.current = [];
+    if (reliefInfoWindowRef.current) {
+      reliefInfoWindowRef.current.close();
+    }
     if (!mapRef.current || !mapLoaded || !showReliefCentres || !reliefData) return;
 
     Object.entries(reliefData.wards).forEach(([ward, w]) => {
@@ -986,7 +999,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const marker = new google.maps.Marker({
         position: { lat: w.lat, lng: w.lng },
         map: mapRef.current,
-        title: `Ward ${ward} (Zone ${w.zone}): ${w.centres.length} relief centre${w.centres.length > 1 ? 's' : ''} on the GCC list. Marker is inside the ward; exact sites are not on the list.`,
+        title: `Ward ${ward} (Zone ${w.zone}): ${w.centres.length} relief centre${w.centres.length > 1 ? 's' : ''} on the GCC list (click for details)`,
         zIndex: 6,
         icon: {
           path: 'M 0,-7 L 7,0 0,7 -7,0 z',
@@ -996,16 +1009,168 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
           strokeWeight: 1.5,
           scale: 1
         },
-        optimized: true
+        cursor: 'pointer',
+        optimized: false
       });
+
+      marker.addListener('click', () => {
+        if (!mapRef.current) return;
+        mapRef.current.panTo({ lat: w.lat!, lng: w.lng! });
+
+        if (!reliefInfoWindowRef.current) {
+          reliefInfoWindowRef.current = new google.maps.InfoWindow();
+        }
+
+        const headerEl = document.createElement('div');
+        headerEl.style.cssText =
+          'display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:24px;font-family:system-ui,-apple-system,sans-serif;';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.style.cssText = 'font-weight:700;font-size:13px;color:#6b21a8;display:flex;align-items:center;gap:4px;';
+        titleSpan.textContent = `🏛️ Ward ${ward} Relief Centres`;
+
+        const badgeWrap = document.createElement('div');
+        badgeWrap.style.cssText = 'display:flex;align-items:center;gap:4px;flex-shrink:0;';
+
+        const zoneBadge = document.createElement('span');
+        zoneBadge.style.cssText =
+          'font-size:10px;font-weight:700;background:#f3e8ff;color:#7e22ce;padding:1px 6px;border-radius:4px;border:1px solid #e9d5ff;';
+        zoneBadge.textContent = `Zone ${w.zone}`;
+
+        const countBadge = document.createElement('span');
+        countBadge.style.cssText =
+          'font-size:10px;font-weight:700;background:#ede9fe;color:#5b21b6;padding:1px 6px;border-radius:4px;';
+        countBadge.textContent = `${w.centres.length} listed`;
+
+        badgeWrap.appendChild(zoneBadge);
+        badgeWrap.appendChild(countBadge);
+        headerEl.appendChild(titleSpan);
+        headerEl.appendChild(badgeWrap);
+
+        if (typeof reliefInfoWindowRef.current?.setHeaderContent === 'function') {
+          reliefInfoWindowRef.current.setHeaderContent(headerEl);
+        }
+
+        const facts = wardFacts(gccPlan, ward);
+        const planRelief = facts?.relief ?? [];
+        const yn = (v: boolean | null) => (v === null ? 'not stated' : v ? 'Yes' : 'No');
+
+        const centresHtml = w.centres
+          .map((c) => {
+            const cleanPhone = c.contact ? c.contact.replace(/[^0-9+]/g, '') : '';
+            return `
+              <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px;">
+                  <div style="font-weight:700;font-size:12px;color:#0f172a;line-height:1.35;">
+                    ${escapeHtml(c.address || 'Address not listed')}
+                  </div>
+                  ${
+                    cleanPhone
+                      ? `
+                    <a href="tel:${escapeHtml(cleanPhone)}" 
+                       style="display:inline-flex;align-items:center;gap:3px;background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;padding:2px 6px;border-radius:4px;font-size:11px;font-family:monospace;font-weight:700;text-decoration:none;flex-shrink:0;"
+                       title="Call In-Charge Officer">
+                      📞 ${escapeHtml(c.contact)}
+                    </a>
+                  `
+                      : ''
+                  }
+                </div>
+                <div style="font-size:11.5px;color:#475569;margin-bottom:2px;">
+                  👤 <strong>Officer:</strong> ${escapeHtml(c.officer || 'Not listed')}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+        let planHtml = '';
+        if (planRelief.length > 0) {
+          const items = planRelief
+            .map(
+              (p, i) => `
+              <div style="margin-bottom:5px;padding-bottom:5px;${i < planRelief.length - 1 ? 'border-bottom:1px dashed #e2e8f0;' : ''}">
+                <div style="font-weight:600;font-size:11.5px;color:#1e293b;">
+                  ${escapeHtml(p.name)}
+                </div>
+                <div style="font-size:11px;color:#475569;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px;">
+                  <span>👥 Capacity: <strong>${p.capacity !== null ? `${p.capacity} people` : 'not given'}</strong></span>
+                  <span>🚰 Water: <strong>${yn(p.water)}</strong></span>
+                  <span>🚻 Toilets: <strong>${yn(p.toilets)}</strong></span>
+                  <span>🍲 Cooking: <strong>${yn(p.cooking)}</strong></span>
+                </div>
+                ${
+                  p.streets
+                    ? `<div style="font-size:10px;color:#64748b;margin-top:2px;font-style:italic;">Served streets: ${escapeHtml(p.streets)}</div>`
+                    : ''
+                }
+              </div>
+            `
+            )
+            .join('');
+
+          planHtml = `
+            <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;">
+              <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#0369a1;margin-bottom:5px;">
+                Shelter Capacity & Facilities (GCC Plan 2024)
+              </div>
+              ${items}
+            </div>
+          `;
+        }
+
+        let floodNoteHtml = '';
+        if (facts) {
+          const inundationItems = [];
+          if (facts.in2023 && facts.in2023.length > 0) {
+            inundationItems.push(
+              `🌊 <strong>2023 Michaung Inundated Streets (${facts.in2023.length}):</strong> ${escapeHtml(
+                facts.in2023.slice(0, 3).join(', ')
+              )}${facts.in2023.length > 3 ? ` +${facts.in2023.length - 3} more` : ''}`
+            );
+          }
+          if (facts.reg2015) {
+            inundationItems.push(
+              `⚠️ <strong>2015 Flood Depth Register:</strong> ${DEPTH_TEXT[facts.reg2015.deepest]} (${facts.reg2015.n} streets)`
+            );
+          }
+          if (inundationItems.length > 0) {
+            floodNoteHtml = `
+              <div style="background:#fffbeb;border:1px solid #fef3c7;border-radius:6px;padding:6px 8px;margin-bottom:6px;font-size:11px;color:#92400e;line-height:1.4;">
+                ${inundationItems.join('<br>')}
+              </div>
+            `;
+          }
+        }
+
+        reliefInfoWindowRef.current?.setContent(`
+          <div style="font-family:system-ui,-apple-system,sans-serif;color:#0f172a;max-width:320px;line-height:1.35;max-height:380px;overflow-y:auto;padding-right:2px;">
+            ${floodNoteHtml}
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#6b21a8;margin-bottom:4px;">
+              Designated Relief Centres
+            </div>
+            ${centresHtml}
+            ${planHtml}
+            <div style="font-size:9.5px;color:#94a3b8;border-top:1px solid #f1f5f9;padding-top:4px;margin-top:4px;line-height:1.3;">
+              Official GCC directory assigns centres by ward without discrete coordinates. Marker is placed inside the official ward boundary.
+            </div>
+          </div>
+        `);
+
+        reliefInfoWindowRef.current?.open(mapRef.current, marker);
+      });
+
       reliefMarkersRef.current.push(marker);
     });
 
     return () => {
       reliefMarkersRef.current.forEach(m => m.setMap(null));
       reliefMarkersRef.current = [];
+      if (reliefInfoWindowRef.current) {
+        reliefInfoWindowRef.current.close();
+      }
     };
-  }, [showReliefCentres, reliefData, mapLoaded]);
+  }, [showReliefCentres, reliefData, mapLoaded, gccPlan]);
 
   // IMD's observed track: the whole path dotted underneath, the part travelled solid, a marker at the storm centre, and the landfall point.
   const bestTrack = useBestTrack();
