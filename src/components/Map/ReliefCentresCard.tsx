@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Info, Phone } from 'lucide-react';
 import type { TnebSubstation } from '../../types/tneb';
 import { CHENNAI_AVERAGE_ELEVATION_M } from '../../data/officialSources';
 import { useOfficialFlood, isOfficiallyFloodFlagged } from '../../services/officialFloodLayers';
@@ -16,10 +17,12 @@ interface ReliefCentresCardProps {
 export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation, isLight }) => {
   const data = useReliefCentres();
   const { flood } = useOfficialFlood(substation.code);
+  const [showCriteria, setShowCriteria] = useState(false);
 
   const box = isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-slate-100';
   const label = isLight ? 'text-slate-500' : 'text-slate-400';
   const sub = isLight ? 'text-slate-400' : 'text-slate-500';
+  const chip = isLight ? 'bg-slate-100 text-slate-700' : 'bg-slate-800 text-slate-300';
 
   const ward = substation.gccWard !== undefined ? String(substation.gccWard) : null;
   const wardEntry = ward && data ? data.wards[ward] : undefined;
@@ -35,58 +38,85 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
     return (
       <div className={`p-3 rounded-xl border text-[11px] ${box}`}>
         <div className={`text-[10px] uppercase tracking-wider font-semibold mb-1 ${label}`}>Relief centres</div>
-        The GCC relief-centre list has no centre in Ward {ward}.
+        No GCC relief centre listed for Ward {ward}.
       </div>
     );
   }
 
+  const hasCentres = Boolean(ward) && centres.length > 0;
+  const notes = [
+    hasCentres && 'GCC list: ward and address only, no coordinates, so we cannot say which substation feeds which centre.',
+    showBackup && 'Backup is our own straight-line calculation; whether load can be moved has not been checked.',
+  ].filter(Boolean);
+
   return (
     <div className={`p-3 rounded-xl border space-y-2.5 ${box}`}>
-      <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>Relief centres and backup</div>
+      {hasCentres && (
+        <>
+          <div className="flex items-center justify-between gap-2">
+            <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>
+              Relief centres · Ward {ward}
+              {wardEntry?.zone ? ` · Zone ${wardEntry.zone}` : ''}
+            </div>
+            <span className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold ${chip}`}>{centres.length} listed</span>
+          </div>
 
-      {ward && centres.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-[11px]">
-            The GCC list has <strong>{centres.length}</strong> relief centre{centres.length > 1 ? 's' : ''} in Ward {ward}
-            {wardEntry?.zone ? ` (Zone ${wardEntry.zone})` : ''}:
-          </p>
-          {centres.map((c, i) => (
-            <div
-              key={`${c.address}-${i}`}
-              className={`p-2 rounded-lg border text-[11px] ${isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/50 border-slate-800'}`}
-            >
-              <div className="font-semibold">{c.address || 'Address not listed'}</div>
-              <div className={`font-mono text-[10px] ${label}`}>
-                {c.officer || 'Officer not listed'}
+          <div className="space-y-1.5">
+            {centres.map((c, i) => (
+              <div
+                key={`${c.address}-${i}`}
+                className={`p-2 rounded-lg border text-[11px] flex items-center justify-between gap-2 ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/50 border-slate-800'
+                }`}
+              >
+                <div className="min-w-0">
+                  <div className="font-semibold">{c.address || 'Address not listed'}</div>
+                  <div className={`text-[10px] ${label}`}>{c.officer || 'Officer not listed'}</div>
+                </div>
                 {c.contact && (
-                  <>
-                    {' · '}
-                    <a href={`tel:${c.contact}`} className="underline">
-                      {c.contact}
-                    </a>
-                  </>
+                  <a
+                    href={`tel:${c.contact}`}
+                    className={`shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-md font-mono text-[10px] font-semibold ${
+                      isLight ? 'bg-sky-50 text-sky-700 border border-sky-200' : 'bg-sky-500/10 text-cyan-300 border border-sky-500/30'
+                    }`}
+                  >
+                    <Phone className="w-3 h-3" />
+                    {c.contact}
+                  </a>
                 )}
               </div>
-            </div>
-          ))}
-          <span className={`text-[10px] block ${sub}`}>
-            The GCC list gives ward and address only, with no map coordinates. We cannot say which substation feeds which centre.
-          </span>
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
       {showBackup && backup && (
-        <div className="space-y-1">
-          <p className="text-[11px]">
-            Nearest other substation with none of the flood flags above (yard above {CHENNAI_AVERAGE_ELEVATION_M} m, outside the 2015
-            flood extent, not rated Moderate or High): <strong>{backup.name}</strong>, {backup.km} km away in a straight line.
+        <div className={hasCentres ? `pt-2 border-t ${isLight ? 'border-slate-200' : 'border-slate-800'}` : ''}>
+          <div className="flex items-center justify-between gap-2">
+            <div className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}>Backup substation</div>
+            <button
+              type="button"
+              onClick={() => setShowCriteria(v => !v)}
+              aria-expanded={showCriteria}
+              aria-label="How the backup is chosen"
+              className={`p-0.5 rounded ${label} hover:opacity-80`}
+            >
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <p className="text-[12px] mt-0.5">
+            <strong>{backup.name}</strong> · {backup.km} km
           </p>
-          <span className={`text-[10px] block ${sub}`}>
-            Our own calculation from the facts on this card, not from the official plans. Whether load can be moved between the two has
-            not been checked.
-          </span>
+          {showCriteria && (
+            <p className={`text-[10px] mt-1 ${label}`}>
+              Nearest other substation with none of the flood flags: yard above {CHENNAI_AVERAGE_ELEVATION_M} m, outside the 2015 flood
+              extent, not rated Moderate or High. Straight-line distance.
+            </p>
+          )}
         </div>
       )}
+
+      {notes.length > 0 && <span className={`text-[10px] block leading-snug ${sub}`}>{notes.join(' ')}</span>}
     </div>
   );
 };
