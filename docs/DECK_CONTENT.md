@@ -3,7 +3,7 @@
 Track 5: Cyclone Impact & Infrastructure Vulnerability Forecaster. Every number below comes from the repo, the four official plans, or the measurements in `docs/PROJECT_LOG.md`. Live site: https://surgegrid.web.app
 
 **Brief description (2-3 lines, for the submission form):**
-SurgeGrid AI replays three real Chennai rain events hour by hour, shows which of 286 substations are exposed using official flood maps, and lists what the official disaster plans say to do, quoted with page numbers. Gemini adds short notes but never writes or changes the plan text.
+SurgeGrid AI replays Cyclone Michaung (December 2023) in five steps on a map of Chennai: real satellite rain by area, official flood maps, and which of 286 substations are exposed. It lists what the official disaster plans say to do, quoted with page numbers. Gemini adds short notes but never writes or changes the plan text.
 
 ---
 
@@ -26,8 +26,8 @@ Chennai's power grid and flood console. Real rain, official maps, quoted plans.
 *Note:* This is our differentiator: trust. A wrong invented trip level is worse than none.
 
 ## 4. What SurgeGrid does
-- **Replays** three real rain events hour by hour (Michaung 2023, the 2015 floods, a Nov 2020 monsoon spell).
-- **Shows exposure** for 286 substations: yard elevation and official flood-map checks.
+- **Replays** Cyclone Michaung (Dec 2023) in five steps: two before the peak-rain hour, the peak, two after. The map shows the last 24 hours of rain by area (about 11 km cells) at each step.
+- **Shows exposure** for 286 substations: yard elevation, official flood-map checks, and an "exposed now" list at each step (flood-flagged and in heavy rain or worse).
 - **AI Directive:** the official actions for this hour, each a quote with plan and page, and the substations they apply to.
 - **Substation card:** flood facts, a copilot with quoted actions, GCC relief centres for the ward, and a backup suggestion.
 *Note:* Show the four things in that order during the demo.
@@ -38,14 +38,16 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 *Note:* Gemini is the last step and cannot change the quotes.
 
 ## 6. Real data, no synthetic storms
-| Scenario | Peak rain | Total rain |
-|---|---|---|
-| Cyclone Michaung, Dec 2023 | 14.0 mm/h | 273 mm |
-| 2015 floods | 23.4 mm/h | 372 mm |
-| Monsoon spell, Nov 2020 | 16.8 mm/h | 198 mm |
+| Cyclone Michaung, Dec 2023 | Value |
+|---|---|
+| Peak rain (area mean) | 14.0 mm/h |
+| Total rain (area mean) | 273 mm |
+| Worst 24 hours, across the 28 rain cells | 144 to 253 mm |
+| Substations exposed (flood-flagged and heavy rain or worse) | 0 at T-24h and T-6h, 86 at the peak, 87 at T+12h, 74 at T+36h (of 87 flood-flagged) |
+- Rain classes are IMD's (Heavy 64.5 mm, Very heavy 115.6 mm, Extremely heavy 204.5 mm), applied to a rolling 24-hour total of NASA IMERG satellite rain averaged over about 11 km cells.
 - Grid: 286 substations, 2,678 feeders, 65,557 transformers, about 4.9 million consumers on mapped transformers.
 - Official layers: 48 substations sit inside the 2015 flood extent; 114 inside the 100-year flood-hazard map; 162 GCC relief centres in 120 wards.
-*Note:* We deleted our earlier synthetic cyclone. Everything replayed is real rain and wind.
+*Note:* We deleted our earlier synthetic cyclone, and two other events, to focus on one real storm. Everything replayed is real rain and wind. We do not draw flood water: none of our flood data has a time in it.
 
 ## 7. The AI: what Gemini does, and does not do
 - **Does:** choose substation and feeder names from lists we send; write one short note, and on a live day a short summary of our data (facts shown under the card); runs on Google Cloud's Gemini Enterprise Agent Platform (formerly Vertex AI) with no API key in the app.
@@ -54,18 +56,19 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 *Note:* Meaningful AI work, with a safety design judges can inspect in `gemini-proxy/` and `geminiSopService.ts`.
 
 ## 8. Live demo (about 3 minutes)
-1. Open the site; Michaung starts at T-24h. Show the AI Directive: 6 quoted actions with page numbers.
-2. Press play at 4x; the directive moves to impact, then restoration.
-3. Open a low-lying substation (ETL, -1 m): status line, Overview (flood facts, official flood maps), then Respond: copilot's quoted actions, relief centre and backup.
-4. Open a substation not inside any layer: it stays quiet, no false alarms.
-5. Switch to the 2015 scenario; toggle the relief-centre layer.
+1. Open the site and pick Cyclone Michaung; it starts at T-24h. The rain layer is nearly clear. Open the AI Directive: 6 quoted actions with page numbers.
+2. Press play. The timeline moves through five steps, 6 seconds each (T-24h, T-6h, peak rain, T+12h, T+36h): the rain layer fills in by cell, red rings appear on exposed substations, and the "Exposed now" list grows from 0 to 87 and back to 74. The phase moves from watch to impact to restoration.
+3. Point at a cell: it reads the mm of rain in the last 24 hours and its IMD class.
+4. Switch on the official flood maps (fixed layers): the 2015 extent (a past event) and the 100-year hazard map.
+5. Open a low-lying substation (ETL, -1 m): status line, Overview (flood facts), then Respond: copilot's quoted actions, relief centre and backup.
+6. Open a substation not inside any layer: it stays quiet, no false alarms.
 *Note:* End on the quote and page number: "this is the plan's own text".
 
 ## 9. Track 5 fit
 | Brief asks | We deliver | Honest gap |
 |---|---|---|
 | Google Earth Engine + real met data | IMERG rain, ERA5-Land wind, SRTM via Earth Engine; Google Weather API | Wind is an area average |
-| Simulate storm scenarios | Three real hindcasts, hour by hour | No storm surge or cyclone track |
+| Simulate storm scenarios | One real hindcast (Michaung) in five steps, with rain by area | No storm surge or cyclone track; no flood depth or extent prediction |
 | Map exposure of power grids and shelters | 286 substations with official flood-map checks; 162 relief centres by ward | Relief-centre coordinates not in the GCC list |
 | Early-warning advisories | Quoted actions per hour and per substation; copy-SMS with a quoted action | No automatic dispatch |
 | Gemini reasoning | Gemini 2.5 Flash notes with guardrails | Not multimodal |
@@ -86,7 +89,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 *Note:* This is proof of engineering judgement, not a weakness.
 
 ## 12. Roadmap and close
-- Next: more cities; substation ranking by homes in officially mapped flood areas; hospital and shelter exposure; Tamil advisories; faster mobile load.
+- Next: more storms and cities; substation ranking by homes in officially mapped flood areas; hospital and shelter exposure; finer rain data; Tamil advisories; faster mobile load.
 - Pilot path: a TANGEDCO or GCC control room uses it as a plan-lookup layer on its own grid data.
 - **Close:** SurgeGrid AI puts the plan's own words in front of the operator, at the right substation and hour, and makes no rule up.
 *Note:* Finish with the live URL and the repo.

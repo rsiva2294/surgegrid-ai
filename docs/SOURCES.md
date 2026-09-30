@@ -43,6 +43,15 @@ IMD brochure "Heavy Rain Warning Services" (mausam.imd.gov.in, `imd_latest/conte
 
 **Another IMD document disagrees.** IMD's older glossary (`imdpune.gov.in/Reports/glossary.pdf`, "Intensity of Rainfall") gives Heavy 64.5-124.4, Very Heavy 124.5-244.4 and Extremely Heavy 244.5 and above. We use the warning-services brochure above, which matches IMD's current warning bulletins.
 
+## IMD bulletin for Cyclone Michaung (context for the scenario)
+IMD Press Release 4, "Cyclonic Storm MICHAUNG ... intensified into Severe Cyclonic Storm", issued 13:00 IST, 4 December 2023 (`internal.imd.gov.in/press_release/20231204_pr_2671.pdf`, 15 pages; pages 1 to 4 are text, the rest are warning maps). Checked by reading the PDF text.
+- **Rain class limits** are printed in the header of every page: "Heavy rain: 64.5 - 115.5, Very heavy rain: 115.6 - 204.4, Extremely heavy rain: 204.5 or more" (mm). This matches the warning-services brochure above. The same header defines IMD's spatial words: Isolated under 25%, A few 26-50%, Many 51-75%, Most 76-100%.
+- **Storm position and forecast:** centred at 08:30 IST on 4 December near 13.3 N, 81.0 E, about 90 km east-northeast of Chennai; forecast to cross the coast between Nellore and Machilipatnam, close to Bapatla, during the forenoon of 5 December. So T-0 (our peak-rain hour) is not a landfall time.
+- **Wind warning:** "Gale wind speed reaching 60-70 kmph gusting to 80 kmph is prevailing along and off north Tamilnadu coast (Chennai and to its north)." Our ERA5-Land area mean at the T+12h step (14:30 IST on 4 December) is about 37 km/h; it is smoothed over about 9 km and is not gusts, so it reads lower.
+- **Rain warning, north coastal Tamil Nadu and Puducherry:** "heavy to very heavy rainfall at a few places with isolated extremely heavy falls is very likely on 4th".
+- **Damage expected and action suggested** (Tamil Nadu-Puducherry coastal districts) include "Minor damage to power and communication lines due to breaking of branches and uprooting of trees", "Localized Flooding of roads and closure of underpasses mainly in urban areas" and "Avoid going to areas that face the water logging problems often".
+These are IMD's statements at that time (forecast wording). The app does not use them as plan quotes; they are context for the Michaung scenario.
+
 ## IMD four-stage warning system
 TN SDMP 2023, Four Stage Warning System, PDF p. 148 (printed p. 146).
 

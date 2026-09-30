@@ -11,10 +11,16 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 ## Scenarios and timeline
 | What | File |
 |---|---|
-| Scenario ids, data files, start hours, milestone jumps, loader | `src/services/scenarioService.ts` |
-| Three real hindcasts (IMERG rain + ERA5-Land wind) | `public/data/scenarios/michaung2023.json`, `floods2015.json`, `monsoon2020.json` |
-| Cockpit bar: scenario buttons, play/pause, speed (1x to 8x), scrubber, wind/rain readouts, triage filters, AI Directive button | `src/components/Map/DisasterCockpitBar.tsx` |
-| Playback loop, auto-open of the directive at milestones, debounce of Gemini calls | `TnebGridMap.tsx` |
+| Scenario id, data file, the five timeline steps and the 6 s dwell, loader | `src/services/scenarioService.ts` |
+| The Michaung hindcast: area mean (IMERG rain + ERA5-Land wind) and per-cell rain grid (28 cells of about 11 km) | `public/data/scenarios/michaung2023.json`, `michaung2023_grid.json`; grid built by `scripts/build_scenario_grids.py` |
+| Cockpit bar: Live / Michaung buttons, play/pause, previous/next step, the five step chips (phase colour), wind/rain readouts, triage filters, AI Directive button | `src/components/Map/DisasterCockpitBar.tsx` |
+| Step playback (6 s per step), debounce of Gemini calls | `TnebGridMap.tsx` |
+| Grid loader, cell lookup, rolling 24 h rain, city wind direction | `src/services/scenarioGrid.ts` |
+| IMD rain classes (with source) | `src/data/officialSources.ts`, `docs/SOURCES.md` |
+| Rain colour scale and legend breaks | `src/components/Map/rainScale.ts` |
+| Storm legend and switches: 24 h rain, wind, fixed flood maps | `src/components/Map/SimulationMapPanel.tsx` |
+| Simplified official flood maps (2015 extent, 5 to 100-year hazard maps), drawn on demand | `public/data/flood_maps/`; built by `scripts/build_flood_polygons.py` |
+| Exposed now: flood-flagged and Heavy rain or worse, per step | `src/services/simulationExposure.ts`, `src/components/Map/ExposedSubstationsCard.tsx`, red rings in `mapIcons.ts` |
 | Feeder flags in a scenario (low-lying yard, operator decision, underground) | `src/components/Map/disasterUtils.ts` |
 
 ## Official plan text (the only source of plan wording)
@@ -27,7 +33,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 ## AI Directive and Substation Copilot
 | What | File |
 |---|---|
-| Phase rule, action table per scenario and phase, targets from grid data, Gemini wording layer, our ranking panel | `src/services/geminiSopService.ts` |
+| Phase rule, action table per scenario and phase, targets from grid data, Gemini wording layer | `src/services/geminiSopService.ts` |
 | AI Directive window (quotes, citations, notes, target chips) | `src/components/Map/GeminiSopDialog.tsx` |
 | Flags, quoted actions, Gemini note for one substation | `src/services/geminiSubstationCopilotService.ts` |
 | Copilot card inside the health card | `src/components/Map/SubstationHealthCard.tsx` |

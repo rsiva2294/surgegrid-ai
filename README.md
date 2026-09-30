@@ -2,7 +2,7 @@
 > **Chennai's power grid and flood console: real weather, official plans, no invented rules**
 > Hackathon: *Build with AI: Code for Communities (2nd Ed.)*, **Track 5: Cyclone Impact & Infrastructure Vulnerability Forecaster**
 
-**SurgeGrid AI** replays three real Chennai rain events hour by hour, shows which substations and feeders are exposed, and tells the control room what the official disaster plans say to do. Gemini writes short notes on top of quoted plan text. It is a client-side Vite + React 19 + TypeScript app on Google Maps, hosted on Firebase, with one small Cloud Function for Gemini.
+**SurgeGrid AI** replays Cyclone Michaung (December 2023) in five steps on a map of Chennai, shows which substations are exposed to heavy rain and official flood maps, and tells the control room what the official disaster plans say to do. Gemini writes short notes on top of quoted plan text. It is a client-side Vite + React 19 + TypeScript app on Google Maps, hosted on Firebase, with one small Cloud Function for Gemini.
 
 > New here? Read [docs/PROJECT_LOG.md](./docs/PROJECT_LOG.md) (what we decided and did, in order) and [docs/00-feature-map.md](./docs/00-feature-map.md) (where each feature lives in the code).
 
@@ -14,7 +14,7 @@ Everything the app shows is one of four things, and nothing else:
 1. **An official quote.** Every action or rule is a word-for-word quote from a government plan, with plan name and page. The full list is in [docs/SOURCES.md](./docs/SOURCES.md) and `src/data/officialSources.ts` (37 quotes, each checked against the PDF text). The four plans: MoP *Disaster Management Plan for Power Sector* (2021), TANGEDCO *Disaster Management Plan* (2017), Tamil Nadu *State Disaster Management Plan* (2023), Greater Chennai Corporation *City Disaster Management Perspective Plan* (2023).
 2. **Real data with a source.** Rain and wind (NASA GPM IMERG, ERA5-Land), terrain (SRTM), the TNEB grid, live TANGEDCO outage notices, Google Weather, and official flood maps and relief-centre lists (OpenCity, Greater Chennai Corporation profile).
 3. **A map check.** Whether a substation's location falls inside an official flood map. Not a prediction.
-4. **Our own calculation, labelled as ours.** The health score, the SurgeGrid ranking and the backup suggestion say so on screen.
+4. **Our own calculation, labelled as ours.** The health score and the backup suggestion say so on screen.
 
 The plans do **not** give a wind speed or flood depth at which supply must be switched off, restoration hour limits, a plinth height or gang and pump counts. They say supply may be switched off "if required". So the app shows an "operator decision" and never trips a feeder on an invented threshold. See "What the plans do not contain" in [docs/SOURCES.md](./docs/SOURCES.md).
 
@@ -22,16 +22,23 @@ The plans do **not** give a wind speed or flood depth at which supply must be sw
 
 ## What the app does today
 
-### 1. Three real rain scenarios
-Chosen from the floating *Disaster Cockpit* bar. Each is a **hindcast**: real rain (NASA GPM IMERG) and wind (ERA5-Land), averaged over the Chennai area through Earth Engine. Wind is an area average, not gusts. No storm surge is modelled. T-0 is the peak-rain hour.
+### 1. One real storm: Cyclone Michaung, December 2023
+Chosen from the floating *Disaster Cockpit* bar (Live or Cyclone Michaung). It is a **hindcast**: real rain (NASA GPM IMERG) and wind (ERA5-Land) through Earth Engine. T-0 is the peak-rain hour (3 December 2023, 21:00 UTC), not a landfall time: IMD's bulletin of 4 December 2023 forecast the storm to cross the coast near Nellore-Machilipatnam on 5 December. No storm surge is modelled. We earlier had two more events (the 2015 floods and a November 2020 monsoon spell); they were removed to focus on one event that we could finish well.
 
-| Scenario | Steps | Peak rain | Total rain | File |
-|---|---|---|---|---|
-| Cyclone Michaung, Dec 2023 | 144 hourly, T-69h to T+74h | 14.0 mm/h | 273 mm | `public/data/scenarios/michaung2023.json` |
-| 2015 Megaflood | 120 hourly, T-85h to T+34h | 23.4 mm/h | 372 mm | `public/data/scenarios/floods2015.json` |
-| Monsoon Spell, 12-18 Nov 2020 (ordinary heavy monsoon rain) | 144 hourly, T-69h to T+74h | 16.8 mm/h | 198 mm | `public/data/scenarios/monsoon2020.json` |
+| Data | What it holds | File |
+|---|---|---|
+| Area mean | 144 hourly steps, T-69h to T+74h; peak 14.0 mm/h, total 273 mm; wind is an area mean, not gusts | `public/data/scenarios/michaung2023.json` |
+| Per cell | 28 cells of 0.1 degree (about 11 km), each holding at least one substation; hourly rain per cell (worst 24 hours: 144 to 253 mm across cells). Wind is not gridded: ERA5-Land has no data over the coastal cells | `public/data/scenarios/michaung2023_grid.json` |
 
-Timeline controls: play/pause, playback speed (1x to 8x, default 4x), step, milestone jumps and a scrubber. The AI Directive opens at milestone hours. `?scenario=MICHAUNG_2023`, `FLOODS_2015` or `MONSOON_2020` opens a scenario directly. The scenario files were built with the script in the sister project `surgegrid-ai-v2` (`pipeline/07_build_scenario_from_gee.py`).
+**Timeline:** five steps, two before the peak, the peak and two after: T-24h, T-6h, T-0h Peak rain, T+12h, T+36h (the first hour where rain stays below 0.1 mm for six hours). Play walks the steps, 6 seconds each; previous and next buttons and the step chips jump directly. The phase colour of each step comes from the data (watch, impact, restoration). `?scenario=MICHAUNG_2023` opens the scenario directly.
+
+**What the map shows at each step**
+- **Rain, last 24 hours:** one rectangle per cell, coloured by the rain of the last 24 hours (a continuous scale; the legend marks IMD's class limits: Heavy 64.5 mm, Very heavy 115.6 mm, Extremely heavy 204.5 mm). Point at a cell to read it. It is a satellite estimate averaged over about 11 km, so every substation in a cell shares one value (86 of the 286 substations share a single cell).
+- **Wind:** one city-wide reading with its direction (from the land cells). IMD's bulletin of 4 December 2023, 13:00 IST, reported gale wind of 60-70 km/h gusting 80 along and off the Chennai coast; our smoothed area mean reads lower.
+- **Official flood maps, fixed:** the 2015 observed flood extent (a past event, not this storm) and the 5 to 100-year hazard maps. They do not change with the step.
+- **Exposed now:** a substation is exposed when it is flood-flagged (yard at or below 2.0 m, inside the 2015 extent, or Moderate/High on the hazard maps) **and** its rain cell has Heavy rain or worse (64.5 mm or more) over the last 24 hours. Exposed substations get a red ring and are listed in full, sortable, with their reasons. For Michaung the count is 0 of 87 flood-flagged at T-24h and T-6h, 86 at the peak, 87 at T+12h and 74 at T+36h. Two facts side by side, not a prediction of flooding.
+
+Scripts: `scripts/build_scenario_grids.py` (per-cell rain and wind from Earth Engine) and `scripts/build_flood_polygons.py` (simplified flood-map polygons from the OpenCity KML files). The area-mean file was built with `pipeline/07_build_scenario_from_gee.py` in the sister project `surgegrid-ai-v2`.
 
 ### 2. AI Directive (city-wide SOP)
 For the hour on screen, the directive lists the official actions that apply, each as a quote with its citation, and the substations they apply to, chosen from our grid data (lowest-lying yards, substations with overhead feeders, substations with hospital or water feeders). Phases come only from the data: before T-0 = watch; from T-0 while hourly rain is 0.1 mm or more = impact; after T-0 once rain is below 0.1 mm = restoration. Wind is shown with its IMD cyclone class (Severe 88 km/h and above) but does not drive the phase.
@@ -55,12 +62,13 @@ Gemini 2.5 Flash on Google Cloud's Gemini Enterprise Agent Platform (formerly Ve
 ---
 
 ## Honest limits
-- **Rain scenarios only.** No storm surge, no cyclone track, no street-level flood forecast.
+- **One rain event.** No storm surge, no cyclone track, no street-level flood forecast. The flood layers are fixed maps: none of our flood data (the 2015 extent, the depth readings, the stagnation points, the hazard maps) has a time in it, so we do not animate flooding. We have no observed flood extent for Michaung.
 - **Not a predictor.** Nothing here forecasts where water will go. Flood facts are map checks against official layers. In the sister project `surgegrid-ai-v2`, our own flood-proneness score matched the city's 53 flood hotspots (AUC 0.76) but did not match the 2015 satellite flood map, so we do not show model flood depths.
 - **Chennai only.** Nothing has been built for other cities. The scripts and data layout are city-specific.
 - **Relief centres have no exact locations** in the GCC list.
-- **Wind is an area average**, so it stays below the lowest IMD cyclone class in all three scenarios.
-- **Our own labelled items:** the health score, the SurgeGrid ranking panel and the backup suggestion. The waterlogging filter uses facts and official map checks only: yard at or below 2.0 m, inside the 2015 flood extent, or rated Moderate/High on the official flood-hazard maps (87 of 286 substations).
+- **Wind is an area average**, so it stays below the lowest IMD cyclone class in this scenario, and below IMD's own reported gale wind for the Chennai coast.
+- **Rain cells are coarse.** About 11 km, satellite-derived: good for where the heavier rain fell, not for streets.
+- **Our own labelled items:** the health score and the backup suggestion. The waterlogging filter uses facts and official map checks only: yard at or below 2.0 m, inside the 2015 flood extent, or rated Moderate/High on the official flood-hazard maps (87 of 286 substations).
 - **Not built:** road exposure, Tamil text, image input to Gemini, a trained forecasting model, other cities.
 
 ---

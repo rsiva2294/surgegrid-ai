@@ -1,15 +1,15 @@
 # SurgeGrid AI: Technical summary
 
-> SurgeGrid AI replays three real Chennai rain events hour by hour, shows which of 286 TNEB substations are exposed, and lists the actions the official disaster plans call for, quoted with page numbers.
+> SurgeGrid AI replays Cyclone Michaung (December 2023) in five steps on a map of Chennai: real satellite rain by area, official flood maps, and which of 286 TNEB substations are exposed. It lists the actions the official disaster plans call for, quoted with page numbers.
 
 ## 1. What it is
 A control-room console for Chennai's power network during heavy rain. Coverage is Greater Chennai and adjoining areas in the TNEB grid data: 286 substations, 352 section offices, 2,678 feeders (3,335 with surveyed street geometry) and 65,557 distribution transformers.
 
 ## 2. The rule: only truths
-Everything shown is one of: an official quote with plan name and page; real data with a source; a map check of a substation's location against an official flood layer (not a prediction); or our own calculation, labelled as ours (health score, ranking panel, backup suggestion).
+Everything shown is one of: an official quote with plan name and page; real data with a source; a map check of a substation's location against an official flood layer (not a prediction); or our own calculation, labelled as ours (health score, backup suggestion).
 
-## 3. Scenarios (real hindcasts)
-NASA GPM IMERG rain and ERA5-Land wind, averaged over the Chennai area: Cyclone Michaung (Dec 2023), the 2015 floods, and an ordinary heavy monsoon spell (12-18 Nov 2020). Wind is an area average, not gusts. No storm surge is modelled. T-0 is the peak-rain hour.
+## 3. Scenario (real hindcast)
+Cyclone Michaung (Dec 2023): NASA GPM IMERG rain and ERA5-Land wind. Rain is shown per cell of about 11 km (the last 24 hours, with IMD's rain classes); wind is an area average, not gusts. Five timeline steps. Official flood maps are drawn as fixed layers. No storm surge is modelled. T-0 is the peak-rain hour.
 
 ## 4. Official facts on each substation
 Yard elevation against Chennai's 2.0 m average (GCC plan); whether the location falls in the NRSC 2015 flood extent, the 5 to 100-year flood-hazard maps and GCC inundation zones; nearby 2015 stagnation points and 2020 hotspots; GCC relief centres listed for the ward (the list has no coordinates).

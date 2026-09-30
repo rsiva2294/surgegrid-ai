@@ -15,14 +15,14 @@ Before recording: open the site fresh, dark or light theme (pick one), close oth
 **Say:** "The official plans say supply may be switched off 'if required'. They never give a wind speed or flood depth. Most tools invent one. We checked four plans and removed every rule they don't contain. Everything you'll see is a word-for-word quote with a page number, real data with a source, or our own calculation, labelled as ours."
 
 ## 0:50 - 1:35  Replay a real storm
-**Screen:** Pick Cyclone Michaung (Dec 2023) in the Disaster Cockpit bar. Point at the rain and wind readouts. Open the AI Directive.
-**Say:** "This is a replay of Cyclone Michaung, using real NASA rain data and ERA5 wind, through Earth Engine. Not a simulation we made up. At 24 hours before the peak, the AI Directive lists the official actions for this hour. Each one is a quote from the plan, with the plan name and page. Under each, the substations it applies to, chosen from our grid data: the lowest-lying yards, overhead feeders, hospital and water feeders."
+**Screen:** Pick Cyclone Michaung (Dec 2023) in the Disaster Cockpit bar. Point at the timeline chips and the rain legend. Open the AI Directive.
+**Say:** "This is a replay of Cyclone Michaung, using real NASA satellite rain and ERA5 wind, through Earth Engine. Not a simulation we made up. The map shows the rain of the last 24 hours in cells of about eleven kilometres, coloured on IMD's own rain classes. At 24 hours before the peak, the AI Directive lists the official actions for this step. Each one is a quote from the plan, with the plan name and page. Under each, the substations it applies to, chosen from our grid data."
 
-## 1:35 - 2:05  Time moves
-**Screen:** Press play at 4x. Let the phase change to impact, then restoration. The directive updates.
-**Say:** "Press play. As the rain peaks, the phase changes from watch to impact. When the rain stops, it moves to restoration. The phase comes only from the rain data. The actions change with it, and each is still a quote."
+## 1:35 - 2:15  Time moves
+**Screen:** Press play. Five steps, six seconds each. Let the rain layer fill in, red rings appear, and the Exposed now list grow. Point at one cell to read its rain.
+**Say:** "Press play. The timeline moves through five steps: two before the peak, the peak, and two after. The rain builds up cell by cell. A substation gets a red ring when it is flood-flagged, meaning a low yard or inside an official flood map, and its rain cell has heavy rain or worse over the last 24 hours. At the peak, eighty-six of the eighty-seven flood-flagged substations are exposed, and the full list is on the left. Point at a cell to read its rain in millimetres and its IMD class. The phase changes from watch to impact, and to restoration once the rain stops. The actions change with it, and each is still a quote."
 
-## 2:05 - 2:55  One substation
+## 2:15 - 2:55  One substation
 **Screen:** Click a low-lying substation. Show the status line under the name, then the Overview tab (flood exposure, official flood maps, health score), then the Respond tab: the Copilot's quoted actions, relief centres, backup, then the contacts.
 **Say:** "Open a low-lying substation. The line under its name shows its health and any live outage notice. The Overview tab has the flood facts: its yard elevation against Chennai's official 2.0 metre average, and only the official flood maps this spot falls in. That is a map check, not a prediction. On the Respond tab, the copilot comes first: quoted actions for this substation, with feeder names. Below are the Greater Chennai Corporation relief centres for the ward, and a nearby substation with none of the flood flags, as a backup suggestion."
 
@@ -36,7 +36,7 @@ Before recording: open the site fresh, dark or light theme (pick one), close oth
 
 ## 3:40 - 4:00  Honest close
 **Screen:** Slide 9 (Track 5 fit), then the last slide with the URL and repo.
-**Say:** "We are clear about the limits. Rain scenarios only, no storm surge, no forecast, Chennai only for now. What we built is a control-room tool you can trust, because nothing on screen is invented. SurgeGrid AI: the plan's own words, at the right substation, at the right hour. Try it at surgegrid.web.app."
+**Say:** "We are clear about the limits. One real storm, satellite rain in eleven-kilometre cells, no storm surge, no flood forecast, Chennai only for now. The flood maps you can switch on are fixed official layers, not this storm's flooding. What we built is a control-room tool you can trust, because nothing on screen is invented. SurgeGrid AI: the plan's own words, at the right substation, at the right hour. Try it at surgegrid.web.app."
 
 ---
 

@@ -1,11 +1,11 @@
 # SurgeGrid AI: Chennai power grid and flood console
 
-> SurgeGrid AI replays three real Chennai rain events hour by hour, shows which of 286 TNEB substations are exposed, and lists the actions the official disaster plans call for, quoted with page numbers.
+> SurgeGrid AI replays Cyclone Michaung (December 2023) in five steps on a map of Chennai: real satellite rain by area, official flood maps, and which of 286 TNEB substations are exposed. It lists the actions the official disaster plans call for, quoted with page numbers.
 
 Every rule, warning and action in the app is a word-for-word quote from an official plan, real data with a source, a map check against an official layer, or our own calculation labelled as ours. The plans do not give wind or flood levels that force supply to be switched off, so the app shows an "operator decision" and never trips a feeder on an invented threshold.
 
 ## Web console
-- [SurgeGrid AI web console](https://surgegrid.web.app/): map of Chennai's 286 substations, 2,678 feeders and 65,557 distribution transformers, three real rain scenarios (Cyclone Michaung Dec 2023, the 2015 floods, a Nov 2020 monsoon spell), an AI Directive with quoted plan actions, per-substation flood-map checks, and GCC relief centres by ward.
+- [SurgeGrid AI web console](https://surgegrid.web.app/): map of Chennai's 286 substations, 2,678 feeders and 65,557 distribution transformers, a real replay of Cyclone Michaung (Dec 2023) with 24-hour rain by area, an AI Directive with quoted plan actions, per-substation flood-map checks, and GCC relief centres by ward.
 - [Technical summary](https://surgegrid.web.app/llms-full.txt)
 
 ## Sources

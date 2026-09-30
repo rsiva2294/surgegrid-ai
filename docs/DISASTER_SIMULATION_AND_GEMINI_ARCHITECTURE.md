@@ -4,7 +4,7 @@
 
 ## 1. Overview
 
-The app replays a real rain event hour by hour. At each hour it decides which **official actions** apply and which substations they name, then Gemini adds one short note. If Gemini is unavailable, the same quoted actions appear with rule-based notes. Nothing on screen is invented: see [SOURCES.md](./SOURCES.md) and [05](./05-official-plans-and-how-the-app-uses-them.md).
+The app replays one real storm (Cyclone Michaung, December 2023) in five steps. At each step it decides which **official actions** apply and which substations they name, then Gemini adds one short note. The map also shows the last 24 hours of rain by ~11 km cell and lists the substations that are flood-flagged and in Heavy rain or worse (see the project log). If Gemini is unavailable, the same quoted actions appear with rule-based notes. Nothing on screen is invented: see [SOURCES.md](./SOURCES.md) and [05](./05-official-plans-and-how-the-app-uses-them.md).
 
 ```mermaid
 flowchart TB
@@ -21,15 +21,13 @@ flowchart TB
     G --> UI["Quotes + citations + note"]
 ```
 
-## 2. The scenarios
+## 2. The scenario
 
-| Scenario | File | Steps | Notes |
+| Scenario | Files | Steps | Notes |
 |---|---|---|---|
-| Cyclone Michaung, Dec 2023 | `michaung2023.json` | 144 hourly, T-69h..T+74h | Real hindcast; peak 14.0 mm/h at T-0; total 273 mm |
-| 2015 Megaflood | `floods2015.json` | 120 hourly, T-85h..T+34h | Real hindcast; peak 23.4 mm/h; total 372 mm |
-| Monsoon Spell, Nov 2020 | `monsoon2020.json` | 144 hourly, T-69h..T+74h | Real hindcast of an ordinary heavy spell; peak 16.8 mm/h; total 198 mm |
+| Cyclone Michaung, Dec 2023 | `michaung2023.json` (area mean), `michaung2023_grid.json` (28 cells) | 144 hourly, T-69h..T+74h; timeline steps T-24h, T-6h, T-0h, T+12h, T+36h | Real hindcast; peak 14.0 mm/h at T-0; total 273 mm; worst 24 h per cell 144 to 253 mm |
 
-Built with `surgegrid-ai-v2/pipeline/07_build_scenario_from_gee.py`: NASA GPM IMERG V07 rain and ERA5-Land wind and pressure, averaged over the Chennai area (lat 12.8-13.25, lng 80.0-80.35). **Wind is an area average, not gusts. No storm surge is modelled** (sea level is held at normal tide). T-0 is the hour of peak rain, not a landfall time. The earlier synthetic "Category-3" file was removed.
+The area-mean file was built with `surgegrid-ai-v2/pipeline/07_build_scenario_from_gee.py`; the grid with `scripts/build_scenario_grids.py`: NASA GPM IMERG V07 rain and ERA5-Land wind, area mean over the Chennai box (lat 12.8-13.25, lng 80.0-80.35) and, in the grid file, per 0.1 degree cell. **Wind is an area average, not gusts, and is not gridded (no ERA5-Land data over the coastal cells). No storm surge is modelled.** T-0 is the hour of peak rain, not a landfall time. Earlier builds also had the 2015 floods and a November 2020 monsoon spell; both were removed to focus on one event.
 
 ## 3. Phase of an event (data only)
 
@@ -41,7 +39,7 @@ The 0.1 mm line is a presentation choice, not an official threshold. Wind is sho
 
 ## 4. Official actions by phase
 
-`geminiSopService.ts` holds a table from scenario and phase to a list of quote ids in `officialSources.ts`. Cyclone scenarios use the cyclone-alert actions in the watch phase (diesel for 7 days, inventories, ERS towers, expert manpower, plus flood identification and pumps); flood and monsoon scenarios use flood preparation, sandbags and retaining walls. Impact adds switching supply off "if required", pumping out flood water, mobile DG sets and overhead lines kept out of service. Restoration adds recharge only after patrol, restoration priority, mobile substations, an Emergency Operation Centre and generators at sewage pumping stations. Titles for each action are short labels of ours; the quote and citation under each are official.
+`geminiSopService.ts` holds a table from scenario and phase to a list of quote ids in `officialSources.ts`. Michaung uses the cyclone-alert actions in the watch phase (diesel for 7 days, inventories, ERS towers, expert manpower, plus flood identification and pumps). The flood-only set (flood preparation, sandbags, retaining walls) went with the 2015 and 2020 scenarios. Impact adds switching supply off "if required", pumping out flood water, mobile DG sets and overhead lines kept out of service. Restoration adds recharge only after patrol, restoration priority, mobile substations, an Emergency Operation Centre and generators at sewage pumping stations. Titles for each action are short labels of ours; the quote and citation under each are official.
 
 ## 5. Which substations an action names
 
