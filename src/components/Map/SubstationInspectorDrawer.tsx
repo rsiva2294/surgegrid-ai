@@ -38,8 +38,11 @@ import { useSectionBoundary } from '../../services/sectionBoundaries';
 import { ReliefCentresCard } from './ReliefCentresCard';
 import { useOfficialFlood } from '../../services/officialFloodLayers';
 import { getEnrichedHealthProfile } from '../../services/gridHealthService';
+import { useGccPlan, wardFacts } from '../../services/gccPlan';
+import { useReliefCentres } from '../../services/reliefCentres';
 
 interface SubstationInspectorDrawerProps {
+  substations?: TnebSubstation[];
   selectedSubstation: TnebSubstation | null;
   selectedSection: TnebSection | null;
   onSelectSubstation: (ss: TnebSubstation | null) => void;
@@ -58,6 +61,7 @@ interface SubstationInspectorDrawerProps {
 }
 
 export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps> = ({
+  substations = [],
   selectedSubstation,
   selectedSection,
   onSelectSubstation,
@@ -82,6 +86,27 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
   const [showJargonGuide, setShowJargonGuide] = useState(false);
   const [feederFilter, setFeederFilter] = useState('');
   const [feederCategoryFilter, setFeederCategoryFilter] = useState<'all' | 'lifelines'>('all');
+  const reliefData = useReliefCentres();
+  const gccPlan = useGccPlan();
+
+  const nearbySubstations = useMemo(() => {
+    if (!selectedSection || !substations || substations.length === 0) return [];
+    return substations
+      .map(s => {
+        const latDiff = (s.lat - selectedSection.lat) * 111;
+        const lngDiff = (s.lng - selectedSection.lng) * 111 * Math.cos((selectedSection.lat * Math.PI) / 180);
+        const km = Math.hypot(latDiff, lngDiff);
+        const isSameWard = s.gccWard !== undefined && s.gccWard === selectedSection.gccWard;
+        return { substation: s, km, isSameWard };
+      })
+      .sort((a, b) => a.km - b.km)
+      .slice(0, 3);
+  }, [selectedSection, substations]);
+
+  const sectionWardStr = selectedSection?.gccWard !== undefined ? String(selectedSection.gccWard) : null;
+  const sectionWardCentres = sectionWardStr && reliefData ? reliefData.wards[sectionWardStr]?.centres ?? [] : [];
+  const sectionWardFacts = selectedSection?.gccWard !== undefined ? wardFacts(gccPlan, selectedSection.gccWard) : null;
+  const sectionPlanRelief = sectionWardFacts?.relief ?? [];
 
   // Resizable drawer width state & persistence (default 460px, min 380px, max 840px / 65vw)
   const DEFAULT_DRAWER_WIDTH = 460;
@@ -1307,6 +1332,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
               </div>
             )}
 
+            {/* TNEB Administrative & Grid Hierarchy */}
             <div className="grid grid-cols-2 gap-2">
               <div
                 className={`p-2.5 rounded-xl border ${
@@ -1340,44 +1366,330 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   {selectedSection.subdivision || 'Not listed'}
                 </span>
               </div>
+              <div
+                className={`p-2.5 rounded-xl border ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                }`}
+              >
+                <span
+                  className={`text-xs uppercase tracking-wider font-semibold block mb-1 ${
+                    isLight ? 'text-slate-500' : 'text-slate-400'
+                  }`}
+                >
+                  Distribution Circle
+                </span>
+                <span className={`font-semibold text-xs truncate block ${isLight ? 'text-slate-900' : 'text-slate-100'}`} title={selectedSection.circle}>
+                  {selectedSection.circle || 'Not listed'}
+                </span>
+              </div>
+              <div
+                className={`p-2.5 rounded-xl border ${
+                  isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                }`}
+              >
+                <span
+                  className={`text-xs uppercase tracking-wider font-semibold block mb-1 ${
+                    isLight ? 'text-slate-500' : 'text-slate-400'
+                  }`}
+                >
+                  Region & Section Code
+                </span>
+                <span className={`font-semibold text-xs ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+                  {selectedSection.region ? `${selectedSection.region} · #${selectedSection.code}` : `#${selectedSection.code}`}
+                </span>
+              </div>
             </div>
 
-            {/* GCC Municipal & Satellite Vulnerability Stack */}
+            {/* GCC Municipal & Ward Ground Truth */}
             <MunicipalDisasterCard node={selectedSection} isLight={isLight} />
 
+            {/* Section Office Rapid Contact & Quick Action Hub */}
             <div
-              className={`space-y-2.5 p-3 rounded-xl border text-xs ${
-                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+              className={`p-3 rounded-xl border space-y-2.5 text-xs ${
+                isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-slate-900 border-slate-800 text-slate-200 shadow-xs'
               }`}
             >
-              {selectedSection.mobile && (
-                <div className={`flex items-center gap-2.5 ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>
-                  <Phone className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
+              <div className="flex items-center justify-between pb-1 border-b border-current/10">
+                <span className="font-bold flex items-center gap-1.5 text-xs">
+                  <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Section Office Quick Actions</span>
+                </span>
+                <span className={`text-[11px] font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                  1-Click Dispatch
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {selectedSection.mobile && (
                   <a
-                    href={`tel:${selectedSection.mobile}`}
-                    className={`font-mono font-medium ${isLight ? 'hover:text-emerald-600' : 'hover:text-emerald-300'}`}
+                    href={`tel:${selectedSection.mobile.replace(/[^0-9+]/g, '')}`}
+                    className={`p-2.5 rounded-xl border flex flex-col justify-between transition-all group ${
+                      isLight
+                        ? 'bg-emerald-50/70 hover:bg-emerald-100/90 border-emerald-200 text-emerald-950'
+                        : 'bg-emerald-950/20 hover:bg-emerald-950/40 border-emerald-800/60 text-emerald-200'
+                    }`}
+                    title="Call Section Assistant Engineer"
                   >
-                    {selectedSection.mobile}
+                    <span className="text-[11px] font-medium opacity-75">Call Section AE</span>
+                    <div className="flex items-center justify-between gap-1 mt-1">
+                      <div className="flex items-center gap-1.5 font-mono font-bold text-xs truncate">
+                        <Phone className="w-3 h-3 text-emerald-600 group-hover:scale-110 transition-transform shrink-0" />
+                        <span>{selectedSection.mobile}</span>
+                      </div>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-200/70 dark:bg-emerald-800/60 text-emerald-900 dark:text-emerald-200 shrink-0">
+                        Dial ↗
+                      </span>
+                    </div>
+                  </a>
+                )}
+
+                {selectedSection.email && (
+                  <a
+                    href={`mailto:${selectedSection.email}?subject=${encodeURIComponent(`[SurgeGrid] Outage Inquiry - ${selectedSection.cleanName} Section`)}`}
+                    className={`p-2.5 rounded-xl border flex flex-col justify-between transition-all group ${
+                      isLight
+                        ? 'bg-sky-50/70 hover:bg-sky-100/90 border-sky-200 text-sky-950'
+                        : 'bg-sky-950/20 hover:bg-sky-950/40 border-sky-800/60 text-sky-200'
+                    }`}
+                    title="Email Section Office"
+                  >
+                    <span className="text-[11px] font-medium opacity-75">Email Office</span>
+                    <div className="flex items-center justify-between gap-1 mt-1">
+                      <div className="flex items-center gap-1.5 font-mono text-xs truncate">
+                        <Mail className="w-3 h-3 text-sky-600 group-hover:scale-110 transition-transform shrink-0" />
+                        <span className="truncate">{selectedSection.email}</span>
+                      </div>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-200/70 dark:bg-sky-800/60 text-sky-900 dark:text-sky-200 shrink-0">
+                        Email ↗
+                      </span>
+                    </div>
+                  </a>
+                )}
+
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    selectedSection.address || `${selectedSection.lat},${selectedSection.lng}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`p-2.5 rounded-xl border flex flex-col justify-between transition-all group ${
+                    isLight
+                      ? 'bg-indigo-50/70 hover:bg-indigo-100/90 border-indigo-200 text-indigo-950'
+                      : 'bg-indigo-950/20 hover:bg-indigo-950/40 border-indigo-800/60 text-indigo-200'
+                  }`}
+                  title="View Office on Google Maps"
+                >
+                  <span className="text-[11px] font-medium opacity-75">View on Google Maps</span>
+                  <div className="flex items-center justify-between gap-1 mt-1">
+                    <div className="flex items-center gap-1.5 font-bold text-xs truncate">
+                      <MapPin className="w-3 h-3 text-indigo-600 group-hover:scale-110 transition-transform shrink-0" />
+                      <span>Office Location</span>
+                    </div>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-200/70 dark:bg-indigo-800/60 text-indigo-900 dark:text-indigo-200 shrink-0">
+                      View Place ↗
+                    </span>
+                  </div>
+                </a>
+
+                <a
+                  href="tel:1912"
+                  className={`p-2.5 rounded-xl border flex flex-col justify-between transition-all group ${
+                    isLight
+                      ? 'bg-amber-50/70 hover:bg-amber-100/90 border-amber-200 text-amber-950'
+                      : 'bg-amber-950/20 hover:bg-amber-950/40 border-amber-800/60 text-amber-200'
+                  }`}
+                  title="TANGEDCO 24x7 Emergency Call Center"
+                >
+                  <span className="text-[11px] font-medium opacity-75">TANGEDCO 24x7</span>
+                  <div className="flex items-center justify-between gap-1 mt-1">
+                    <div className="flex items-center gap-1.5 font-mono font-bold text-xs">
+                      <Zap className="w-3 h-3 text-amber-600 group-hover:scale-110 transition-transform shrink-0" />
+                      <span>1912 Hotline</span>
+                    </div>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-200/70 dark:bg-amber-800/60 text-amber-900 dark:text-amber-200 shrink-0">
+                      Call ↗
+                    </span>
+                  </div>
+                </a>
+              </div>
+
+              {selectedSection.address && (
+                <div
+                  className={`p-2.5 rounded-xl border flex items-start justify-between gap-2.5 text-xs ${
+                    isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/60 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-start gap-2 min-w-0">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className={`text-[11px] uppercase tracking-wider font-semibold block mb-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                        Office Address
+                      </span>
+                      <p className={`text-xs leading-relaxed ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>
+                        {selectedSection.address}
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedSection.address)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                      isLight
+                        ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200 shadow-2xs'
+                        : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700 shadow-2xs'
+                    }`}
+                  >
+                    <span>View Place</span>
+                    <span className="text-[10px]">↗</span>
                   </a>
                 </div>
               )}
-              {selectedSection.email && (
-                <div className={`flex items-center gap-2.5 ${isLight ? 'text-slate-700' : 'text-slate-200'}`}>
-                  <Mail className={`w-3.5 h-3.5 shrink-0 ${isLight ? 'text-sky-600' : 'text-cyan-400'}`} />
-                  <span className="font-mono truncate">{selectedSection.email}</span>
-                </div>
-              )}
-              {selectedSection.address && (
-                <div
-                  className={`flex items-start gap-2.5 pt-1 border-t ${
-                    isLight ? 'border-slate-200 text-slate-600' : 'border-slate-800 text-slate-400'
-                  }`}
-                >
-                  <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                  <span className="text-xs leading-relaxed">{selectedSection.address}</span>
-                </div>
-              )}
             </div>
+
+            {/* Primary Feeding Substations in Beat */}
+            {nearbySubstations.length > 0 && (
+              <div
+                className={`p-3 rounded-xl border space-y-2 text-xs ${
+                  isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-slate-900 border-slate-800 text-slate-200 shadow-xs'
+                }`}
+              >
+                <div className="flex items-center justify-between pb-1 border-b border-current/10">
+                  <div className="flex items-center gap-1.5 font-bold text-xs">
+                    <Building2 className="w-3.5 h-3.5 text-sky-600" />
+                    <span>Primary Feeding Substations in Beat</span>
+                  </div>
+                  <span className={`text-[11px] font-mono ${isLight ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {nearbySubstations.length} Nearest
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {nearbySubstations.map(({ substation: s, km, isSameWard }) => (
+                    <div
+                      key={s.code}
+                      className={`p-2 rounded-lg border flex items-center justify-between gap-2 ${
+                        isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/50 border-slate-800'
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="font-semibold text-xs truncate flex items-center gap-1.5">
+                          <span>{s.name}</span>
+                          {isSameWard && (
+                            <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300">
+                              Ward {s.gccWard}
+                            </span>
+                          )}
+                        </div>
+                        <div className={`text-[11px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                          {s.capacity || (s.tier === 'bulk' ? '230/110 kV Bulk' : s.tier === 'subtransmission' ? '110/33 kV Sub-Trans' : '33/11 kV Distribution')} · ~{km.toFixed(1)} km away
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onSelectSection(null);
+                          onSelectSubstation(s);
+                        }}
+                        className={`shrink-0 text-xs font-semibold px-2 py-1 rounded-md border transition-all ${
+                          isLight
+                            ? 'bg-white hover:bg-sky-50 text-sky-700 border-sky-200 hover:border-sky-300'
+                            : 'bg-slate-900 hover:bg-sky-950 text-cyan-300 border-sky-800/60'
+                        }`}
+                      >
+                        Inspect ↗
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Ward Emergency Relief Shelters & Facilities (GCC Plan 2024) */}
+            {sectionWardStr && (sectionWardCentres.length > 0 || sectionPlanRelief.length > 0) && (
+              <div
+                className={`p-3 rounded-xl border space-y-2 text-xs ${
+                  isLight ? 'bg-white border-slate-200 text-slate-800 shadow-xs' : 'bg-slate-900 border-slate-800 text-slate-200 shadow-xs'
+                }`}
+              >
+                <div className="flex items-center justify-between pb-1 border-b border-current/10">
+                  <div className="flex items-center gap-1.5 font-bold text-xs">
+                    <span>🏛️</span>
+                    <span>Ward {sectionWardStr} Emergency Relief Shelters</span>
+                  </div>
+                  <span className={`text-[11px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                    isLight ? 'bg-purple-100 text-purple-700' : 'bg-purple-950/50 text-purple-300'
+                  }`}>
+                    {sectionWardCentres.length || sectionPlanRelief.length} Listed
+                  </span>
+                </div>
+
+                {sectionWardFacts?.in2023 && sectionWardFacts.in2023.length > 0 && (
+                  <div className={`p-2 rounded-lg text-[11.5px] border ${
+                    isLight ? 'bg-amber-50 border-amber-200 text-amber-900' : 'bg-amber-950/20 border-amber-800/40 text-amber-200'
+                  }`}>
+                    🌊 <strong>2023 Flood Risk (Michaung):</strong> {sectionWardFacts.in2023.length} streets inundated ({sectionWardFacts.in2023.slice(0, 2).join(', ')}{sectionWardFacts.in2023.length > 2 ? ` +${sectionWardFacts.in2023.length - 2} more` : ''})
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  {sectionWardCentres.slice(0, 3).map((c, i) => (
+                    <div
+                      key={i}
+                      className={`p-2 rounded-lg border text-xs flex items-center justify-between gap-2 ${
+                        isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/50 border-slate-800'
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="font-semibold truncate">{c.address || 'Relief Centre'}</div>
+                        <div className={`text-[11px] ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                          {c.officer || 'GCC Nodal Officer'}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {c.contact && (
+                          <a
+                            href={`tel:${c.contact.replace(/[^0-9+]/g, '')}`}
+                            className={`p-1.5 rounded-md border ${
+                              isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-950/30 text-emerald-300 border-emerald-800/60'
+                            }`}
+                            title="Call Officer"
+                          >
+                            <Phone className="w-3 h-3" />
+                          </a>
+                        )}
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address + ', Chennai')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`px-2 py-1 rounded-md text-[11px] font-semibold border ${
+                            isLight ? 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200' : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
+                          }`}
+                          title="View on Google Maps"
+                        >
+                          View Place ↗
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {sectionPlanRelief.length > 0 && (
+                  <div className={`pt-1.5 border-t text-[11.5px] space-y-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+                    <div className={`text-[11px] uppercase tracking-wider font-semibold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                      Shelter Capacity & Facilities (GCC DMP 2024)
+                    </div>
+                    {sectionPlanRelief.slice(0, 2).map((p, i) => (
+                      <div key={i} className="leading-snug">
+                        <span className="font-semibold">{p.name}</span>: {p.capacity !== null ? `${p.capacity} people` : 'capacity not given'}
+                        <span className={isLight ? 'text-slate-500' : 'text-slate-400'}>
+                          {' '}· water {p.water ? 'yes' : 'no'}, toilets {p.toilets ? 'yes' : 'no'}, cooking {p.cooking ? 'yes' : 'no'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

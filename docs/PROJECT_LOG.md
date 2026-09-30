@@ -314,6 +314,8 @@
 
 86. **Google Maps Turn-by-Turn Directions & Shelter Search Added to Relief Popup (owner approved).** In `TnebGridMap.tsx`, added navigation hyperlinks directly inside the relief centre InfoWindow: (1) Added a `🧭 Directions` button next to the phone call link for each centre, opening turn-by-turn driving and transit directions to the ward location in Google Maps (`https://www.google.com/maps/dir/?api=1&destination=${w.lat},${w.lng}`); (2) Added a `Search ↗` query link alongside each GCC Plan 2024 shelter facility name for direct building lookup on Google Maps. Build passes; committed to git without deployment.
 
+87. **Section Office Drawer Upgraded with 1-Click Action Hub, Grid Hierarchy, Feeding Substations, and Ward Relief Shelters (owner approved).** (1) Replaced plain text contact rows with interactive 1-click quick action cards: `📞 Call Section AE` (`tel:...`), `✉️ Email Office` (`mailto:...`), `📍 View on Google Maps` (`View Place` search link), and `⚡ TANGEDCO 1912 Helpline`; (2) Added TNEB grid hierarchy grid: Distribution Circle, Region, and Section Code alongside Division & Subdivision; (3) Added `Primary Feeding Substations in Beat`: dynamically finds the nearest 3 step-down distribution substations with distance and 1-click inspect navigation; (4) Added `Ward Emergency Relief Shelters & Facilities`: lists designated GCC shelters in the section's ward with capacity, water/toilets/cooking amenities, and `View Place` links; (5) In `TnebGridMap.tsx`, replaced relief centre directions with `📍 View Place` opening Google Maps place search. Build passes; committed to git without deployment.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat

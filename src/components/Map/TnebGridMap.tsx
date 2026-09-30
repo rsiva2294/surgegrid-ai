@@ -1076,12 +1076,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
                     `
                         : ''
                     }
-                    <a href="https://www.google.com/maps/dir/?api=1&destination=${w.lat},${w.lng}"
+                    <a href="https://www.google.com/maps/search/?api=1&query=${w.lat},${w.lng}"
                        target="_blank"
                        rel="noopener noreferrer"
                        style="display:inline-flex;align-items:center;gap:3px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:2px 6px;border-radius:4px;font-size:11px;font-weight:600;text-decoration:none;"
-                       title="Open Google Maps Directions">
-                      🧭 Directions
+                       title="View Location on Google Maps">
+                      📍 View Place
                     </a>
                   </div>
                 </div>
@@ -2149,6 +2149,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
       {/* Full-Height Substation / Section Inspector Drawer */}
       <SubstationInspectorDrawer
+        substations={substations}
         selectedSubstation={selectedSubstation}
         selectedSection={selectedSection}
         onSelectSubstation={onSelectSubstation}
