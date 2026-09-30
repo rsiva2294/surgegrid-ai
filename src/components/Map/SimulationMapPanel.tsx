@@ -22,6 +22,10 @@ interface SimulationMapPanelProps {
   hazardYears: HazardYears;
   setHazardYears: (v: HazardYears) => void;
   hover: HoverCell | null;
+  showGauges: boolean;
+  setShowGauges: (v: boolean) => void;
+  /** The gauge window shown at this step and how many gauges IMD lists in it; null window = none had ended yet. */
+  gaugeInfo: { label: string | null; listed: number } | null;
   windSpeedKmh: number | null;
   windFromDeg: number | null;
 }
@@ -50,6 +54,9 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
   hazardYears,
   setHazardYears,
   hover,
+  showGauges,
+  setShowGauges,
+  gaugeInfo,
   windSpeedKmh,
   windFromDeg,
 }) => {
@@ -86,9 +93,9 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
           Rain is a NASA IMERG satellite estimate averaged over cells of about 11 km, so every substation in a cell gets that cell&apos;s
           value. Class names and limits are IMD&apos;s, applied here to a rolling 24-hour total. Wind is the ERA5-Land area mean (no data over
           coastal cells), smoothed and not gusts: IMD&apos;s Nungambakkam and Meenambakkam weather stations recorded 56 to 68 km/h on 4
-          December, with gusts of 75 to 90 km/h. IMD&apos;s rain gauges also read higher than these cells: at the 7, 16 and 9 stations we
-          could place, the satellite cell held about a third (3 Dec), three-quarters (4 Dec) and two-thirds (5 Dec) of the gauge total for
-          the 24 hours to 08:30 IST (medians 30 vs 80 mm, 147 vs 190 mm, 115 vs 170 mm). The flood maps are fixed official layers,
+          December, with gusts of 75 to 90 km/h. IMD&apos;s rain gauges also read higher than these cells: at the 7, 16 and 10 stations we
+          could place, the satellite cell held about a third (3 Dec), three-quarters (4 Dec) and three-fifths (5 Dec) of the gauge total for
+          the 24 hours to 08:30 IST (medians 30 vs 80 mm, 147 vs 195 mm, 115 vs 170 mm). The flood maps are fixed official layers,
           not this hour.
         </p>
       )}
@@ -125,6 +132,19 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
                 )}
               </div>
             </div>
+          </div>
+
+          <div className={`pt-1.5 border-t space-y-0.5 ${isLight ? 'border-slate-200' : 'border-slate-700'}`}>
+            <label className={row}>
+              <input type="checkbox" checked={showGauges} onChange={e => setShowGauges(e.target.checked)} className="accent-slate-700" />
+              <span className="inline-block w-2.5 h-2.5 rounded-[2px] border border-slate-700 bg-blue-500" aria-hidden />
+              <span className="font-semibold">IMD rain gauges</span>
+            </label>
+            <p className={`pl-5 text-[10px] leading-snug ${muted}`}>
+              {gaugeInfo && gaugeInfo.label
+                ? `${gaugeInfo.label}: ${gaugeInfo.listed} gauges listed by IMD (same colours as the rain layer). Point at one for its reading and the satellite cell.`
+                : 'No gauge window had ended yet at this step.'}
+            </p>
           </div>
 
           <div className={`flex items-center gap-2 pt-1.5 border-t ${isLight ? 'border-slate-200' : 'border-slate-700'}`}>

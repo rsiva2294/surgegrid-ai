@@ -57,6 +57,7 @@ import { ExposedSubstationsCard } from './ExposedSubstationsCard';
 import { ImdAtTheTimeCard } from './ImdAtTheTimeCard';
 import { IMD_BEST_TRACK, IMD_STEP_NOTES, istLabel } from '../../data/imdBulletins';
 import { computeExposure } from '../../services/simulationExposure';
+import { fetchGaugePoints, gaugeWindowFor, type GaugePoints } from '../../services/gaugePoints';
 
 // Official flood maps (fixed layers), fetched when first switched on.
 const floodMapCache = new Map<string, Promise<object | null>>();
@@ -194,6 +195,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [showHazard, setShowHazard] = useState(false);
   const [hazardYears, setHazardYears] = useState<HazardYears>(100);
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const [gaugePoints, setGaugePoints] = useState<GaugePoints | null>(null);
+  const [showGauges, setShowGauges] = useState(true);
+  const gaugeMarkersRef = useRef<google.maps.Marker[]>([]);
   const rainRectsRef = useRef<google.maps.Rectangle[]>([]);
   const flood2015LayerRef = useRef<google.maps.Data | null>(null);
   const hazardLayerRef = useRef<google.maps.Data | null>(null);
@@ -223,6 +227,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       setIsLayersExpanded(false);
       setScenarioGrid(null);
       fetchScenarioGrid(id).then(setScenarioGrid);
+      fetchGaugePoints().then(setGaugePoints);
     } else {
       setScenarioData(null);
       setScenarioGrid(null);
@@ -978,6 +983,44 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [scenarioGrid, showRain, hoverIdx, simulationHour]);
 
+  // IMD rain gauges: the readings of the latest 24-hour window that had ended at this step, as squares coloured on the rain scale.
+  const gaugeWindow = useMemo(
+    () => (gaugePoints ? gaugeWindowFor(gaugePoints, currentTimestep?.utc) : null),
+    [gaugePoints, currentTimestep?.utc]
+  );
+  useEffect(() => {
+    gaugeMarkersRef.current.forEach(m => m.setMap(null));
+    gaugeMarkersRef.current = [];
+    if (!mapRef.current || !mapLoaded || !gaugePoints || !gaugeWindow || !showGauges || !isSimulationScenario(disasterScenario)) return;
+    const isLight = theme === 'light';
+    gaugePoints.stations.forEach(s => {
+      const mm = s.mm[gaugeWindow.id];
+      if (mm === null || mm === undefined) return;
+      const sat = s.sat[gaugeWindow.id];
+      gaugeMarkersRef.current.push(
+        new google.maps.Marker({
+          position: { lat: s.lat, lng: s.lng },
+          map: mapRef.current,
+          zIndex: 8,
+          title: `${s.name} (${s.district}): IMD gauge ${mm} mm in the ${gaugeWindow.label}.${sat !== null && sat !== undefined ? ` Satellite cell: ${sat} mm.` : ' Outside our satellite cells.'}`,
+          icon: {
+            path: 'M -1,-1 L 1,-1 L 1,1 L -1,1 z',
+            scale: 6.5,
+            fillColor: rainFill(mm).color,
+            fillOpacity: 1,
+            strokeColor: isLight ? '#0f172a' : '#f8fafc',
+            strokeWeight: 1.5
+          },
+          optimized: true
+        })
+      );
+    });
+    return () => {
+      gaugeMarkersRef.current.forEach(m => m.setMap(null));
+      gaugeMarkersRef.current = [];
+    };
+  }, [gaugePoints, gaugeWindow, showGauges, mapLoaded, disasterScenario, theme]);
+
   // Storm layer 2 and 3: the official flood maps, drawn as fixed backdrops (not what is flooded at this hour).
   useEffect(() => {
     const map = mapRef.current;
@@ -1681,6 +1724,16 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
             hazardYears={hazardYears}
             setHazardYears={setHazardYears}
             hover={hoverCell}
+          showGauges={showGauges}
+          setShowGauges={setShowGauges}
+          gaugeInfo={
+            gaugePoints
+              ? {
+                  label: gaugeWindow ? gaugeWindow.label : null,
+                  listed: gaugeWindow ? gaugePoints.stations.filter(s => s.mm[gaugeWindow.id] != null).length : 0
+                }
+              : null
+          }
             windSpeedKmh={currentTimestep ? Math.abs(currentTimestep.wind_speed_10m_kmh) : null}
             windFromDeg={cityWindFromDeg(scenarioGrid, simulationHour)?.fromDeg ?? null}
           />
