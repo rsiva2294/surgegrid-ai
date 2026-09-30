@@ -192,10 +192,17 @@ export function getFeederLifelineBadge(feeder: FeederDetail, isLight: boolean) {
 }
 
 // `highlight` is true while a triage filter is on: every marker still shown is one the user is looking for.
-export function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean, isLight: boolean, highlight = false): google.maps.Symbol {
+// `exposed` marks a substation that is flood-flagged and in heavy rain at the current simulation step.
+export function getSubstationMarkerIcon(
+  ss: TnebSubstation,
+  isSelected: boolean,
+  isLight: boolean,
+  highlight = false,
+  exposed = false
+): google.maps.Symbol {
   let color = isLight ? '#0284C7' : '#06B6D4';
   let scale = 6;
-  const boost = highlight && !isSelected ? 3 : 0;
+  const boost = (highlight || exposed) && !isSelected ? 3 : 0;
 
   if (ss.tier === 'bulk') {
     color = isLight ? '#BE185D' : '#EC4899';
@@ -209,9 +216,11 @@ export function getSubstationMarkerIcon(ss: TnebSubstation, isSelected: boolean,
 
   const strokeColor = isSelected
     ? (isLight ? '#0F172A' : '#FFFFFF')
+    : exposed
+    ? '#DC2626'
     : (isLight ? '#FFFFFF' : '#083344');
 
-  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : 2.5;
+  const strokeWeight = isSelected ? (isLight ? 4 : 3.5) : exposed ? 3.5 : 2.5;
 
   return {
     path: google.maps.SymbolPath.CIRCLE,

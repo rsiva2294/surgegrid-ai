@@ -53,6 +53,8 @@ import {
 import { getImdRainClass } from '../../data/officialSources';
 import { rainFill, type HazardYears } from './rainScale';
 import { SimulationMapPanel, type HoverCell } from './SimulationMapPanel';
+import { ExposedSubstationsCard } from './ExposedSubstationsCard';
+import { computeExposure } from '../../services/simulationExposure';
 
 // Official flood maps (fixed layers), fetched when first switched on.
 const floodMapCache = new Map<string, Promise<object | null>>();
@@ -216,6 +218,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         setScenarioData(data);
         setSimulationHour(SCENARIO_MILESTONES[id][0].hour);
       });
+      setIsLayersExpanded(false);
       setScenarioGrid(null);
       fetchScenarioGrid(id).then(setScenarioGrid);
     } else {
@@ -428,6 +431,18 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   }, [substations, liveOutages]);
 
   const floodLayersLoaded = useOfficialFloodLoaded();
+
+  // Substations exposed at this step: flood-flagged and in a rain cell at Heavy or worse over the last 24 hours.
+  const exposure = useMemo(
+    () =>
+      scenarioGrid && isSimulationScenario(disasterScenario) && substations.length > 0
+        ? computeExposure(substations, scenarioGrid, simulationHour)
+        : null,
+    [scenarioGrid, disasterScenario, substations, simulationHour, floodLayersLoaded]
+  );
+  const exposedCodes = useMemo(() => new Set(exposure ? exposure.exposed.map(e => e.substation.code) : []), [exposure]);
+  const exposedCodesRef = useRef(exposedCodes);
+  exposedCodesRef.current = exposedCodes;
   const waterloggingRiskCount = useMemo(() => {
     return substations.filter(s => isSubstationWaterloggingRisk(s)).length;
   }, [substations, floodLayersLoaded]);
@@ -744,7 +759,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const prevMarker = markersRef.current[prevSelectedSubstationCodeRef.current];
       const prevSS = substationsByCode.get(prevSelectedSubstationCodeRef.current);
       if (prevMarker && prevSS) {
-        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight, crisisTriageFilter !== 'all'));
+        prevMarker.setIcon(getSubstationMarkerIcon(prevSS, false, isLight, crisisTriageFilter !== 'all', exposedCodesRef.current.has(prevSS.code)));
         prevMarker.setZIndex(prevSS.tier === 'bulk' ? 30 : prevSS.tier === 'subtransmission' ? 20 : 10);
       }
     }
@@ -794,7 +809,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       const marker = markersRef.current[ss.code];
       if (marker) {
         const isSelected = selectedSubstation?.code === ss.code;
-        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight, highlight));
+        marker.setIcon(getSubstationMarkerIcon(ss, isSelected, isLight, highlight, exposedCodes.has(ss.code)));
       }
     });
     sections.forEach(sec => {
@@ -804,7 +819,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         marker.setIcon(getSectionMarkerIcon(isSelected, isLight));
       }
     });
-  }, [theme, mapLoaded, crisisTriageFilter]);
+  }, [theme, mapLoaded, crisisTriageFilter, exposedCodes]);
 
   // 8. Dedicated Selection Beacon Halo Ring (Visual Highlighting in Light & Dark modes)
   useEffect(() => {
@@ -1511,24 +1526,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         steps={timelineSteps}
       />
 
-      {isSimulationScenario(disasterScenario) && scenarioGrid && (
-        <SimulationMapPanel
-          isLight={isLight}
-          stepLabel={currentTimestep?.label || `T${simulationHour >= 0 ? '+' : ''}${simulationHour}h`}
-          showRain={showRain}
-          setShowRain={setShowRain}
-          showFlood2015={showFlood2015}
-          setShowFlood2015={setShowFlood2015}
-          showHazard={showHazard}
-          setShowHazard={setShowHazard}
-          hazardYears={hazardYears}
-          setHazardYears={setHazardYears}
-          hover={hoverCell}
-          windSpeedKmh={currentTimestep ? Math.abs(currentTimestep.wind_speed_10m_kmh) : null}
-          windFromDeg={cityWindFromDeg(scenarioGrid, simulationHour)?.fromDeg ?? null}
-        />
-      )}
-
       {/* Floating AI Directive dialog (official-quote SOP) */}
       <GeminiSopDialog
         directive={activeDirective}
@@ -1554,7 +1551,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
       {/* Top Left Floating Search & Quick Filters */}
       <div
-        className={`absolute top-[5.25rem] md:top-4 left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] ${
+        className={`absolute top-[5.25rem] md:top-4 left-2 md:left-4 z-20 flex flex-col gap-2 w-[calc(100vw-1rem)] max-h-[calc(100%-6.25rem)] md:max-h-[calc(100%-2rem)] ${
           isResizingLeftPanel ? 'transition-none select-none' : 'transition-[width] duration-200'
         } pointer-events-none`}
         style={{
@@ -1644,7 +1641,37 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               onTogglePreset={toggleLeftPanelPreset}
               isResizing={isResizingLeftPanel}
             />
+            {exposure && isSimulationScenario(disasterScenario) && (
+              <ExposedSubstationsCard
+                exposure={exposure}
+                stepLabel={currentTimestep?.label || `T${simulationHour >= 0 ? '+' : ''}${simulationHour}h`}
+                isLight={isLight}
+                selectedSubstation={selectedSubstation}
+                onSelect={(s) => {
+                  onSelectSubstation(s);
+                  onSelectSection(null);
+                }}
+              />
+            )}
           </>
+        )}
+
+          {isSimulationScenario(disasterScenario) && scenarioGrid && (
+          <SimulationMapPanel
+            isLight={isLight}
+            stepLabel={currentTimestep?.label || `T${simulationHour >= 0 ? '+' : ''}${simulationHour}h`}
+            showRain={showRain}
+            setShowRain={setShowRain}
+            showFlood2015={showFlood2015}
+            setShowFlood2015={setShowFlood2015}
+            showHazard={showHazard}
+            setShowHazard={setShowHazard}
+            hazardYears={hazardYears}
+            setHazardYears={setHazardYears}
+            hover={hoverCell}
+            windSpeedKmh={currentTimestep ? Math.abs(currentTimestep.wind_speed_10m_kmh) : null}
+            windFromDeg={cityWindFromDeg(scenarioGrid, simulationHour)?.fromDeg ?? null}
+          />
         )}
       </div>
 

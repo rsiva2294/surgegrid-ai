@@ -65,7 +65,7 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
 
   return (
     <div
-      className={`pointer-events-auto absolute z-20 bottom-8 left-2 md:left-4 w-[min(19rem,calc(100vw-1rem))] rounded-xl border p-2.5 text-[11px] space-y-2 backdrop-blur-md ${card}`}
+      className={`pointer-events-auto shrink-0 w-full rounded-xl border p-2.5 text-[11px] space-y-2 backdrop-blur-md ${card}`}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-bold text-xs">
