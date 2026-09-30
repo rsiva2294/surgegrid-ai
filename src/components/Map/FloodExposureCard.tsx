@@ -47,6 +47,15 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
   const rating = flood?.returnPeriod ?? null;
   const ratingTone = rating === 'HIGH' ? 'rose' : rating === 'MODERATE' ? 'amber' : rating === 'LOW' ? 'sky' : 'neutral';
 
+  const ratingText = rating ? `Official hazard maps rate it ${title(rating)}.` : 'Official hazard maps show no rating.';
+  const summary = !flood
+    ? 'Flood-map data is unavailable for this site.'
+    : flood.nrsc2015
+    ? `Inside the 2015 flood extent. ${ratingText}`
+    : rating
+    ? `Not in the 2015 flood extent. ${ratingText}`
+    : 'On no official flood map. This is not proof of safety.';
+
   const tile = (label: string, value: string, sub: string, kind: 'cyan' | 'amber' | 'rose' | 'sky' | 'neutral') => (
     <div className={`py-2 px-1.5 rounded-lg border shadow-2xs flex flex-col justify-between ${tone(kind)}`}>
       <span className={`text-[10px] uppercase font-semibold block ${kind === 'neutral' ? neutralLabel : 'opacity-80'}`}>{label}</span>
@@ -78,6 +87,8 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
         <span className={`px-2 py-0.5 rounded-md font-mono font-bold text-[10px] border whitespace-nowrap ${badge.cls}`}>{badge.text}</span>
       </div>
 
+      <p className={`text-[11px] font-semibold leading-snug ${isLight ? 'text-slate-800' : 'text-slate-100'}`}>{summary}</p>
+
       <div className="grid grid-cols-3 gap-2 text-center">
         {tile(
           'Yard elevation',
@@ -86,7 +97,7 @@ export const FloodExposureCard: React.FC<FloodExposureCardProps> = ({ substation
           atOrBelowAverage ? 'amber' : 'neutral'
         )}
         {tile('2015 flood extent', flood ? (flood.nrsc2015 ? 'Yes' : 'No') : 'n/a', 'NRSC satellite map', flood?.nrsc2015 ? 'cyan' : 'neutral')}
-        {tile('Hazard map rating', rating ? title(rating) : flood ? 'None' : 'n/a', '5 to 100-year maps, highest', ratingTone)}
+        {tile('Hazard map rating', rating ? title(rating) : flood ? 'None' : 'n/a', 'across 5 to 100-year maps', ratingTone)}
       </div>
 
       {chips.length > 0 && (
