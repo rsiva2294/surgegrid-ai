@@ -881,19 +881,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       </div>
                     )}
-                    {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
-                    <SubstationHealthCard
-                      substation={selectedSubstation}
-                      isLight={isLight}
-                      liveOutages={activeSubstationOutages}
-                    />
-
-                    {/* Flood exposure: facts and official map checks */}
-                    {selectedSubstation.elevationM !== undefined && (
-                      <FloodExposureCard substation={selectedSubstation} isLight={isLight} />
-                    )}
-
-                    {/* Consolidated Administrative & Switchyard Capacity Overview */}
+                    {/* Circle, region and switchyard capacity: identity first, right after any live outage banner */}
                     {(() => {
                       const validIncomers = (selectedSubstation.incomingFeederNames || []).filter((n) => {
                         const clean = String(n).trim().toUpperCase();
@@ -1009,6 +997,18 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         </div>
                       );
                     })()}
+
+                    {/* Operational Health, 90-Day Incident Log & Disaster Risk Multiplier */}
+                    <SubstationHealthCard
+                      substation={selectedSubstation}
+                      isLight={isLight}
+                      liveOutages={activeSubstationOutages}
+                    />
+
+                    {/* Flood exposure: facts and official map checks */}
+                    {selectedSubstation.elevationM !== undefined && (
+                      <FloodExposureCard substation={selectedSubstation} isLight={isLight} />
+                    )}
                   </div>
                 )}
 
