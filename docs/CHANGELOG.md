@@ -2,6 +2,18 @@
 
 All notable changes, architectural decisions, and data extractions for the SurgeGrid AI project are documented in this file.
 
+## [3.2.0-responder-tools] - 2026-09-30
+
+### Added
+- **Relief centre popup:** clicking a relief centre marker centres it and opens an InfoWindow with ward and zone, officer contacts, GCC plan 2024 capacity and amenities, Google Maps directions and a single View Place link.
+- **Section office drawer:** 1-click action hub (call Section AE and more), grid hierarchy, feeding substations and ward relief shelters.
+- **Nearest relief centre fallback** when a ward has no listed centre.
+
+### Changed
+- **Feeders tab (simulation):** one consolidated distribution circuit policy banner instead of the same quote on every feeder card.
+- **Substation panel:** one text scale across the three tabs (13 / 12.5 / 12 px); status badges on a single line; section office card streamlined.
+- **Performance and accessibility:** stale-while-revalidate for the outage Gold Registry, Cloud Storage CORS for `surgegrid.web.app`, badge contrast fix.
+
 ## [3.1.0-performance] - 2026-09-30
 
 ### Changed
