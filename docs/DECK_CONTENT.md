@@ -38,16 +38,17 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 *Note:* Gemini is the last step and cannot change the quotes.
 
 ## 6. Real data, no synthetic storms
-| Cyclone Michaung, Dec 2023 | Value |
-|---|---|
-| Peak rain (area mean) | 14.0 mm/h |
-| Total rain (area mean) | 273 mm |
-| Worst 24 hours, across the 28 rain cells | 144 to 253 mm |
-| Substations exposed (flood-flagged and heavy rain or worse) | 0 at T-24h and T-6h, 86 at the peak, 87 at T+12h, 74 at T+36h (of 87 flood-flagged) |
+| Michaung, Dec 2023 | Satellite cells (28) | IMD gauges, Chennai district |
+|---|---|---|
+| Rain, 24 h to 08:30 IST 3 Dec | 13 to 37 mm | 70 to 100 mm (16 stations) |
+| Rain, 24 h to 08:30 IST 4 Dec | 106 to 184 mm | 70 to 290 mm (50 stations) |
+| Whole event, area mean | 273 mm (peak 14.0 mm/h) | not reported |
+- **We show that our satellite rain reads below IMD's own gauges, and we do not scale it up.** The early steps therefore look quieter than the gauges say (IMD's gauge lists start at about 70 mm, so they are a floor).
 - Rain classes are IMD's (Heavy 64.5 mm, Very heavy 115.6 mm, Extremely heavy 204.5 mm), applied to a rolling 24-hour total of NASA IMERG satellite rain averaged over about 11 km cells.
+- Substations exposed on the satellite rain (flood-flagged and heavy rain or worse): 0 at T-24h and T-6h, 86 at the peak, 87 at T+12h, 74 at T+36h, of 87 flood-flagged; the early counts are probably too low.
 - Grid: 286 substations, 2,678 feeders, 65,557 transformers, about 4.9 million consumers on mapped transformers.
 - Official layers: 48 substations sit inside the 2015 flood extent; 114 inside the 100-year flood-hazard map; 162 GCC relief centres in 120 wards.
-*Note:* We deleted our earlier synthetic cyclone, and two other events, to focus on one real storm. Everything replayed is real rain and wind. We do not draw flood water: none of our flood data has a time in it.
+*Note:* We deleted our earlier synthetic cyclone, and two other events, to focus on one real storm. Everything replayed is real rain and wind. We do not draw flood water: none of our flood data has a time in it. Judges reward the honest comparison with IMD's gauges.
 
 ## 7. The AI: what Gemini does, and does not do
 - **Does:** choose substation and feeder names from lists we send; write one short note, and on a live day a short summary of our data (facts shown under the card); runs on Google Cloud's Gemini Enterprise Agent Platform (formerly Vertex AI) with no API key in the app.
@@ -56,9 +57,9 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 *Note:* Meaningful AI work, with a safety design judges can inspect in `gemini-proxy/` and `geminiSopService.ts`.
 
 ## 8. Live demo (about 3 minutes)
-1. Open the site and pick Cyclone Michaung; it starts at T-24h. The rain layer is nearly clear. Open the AI Directive: 6 quoted actions with page numbers.
+1. Open the site and pick Cyclone Michaung; it starts at T-24h. The satellite rain layer is nearly clear (IMD's gauges had already recorded 70 to 100 mm; say so). Open the AI Directive: 6 quoted actions with page numbers.
 2. Press play. The timeline moves through five steps, 6 seconds each (T-24h, T-6h, peak rain, T+12h, T+36h): the rain layer fills in by cell, red rings appear on exposed substations, and the "Exposed now" list grows from 0 to 87 and back to 74. The phase moves from watch to impact to restoration.
-3. Point at a cell: it reads the mm of rain in the last 24 hours and its IMD class.
+3. Point at a cell: it reads the mm of rain in the last 24 hours and its IMD class. Under the timeline, "IMD at the time" quotes the bulletin for that moment; at T+36h it shows the landfall window.
 4. Switch on the official flood maps (fixed layers): the 2015 extent (a past event) and the 100-year hazard map.
 5. Open a low-lying substation (ETL, -1 m): status line, Overview (flood facts), then Respond: copilot's quoted actions, relief centre and backup.
 6. Open a substation not inside any layer: it stays quiet, no false alarms.
@@ -85,6 +86,7 @@ Runs on Google Maps Platform, Earth Engine (scenario data), Gemini via a Cloud F
 - Every plan statement: word for word, with plan and page; 37 quotes each checked against the PDF text.
 - What we removed because no plan says it: wind and flood trip limits, restoration hours, a five-stage protocol, plinth heights, gang and pump counts.
 - Our own flood-proneness score matched the city's 53 flood hotspots (AUC 0.76) but not the 2015 satellite map, so **we show official map checks, not model depths**.
+- Our satellite rain reads below IMD's gauges (IMD: 70 to 290 mm at 50 Chennai stations on 4 Dec; ours: 106 to 184 mm). We show both and do not correct it.
 - Live site: accessibility 100, desktop performance 91, mobile 54 (Lighthouse).
 *Note:* This is proof of engineering judgement, not a weakness.
 
