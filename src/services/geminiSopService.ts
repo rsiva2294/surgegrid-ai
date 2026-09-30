@@ -169,7 +169,7 @@ export function extractTopCompromisedInfra(
 
 export type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
 type TargetGroup = 'flood' | 'overhead' | 'lifeline' | 'none';
-type ScenarioKey = 'MICHAUNG_2023' | 'FLOODS_2015' | 'MONSOON_2020';
+type ScenarioKey = 'MICHAUNG_2023';
 
 export interface RuleMeta {
   title: string;
@@ -205,33 +205,6 @@ export const RULE_META: Record<string, RuleMeta> = {
 };
 
 // Which official actions appear in which phase. Every id exists in officialSources.ts.
-// Rain-flood actions, used for the 2015 floods and the 2020 monsoon spell.
-const FLOOD_PHASE_RULES: Partial<Record<SopPhase, string[]>> = {
-    WATCH: [
-      'mop-identify-flood-prone',
-      'mop-trigger-mechanism',
-      'mop-dewatering-pump-arranged',
-      'tangedco-sandbags',
-      'tangedco-retaining-wall',
-      'gcc-check-transformers-pillar-boxes',
-    ],
-    CRITICAL: [
-      'mop-switch-off-if-required',
-      'gcc-cut-off-during-flooding',
-      'tangedco-oh-lines-out-of-service',
-      'tangedco-pump-out-flood',
-      'mop-mobile-dg-sets',
-      'tangedco-diesel-pumps-low-lying',
-    ],
-    RESTORATION: [
-      'tangedco-no-recharge-before-patrol',
-      'mop-restore-priority',
-      'mop-mobile-substation-12-24h',
-      'mop-emergency-operation-centre',
-      'gcc-generators-sewage-pumping',
-    ],
-};
-
 const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
   MICHAUNG_2023: {
     WATCH: [
@@ -258,8 +231,6 @@ const PHASE_RULES: Record<ScenarioKey, Partial<Record<SopPhase, string[]>>> = {
       'gcc-generators-sewage-pumping',
     ],
   },
-  FLOODS_2015: FLOOD_PHASE_RULES,
-  MONSOON_2020: FLOOD_PHASE_RULES,
 };
 
 const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
@@ -267,16 +238,6 @@ const PHASE_TITLES: Record<ScenarioKey, Record<SopPhase, string>> = {
     WATCH: 'Cyclone approaching: standby actions from the official plans',
     CRITICAL: 'Cyclone impact: safety and switch-off actions from the official plans',
     RESTORATION: 'After the storm: safe recharge and restoration priority',
-  },
-  FLOODS_2015: {
-    WATCH: 'Flood watch: substation flood preparation from the official plans',
-    CRITICAL: 'Flood response: switch-off and dewatering actions from the official plans',
-    RESTORATION: 'After the flood: safe recharge and restoration priority',
-  },
-  MONSOON_2020: {
-    WATCH: 'Heavy monsoon rain expected: substation flood preparation from the official plans',
-    CRITICAL: 'Heavy monsoon rain: switch-off and dewatering actions from the official plans',
-    RESTORATION: 'After the rain: safe recharge and restoration priority',
   },
 };
 
@@ -472,8 +433,6 @@ export function getDirectiveForTimestep(
 
 const SCENARIO_LABELS: Record<ScenarioKey, string> = {
   MICHAUNG_2023: 'Cyclone Michaung, December 2023 (hindcast)',
-  FLOODS_2015: '2015 Chennai floods (hindcast)',
-  MONSOON_2020: 'Northeast monsoon rain spell, mid-November 2020 (hindcast)',
 };
 
 /** Human-readable scenario name for prompts. */

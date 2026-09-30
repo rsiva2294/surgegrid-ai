@@ -38,7 +38,7 @@ const cache = new Map<SimulationScenarioId, ScenarioGrid>();
 export async function fetchScenarioGrid(id: SimulationScenarioId): Promise<ScenarioGrid | null> {
   const hit = cache.get(id);
   if (hit) return hit;
-  const file = id === 'MICHAUNG_2023' ? 'michaung2023' : id === 'FLOODS_2015' ? 'floods2015' : 'monsoon2020';
+  const file = 'michaung2023';
   try {
     const res = await fetch(`/data/scenarios/${file}_grid.json`);
     if (!res.ok) return null;

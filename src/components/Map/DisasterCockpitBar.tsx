@@ -20,9 +20,7 @@ export type TimelineStep = MilestoneInfo & { phase: SopPhase };
 export type DisasterScenario = 
   | 'NORMAL' 
   | 'LIVE' 
-  | 'MICHAUNG_2023' 
-  | 'FLOODS_2015' 
-  | 'MONSOON_2020';
+  | 'MICHAUNG_2023';
 
 export type CrisisTriageFilter = 'all' | 'poor_stability' | 'waterlogging_risk' | 'outages';
 
@@ -266,50 +264,6 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
             }`}>
               Dec 2023
-            </span>
-          </button>
-
-          {/* 3. 2015 Chennai Megafloods Scenario Simulation */}
-          <button
-            type="button"
-            onClick={() => setDisasterScenario('FLOODS_2015')}
-            className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
-              disasterScenario === 'FLOODS_2015'
-                ? (isLight ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'bg-cyan-500 text-slate-950 font-bold shadow-sm')
-                : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
-            }`}
-            title="2015 Chennai floods: real hindcast (NASA IMERG rain + ERA5-Land wind), 120 hourly steps"
-          >
-            <span>🌊</span>
-            <span>2015 Megaflood</span>
-            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
-              disasterScenario === 'FLOODS_2015'
-                ? (isLight ? 'bg-cyan-800 text-white' : 'bg-slate-950 text-cyan-300 font-bold')
-                : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
-            }`}>
-              NASA GPM
-            </span>
-          </button>
-
-          {/* 4. Northeast monsoon rain spell, Nov 2020 hindcast */}
-          <button
-            type="button"
-            onClick={() => setDisasterScenario('MONSOON_2020')}
-            className={`px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 ${
-              disasterScenario === 'MONSOON_2020'
-                ? (isLight ? 'bg-teal-600 text-white font-bold shadow-sm' : 'bg-teal-500 text-slate-950 font-bold shadow-sm')
-                : (isLight ? 'hover:bg-slate-100 text-slate-700' : 'hover:bg-slate-800 text-slate-300 hover:text-white')
-            }`}
-            title="Northeast monsoon rain spell, 12-18 November 2020: real hindcast (NASA IMERG rain + ERA5-Land wind), 144 hourly steps"
-          >
-            <span>🌧️</span>
-            <span>Monsoon Spell</span>
-            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
-              disasterScenario === 'MONSOON_2020'
-                ? (isLight ? 'bg-teal-800 text-white' : 'bg-slate-950 text-teal-300 font-bold')
-                : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-slate-800 text-slate-300')
-            }`}>
-              Nov 2020
             </span>
           </button>
 

@@ -150,7 +150,7 @@ export const SimulationMapPanel: React.FC<SimulationMapPanelProps> = ({
             <div className={`text-[10px] uppercase tracking-wider font-semibold ${muted}`}>Official flood maps (fixed)</div>
             <label className={row}>
               <input type="checkbox" checked={showFlood2015} onChange={e => setShowFlood2015(e.target.checked)} className="accent-cyan-600" />
-              <span>2015 flood extent (observed)</span>
+              <span>2015 flood extent (past event)</span>
             </label>
             <div className="flex items-center gap-2">
               <label className={row}>

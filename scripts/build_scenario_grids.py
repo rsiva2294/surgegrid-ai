@@ -1,4 +1,4 @@
-"""Per-cell hourly rain and wind for the three hindcast scenarios (NASA GPM IMERG V07 rain, ECMWF ERA5-Land wind).
+"""Per-cell hourly rain and wind for the Michaung hindcast (NASA GPM IMERG V07 rain, ECMWF ERA5-Land wind).
 
 The existing scenario files hold ONE area-mean value per hour. This keeps the grid: the source data is ~11 km cells
 (0.1 degree), so each Chennai cell gets its own hourly rain and wind. Hours are taken from the existing scenario file
@@ -18,7 +18,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "public", "data")
 GEE_PROJECT = "namma-map-407ca"
 CELL = 0.1
-SCENARIOS = ["michaung2023", "floods2015", "monsoon2020"]
+SCENARIOS = ["michaung2023"]
 CHUNK_HOURS = 24
 
 ee.Initialize(project=GEE_PROJECT)
