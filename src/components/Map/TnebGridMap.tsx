@@ -55,7 +55,7 @@ import { rainFill, type HazardYears } from './rainScale';
 import { SimulationMapPanel, type HoverCell } from './SimulationMapPanel';
 import { ExposedSubstationsCard } from './ExposedSubstationsCard';
 import { ImdAtTheTimeCard } from './ImdAtTheTimeCard';
-import { IMD_STEP_NOTES, istLabel } from '../../data/imdBulletins';
+import { IMD_BEST_TRACK, IMD_STEP_NOTES, istLabel } from '../../data/imdBulletins';
 import { computeExposure } from '../../services/simulationExposure';
 
 // Official flood maps (fixed layers), fetched when first switched on.
@@ -1528,7 +1528,12 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         steps={timelineSteps}
         footer={
           disasterScenario === 'MICHAUNG_2023' && IMD_STEP_NOTES[simulationHour] ? (
-            <ImdAtTheTimeCard isLight={isLight} stepTime={istLabel(currentTimestep?.utc)} note={IMD_STEP_NOTES[simulationHour]} />
+            <ImdAtTheTimeCard
+              isLight={isLight}
+              stepTime={istLabel(currentTimestep?.utc)}
+              note={IMD_STEP_NOTES[simulationHour]}
+              track={IMD_BEST_TRACK[simulationHour] ?? null}
+            />
           ) : null
         }
       />

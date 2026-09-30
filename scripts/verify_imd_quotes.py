@@ -1,8 +1,9 @@
 """
-Check that every quote in src/data/imdBulletins.ts appears in the IMD press-release PDFs.
+Check that every quote and every best-track row in src/data/imdBulletins.ts appears in the IMD PDFs.
 
 The PDFs are not stored in the repo. Download them first (for example with curl) into one folder:
   https://internal.imd.gov.in/press_release/20231203_pr_2669.pdf   (and 20231204_pr_2671, 20231205_pr_2674, 20231206_pr_2677)
+and put IMD's final report on Michaung (26_0580dd_Michaung Report_Final_Sir.pdf) in the same folder.
 The PDF text has broken spacing ("east -northeast", "0 830"), so the comparison ignores all whitespace.
 Usage:  python scripts/verify_imd_quotes.py <folder-with-the-pdfs>
 """
@@ -18,7 +19,7 @@ src = open(os.path.join(ROOT, 'src', 'data', 'imdBulletins.ts'), encoding='utf-8
 
 files = {
     m.group(1): m.group(2)
-    for m in re.finditer(r"(\w+): \{ id: '\w+', label: '[^']*', issuedIst: '[^']*', file: '([^']+)'", src)
+    for m in re.finditer(r"(\w+): \{ id: '\w+', label: '[^']*', file: '([^']+)'", src)
 }
 
 
@@ -35,10 +36,16 @@ for bid, fn in files.items():
 ok = bad = 0
 for m in re.finditer(r"bulletin: (\w),\s*kind: '([^']+)',\s*text: '((?:[^'\\]|\\.)*)'", src):
     letter, kind, text = m.group(1), m.group(2), m.group(3).replace("\\'", "'")
-    bid = {'A': 'b3dec', 'B': 'b4dec', 'C': 'b5dec', 'D': 'b6dec'}[letter]
+    bid = {'A': 'b3dec', 'B': 'b4dec', 'C': 'b5dec', 'D': 'b6dec', 'R': 'report'}[letter]
     found = squash(text) in texts[bid]
     ok += found
     bad += not found
     print(('OK   ' if found else 'MISS ') + f'{bid} [{kind}] {text[:70]}...')
+for m in re.finditer(r"row: '([^']+)'", src):
+    row = m.group(1)
+    found = squash(row) in texts['report']
+    ok += found
+    bad += not found
+    print(('OK   ' if found else 'MISS ') + f'report best-track row {row}')
 print(f'{ok} found, {bad} missing')
 sys.exit(1 if bad else 0)

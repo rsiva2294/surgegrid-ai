@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { IMD_BULLETINS, type ImdStepNote } from '../../data/imdBulletins';
+import { IMD_BULLETINS, TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel, type BestTrackPoint, type ImdStepNote } from '../../data/imdBulletins';
 
 interface ImdAtTheTimeCardProps {
   isLight: boolean;
   /** "14:30 IST, 4 Dec": when this step is. */
   stepTime: string | null;
   note: ImdStepNote;
+  /** IMD's observed best-track position for this step (final report). */
+  track: BestTrackPoint | null;
 }
 
 /**
  * What IMD said about Cyclone Michaung around the current step, quoted from its own press releases (see
  * src/data/imdBulletins.ts). IMD's statements at the time, in its forecast wording: context, not our claims.
  */
-export const ImdAtTheTimeCard: React.FC<ImdAtTheTimeCardProps> = ({ isLight, stepTime, note }) => {
+export const ImdAtTheTimeCard: React.FC<ImdAtTheTimeCardProps> = ({ isLight, stepTime, note, track }) => {
   const [open, setOpen] = useState(() => (typeof window === 'undefined' ? true : window.innerWidth >= 768));
 
   const card = isLight
@@ -49,22 +51,42 @@ export const ImdAtTheTimeCard: React.FC<ImdAtTheTimeCardProps> = ({ isLight, ste
 
       {open && (
         <div className="max-h-[8.5rem] overflow-y-auto space-y-2 pr-0.5 scrollbar-thin">
-          {note.none ? (
+          {track && (
+            <div className="space-y-0.5">
+              <span className={`block text-[10px] font-mono ${muted}`} title={`Table 1, best track positions, in ${IMD_BULLETINS.report.file}`}>
+                {IMD_BULLETINS.report.label}
+              </span>
+              <p className="leading-snug">
+                <span className={`mr-1 px-1 rounded text-[9px] font-semibold ${kindCls}`}>Best track</span>
+                {TRACK_GRADE_NAMES[track.grade]}, {track.lat.toFixed(1)}°N {track.lng.toFixed(1)}°E at {istLabel(track.utc)}
+                {track.nearestEarlier ? ' (nearest earlier row)' : ''}: {track.windKt} kt (about {Math.round(track.windKt * 1.85)} km/h), {track.pressureHpa} hPa.
+                About {Math.round(distanceToChennaiKm(track.lat, track.lng) / 5) * 5} km from Chennai
+                <span className={muted}> (our calculation)</span>.
+              </p>
+            </div>
+          )}
+          {note.quotes.length === 0 ? (
             <p className={`text-[10px] ${muted}`}>No IMD bulletin in our set was issued before this step (the first is 13:30 IST on 3 December).</p>
           ) : (
             groups.map(g => {
               const b = IMD_BULLETINS[g.bulletin];
               return (
                 <div key={`${g.bulletin}-${g.quotes[0].kind}`} className="space-y-1">
-                  <a
-                    href={b.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`block text-[10px] font-mono underline ${muted}`}
-                    title={`Open ${b.file}`}
-                  >
-                    {b.label}
-                  </a>
+                  {b.url ? (
+                    <a
+                      href={b.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`block text-[10px] font-mono underline ${muted}`}
+                      title={`Open ${b.file}`}
+                    >
+                      {b.label}
+                    </a>
+                  ) : (
+                    <span className={`block text-[10px] font-mono ${muted}`} title={b.file}>
+                      {b.label}
+                    </span>
+                  )}
                   {g.quotes.map(q => (
                     <p key={q.text.slice(0, 40)} className="leading-snug">
                       <span className={`mr-1 px-1 rounded text-[9px] font-semibold ${kindCls}`}>{q.kind}</span>
