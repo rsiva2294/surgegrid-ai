@@ -306,6 +306,8 @@
 
 82. **Deployed to Firebase Hosting from `feature/spatial-simulation` (owner asked).** `npm run build` then `firebase deploy --only hosting:surgegrid --project namma-map-407ca` at commit 1fb4c21 (418 files) -> https://surgegrid.web.app. Live check: returns HTTP 200 OK. Master not touched or merged.
 
+83. **Cloud Storage CORS configured, Stale-While-Revalidate registry, and Accessibility contrast fix (owner asked).** (1) **GCS CORS:** Applied CORS configuration to bucket `gs://namma-map-407ca.firebasestorage.app` via `gcloud storage buckets update` allowing origins `surgegrid.web.app`, `surgegrid.firebaseapp.com`, `nammamap.in` and `localhost:5173`. (2) **Stale-While-Revalidate Registry:** In `src/services/liveOutageService.ts` and `TnebGridMap.tsx`, `getGoldRegistry` now loads the bundled local registry immediately (zero delay, zero network wait), and concurrently fetches the live registry from Cloud Storage in the background, upgrading memory and re-enriching outages when the newer version completes. (3) **Accessibility:** In `DisasterCockpitBar.tsx`, live outages count badge in light mode updated from `bg-orange-500` to `bg-orange-700` (`#c2410c`), boosting contrast ratio from 2.88 to 5.2:1 (> 4.5:1 WCAG AA). (4) **Lazy loading & preconnects:** `SimulationMapPanel` and `ExposedSubstationsCard` lazy-loaded in `TnebGridMap.tsx`; DNS prefetch and preconnect hints added to `index.html`. (5) **Lighthouse Desktop verified:** Accessibility 100/100 (up from 96), Best Practices 96/100 (zero console errors, up from 92), SEO 100/100, Performance 78-83.
+
 ---
 
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat

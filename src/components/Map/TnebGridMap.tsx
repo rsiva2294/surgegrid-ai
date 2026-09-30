@@ -6,7 +6,7 @@ import { Shield } from 'lucide-react';
 import { DisasterCockpitBar, type DisasterScenario, type CrisisTriageFilter } from './DisasterCockpitBar';
 import { MapSearchBox } from './MapSearchBox';
 import { MapLayerControls } from './MapLayerControls';
-import { getLiveChennaiOutages, getGoldRegistry, getOutagesForSubstation, enrichLiveOutagesWithGrid, type LiveOutage } from '../../services/liveOutageService';
+import { getLiveChennaiOutages, getGoldRegistry, getOutagesForSubstation, enrichLiveOutagesWithGrid, type LiveOutage, type GoldRegistry } from '../../services/liveOutageService';
 import type { LiveWeatherConditions } from '../../services/liveWeatherService';
 import {
   NO_POI_DARK_STYLE,
@@ -52,8 +52,6 @@ import {
   type ScenarioGrid
 } from '../../services/scenarioGrid';
 import { rainFill, type HazardYears } from './rainScale';
-import { SimulationMapPanel } from './SimulationMapPanel';
-import { ExposedSubstationsCard } from './ExposedSubstationsCard';
 import { TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel } from '../../data/imdBulletins';
 import { GRADE_COLOR, stormAt, useBestTrack } from '../../services/bestTrack';
 import { computeExposure } from '../../services/simulationExposure';
@@ -78,6 +76,8 @@ const HAZARD_COLOURS: Record<string, string> = { LOW: '#facc15', MODERATE: '#f97
 const LazyDrawer = lazy(() => import('./SubstationInspectorDrawer').then(m => ({ default: m.SubstationInspectorDrawer })));
 const LazySopDialog = lazy(() => import('./GeminiSopDialog').then(m => ({ default: m.GeminiSopDialog })));
 const LazyRoster = lazy(() => import('./TriageSubstationRosterCard').then(m => ({ default: m.TriageSubstationRosterCard })));
+const LazySimulationMapPanel = lazy(() => import('./SimulationMapPanel').then(m => ({ default: m.SimulationMapPanel })));
+const LazyExposedSubstationsCard = lazy(() => import('./ExposedSubstationsCard').then(m => ({ default: m.ExposedSubstationsCard })));
 
 const SubstationInspectorDrawer = (props: React.ComponentProps<typeof LazyDrawer>) => (
   <Suspense fallback={null}>
@@ -92,6 +92,16 @@ const GeminiSopDialog = (props: React.ComponentProps<typeof LazySopDialog>) => (
 const TriageSubstationRosterCard = (props: React.ComponentProps<typeof LazyRoster>) => (
   <Suspense fallback={null}>
     <LazyRoster {...props} />
+  </Suspense>
+);
+const SimulationMapPanel = (props: React.ComponentProps<typeof LazySimulationMapPanel>) => (
+  <Suspense fallback={null}>
+    <LazySimulationMapPanel {...props} />
+  </Suspense>
+);
+const ExposedSubstationsCard = (props: React.ComponentProps<typeof LazyExposedSubstationsCard>) => (
+  <Suspense fallback={null}>
+    <LazyExposedSubstationsCard {...props} />
   </Suspense>
 );
 
@@ -473,13 +483,23 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   // Fetch real-time live outages from outage.nammamap.in on load and enrich with grid topology and Gold Standard Registry
   useEffect(() => {
     let isMounted = true;
+    let rawOutages: LiveOutage[] = [];
+
+    const applyEnrichment = (gold: GoldRegistry | null) => {
+      if (!isMounted || rawOutages.length === 0) return;
+      const enriched = enrichLiveOutagesWithGrid(rawOutages, substations, sections, gold);
+      setLiveOutages(enriched);
+    };
+
     Promise.all([
       getLiveChennaiOutages(),
-      getGoldRegistry()
+      getGoldRegistry((upgradedGold) => {
+        applyEnrichment(upgradedGold);
+      })
     ]).then(([res, gold]) => {
       if (isMounted && res.data) {
-        const enriched = enrichLiveOutagesWithGrid(res.data, substations, sections, gold);
-        setLiveOutages(enriched);
+        rawOutages = res.data;
+        applyEnrichment(gold);
       }
     });
     return () => { isMounted = false; };

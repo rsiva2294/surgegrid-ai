@@ -254,39 +254,71 @@ export interface GoldRegistry {
 }
 
 let cachedGoldRegistry: GoldRegistry | null = null;
+const registryListeners = new Set<(registry: GoldRegistry) => void>();
+
+export function onGoldRegistryUpdated(callback: (registry: GoldRegistry) => void): () => void {
+  registryListeners.add(callback);
+  return () => { registryListeners.delete(callback); };
+}
 
 const CLOUD_GOLD_REGISTRY_URL = 'https://storage.googleapis.com/namma-map-407ca.firebasestorage.app/registry/chennai_outage_gold_registry.json';
 
-/**
- * Loads the Gold Standard Outage Registry (2,770+ verified historical mappings)
- * Fetches the live, self-enriching registry from Cloud Storage with local bundled fallback.
- */
-export async function getGoldRegistry(): Promise<GoldRegistry | null> {
-  if (cachedGoldRegistry) return cachedGoldRegistry;
-  
-  // 1. Try Cloud-hosted self-enriching registry
+let isFetchingCloud = false;
+async function fetchCloudRegistryInBackground() {
+  if (isFetchingCloud) return;
+  isFetchingCloud = true;
   try {
     const res = await fetch(CLOUD_GOLD_REGISTRY_URL);
     if (res.ok) {
-      cachedGoldRegistry = await res.json();
-      console.log(`[liveOutageService] Loaded Cloud Gold Registry v${cachedGoldRegistry?.version} (${cachedGoldRegistry?.counts?.uniqueSignatures} signatures)`);
-      return cachedGoldRegistry;
+      const cloudRegistry: GoldRegistry = await res.json();
+      const currentCount = cachedGoldRegistry?.counts?.uniqueSignatures || 0;
+      const cloudCount = cloudRegistry?.counts?.uniqueSignatures || 0;
+      if (cloudCount >= currentCount) {
+        cachedGoldRegistry = cloudRegistry;
+        console.log(`[liveOutageService] Upgraded to Cloud Gold Registry v${cloudRegistry?.version} (${cloudCount} signatures)`);
+        registryListeners.forEach(listener => {
+          try { listener(cloudRegistry); } catch (e) { console.warn('Registry listener error:', e); }
+        });
+      }
     }
   } catch (cloudErr) {
-    console.warn('[liveOutageService] Cloud registry fetch failed, falling back to local bundle:', cloudErr);
+    console.warn('[liveOutageService] Cloud registry background fetch skipped or failed:', cloudErr);
+  } finally {
+    isFetchingCloud = false;
+  }
+}
+
+/**
+ * Loads the Gold Standard Outage Registry (2,770+ verified historical mappings)
+ * Stale-While-Revalidate: loads the bundled local registry immediately (zero network delay),
+ * then fetches the live, self-enriching registry from Cloud Storage in the background and replaces the cache.
+ */
+export async function getGoldRegistry(onUpdated?: (registry: GoldRegistry) => void): Promise<GoldRegistry | null> {
+  if (onUpdated) {
+    registryListeners.add(onUpdated);
   }
 
-  // 2. Fallback to local bundled registry
+  // 1. If already in memory, return immediately and kick off background revalidation
+  if (cachedGoldRegistry) {
+    fetchCloudRegistryInBackground();
+    return cachedGoldRegistry;
+  }
+
+  // 2. Load bundled local registry first (instant local response)
   try {
     const res = await fetch('/data/chennai_outage_gold_registry.json');
     if (res.ok) {
       cachedGoldRegistry = await res.json();
-      return cachedGoldRegistry;
+      console.log(`[liveOutageService] Loaded local bundled Gold Registry v${cachedGoldRegistry?.version} (${cachedGoldRegistry?.counts?.uniqueSignatures} signatures)`);
     }
   } catch (err) {
     console.warn('[liveOutageService] Failed to load local gold registry:', err);
   }
-  return null;
+
+  // 3. Revalidate from Cloud Storage in the background without blocking the initial render
+  fetchCloudRegistryInBackground();
+
+  return cachedGoldRegistry;
 }
 
 /**

@@ -529,7 +529,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
               crisisTriageFilter === 'outages' 
                 ? 'bg-black/25 text-white' 
                 : liveOutagesCount > 0 
-                ? (isLight ? 'bg-orange-500 text-white' : 'bg-orange-400 text-slate-950') 
+                ? (isLight ? 'bg-orange-700 text-white' : 'bg-orange-400 text-slate-950') 
                 : (isLight ? 'bg-slate-200 text-slate-700' : 'bg-orange-500/20 text-orange-200 border border-orange-500/30')
             }`}>
               {liveOutagesCount}

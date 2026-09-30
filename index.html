@@ -10,9 +10,13 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLM-readable summary" />
     
-    <!-- Preconnect hints for critical APIs (Google Maps tiles, weather, fonts) and an early start on the grid data download -->
+    <!-- Preconnect & DNS-prefetch hints for critical APIs (Google Maps tiles, Cloud Storage, fonts) -->
+    <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+    <link rel="dns-prefetch" href="https://maps.gstatic.com" />
+    <link rel="dns-prefetch" href="https://storage.googleapis.com" />
     <link rel="preconnect" href="https://maps.googleapis.com" />
     <link rel="preconnect" href="https://maps.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
     <link rel="preload" href="/data/chennai_tneb_grid.json" as="fetch" crossorigin="anonymous" />
     <link rel="preconnect" href="https://weather.googleapis.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
