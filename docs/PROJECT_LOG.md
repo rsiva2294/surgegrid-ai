@@ -262,7 +262,7 @@
 ## HANDOFF SUMMARY (end of session 1, 2026-09-30): read this first in a new chat
 
 **State**
-- **Update (items 44-52):** the current work is on branch `feature/spatial-simulation` (from `feature/hackathon-polish`): one event (Cyclone Michaung), five-step timeline, per-cell rain layer, fixed official flood maps, Exposed now list. It is committed locally, **not pushed and not deployed**; the live site is still the build from `63b5dbd`. Below is the earlier state, kept for history.
+- **Update (items 44-58):** the current work is on branch `feature/spatial-simulation` (from `feature/hackathon-polish`): one event (Cyclone Michaung), five-step timeline, per-cell rain layer, fixed official flood maps, Exposed now list, IMD bulletins and gauge points (items 53-55), GCC plan 2024 ward records and relief-centre capacity for all 15 zones (items 56-57), redesigned flood card (item 58). Pushed and deployed at the end of session 1 (see item 59). Below is the earlier state, kept for history.
 - Branch `feature/hackathon-polish` (created from `feature/disaster-simulation-mvp`), all work committed and pushed. **Master was never touched or merged.** Live site https://surgegrid.web.app was deployed from commit `de6307f` (Hosting site `surgegrid`, project `namma-map-407ca`); later commits are docs only.
 - Working rules: get approval for a plan before writing code; keep answers plain and short; keep this log updated; the app shows **only truths** (official quotes with page, real data with a source, map checks, or our own labelled calculations).
 - Hackathon: Build with AI: Code for Communities, Track 5. Deadline 2026-09-30. **Still to do: pitch deck (10-12 slides), 3-5 minute demo video, 2-3 line description.** The README, `docs/SOURCES.md` and this log hold the story.
@@ -272,7 +272,7 @@
 - Data scripts: `scripts/build_official_flood_layers.py`, `scripts/build_relief_centres.py`, `scripts/slim_grid_data.py` (run after regenerating the grid). The large OpenCity GCC KML files and the scenario builder live in the sister project `C:\projects\surgegrid-ai-v2` (not in git; see items 15, 26).
 
 **Open items / ideas (none started)**
-0. Still to check before deploying: dark theme, phone width, the storm legend and exposed list on small screens, the deck layout. Then push and deploy `feature/spatial-simulation`. Ideas not built: Windy-style smooth rain surface, per-place hourly rain chart, accumulation window, source chip (item 51); Gemini per-area rain facts (Step 5); observed 2015 layers (streets, stagnation points, depth points) as a labelled fixed group.
+0. Still to check (deployed without): phone width, dark theme of the storm legend and exposed list (the flood card was checked in dark mode), the storm legend and exposed list on small screens, the deck layout. Then push and deploy `feature/spatial-simulation`. Ideas not built: Windy-style smooth rain surface, per-place hourly rain chart, accumulation window, source chip (item 51); Gemini per-area rain facts (Step 5); observed 2015 layers (streets, stagnation points, depth points) as a labelled fixed group.
 1. Deck, video, description (above; deck text and script updated in item 52, recording is the owner's).
 2. More mobile speed: inject the Maps script from `index.html`, create markers in chunks, load feeder/health details on demand (item 34).
 3. Bucket CORS for the outage Gold Registry on `namma-map-407ca.firebasestorage.app` for `https://surgegrid.web.app` (shared with Namma Map, needs owner approval); it is the only console error on the live site.

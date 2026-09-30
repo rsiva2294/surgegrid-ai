@@ -56,7 +56,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Map layer "Relief centres (by ward)" | `TnebGridMap.tsx`, `MapLayerControls.tsx` |
 | GCC zone/ward card, hotlines, quoted TANGEDCO role, copy-SMS dispatch (quoted action) | `MunicipalDisasterCard.tsx`, `CopyIncidentSmsButton.tsx` |
 | Drawer: header with a status line (health grade, live outage notice, 2015 flood extent) and three tabs: Overview (outage banner, health score and 90-day log, flood exposure, plant specs), Feeders (feeder list first, circuit isolation below), Respond (AI card, relief centres, all contacts, collapsed plan notes) | `SubstationInspectorDrawer.tsx` |
-| Flood exposure card (badge, three tiles, chips; official map checks only) and the flood plan quotes shown in Respond > Plan notes | `FloodExposureCard.tsx`, `FloodPlanNotes.tsx` |
+| Flood exposure card (headline, ward flood-history year strip and 2015 depth bar, three site rows, detail fold; official map checks only) and the flood plan quotes shown in Respond > Plan notes | `FloodExposureCard.tsx`, `FloodPlanNotes.tsx` |
 | Substation Copilot (quoted actions, shown only while a scenario plays) | `SubstationCopilotCard.tsx` |
 | Live-day AI summary (facts only, shown when no scenario plays), with its prompt facts, rule-based fallback and grounding checks | `SubstationLiveBriefCard.tsx`, `src/services/geminiLiveBriefService.ts` |
 | Live weather: real Weather API readings only; a missing field is null and a failed call returns null ("Weather unavailable"), never made-up values | `src/services/liveWeatherService.ts`, `LiveWeatherPill.tsx` |
