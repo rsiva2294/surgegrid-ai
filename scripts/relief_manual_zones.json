@@ -1,0 +1,48 @@
+{
+  "note": "Relief-centre table rows for zones 10, 13 and 14, copied by hand from the GCC City DMP 2024 PDF by the project owner (the automatic table parse missed rows in these layouts). Text is as printed, broken font glyphs repaired. build_gcc_plan_2024.py checks each row's ward, capacity and name words against the PDF page text before shipping. wardInherited: the ward cell is blank in the plan (merged cell) and the ward of the row above is used. facilitiesBlank: the plan prints no Yes/No values for that row. checkName: the page text scrambles part of this name (the letters of 'Govt Higher Secondary' come out scattered), so only the readable part is checked.",
+  "zones": {
+    "10": [
+      {"sl": 1, "page": 579, "wards": [127], "capacity": 500, "name": "Chennai Higher Secondary School, Koyambedu and Chennai Primary School, Koyambedu, school street", "streets": "New Colony, Mettukulam", "water": true, "toilets": true, "cooking": false},
+      {"sl": 2, "page": 579, "wards": [128], "capacity": 500, "name": "Chennai Higher Secondary School, School street, Virugambakkam", "streets": "Lambert Nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 3, "page": 579, "wards": [137], "capacity": 500, "name": "Chennai Middle School at Kamarajar st.", "streets": "Choolai pallam, Dr.Khanu Nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 4, "page": 579, "wards": [138], "capacity": 300, "name": "Chennai Higher Secondary School govindasamy street & Chennai Primary School govindasamy street", "streets": "Jafferkhanpet, Pari Nagar, Thiru Nagar, SM Block", "water": true, "toilets": true, "cooking": false},
+      {"sl": 5, "page": 580, "wards": [139], "capacity": 400, "name": "Chennai High School, Jafferkhanpet main road", "streets": "Jothiramalingam Nagar, Muthurangam block & Sarathinagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 6, "page": 580, "wards": [141], "capacity": 50, "name": "Chennai High School, CIT Nagar 4th main road", "streets": "Canal Bank Road", "water": true, "toilets": true, "cooking": false},
+      {"sl": 7, "page": 580, "wards": [142], "capacity": 1000, "name": "Chennai Primary School, Bazaar Road, Chennai Middle School & Chennai Girls Higher Secondary School", "streets": "Thideer Nagar & Godhamedu", "water": true, "toilets": true, "cooking": false}
+    ],
+    "13": [
+      {"sl": 1, "page": 699, "wards": [168], "capacity": 500, "name": "Annai Velankanni school, Hospital road", "streets": "Vinayaga puram, Chetti thottam, Neruppumedu, Alachiamman", "water": true, "toilets": true, "cooking": false},
+      {"sl": 2, "page": 699, "wards": [168], "wardInherited": true, "capacity": 700, "name": "Infant Jesus school, Labour colony", "streets": "Nagi reddi thottam, Arulayammanpet", "water": true, "toilets": true, "cooking": false},
+      {"sl": 3, "page": 699, "wards": [168], "wardInherited": true, "capacity": 750, "name": "Chennai Higher Secondary School Little Mount Annai Velankanni school, Hospital road Govt ITI", "streets": "Arulayammanpet", "water": true, "toilets": true, "cooking": false},
+      {"sl": 4, "page": 699, "wards": [169], "capacity": 400, "name": "Model Higher secondary school", "streets": "Arasupannai, Jothiammal Nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 5, "page": 699, "wards": [170], "capacity": 250, "name": "Anna Gem", "streets": "T.N.H.B, T.N.U.H.D.B, Kotturpuram and Kottur", "water": true, "toilets": true, "cooking": false},
+      {"sl": 6, "page": 699, "wards": [170], "wardInherited": true, "capacity": null, "name": "CPS, New street", "streets": "T.N.H.B, T.N.U.H.D.B, Kotturpuram and Kottur", "water": true, "toilets": true, "cooking": false},
+      {"sl": 7, "page": 700, "wards": [172], "capacity": 1000, "name": "Chennai Hr. Sec. School", "streets": "Maduvinkarai", "water": true, "toilets": true, "cooking": false},
+      {"sl": 8, "page": 700, "wards": [170], "capacity": 300, "name": "Chennai School Kamaraj Avenue", "streets": "Adyar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 9, "page": 700, "wards": [170], "wardInherited": true, "facilitiesBlank": true, "capacity": 100, "name": "Chennai School Indhira nagar", "streets": "", "water": null, "toilets": null, "cooking": null},
+      {"sl": 10, "page": 700, "wards": [174], "capacity": 250, "name": "Anna School - Besant Nagar", "streets": "Arunachalapuram", "water": true, "toilets": true, "cooking": false},
+      {"sl": 11, "page": 700, "wards": [175], "capacity": 200, "name": "Britto school, Nethaji salai, Nehru nagar", "streets": "Ambedkar nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 12, "page": 700, "wards": [175], "wardInherited": true, "facilitiesBlank": true, "capacity": 100, "name": "CPS- Housing Board", "streets": "Periyar Nagar", "water": null, "toilets": null, "cooking": null},
+      {"sl": 13, "page": 701, "wards": [176], "capacity": 1000, "name": "Murugan kalyanamandapam", "streets": "Erikkarai Salai", "water": true, "toilets": true, "cooking": true},
+      {"sl": 14, "page": 701, "wards": [177], "capacity": 300, "name": "Govt Higher Secondary School, Throwpathyamman koil Street", "checkName": "Throwpathyamman koil Street", "streets": "", "water": true, "toilets": true, "cooking": false},
+      {"sl": 15, "page": 701, "wards": [177], "wardInherited": true, "facilitiesBlank": true, "capacity": 300, "name": "CPS, CHS Rajalakshmi nagar", "streets": "Velachery", "water": null, "toilets": null, "cooking": null},
+      {"sl": 16, "page": 701, "wards": [178], "capacity": 200, "name": "Chennai School", "streets": "Udhayam Nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 17, "page": 701, "wards": [178], "wardInherited": true, "facilitiesBlank": true, "capacity": 350, "name": "CPS, CHS - Peeliamman Koil Street, Taramani", "streets": "Thanthai periyar nagar", "water": null, "toilets": null, "cooking": null},
+      {"sl": 18, "page": 701, "wards": [180], "capacity": 200, "name": "Thiruvanmiyur - Shakthi nilayam", "streets": "Ranganathapuram", "water": true, "toilets": true, "cooking": false}
+    ],
+    "14": [
+      {"sl": 1, "page": 736, "wards": [185], "capacity": 200, "name": "ST Thomas Primary School (Nanganallur)", "streets": "Madhialagan street, Kamaraj street, Gandhi street, kannagi street, Nehru street, Saravana Nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 2, "page": 737, "wards": [186], "capacity": 300, "name": "ST Thomas Primary School", "streets": "Pillayar Koil street, Easwaran koil street, Mandaveli street, Gangai amman koil street", "water": true, "toilets": true, "cooking": false},
+      {"sl": 3, "page": 737, "wards": [186], "capacity": 700, "name": "Thanthai Periyar Hi Sec School", "streets": "Sarathi nagar, Ravanan nagar, Balaji Nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 4, "page": 737, "wards": [181], "capacity": 1500, "name": "Nellai Nadar School", "streets": "Kottivakkam kuppam, New colony", "water": true, "toilets": true, "cooking": false},
+      {"sl": 5, "page": 737, "wards": [181], "capacity": 1500, "name": "St Antony School", "streets": "Swaminadhan nagar, enkatesapuram, Ilango nagar", "water": true, "toilets": true, "cooking": false},
+      {"sl": 6, "page": 738, "wards": [182], "capacity": 300, "name": "Kuppam Primary School", "streets": "Kottivakkam Kuppam", "water": true, "toilets": true, "cooking": false},
+      {"sl": 7, "page": 738, "wards": [183], "capacity": 1000, "name": "Govt Hr Sec School", "streets": "Kallukuttai area", "water": true, "toilets": true, "cooking": false},
+      {"sl": 8, "page": 738, "wards": [183], "capacity": 1500, "name": "ECR Adi Dravidar School", "streets": "Kandasamy nagar, periyar salai & Maniyammai street", "water": true, "toilets": true, "cooking": false},
+      {"sl": 9, "page": 738, "wards": [184], "capacity": 500, "name": "Kandasamy Nagar Adi Dravidar Primary School", "streets": "Kandasamy nagar, periyar salai, Maniyammai street", "water": true, "toilets": true, "cooking": false},
+      {"sl": 10, "page": 739, "wards": [188], "capacity": 500, "name": "Panchayat Union Primary School", "streets": "Selvaganapathu avenue", "water": true, "toilets": true, "cooking": false},
+      {"sl": 11, "page": 739, "wards": [188], "capacity": 1800, "name": "Jay Jay Sankara Kalayana Mandapam", "streets": "Interior of Madipakkam", "water": true, "toilets": true, "cooking": false},
+      {"sl": 12, "page": 739, "wards": [188], "capacity": 700, "name": "Mylai Balaji nagar Block II", "streets": "Mylai Balaji nagar", "water": true, "toilets": true, "cooking": false}
+    ]
+  }
+}

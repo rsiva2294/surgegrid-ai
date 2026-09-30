@@ -29,6 +29,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDF = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.expanduser('~'), 'Downloads', 'chennai Gcc ddmp 2024.pdf')
 OUT = os.path.join(ROOT, 'public', 'data', 'gcc_plan_2024.json')
 
+with open(os.path.join(ROOT, 'scripts', 'relief_manual_zones.json'), encoding='utf-8') as fh:
+    MANUAL = json.load(fh)['zones']   # relief-centre rows copied by hand for zones the table parse misses (10, 13, 14)
+
 ROMAN = {'I': 1, 'II': 2, 'III': 3, 'IV': 4, 'V': 5, 'VI': 6, 'VII': 7, 'VIII': 8, 'IX': 9, 'X': 10, 'XI': 11, 'XII': 12, 'XIII': 13, 'XIV': 14, 'XV': 15}
 CLASSES = ('veryHigh', 'high', 'medium', 'low')   # above 5 ft, 3-5 ft, 2-3 ft, under 2 ft
 
@@ -55,6 +58,15 @@ def clean(s):
         s = s.replace(bad, good)
     s = s.replace('昀', 'f')
     return re.sub(r'[⺀-鿿가-힯]', '', s)      # drop any other stray CJK glyph from the broken font map
+
+
+def word_on_page(word, text):
+    """The word is in the text, or it is split over two lines with a hyphen ("San-" ... "kara"; the columns interleave in the text)."""
+    t = text.lower()
+    w = word.lower()
+    if w in t:
+        return True
+    return any(w[:k] + '-' in t and w[k:k + 3] in t for k in range(3, len(w) - 2))
 
 
 def wards_of(cell):
@@ -137,6 +149,19 @@ def read_relief(pdf):
                 found_any = True
             elif found_any:
                 break   # the relief-centre tables are contiguous; a page without one ends the section
+        if str(z) in MANUAL:      # hand-copied rows replace the parse; verified against the page text below
+            rows, serials, unverified = [], [], 0
+            for mr in MANUAL[str(z)]:
+                ptext = clean(pdf.pages[mr['page'] - 1].extract_text() or '')
+                words = [w for w in re.findall(r'[A-Za-z]{4,}', mr.get('checkName', mr['name']))]
+                ok = (all(str(w) in ptext for w in mr['wards'] if not mr.get('wardInherited'))
+                      and (mr['capacity'] is None or str(mr['capacity']) in ptext)
+                      and all(word_on_page(w, ptext) for w in words))
+                if not ok:
+                    print(f"   zone {z} row {mr['sl']} (page {mr['page']}): not found in the page text")
+                unverified += not ok
+                serials.append(mr['sl'])
+                rows.append({'zone': z, **{k: mr[k] for k in ('wards', 'capacity', 'name', 'streets', 'water', 'toilets', 'cooking')}})
         got = (len(rows), sum(r['capacity'] or 0 for r in rows))
         same = stated == got
         blanks = sum(1 for r in rows if r['capacity'] is None)
@@ -179,7 +204,7 @@ def main():
         'note': 'Street names with ward numbers, not coordinates, so everything is per ward. A location listed under several wards counts once in each. Depth classes: veryHigh above 5 ft, high 3 to 5 ft, medium 2 to 3 ft, low under 2 ft.',
         'registers': {y: {'pages': f'{a}-{b}', 'locations': sum(t)} for y, (a, b, t) in REGISTERS.items()},
         'list2023': {'page': LIST_2023_PAGE, 'locations': len(l2023), 'label': '2023 north-east monsoon (no depth classes)'},
-        'reliefNote': "Capacity and facilities are the table rows as printed. A zone ships when its serial numbers run 1..n and every row's ward, capacity and phone numbers are also in the page text; the plan's own zone statements often differ from its tables (see reliefZoneDiscrepancies).",
+        'reliefNote': "Capacity and facilities are the table rows as printed. A zone ships when its serial numbers run 1..n and every row's ward, capacity and phone numbers or name words are also in the page text (zones 10, 13, 14 come from scripts/relief_manual_zones.json); the plan's own zone statements often differ from its tables (see reliefZoneDiscrepancies).",
         'reliefTotals': {'centres': len(relief), 'capacity': sum(r['capacity'] or 0 for r in relief), 'withoutCapacity': sum(1 for r in relief if r['capacity'] is None)},
         'reliefZoneDiscrepancies': relief_checks,
         'wards': {str(w): v for w, v in sorted(wards.items())},

@@ -95,7 +95,7 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
             <div className={`pt-2 border-t space-y-1 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
               <div
                 className={`text-[10px] uppercase tracking-wider font-semibold ${label}`}
-                title="GCC plan 2024 relief-centre table. Table rows as printed; the plan's own zone totals sometimes differ from its tables. Not shown for zones 10, 13 and 14."
+                title="GCC plan 2024 relief-centre table. Table rows as printed; the plan's own zone totals sometimes differ from its tables."
               >
                 Capacity and facilities (GCC plan 2024)
               </div>
