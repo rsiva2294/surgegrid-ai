@@ -9,6 +9,9 @@ All notable changes, architectural decisions, and data extractions for the Surge
 - **Section office drawer:** 1-click action hub (call Section AE and more), grid hierarchy, feeding substations and ward relief shelters.
 - **Nearest relief centre fallback** when a ward has no listed centre.
 
+- **Reservoir pill (LIVE mode only, app bar beside the weather pill):** combined storage of the six Chennai supply reservoirs from the CMWSSB Lake Level page, with a dropdown per reservoir (storage, inflow, outflow, same day last year) and the "as on" date. Read through the new Cloud Function `surgegridReservoirs` (`reservoir-proxy/`); hidden if the source is unavailable.
+- **Sewerage pumping stations layer:** 124 CMWSSB stations (TNGIS), a map toggle, and a substation-card line with the nearest station and the MoP 2021 priority-restoration quote. Labelled as sewage pumps, not storm-water pumps.
+
 ### Changed
 - **Feeders tab (simulation):** one consolidated distribution circuit policy banner instead of the same quote on every feeder card.
 - **Substation panel:** one text scale across the three tabs (13 / 12.5 / 12 px); status badges on a single line; section office card streamlined.

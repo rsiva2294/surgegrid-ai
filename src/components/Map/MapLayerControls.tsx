@@ -18,6 +18,9 @@ interface MapLayerControlsProps {
   showReliefCentres: boolean;
   setShowReliefCentres: (show: boolean) => void;
   reliefWardCount: number;
+  showSewerageStations: boolean;
+  setShowSewerageStations: (show: boolean) => void;
+  sewerageStationCount: number;
   isHospitalLifelineActive?: boolean;
   substations: TnebSubstation[];
   sections: TnebSection[];
@@ -45,6 +48,9 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
   showReliefCentres,
   setShowReliefCentres,
   reliefWardCount,
+  showSewerageStations,
+  setShowSewerageStations,
+  sewerageStationCount,
   isHospitalLifelineActive,
   substations,
   sections,
@@ -305,6 +311,36 @@ export const MapLayerControls: React.FC<MapLayerControlsProps> = ({
                 }`}
               >
                 {reliefWardCount}
+              </span>
+            </button>
+
+            <button
+              onClick={() => setShowSewerageStations(!showSewerageStations)}
+              title="CMWSSB sewerage pumping stations (sewage, not storm water). Source: TNGIS."
+              className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg border transition-all ${
+                showSewerageStations
+                  ? isLight
+                    ? 'bg-teal-50/90 border-teal-300 text-teal-900 shadow-sm'
+                    : 'bg-teal-950/50 border-teal-500/60 text-teal-200 shadow-sm'
+                  : isLight
+                  ? 'bg-slate-100/90 border-slate-300 text-slate-700 line-through'
+                  : 'bg-slate-900/80 border-slate-700 text-slate-300 line-through'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2.5 h-2.5 rounded-sm ${
+                    isLight ? 'bg-teal-600 ring-2 ring-teal-300' : 'bg-teal-500 ring-2 ring-teal-400/40'
+                  }`}
+                />
+                <span className="font-medium">Sewerage pumping stations</span>
+              </div>
+              <span
+                className={`font-mono text-xs px-1.5 py-0.5 rounded font-bold ${
+                  isLight ? 'bg-teal-100 text-teal-700' : 'bg-teal-500/20 text-teal-300'
+                }`}
+              >
+                {sewerageStationCount}
               </span>
             </button>
           </div>

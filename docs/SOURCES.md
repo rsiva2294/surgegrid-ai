@@ -110,6 +110,14 @@ There is no 2016 register. The 2022 register is headed "Depth of Inundation Duri
 
 **6. Not used:** a TANGEDCO Junior Engineer contact per ward (200 ward tables; not compared with the contacts the app already shows), zone centroids (15 latitude and longitude pairs), park, playground and pump-set tables.
 
+## Reservoir storage (live) and sewerage pumping stations
+
+**Reservoir storage.** The LIVE-mode app-bar pill and its dropdown show the daily storage of the six Chennai supply reservoirs (Poondi, Cholavaram, Puzhal, Kannankottai Thervoy Kandigai, Chembarambakkam, Veeranam) as published by CMWSSB at `https://cmwssb.tn.gov.in/lake-level` (a table by date: level, storage, storage %, inflow, outflow, rainfall, storage on the same day last year). The page has no API and no CORS headers, so the Cloud Function `surgegridReservoirs` (`reservoir-proxy/`) reads the table and returns it as JSON, cached for 30 minutes. Figures are shown as published, with the "as on" date; nothing is estimated (no "days of water left"). On 2026-09-30 the page and the Neervazhvu site (`neervazhvu.org/chennai`, which reads the same table) both showed 4,998 of 13,222 mcft (37.8%).
+
+**Sewerage pumping stations.** `public/data/sewerage_pumping_stations.json` (`scripts/build_sewerage_pumping_stations.py`): 124 stations from the TNGIS layer "CMWSSB Sewerage Pumping Stations" (file downloaded from TNGIS in April 2026), each placed at the centre of its polygon, with name and road. These carry sewage, not storm water. The substation card shows the nearest station (straight-line km) and how many are within 1 km, only when one is within 5 km; which substation feeds a station is not known. It sits beside the MoP 2021 line on restoring "Drainage pumping stations" first (see Restoration priority below).
+
+**Looked at, not used.** TNGIS `Drainage_Network` is a statewide natural stream layer (315,349 lines, e.g. "Stream single-line dry 1st graduation"), not storm drains. The storm-drain and manhole network at `swd.reclaimchennai.city` (5,513 drains, 5,941 chambers) has TNGIS as its source per the owner; it is not in the app yet. TNGIS rain gauges (496 stations, 12 in Chennai) have locations only, no readings.
+
 ## Source files kept outside the repo (checksums)
 These are the files behind the ward records, the IMD material and the gauge points. They are not in git (the 2024 plan is 56 MB); keep the originals, and use the checksums to confirm a re-downloaded copy is the same file.
 

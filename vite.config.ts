@@ -16,6 +16,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: () => '/surgegridGemini'
       },
+      // CMWSSB reservoir storage relay (Cloud Function). The CMWSSB page has no CORS headers, so the browser cannot read it.
+      '/api/reservoirs': {
+        target: 'https://asia-south1-namma-map-407ca.cloudfunctions.net',
+        changeOrigin: true,
+        rewrite: () => '/surgegridReservoirs'
+      },
       '/api/outage-live': {
         target: 'https://outage.nammamap.in',
         changeOrigin: true,

@@ -3,6 +3,8 @@ import { loadChennaiGrid } from './services/tnebGridService';
 import type { ChennaiGridData, TnebSubstation, TnebSection } from './types/tneb';
 import { TnebGridMap } from './components/Map/TnebGridMap';
 import { LiveWeatherPill } from './components/Map/LiveWeatherPill';
+import { ReservoirPill } from './components/Map/ReservoirPill';
+import { useReservoirs } from './services/reservoirService';
 import { RefreshCw, Cpu, Sun, Moon } from 'lucide-react';
 import {
   fetchLiveWeatherConditions,
@@ -23,6 +25,8 @@ export default function App() {
   // True while a past storm is replayed: today's weather is hidden so it does not sit beside the storm.
   const [isReplay, setIsReplay] = useState(false);
   const handleScenarioChange = useCallback((s: string) => setIsReplay(s !== 'NORMAL' && s !== 'LIVE'), []);
+  // CMWSSB reservoir storage, LIVE mode only (hidden if the source is unavailable)
+  const reservoirs = useReservoirs(!isReplay);
 
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('sg_theme') as 'light' | 'dark') || 'light';
@@ -138,6 +142,8 @@ export default function App() {
             onRefresh={() => handleRefreshWeather()}
             isLight={isLight}
           />}
+
+          {!isReplay && reservoirs && <ReservoirPill data={reservoirs} isLight={isLight} />}
 
           {/* Light / Dark Mode Toggle Button */}
           <button

@@ -1,0 +1,14 @@
+{
+  "name": "surgegrid-reservoir-proxy",
+  "version": "1.0.0",
+  "description": "Relay from the SurgeGrid AI browser app to the CMWSSB Lake Level page (reservoir storage)",
+  "main": "index.js",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "functions-framework --target=surgegridReservoirs --port=8091"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.0"
+  }
+}

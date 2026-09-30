@@ -33,6 +33,7 @@ import {
 import { isSubstationAtRisk, isSubstationWaterloggingRisk } from '../../services/gridHealthService';
 import { useOfficialFloodLoaded } from '../../services/officialFloodLayers';
 import { useReliefCentres } from '../../services/reliefCentres';
+import { useSewerageStations } from '../../services/sewerageStations';
 import { useSectionBoundary } from '../../services/sectionBoundaries';
 import {
   fetchScenarioData,
@@ -189,6 +190,10 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const reliefData = useReliefCentres();
   const reliefMarkersRef = useRef<google.maps.Marker[]>([]);
   const reliefInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
+  const [showSewerageStations, setShowSewerageStations] = useState(false);
+  const sewerageData = useSewerageStations();
+  const sewerageMarkersRef = useRef<google.maps.Marker[]>([]);
+  const sewerageInfoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const [isSatellite, setIsSatellite] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showConnections, setShowConnections] = useState(false);
@@ -1183,6 +1188,57 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     };
   }, [showReliefCentres, reliefData, mapLoaded, gccPlan]);
 
+  // CMWSSB sewerage pumping stations (TNGIS), one marker per station at the centre of its polygon.
+  useEffect(() => {
+    sewerageMarkersRef.current.forEach(m => m.setMap(null));
+    sewerageMarkersRef.current = [];
+    sewerageInfoWindowRef.current?.close();
+    if (!mapRef.current || !mapLoaded || !showSewerageStations || !sewerageData) return;
+
+    sewerageData.stations.forEach(st => {
+      const marker = new google.maps.Marker({
+        position: { lat: st.lat, lng: st.lng },
+        map: mapRef.current,
+        title: `${st.name} (sewerage pumping station)`,
+        zIndex: 5,
+        icon: {
+          path: 'M -5,-5 L 5,-5 5,5 -5,5 z',
+          fillColor: '#0d9488',
+          fillOpacity: 0.9,
+          strokeColor: '#ffffff',
+          strokeWeight: 1.5,
+          scale: 1
+        },
+        cursor: 'pointer',
+        optimized: false
+      });
+      marker.addListener('click', () => {
+        if (!sewerageInfoWindowRef.current) sewerageInfoWindowRef.current = new google.maps.InfoWindow();
+        const root = document.createElement('div');
+        root.style.cssText = 'font-family:system-ui,sans-serif;font-size:12.5px;line-height:1.4;max-width:240px;color:#0f172a;';
+        const title = document.createElement('div');
+        title.style.cssText = 'font-weight:700;font-size:13px;';
+        title.textContent = st.name;
+        const road = document.createElement('div');
+        road.style.cssText = 'color:#475569;';
+        road.textContent = st.road;
+        const note = document.createElement('div');
+        note.style.cssText = 'margin-top:6px;color:#475569;font-size:12px;';
+        note.textContent = 'CMWSSB sewerage pumping station (sewage, not storm water). Source: TNGIS.';
+        root.append(title, road, note);
+        sewerageInfoWindowRef.current.setContent(root);
+        sewerageInfoWindowRef.current.open(mapRef.current, marker);
+      });
+      sewerageMarkersRef.current.push(marker);
+    });
+
+    return () => {
+      sewerageMarkersRef.current.forEach(m => m.setMap(null));
+      sewerageMarkersRef.current = [];
+      sewerageInfoWindowRef.current?.close();
+    };
+  }, [showSewerageStations, sewerageData, mapLoaded]);
+
   // IMD's observed track: the whole path dotted underneath, the part travelled solid, a marker at the storm centre, and the landfall point.
   const bestTrack = useBestTrack();
   const [showTrack, setShowTrack] = useState(true);
@@ -2086,6 +2142,9 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
               showReliefCentres={showReliefCentres}
               setShowReliefCentres={setShowReliefCentres}
               reliefWardCount={reliefData ? Object.values(reliefData.wards).filter(w => w.lat !== null).length : 0}
+              showSewerageStations={showSewerageStations}
+              setShowSewerageStations={setShowSewerageStations}
+              sewerageStationCount={sewerageData ? sewerageData.stations.length : 0}
               isHospitalLifelineActive={isHospitalLifelineActive}
               substations={substations}
               sections={sections}

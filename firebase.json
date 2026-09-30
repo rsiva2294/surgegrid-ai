@@ -20,6 +20,13 @@
         }
       },
       {
+        "source": "/api/reservoirs",
+        "function": {
+          "functionId": "surgegridReservoirs",
+          "region": "asia-south1"
+        }
+      },
+      {
         "source": "!@(*.json|ai-catalog.json)",
         "destination": "/index.html"
       }

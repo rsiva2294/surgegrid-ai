@@ -35,6 +35,7 @@ import { FloodExposureCard } from './FloodExposureCard';
 import { SiteBriefingCard } from './SiteBriefingCard';
 import { FloodPlanNotes } from './FloodPlanNotes';
 import { ReliefCentresCard } from './ReliefCentresCard';
+import { SewerageStationsCard } from './SewerageStationsCard';
 import { useOfficialFlood } from '../../services/officialFloodLayers';
 import { getEnrichedHealthProfile } from '../../services/gridHealthService';
 import { useGccPlan, wardFacts } from '../../services/gccPlan';
@@ -1191,6 +1192,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                       liveWeather={liveWeather}
                     />
                     <ReliefCentresCard substation={selectedSubstation} isLight={isLight} />
+                    <SewerageStationsCard substation={selectedSubstation} isLight={isLight} />
                     {/* Section office contact (grouped with the ward contacts below) */}
                     {jurisdictionalSections.length > 0 && (
                       <div
