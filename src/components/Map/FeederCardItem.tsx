@@ -29,7 +29,7 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
     <button
       type="button"
       onClick={() => onSelectFeeder(f)}
-      className={`w-full feeder-card-virtual text-left p-2 rounded-xl text-[13px] border transition-all ${
+      className={`w-full feeder-card-virtual text-left p-2 rounded-xl text-[12.5px] border transition-all ${
         isFeederActive
           ? (isNonCut
               ? (isLight
@@ -47,7 +47,7 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
       <div className="flex items-center justify-between gap-2 mb-0.5">
         <div className="flex items-center gap-1.5 truncate">
           <span
-            className={`font-semibold text-sm truncate ${
+            className={`font-semibold text-[13px] truncate ${
               isFeederActive
                 ? (isNonCut
                     ? (isLight ? 'text-rose-950 font-bold' : 'text-rose-200 font-bold')
@@ -178,7 +178,7 @@ export const FeederCardItem: React.FC<FeederCardItemProps> = ({
       {disasterScenario !== 'NORMAL' && (() => {
         const dStatus = getFeederDisasterStatus(f, selectedSubstation, disasterScenario, isLight);
         return (
-          <div className={`mt-1.5 p-2 rounded-xl text-[13px] leading-relaxed border flex items-start gap-2 ${dStatus.badgeBg} ${dStatus.badgeTextCol} ${dStatus.badgeBorder}`}>
+          <div className={`mt-1.5 p-2 rounded-xl text-[12.5px] leading-relaxed border flex items-start gap-2 ${dStatus.badgeBg} ${dStatus.badgeTextCol} ${dStatus.badgeBorder}`}>
             <span className="shrink-0 mt-0.5">{dStatus.icon}</span>
             <div className="min-w-0 flex-1">
               <div className="font-bold">

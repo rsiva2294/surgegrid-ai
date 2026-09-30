@@ -285,7 +285,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
           {/* Width tooltip while actively dragging */}
           {isResizing && (
             <div
-              className={`absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-[13px] font-mono font-bold pointer-events-none whitespace-nowrap shadow-xl border ${
+              className={`absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 rounded text-[12.5px] font-mono font-bold pointer-events-none whitespace-nowrap shadow-xl border ${
                 isLight
                   ? 'bg-slate-900 text-white border-slate-700'
                   : 'bg-slate-950 text-cyan-300 border-cyan-500/50'
@@ -510,7 +510,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   <button
                     type="button"
                     onClick={() => setInspectorTab('overview')}
-                    className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-sm ${
+                    className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[13px] ${
                       inspectorTab === 'overview'
                         ? isLight
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
@@ -526,7 +526,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   <button
                     type="button"
                     onClick={() => setInspectorTab('feeders')}
-                    className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-sm ${
+                    className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[13px] ${
                       inspectorTab === 'feeders'
                         ? isLight
                           ? 'bg-white text-slate-900 shadow-sm border border-slate-300/60'
@@ -542,7 +542,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                   <button
                     type="button"
                     onClick={() => setInspectorTab('respond')}
-                    className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-sm ${
+                    className={`flex-1 py-1.5 px-1 rounded-lg font-bold transition-all text-center flex items-center justify-center gap-1 text-[13px] ${
                       inspectorTab === 'respond'
                         ? 'bg-indigo-600 text-white shadow-sm'
                         : isLight
@@ -707,7 +707,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className={`text-[13px] font-bold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                              <span className={`text-[12.5px] font-bold truncate ${isLight ? 'text-slate-900' : 'text-white'}`}>
                                 Isolate Electrical Circuit
                               </span>
                               <span
@@ -864,7 +864,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     )}
                     {/* Live Outage / Maintenance Alert Banner */}
                     {!isReplay && activeSubstationOutages.length > 0 && (
-                      <div className={`p-2.5 rounded-xl border text-[13px] shrink-0 flex items-start gap-2 ${
+                      <div className={`p-2.5 rounded-xl border text-[12.5px] shrink-0 flex items-start gap-2 ${
                         isLight
                           ? 'bg-red-50 border-red-200 text-red-800'
                           : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -890,7 +890,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                             </a>
                           </div>
                           {activeSubstationOutages.slice(0, 2).map((o, idx) => (
-                            <div key={idx} className="mt-1 text-[13px] leading-snug">
+                            <div key={idx} className="mt-1 text-[12.5px] leading-snug">
                               <span className={`font-semibold ${isLight ? 'text-red-900' : 'text-white'}`}>{o.workType || 'Scheduled Maintenance'}</span>
                               {o.fromTime && o.toTime && <span className={isLight ? 'text-red-700' : 'opacity-90'}> ({o.fromTime} - {o.toTime})</span>}
                               {o.location && <div className={`truncate mt-0.5 ${isLight ? 'text-red-600' : 'text-amber-200/80'}`}>📍 {o.location}</div>}
@@ -908,7 +908,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 
                       return (
                         <div
-                          className={`p-2.5 rounded-xl border text-[13px] shrink-0 ${
+                          className={`p-2.5 rounded-xl border text-[12.5px] shrink-0 ${
                             isLight
                               ? 'bg-slate-50/90 border-slate-200/90 text-slate-900 shadow-xs'
                               : 'bg-slate-950/60 border-slate-800 text-slate-100 shadow-xs'
@@ -925,7 +925,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                               </div>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-1.5 flex-wrap">
-                                  <span className="font-bold text-sm truncate">
+                                  <span className="font-bold text-[13px] truncate">
                                     {selectedSubstation.circle || 'Circle not listed'}
                                   </span>
                                   {selectedSubstation.regionCode && (
@@ -1053,7 +1053,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-sm flex items-center gap-1.5">
+                          <span className="font-bold text-[13px] flex items-center gap-1.5">
                             <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                             <span>Jurisdictional Section Office</span>
                           </span>
@@ -1065,11 +1065,11 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                             {jurisdictionalSections[0].distanceKm} km away
                           </span>
                         </div>
-                        <p className={`text-[13px] ${isLight ? 'text-emerald-900 font-semibold' : 'text-emerald-200'}`}>
+                        <p className={`text-[12.5px] ${isLight ? 'text-emerald-900 font-semibold' : 'text-emerald-200'}`}>
                           {jurisdictionalSections[0].name}
                         </p>
                         {jurisdictionalSections[0].section && (
-                          <div className="space-y-1.5 pt-1 text-[13px]">
+                          <div className="space-y-1.5 pt-1 text-[12.5px]">
                             {jurisdictionalSections[0].section.mobile && (
                               <div className="flex items-center gap-2">
                                 <Phone className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -1146,7 +1146,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
 
             {/* Section Active Outage Alert Banner */}
             {activeSectionOutages.length > 0 && (
-              <div className={`p-2.5 rounded-xl border text-[13px] shrink-0 flex items-start gap-2 ${
+              <div className={`p-2.5 rounded-xl border text-[12.5px] shrink-0 flex items-start gap-2 ${
                 isLight
                   ? 'bg-red-50 border-red-200 text-red-800'
                   : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
@@ -1172,7 +1172,7 @@ export const SubstationInspectorDrawer: React.FC<SubstationInspectorDrawerProps>
                     </a>
                   </div>
                   {activeSectionOutages.slice(0, 2).map((o, idx) => (
-                    <div key={idx} className="mt-1 text-[13px] leading-snug">
+                    <div key={idx} className="mt-1 text-[12.5px] leading-snug">
                       <span className={`font-semibold ${isLight ? 'text-red-900' : 'text-white'}`}>{o.workType || 'Scheduled Maintenance'}</span>
                       {o.fromTime && o.toTime && <span className={isLight ? 'text-red-700' : 'opacity-90'}> ({o.fromTime} - {o.toTime})</span>}
                       {o.location && <div className={`truncate mt-0.5 ${isLight ? 'text-red-600' : 'text-amber-200/80'}`}>📍 {o.location}</div>}

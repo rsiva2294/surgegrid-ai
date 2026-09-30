@@ -47,14 +47,14 @@ export const SiteBriefingCard: React.FC<SiteBriefingCardProps> = ({ substation, 
 
   return (
     <div
-      className={`p-3.5 rounded-xl border space-y-3 text-[13px] leading-snug shrink-0 ${
+      className={`p-3.5 rounded-xl border space-y-3 text-[12.5px] leading-snug shrink-0 ${
         isLight ? 'bg-sky-50/80 border-sky-200 text-slate-900' : 'bg-sky-950/30 border-sky-800/60 text-slate-100'
       }`}
     >
       <div className="flex items-center justify-between gap-2 min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">
           <CloudRain className={`w-4 h-4 shrink-0 ${isLight ? 'text-sky-700' : 'text-sky-300'}`} />
-          <span className="font-bold text-sm truncate">At {stepLabel}{when ? ` · ${when}` : ''}</span>
+          <span className="font-bold text-[13px] truncate">At {stepLabel}{when ? ` · ${when}` : ''}</span>
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <span
@@ -86,7 +86,7 @@ export const SiteBriefingCard: React.FC<SiteBriefingCardProps> = ({ substation, 
       )}
 
       <div className={`px-3 py-2.5 rounded-lg border ${TIER.tone}`}>
-        <div className="text-sm font-bold">{TIER.title}</div>
+        <div className="text-[13px] font-bold">{TIER.title}</div>
         {headSub && <div className="mt-0.5 opacity-90">{headSub}</div>}
       </div>
 

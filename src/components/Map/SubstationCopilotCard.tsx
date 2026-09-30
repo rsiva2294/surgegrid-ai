@@ -81,7 +81,7 @@ export const SubstationCopilotCard: React.FC<SubstationCopilotCardProps> = ({
               <div className="w-5 h-5 rounded-md bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center shrink-0">
                 <Sparkles className="w-3 h-3 text-indigo-400" />
               </div>
-              <span className="font-bold text-sm tracking-tight text-indigo-950 dark:text-indigo-200 truncate">
+              <span className="font-bold text-[13px] tracking-tight text-indigo-950 dark:text-indigo-200 truncate">
                 What the plans say to do now
               </span>
             </div>
@@ -96,7 +96,7 @@ export const SubstationCopilotCard: React.FC<SubstationCopilotCardProps> = ({
 
           {/* Note tying the actions to this substation's data */}
           {copilotAdvisory.note && (
-            <p className="text-[13px] leading-snug mb-3 text-slate-700 dark:text-slate-300 bg-indigo-500/5 dark:bg-indigo-950/20 p-2 rounded border border-indigo-500/10">
+            <p className="text-[12.5px] leading-snug mb-3 text-slate-700 dark:text-slate-300 bg-indigo-500/5 dark:bg-indigo-950/20 p-2 rounded border border-indigo-500/10">
               <span className="inline-flex items-center gap-1 font-semibold text-indigo-700 dark:text-indigo-300 mr-1">
                 <Sparkles className="w-3 h-3" /> Gemini:
               </span>
@@ -115,8 +115,8 @@ export const SubstationCopilotCard: React.FC<SubstationCopilotCardProps> = ({
                 key={act.id || idx}
                 className="p-2 rounded-lg bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 shadow-xs"
               >
-                <div className="text-sm text-slate-900 dark:text-slate-100 font-bold leading-snug">{act.title}</div>
-                <blockquote className="mt-1 text-[13px] italic leading-snug text-slate-700 dark:text-slate-300 border-l-2 border-indigo-300 dark:border-indigo-500/60 pl-2">
+                <div className="text-[13px] text-slate-900 dark:text-slate-100 font-bold leading-snug">{act.title}</div>
+                <blockquote className="mt-1 text-[12.5px] italic leading-snug text-slate-700 dark:text-slate-300 border-l-2 border-indigo-300 dark:border-indigo-500/60 pl-2">
                   &ldquo;{act.quote}&rdquo;
                   <span className="block not-italic text-xs text-slate-500 dark:text-slate-400 mt-0.5">{act.citation}</span>
                 </blockquote>

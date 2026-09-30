@@ -40,7 +40,7 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
   if (!data || (!ward && !showBackup)) return null;
   if (centres.length === 0 && !showBackup && ward) {
     return (
-      <div className={`p-3 rounded-xl border text-[13px] ${box}`}>
+      <div className={`p-3 rounded-xl border text-[12.5px] ${box}`}>
         <div className={`text-xs uppercase tracking-wider font-semibold mb-1 ${label}`}>Relief centres</div>
         No GCC relief centre listed for Ward {ward}.
       </div>
@@ -69,7 +69,7 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
             {centres.map((c, i) => (
               <div
                 key={`${c.address}-${i}`}
-                className={`p-2 rounded-lg border text-[13px] flex items-center justify-between gap-2 ${
+                className={`p-2 rounded-lg border text-[12.5px] flex items-center justify-between gap-2 ${
                   isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/50 border-slate-800'
                 }`}
               >
@@ -100,7 +100,7 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
                 Capacity and facilities (GCC plan 2024)
               </div>
               {planRelief.map((c, i) => (
-                <p key={`${c.name}-${i}`} className="text-[13px] leading-snug">
+                <p key={`${c.name}-${i}`} className="text-[12.5px] leading-snug">
                   <span className="font-semibold">{c.name}</span>: {c.capacity !== null ? `${c.capacity} people` : 'capacity not given'}
                   <span className={label}>
                     {' '}
@@ -127,7 +127,7 @@ export const ReliefCentresCard: React.FC<ReliefCentresCardProps> = ({ substation
               <Info className="w-3.5 h-3.5" />
             </button>
           </div>
-          <p className="text-[13px] mt-0.5">
+          <p className="text-[12.5px] mt-0.5">
             <strong>{backup.name}</strong> · {backup.km} km
           </p>
           {showCriteria && (

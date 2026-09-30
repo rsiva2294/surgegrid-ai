@@ -73,7 +73,7 @@ export const SubstationLiveBriefCard: React.FC<SubstationLiveBriefCardProps> = (
           <div className="w-5 h-5 rounded-md bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center shrink-0">
             <Sparkles className="w-3 h-3 text-indigo-400" />
           </div>
-          <span className="font-bold text-sm tracking-tight truncate">AI SUMMARY</span>
+          <span className="font-bold text-[13px] tracking-tight truncate">AI SUMMARY</span>
           <span className="text-xs px-1 py-0.5 rounded font-mono font-semibold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
             LIVE
           </span>
@@ -81,7 +81,7 @@ export const SubstationLiveBriefCard: React.FC<SubstationLiveBriefCardProps> = (
         {isLoading && <RefreshCw className="w-2.5 h-2.5 text-indigo-400 animate-spin shrink-0" />}
       </div>
 
-      <p className="text-[13px] leading-relaxed">{brief.summary}</p>
+      <p className="text-[12.5px] leading-relaxed">{brief.summary}</p>
 
       <details className="mt-2">
         <summary className={`text-xs cursor-pointer ${muted}`}>Facts used for this summary</summary>

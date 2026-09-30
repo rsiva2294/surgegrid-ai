@@ -61,7 +61,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
     return (
       <div
         key={event.id || key}
-        className={`p-2 rounded-lg border text-[13px] leading-tight flex items-start gap-2 ${
+        className={`p-2 rounded-lg border text-[12.5px] leading-tight flex items-start gap-2 ${
           event.isLiveActive
             ? isLight
               ? 'bg-red-50 border-red-300 text-red-900 ring-1 ring-red-400/20'
@@ -151,7 +151,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
 
   return (
     <div
-      className={`p-3 rounded-xl border space-y-2.5 text-[13px] transition-all ${
+      className={`p-3 rounded-xl border space-y-2.5 text-[12.5px] transition-all ${
         isLight ? 'bg-slate-50/90 border-slate-200' : 'bg-slate-950/70 border-slate-700/80 shadow-xs'
       }`}
     >
@@ -159,7 +159,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
       <div className="flex items-center justify-between gap-2 min-w-0">
         <div className="flex items-center gap-1.5 min-w-0">
           <Activity className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-          <span className={`font-bold text-sm truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
+          <span className={`font-bold text-[13px] truncate ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
             Health (our model)
           </span>
         </div>
@@ -185,7 +185,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
           <span className={`text-xs uppercase font-semibold block ${isLight ? 'text-emerald-800' : 'text-emerald-300'}`}>
             🛠️ Scheduled PM
           </span>
-          <strong className={`text-sm font-bold block my-0.5 tabular-nums ${isLight ? 'text-emerald-950' : 'text-emerald-200'}`}>
+          <strong className={`text-[13px] font-bold block my-0.5 tabular-nums ${isLight ? 'text-emerald-950' : 'text-emerald-200'}`}>
             {profile.periodicMaintenanceCount} {profile.periodicMaintenanceCount === 1 ? 'Run' : 'Runs'}
           </strong>
           {(profile.yardCoreMaintenanceCount !== undefined || profile.feederMaintenanceCount !== undefined || profile.ltStreetMaintenanceCount !== undefined) ? (
@@ -224,7 +224,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
             ⚠️ Forced Trips
           </span>
           <strong
-            className={`text-sm font-bold block my-0.5 tabular-nums ${
+            className={`text-[13px] font-bold block my-0.5 tabular-nums ${
               profile.unscheduledTripsCount > 0
                 ? isLight
                   ? 'text-rose-950'
@@ -263,7 +263,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
             <button
               type="button"
               onClick={() => setShowEmptyLog(!showEmptyLog)}
-              className={`w-full py-1.5 px-2 rounded-lg font-medium text-[13px] flex items-center justify-between transition-colors ${
+              className={`w-full py-1.5 px-2 rounded-lg font-medium text-[12.5px] flex items-center justify-between transition-colors ${
                 isLight
                   ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80'
@@ -280,7 +280,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
 
             {showEmptyLog && (
               <div className="mt-1.5 p-2.5 rounded-lg border border-dashed border-slate-300 dark:border-slate-700/60 text-center">
-                <p className="text-slate-400 text-[13px] italic">
+                <p className="text-slate-400 text-[12.5px] italic">
                   No outage or maintenance notices recorded in the past 90 days (clean operational record).
                 </p>
               </div>
@@ -289,7 +289,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
         ) : (
           <div className="space-y-1.5">
             {/* Header row */}
-            <div className="flex items-center justify-between text-[13px] px-0.5">
+            <div className="flex items-center justify-between text-[12.5px] px-0.5">
               <span className={`font-bold flex items-center gap-1.5 ${isLight ? 'text-slate-900' : 'text-slate-100'}`}>
                 <Clock className={`w-3.5 h-3.5 ${isLight ? 'text-slate-700' : 'text-slate-300'}`} />
                 <span>90-Day Incident & Maintenance Log ({profile.events.length})</span>
@@ -308,7 +308,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsExpanded(true)}
-                    className={`w-full py-1 px-2 rounded-lg text-[13px] font-medium flex items-center justify-center gap-1 transition-colors ${
+                    className={`w-full py-1 px-2 rounded-lg text-[12.5px] font-medium flex items-center justify-center gap-1 transition-colors ${
                       isLight
                         ? 'bg-slate-100 hover:bg-slate-200/80 text-slate-700 border border-slate-200/70'
                         : 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700/70'
@@ -397,7 +397,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
                 {/* Event List */}
                 <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
                   {filteredEvents.length === 0 ? (
-                    <p className="text-center py-2.5 text-slate-400 text-[13px] italic">
+                    <p className="text-center py-2.5 text-slate-400 text-[12.5px] italic">
                       No recorded incidents matching this scope filter.
                     </p>
                   ) : (
@@ -409,7 +409,7 @@ export const SubstationHealthCard: React.FC<SubstationHealthCardProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsExpanded(false)}
-                  className={`w-full py-1 px-2 rounded-lg text-[13px] font-medium flex items-center justify-center gap-1 transition-colors ${
+                  className={`w-full py-1 px-2 rounded-lg text-[12.5px] font-medium flex items-center justify-center gap-1 transition-colors ${
                     isLight
                       ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                       : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80'

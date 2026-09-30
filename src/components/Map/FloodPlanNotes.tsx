@@ -34,7 +34,7 @@ export const FloodPlanNotes: React.FC<FloodPlanNotesProps> = ({ substation, isLi
     const q = getQuote(id);
     return q ? (
       <blockquote
-        className={`italic border-l-2 pl-2.5 text-[13px] leading-relaxed ${
+        className={`italic border-l-2 pl-2.5 text-[12.5px] leading-relaxed ${
           isLight ? 'text-slate-800 border-indigo-300' : 'text-slate-200 border-indigo-500/60'
         }`}
       >
@@ -47,7 +47,7 @@ export const FloodPlanNotes: React.FC<FloodPlanNotesProps> = ({ substation, isLi
   return (
     <div className="space-y-2">
       <div className={`text-xs uppercase tracking-wider font-semibold ${label}`}>Flood actions in the plans</div>
-      <p className="text-[13px]">Applies here: {reasons.join('; ')}.</p>
+      <p className="text-[12.5px]">Applies here: {reasons.join('; ')}.</p>
       {quote('mop-identify-flood-prone')}
       {quote('mop-dewatering-pump-arranged')}
     </div>
