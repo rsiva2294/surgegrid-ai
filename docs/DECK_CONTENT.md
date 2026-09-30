@@ -1,4 +1,6 @@
-# SurgeGrid AI: Pitch Deck Content (draft, 12 slides)
+# SurgeGrid AI: Pitch Deck Content (16 slides in the current .pptx)
+
+**Current slide order** (`SurgeGrid_AI_Deck.pptx`, rebuilt with real screenshots and two native charts): 1 Title, 2 Problem, 3 Insight, 4 What it does, 5 Live grid and triage, 6 Replay: sites to check per step (chart), 7 Real data: satellite vs IMD gauge (chart), 8 AI Directive, 9 One substation (Gemini note, circuit policy), 10 Responder hub, 11 How it works, 12 Gemini does and never does, 13 Track 5 fit, 14 Built for India, 15 Evidence and trust, 16 Roadmap and close. The sections below are the earlier 12-slide draft and still hold the wording and numbers.
 
 Track 5: Cyclone Impact & Infrastructure Vulnerability Forecaster. Every number below comes from the repo, the four official plans, or the measurements in `docs/PROJECT_LOG.md`. Live site: https://surgegrid.web.app
 
