@@ -21,7 +21,7 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 | Storm panel: halo key, fixed flood maps (2015 extent on by default, hazard maps), track, gauges, wind; folded by default | `src/components/Map/SimulationMapPanel.tsx` |
 | Simplified official flood maps (2015 extent, 5 to 100-year hazard maps), drawn on demand | `public/data/flood_maps/`; built by `scripts/build_flood_polygons.py` |
 | Cyclone track on the map (IMD best track, storm marker, landfall), glide between steps, Show whole storm, Animate switch | `src/services/bestTrack.ts`, `TnebGridMap.tsx` (`paintStorm`, glide effect), `SimulationMapPanel.tsx`; data by `scripts/build_best_track.py` |
-| IMD at the time: quotes from IMD's press releases and final report, observed best track, distance from Chennai, per step | `src/data/imdBulletins.ts`, `src/components/Map/ImdAtTheTimeCard.tsx`; quotes checked by `scripts/verify_imd_quotes.py` |
+| IMD's statements per step (press releases, final report, observed best track), shown in the AI Directive and the site briefing | `src/data/imdBulletins.ts`; chosen in `GeminiSopDialog.tsx` (`imdForStep`) and `SiteBriefingCard.tsx`; quotes checked by `scripts/verify_imd_quotes.py` |
 | GCC ward records: 2015 to 2022 depth-of-inundation registers per ward, the 2023 north-east monsoon list, relief-centre capacity for verified zones | `src/services/gccPlan.ts`, `public/data/gcc_plan_2024.json`; built by `scripts/build_gcc_plan_2024.py`; shown in `FloodExposureCard.tsx` and `ReliefCentresCard.tsx` |
 | Check that our GCC quotes also appear in the 2024 plan | `scripts/verify_gcc_quotes_2024.py` |
 | IMD rain gauges drawn on the map (latest 24 h window before the step) with the satellite cell's value | `src/services/gaugePoints.ts`, `public/data/scenarios/michaung2023_gauges.json`; built by `scripts/build_gauge_points.py` |
@@ -40,8 +40,8 @@ A locator: **feature to file**. Updated 2026-09-30 for the final state. Search b
 ## AI Directive and Substation Copilot
 | What | File |
 |---|---|
-| Phase rule, action table per scenario and phase, targets from grid data, Gemini wording layer | `src/services/geminiSopService.ts` |
-| AI Directive window (quotes, citations, notes, target chips) | `src/components/Map/GeminiSopDialog.tsx` |
+| Phase rule, action table per scenario and phase, step targets from the sites to check (spread one per ~11 km cell; flood, transmission, overhead, lifeline, none), Gemini wording layer and rejected wording | `src/services/geminiSopService.ts` |
+| AI Directive window, opened at each step with "Next step" (IMD said, counts, sites to check first, quoted actions, target chips) | `src/components/Map/GeminiSopDialog.tsx`; step flow in `TnebGridMap.tsx` (`goToNextStep`, settle effect) |
 | Flags, quoted actions, Gemini note for one substation | `src/services/geminiSubstationCopilotService.ts` |
 | Copilot card ("What the plans say to do now"), top of the Overview tab during a replay | `src/components/Map/SubstationCopilotCard.tsx` |
 | Shared browser client for Gemini (no key) | `src/services/geminiClient.ts` |

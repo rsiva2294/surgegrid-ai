@@ -11,6 +11,7 @@
 import type { ScenarioId, ScenarioTimestep } from './scenarioService';
 import type { TnebSubstation, FeederDetail } from '../types/tneb';
 import { generateJson } from './geminiClient';
+import { getCachedOfficialFlood } from './officialFloodLayers';
 import {
   CHENNAI_AVERAGE_ELEVATION_M,
   OFFICIAL_SOURCES,
@@ -62,12 +63,20 @@ export interface GeminiSopDirective {
     /** IMD cyclone class for the wind speed, or null below the lowest class (88 km/h). */
     imdClass: string | null;
   };
-  /** Counts taken from our grid data, not estimates. `flood` = substations at or below Chennai's average elevation. */
+  /**
+   * Counts for the step on screen (our order, see simulationExposure.ts): `flood` = sites to check first, `overhead` = sites to
+   * check with overhead or mixed feeders, `lifeline` = hospital and water feeders at the sites to check; `toCheck` of
+   * `withFloodFact` sites have Heavy rain or worse here. Without a step result they fall back to grid-data counts.
+   */
   exposure: {
     flood: number;
     overhead: number;
     lifeline: number;
+    toCheck?: number;
+    withFloodFact?: number;
   };
+  /** Sites to check first at this step, spread across the city (our order). */
+  checkFirstSites?: string[];
   actionItems: SopActionItem[];
   geminiModelTag: string;
   timestamp: string;
@@ -78,7 +87,9 @@ export interface GeminiSopDirective {
 // ---------------------------------------------------------------------------
 
 export type SopPhase = 'WATCH' | 'CRITICAL' | 'RESTORATION';
-type TargetGroup = 'flood' | 'overhead' | 'lifeline' | 'none';
+// flood = sites where water can get in (2015 extent or low yard); transmission = 230/110 kV sites (for ERS towers);
+// none = planning or city-wide actions that apply to every site to check, with no site chips.
+type TargetGroup = 'flood' | 'transmission' | 'overhead' | 'lifeline' | 'none';
 type ScenarioKey = 'MICHAUNG_2023';
 
 export interface RuleMeta {
@@ -89,11 +100,11 @@ export interface RuleMeta {
 
 // Short labels are ours; the quote and citation shown beneath each one are official.
 export const RULE_META: Record<string, RuleMeta> = {
-  'mop-diesel-7-days': { title: 'Keep diesel for substation generators', category: 'FIELD', group: 'flood' },
+  'mop-diesel-7-days': { title: 'Keep diesel for substation generators', category: 'FIELD', group: 'none' },
   'mop-check-inventories': { title: 'Check and top up inventories near the likely area', category: 'FIELD', group: 'none' },
-  'mop-move-ers-towers': { title: 'Move ERS towers to the nearest substation', category: 'FIELD', group: 'flood' },
-  'mop-deploy-manpower': { title: 'Deploy expert manpower to the nearest station', category: 'FIELD', group: 'flood' },
-  'mop-identify-flood-prone': { title: 'Identify flood-prone substations', category: 'FIELD', group: 'flood' },
+  'mop-move-ers-towers': { title: 'Move ERS towers to the nearest substation', category: 'FIELD', group: 'transmission' },
+  'mop-deploy-manpower': { title: 'Deploy expert manpower to the nearest station', category: 'FIELD', group: 'none' },
+  'mop-identify-flood-prone': { title: 'Identify flood-prone substations', category: 'FIELD', group: 'none' },
   'mop-dewatering-pump-arranged': { title: 'Arrange dewatering pumps', category: 'DEWATERING', group: 'flood' },
   'mop-trigger-mechanism': { title: 'Set the trigger that starts the action plan', category: 'FIELD', group: 'none' },
   'mop-switch-off-if-required': { title: 'Switch supply off if required', category: 'DE_ENERGIZE', group: 'flood' },
@@ -171,9 +182,14 @@ export function resolvePhase(timestep: ScenarioTimestep): SopPhase {
 
 interface SopTargets {
   flood: string[];
+  transmission: string[];
   overhead: string[];
   lifeline: string[];
+  /** Sites to check first, spread across the city (at most one per ~11 km cell), for the line at the top. */
+  checkFirst?: string[];
   counts: { flood: number; overhead: number; lifeline: number };
+  /** Set when the targets come from the step's sites to check. */
+  step?: { toCheck: number; withFloodFact: number };
 }
 
 const MAX_TARGETS = 4;
@@ -188,6 +204,76 @@ export function isOverheadFeeder(f: FeederDetail): boolean {
  * The scenarios model no storm surge, so "flood" targets are the lowest-lying substations by the
  * elevation stored in the grid data (Earth Engine terrain data).
  */
+
+/** The step's sites to check (Check first / Check next), from computeExposure. */
+export interface StepSites {
+  sites: { substation: TnebSubstation; tier: 'first' | 'next'; mm24: number }[];
+  withFloodFact: number;
+}
+
+function isLifelineFeeder(f: FeederDetail): boolean {
+  return f.lifelineCategory === 'hospital' || f.lifelineCategory === 'water';
+}
+
+/** The ~11 km (0.1 degree) cell a site is in, so a list can take at most one site per area. */
+function cellKey(ss: TnebSubstation): string {
+  return `${Math.floor(ss.lat * 10)}_${Math.floor(ss.lng * 10)}`;
+}
+
+/** The first `n` sites of a ranked list, at most one per ~11 km cell, so one cluster cannot fill the list. */
+function spread<T>(ranked: T[], site: (x: T) => TnebSubstation, n: number): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const x of ranked) {
+    const key = cellKey(site(x));
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(x);
+    if (out.length === n) break;
+  }
+  return out;
+}
+
+const MAX_CHECK_FIRST = 6;
+
+/**
+ * Targets for one step, each list spread across the city and ranked by rain here (ties by consumers served):
+ * - checkFirst: the sites to check first (the line at the top);
+ * - flood (dewatering, sandbags, pumping out): check-first sites inside the 2015 flood extent or with a yard at or below 2 m;
+ * - transmission (ERS towers): 230 kV and 110 kV sites among the check-first sites;
+ * - overhead: sites to check with the most overhead feeders; lifeline: sites to check serving the most hospital and water feeders.
+ */
+function buildStepTargets(step: StepSites): SopTargets {
+  const nameOf = (ss: TnebSubstation) => ss.cleanName || ss.name;
+  const byRain = (a: StepSites['sites'][number], b: StepSites['sites'][number]) =>
+    b.mm24 - a.mm24 || (b.substation.totalConsumers ?? 0) - (a.substation.totalConsumers ?? 0);
+  const first = step.sites.filter(x => x.tier === 'first').sort(byRain);
+  const waterCanEnter = (ss: TnebSubstation) =>
+    Boolean(getCachedOfficialFlood(ss.code)?.nrsc2015) || (ss.elevationM !== undefined && ss.elevationM <= CHENNAI_AVERAGE_ELEVATION_M);
+  const floodPool = first.filter(x => waterCanEnter(x.substation));
+  const transmissionPool = first.filter(x => x.substation.tier === 'bulk' || x.substation.tier === 'subtransmission');
+  const overheadRanked = step.sites
+    .map(x => ({ x, n: (x.substation.feeders || []).filter(isOverheadFeeder).length }))
+    .filter(y => y.n > 0)
+    .sort((a, b) => (a.x.tier === b.x.tier ? b.n - a.n : a.x.tier === 'first' ? -1 : 1));
+  const lifelineRanked = step.sites
+    .map(x => ({ x, n: (x.substation.feeders || []).filter(isLifelineFeeder).length }))
+    .filter(y => y.n > 0)
+    .sort((a, b) => b.n - a.n);
+  return {
+    checkFirst: spread(first, x => x.substation, MAX_CHECK_FIRST).map(x => nameOf(x.substation)),
+    flood: spread(floodPool, x => x.substation, MAX_TARGETS).map(x => nameOf(x.substation)),
+    transmission: spread(transmissionPool, x => x.substation, MAX_TARGETS).map(x => nameOf(x.substation)),
+    overhead: spread(overheadRanked, y => y.x.substation, MAX_TARGETS).map(y => nameOf(y.x.substation)),
+    lifeline: spread(lifelineRanked, y => y.x.substation, MAX_TARGETS).map(y => nameOf(y.x.substation)),
+    counts: {
+      flood: first.length,
+      overhead: overheadRanked.length,
+      lifeline: lifelineRanked.reduce((sum, y) => sum + y.n, 0),
+    },
+    step: { toCheck: step.sites.length, withFloodFact: step.withFloodFact },
+  };
+}
 
 function buildTargets(substations: TnebSubstation[]): SopTargets {
   const nameOf = (ss: TnebSubstation) => ss.cleanName || ss.name;
@@ -212,6 +298,7 @@ function buildTargets(substations: TnebSubstation[]): SopTargets {
 
   return {
     flood: withElevation.slice(0, MAX_TARGETS).map(nameOf),
+    transmission: [],
     overhead: overheadRanked.slice(0, MAX_TARGETS).map(x => nameOf(x.ss)),
     lifeline: lifelineRanked.slice(0, MAX_TARGETS).map(x => nameOf(x.ss)),
     counts: {
@@ -222,11 +309,60 @@ function buildTargets(substations: TnebSubstation[]): SopTargets {
   };
 }
 
+/** The substation lists and counts as prompt lines. */
+function targetLines(targets: SopTargets): string {
+  if (targets.step) {
+    return [
+      "SUBSTATION LISTS for this step (SurgeGrid's own order, not official: Heavy rain or worse already recorded at the site, as the satellite total for the last 24 hours or the nearest IMD gauge's latest daily total, and a flood fact from official maps or the GCC 2015 register):",
+      `flood (sites to check first inside the 2015 flood extent or with a yard at or below 2 m): ${targets.flood.join(', ') || 'none'}`,
+      `transmission (230 kV and 110 kV sites among the sites to check first): ${targets.transmission.join(', ') || 'none'}`,
+      `overhead (sites to check with overhead or mixed feeders): ${targets.overhead.join(', ') || 'none'}`,
+      `lifeline (sites to check with hospital or water feeders): ${targets.lifeline.join(', ') || 'none'}`,
+      `COUNTS: ${targets.step.toCheck} of ${targets.step.withFloodFact} substations with a flood fact had Heavy rain or worse (recorded totals, not this hour); ` +
+        `${targets.counts.flood} to check first; ${targets.counts.overhead} of the sites to check have overhead or mixed feeders; ` +
+        `${targets.counts.lifeline} hospital and water feeders at the sites to check`,
+    ].join('\n');
+  }
+  return [
+    'SUBSTATION LISTS (names from our grid data):',
+    `flood (lowest-lying): ${targets.flood.join(', ') || 'none'}`,
+    `overhead: ${targets.overhead.join(', ') || 'none'}`,
+    `lifeline: ${targets.lifeline.join(', ') || 'none'}`,
+    `COUNTS: ${targets.counts.flood} substations at or below 2.0 m MSL; ${targets.counts.overhead} substations with overhead or mixed feeders; ${targets.counts.lifeline} hospital and water feeders`,
+  ].join('\n');
+}
+
 function targetsFor(group: TargetGroup, targets: SopTargets): string[] {
+  if (group === 'transmission') return targets.transmission;
   return group === 'none' ? [] : targets[group];
 }
 
 function fallbackNote(group: TargetGroup, targets: SopTargets): string | undefined {
+  if (targets.step) {
+    const { toCheck } = targets.step;
+    switch (group) {
+      case 'flood':
+        return toCheck === 0
+          ? 'No substation with a flood fact had Heavy rain or worse yet at this step.'
+          : targets.flood.length === 0
+          ? 'None of the sites to check first is inside the 2015 flood extent or has a yard at or below 2 m.'
+          : 'Sites to check first that are inside the 2015 flood extent or have a yard at or below 2 m (our match), one per area, most rain first.';
+      case 'transmission':
+        return toCheck === 0
+          ? undefined
+          : targets.transmission.length === 0
+          ? 'None of the sites to check first is a 230 kV or 110 kV substation.'
+          : '230 kV and 110 kV substations among the sites to check first (our match), one per area.';
+      case 'none':
+        return toCheck === 0 ? undefined : `Applies to all ${toCheck} sites to check at this step; no single site is named.`;
+      case 'overhead':
+        return toCheck === 0 ? undefined : `${targets.counts.overhead} of the ${toCheck} sites to check have overhead or mixed feeders.`;
+      case 'lifeline':
+        return toCheck === 0 ? undefined : `${targets.counts.lifeline} hospital and water feeders are fed from the sites to check.`;
+      default:
+        return undefined;
+    }
+  }
   switch (group) {
     case 'flood':
       return `${targets.counts.flood} substations sit at or below ${CHENNAI_AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai; the lowest-lying are listed.`;
@@ -252,13 +388,14 @@ function scenarioKeyOf(scenarioId: ScenarioId): ScenarioKey | null {
 }
 
 function hourLabel(hour: number): string {
-  return `T${hour >= 0 ? '+' : ''}${hour}h`;
+  return hour === 0 ? 'T-0h' : `T${hour > 0 ? '+' : ''}${hour}h`;
 }
 
 function buildDirective(
   scenarioId: ScenarioId,
   timestep: ScenarioTimestep,
-  substations: TnebSubstation[]
+  substations: TnebSubstation[],
+  step?: StepSites | null
 ): BuiltDirective | null {
   const scenarioKey = scenarioKeyOf(scenarioId);
   if (!scenarioKey) return null;
@@ -268,7 +405,7 @@ function buildDirective(
   const rainMm = timestep.total_precipitation_1hr_mm;
   const phase = resolvePhase(timestep);
   const imdClass = getImdCycloneClass(windKmh);
-  const targets = buildTargets(substations);
+  const targets = step ? buildStepTargets(step) : buildTargets(substations);
 
   const ruleIds = (PHASE_RULES[scenarioKey][phase] || []).filter(id => getOfficialRule(id) && RULE_META[id]);
   // The data note is shown once per target group, on the first action that uses it, to avoid repeating it.
@@ -294,10 +431,13 @@ function buildDirective(
   ruleIds.forEach(id => sourceIds.add((getOfficialRule(id) as OfficialRule).sourceId));
   const sources = Array.from(sourceIds).map(sid => OFFICIAL_SOURCES[sid].shortName);
 
-  const summaryEn =
-    `${hourLabel(hour)}: area-mean rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h${imdClass ? ` (IMD class: ${imdClass.name})` : ''}. ` +
-    `${targets.counts.flood} substations sit at or below ${CHENNAI_AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai. ` +
-    `The actions below are quoted from official disaster management plans.`;
+  const summaryEn = targets.step
+    ? `${hourLabel(hour)}: ${targets.step.toCheck} of ${targets.step.withFloodFact} substations with a flood fact had Heavy rain or worse in the last 24 hours ` +
+      `or the latest IMD gauge day (${targets.counts.flood} to check first; our order). This hour, city-mean rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h. ` +
+      `The actions below are quoted from official disaster management plans.`
+    : `${hourLabel(hour)}: area-mean rain ${rainMm.toFixed(1)} mm/h, wind ${windKmh.toFixed(0)} km/h${imdClass ? ` (IMD class: ${imdClass.name})` : ''}. ` +
+      `${targets.counts.flood} substations sit at or below ${CHENNAI_AVERAGE_ELEVATION_M} m MSL, the average elevation of Chennai. ` +
+      `The actions below are quoted from official disaster management plans.`;
 
   const directive: GeminiSopDirective = {
     scenarioId,
@@ -315,7 +455,8 @@ function buildDirective(
         ? `${imdClass.name} (${imdClass.minKmh}${imdClass.maxKmh ? `-${imdClass.maxKmh}` : '+'} km/h)`
         : null,
     },
-    exposure: targets.counts,
+    exposure: { ...targets.counts, ...(targets.step ?? {}) },
+    checkFirstSites: targets.checkFirst,
     actionItems,
     geminiModelTag: 'Official quotes · rule-based',
     timestamp: `${hourLabel(hour)} ${timestep.label || ''}`.trim(),
@@ -331,9 +472,10 @@ function buildDirective(
 export function getDirectiveForTimestep(
   scenarioId: ScenarioId,
   timestep: ScenarioTimestep,
-  substations: TnebSubstation[] = []
+  substations: TnebSubstation[] = [],
+  step?: StepSites | null
 ): GeminiSopDirective | null {
-  return buildDirective(scenarioId, timestep, substations)?.directive ?? null;
+  return buildDirective(scenarioId, timestep, substations, step)?.directive ?? null;
 }
 
 // ---- Gemini wording layer --------------------------------------------------------
@@ -358,7 +500,10 @@ const SOP_SYSTEM_INSTRUCTION =
   'Also write a two-sentence summary of the situation. ' +
   'Rules: use only substation names that appear in the lists; never add numbers, thresholds, times, quantities, clause numbers or facts that are not in the input; ' +
   'never restate, reword or cite the quotes; if an action has no list, return an empty applyTo. ' +
-  'Describe only what the input states; do not conclude that a place is flood-prone, at risk or will flood unless the input says so. ' +
+  'Describe only what the input states; do not conclude that a place is flood-prone, vulnerable, at risk or will flood unless the input says so. ' +
+  'The rain behind the substation lists is a total already recorded (the last 24 hours, or the latest IMD gauge day), so write it in the past tense ' +
+  '("had heavy rain or worse"), never as rain falling now; the city-mean rain and wind are for this hour only. ' +
+  'Do not describe wind or rain with words that are not in the input (such as light, moderate or strong wind). ' +
   'Never say that a fact causes, indicates, suggests or calls for an action; state the facts, and say only that the listed action applies to the named substations.';
 
 function numbersIn(text: string): string[] {
@@ -370,7 +515,7 @@ function numbersIn(text: string): string[] {
  * A sentence that contains any of these is discarded and the rule-based text is used instead.
  */
 export const BANNED_WORDING =
-  /\b(will|likely|expected to|forecast\w*|predict\w*|at risk|danger\w*|safe|should|must|need\w*|indicat\w*|suggest\w*|recommend\w*|because|therefore|due to|call\w* for|requir\w*)\b/i;
+  /\b(will|likely|expected to|forecast\w*|predict\w*|at risk|danger\w*|safe|should|must|need\w*|indicat\w*|suggest\w*|recommend\w*|because|therefore|due to|call\w* for|requir\w*|flood-prone|prone|vulnerab\w*|susceptib\w*|experienc\w*|(?:light|moderate|strong|gentle|calm|high) winds?)\b/i;
 
 /** A generated sentence is accepted only if every number in it already appears in the prompt and it uses no banned wording. */
 export function isGroundedText(text: unknown, promptNumbers: Set<string>, maxChars: number): text is string {
@@ -387,15 +532,16 @@ export function isGroundedText(text: unknown, promptNumbers: Set<string>, maxCha
 export async function fetchLiveGeminiDirective(
   scenarioId: ScenarioId,
   timestep: ScenarioTimestep,
-  substations: TnebSubstation[] = []
+  substations: TnebSubstation[] = [],
+  step?: StepSites | null
 ): Promise<GeminiSopDirective | null> {
-  const built = buildDirective(scenarioId, timestep, substations);
+  const built = buildDirective(scenarioId, timestep, substations, step);
   if (!built) return null;
   const { directive: fallback, targets, ruleIds } = built;
 
   if (ruleIds.length === 0) return fallback;
 
-  const cacheKey = `${scenarioId}_${timestep.timestep_hour}_${targets.flood.join('-')}_${targets.overhead.join('-')}_${targets.lifeline.join('-')}`;
+  const cacheKey = `${scenarioId}_${timestep.timestep_hour}_${targets.flood.join('-')}_${targets.overhead.join('-')}_${targets.lifeline.join('-')}_${targets.counts.flood}_${targets.step?.toCheck ?? 'grid'}`;
   const cached = geminiSopCache.get(cacheKey);
   if (cached) return cached;
 
@@ -405,12 +551,8 @@ export async function fetchLiveGeminiDirective(
     .join('\n');
   const prompt = `SCENARIO: ${SCENARIO_LABELS[scenarioId as ScenarioKey]}
 TIME: ${hourLabel(timestep.timestep_hour)} (T-0 is the peak-rain hour)
-WEATHER (area mean): wind ${w.windKmh.toFixed(0)} km/h${w.imdClass ? ` (IMD class ${w.imdClass})` : ''} | rain ${w.rainMm.toFixed(1)} mm/h
-SUBSTATION LISTS (names from our grid data):
-flood (lowest-lying): ${targets.flood.join(', ') || 'none'}
-overhead: ${targets.overhead.join(', ') || 'none'}
-lifeline: ${targets.lifeline.join(', ') || 'none'}
-COUNTS: ${targets.counts.flood} substations at or below 2.0 m MSL; ${targets.counts.overhead} substations with overhead or mixed feeders; ${targets.counts.lifeline} hospital and water feeders
+WEATHER THIS HOUR (city mean): wind ${w.windKmh.toFixed(0)} km/h${w.imdClass ? ` (IMD class ${w.imdClass})` : ''} | rain ${w.rainMm.toFixed(1)} mm/h
+${targetLines(targets)}
 ACTIONS (id|list to use|exact quote):
 ${actionLines}`;
 

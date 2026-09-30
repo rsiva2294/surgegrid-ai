@@ -357,7 +357,7 @@ export const DisasterCockpitBar: React.FC<DisasterCockpitBarProps> = ({
                 ? 'bg-amber-600 hover:bg-amber-500 text-white'
                 : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
             }`}
-            title={isPlaying ? 'Pause' : 'Play through the steps (6 s each)'}
+            title={isPlaying ? 'Pause' : 'Play: each step opens its AI Directive; Next step moves on'}
           >
             {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current" />}
           </button>

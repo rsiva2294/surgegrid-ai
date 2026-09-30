@@ -44,7 +44,7 @@ import {
   type ScenarioData,
   type ScenarioId
 } from '../../services/scenarioService';
-import { getDirectiveForTimestep, fetchLiveGeminiDirective, resolvePhase, type GeminiSopDirective } from '../../services/geminiSopService';
+import { getDirectiveForTimestep, fetchLiveGeminiDirective, resolvePhase, type GeminiSopDirective, type StepSites } from '../../services/geminiSopService';
 import type { TimelineStep } from './DisasterCockpitBar';
 import {
   fetchScenarioGrid,
@@ -54,8 +54,7 @@ import {
 import { rainFill, type HazardYears } from './rainScale';
 import { SimulationMapPanel } from './SimulationMapPanel';
 import { ExposedSubstationsCard } from './ExposedSubstationsCard';
-import { ImdAtTheTimeCard } from './ImdAtTheTimeCard';
-import { IMD_BEST_TRACK, IMD_STEP_NOTES, TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel } from '../../data/imdBulletins';
+import { TRACK_GRADE_NAMES, distanceToChennaiKm, istLabel } from '../../data/imdBulletins';
 import { GRADE_COLOR, stormAt, useBestTrack } from '../../services/bestTrack';
 import { computeExposure } from '../../services/simulationExposure';
 import { useGccPlan } from '../../services/gccPlan';
@@ -197,6 +196,8 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   const [scenarioData, setScenarioData] = useState<ScenarioData | null>(null);
   const [scenarioGrid, setScenarioGrid] = useState<ScenarioGrid | null>(null);
   const [isGeminiSopOpen, setIsGeminiSopOpen] = useState<boolean>(false);
+  // The owner's replay flow: at each step the map moves, then the AI Directive opens and playback waits for "Next step".
+  const [directiveEachStep, setDirectiveEachStep] = useState(true);
   // Storm layers (only while a hindcast scenario is selected)
   // The 2015 flood extent is the map's water layer during a replay (fixed, not Michaung; see the storm panel).
   const [showFlood2015, setShowFlood2015] = useState(true);
@@ -259,14 +260,36 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return () => clearTimeout(timer);
   }, [isPlaying, simulationHour, disasterScenario]);
 
-  // Play from the first step when the last step was reached (or the hour is not one of the steps).
+  // Play from the first step when the last step was reached (or the hour is not one of the steps). With the directive shown at
+  // each step, Play on a step opens that step's directive; "Next step" in the directive moves on.
   const togglePlay = () => {
     if (!isPlaying && isSimulationScenario(disasterScenario)) {
       const stepHours = SCENARIO_MILESTONES[disasterScenario].map(m => m.hour);
       const idx = stepHours.indexOf(simulationHour);
       if (idx === -1 || idx === stepHours.length - 1) setSimulationHour(stepHours[0]);
+      else if (directiveEachStep) {
+        setIsGeminiSopOpen(true);
+        return;
+      }
     }
     setIsPlaying(p => !p);
+  };
+
+  // "Next step" in the directive: close it and play the move to the next step (the directive opens again when the map settles).
+  const nextStep = useMemo(() => {
+    if (!isSimulationScenario(disasterScenario)) return null;
+    const steps = SCENARIO_MILESTONES[disasterScenario];
+    const idx = steps.findIndex(m => m.hour === simulationHour);
+    return idx >= 0 && idx < steps.length - 1 ? steps[idx + 1] : null;
+  }, [disasterScenario, simulationHour]);
+  const goToNextStep = () => {
+    setIsGeminiSopOpen(false);
+    if (!nextStep) {
+      setIsPlaying(false);
+      return;
+    }
+    setIsPlaying(true);
+    setSimulationHour(nextStep.hour);
   };
 
   const currentTimestep = useMemo(() => {
@@ -274,12 +297,35 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return scenarioData.timesteps.find(t => t.timestep_hour === simulationHour) || scenarioData.timesteps[0] || null;
   }, [scenarioData, simulationHour, disasterScenario]);
 
+  const floodLayersLoaded = useOfficialFloodLoaded();
+
+  // Substations to check at this step, by the same rule as the site briefing card (see simulationExposure.ts).
+  const gccPlan = useGccPlan();
+  const exposure = useMemo(
+    () =>
+      scenarioGrid && isSimulationScenario(disasterScenario) && substations.length > 0
+        ? computeExposure(substations, scenarioGrid, currentTimestep, gaugePoints, gccPlan)
+        : null,
+    [scenarioGrid, disasterScenario, substations, currentTimestep, gaugePoints, gccPlan, floodLayersLoaded]
+  );
   const [liveGeminiDirective, setLiveGeminiDirective] = useState<GeminiSopDirective | null>(null);
+
+  // The directive's targets and counts are this step's sites to check (the same result as the map halos and the list).
+  const stepSites = useMemo<StepSites | null>(
+    () =>
+      exposure
+        ? {
+            sites: exposure.exposed.map(e => ({ substation: e.substation, tier: e.tier, mm24: e.mm24 })),
+            withFloodFact: exposure.floodFlaggedCount
+          }
+        : null,
+    [exposure]
+  );
 
   const baseDirective = useMemo(() => {
     if (!currentTimestep || !isSimulationScenario(disasterScenario)) return null;
-    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations);
-  }, [currentTimestep, disasterScenario, substations]);
+    return getDirectiveForTimestep(disasterScenario as ScenarioId, currentTimestep, substations, stepSites);
+  }, [currentTimestep, disasterScenario, substations, stepSites]);
 
   useEffect(() => {
     if (!currentTimestep || !isSimulationScenario(disasterScenario)) {
@@ -289,11 +335,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
 
     // No Gemini call before the grid has loaded, and wait briefly after the step changes so clicking through
     // the steps quickly does not fire a request per click. Playback asks for each step as it arrives.
-    if (substations.length === 0) return;
+    if (substations.length === 0 || !stepSites) return;
 
     let isSubscribed = true;
     const timer = setTimeout(() => {
-      fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations)
+      fetchLiveGeminiDirective(disasterScenario as ScenarioId, currentTimestep, substations, stepSites)
         .then((res) => {
           if (isSubscribed && res) {
             setLiveGeminiDirective(res);
@@ -308,7 +354,7 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
       isSubscribed = false;
       clearTimeout(timer);
     };
-  }, [currentTimestep, disasterScenario, substations]);
+  }, [currentTimestep, disasterScenario, substations, stepSites]);
 
   // Use the Gemini-worded directive only if it belongs to the hour on screen.
   const matchingLiveDirective =
@@ -443,17 +489,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
     return substations.filter(s => isSubstationAtRisk(s, liveOutages)).length;
   }, [substations, liveOutages]);
 
-  const floodLayersLoaded = useOfficialFloodLoaded();
-
-  // Substations to check at this step, by the same rule as the site briefing card (see simulationExposure.ts).
-  const gccPlan = useGccPlan();
-  const exposure = useMemo(
-    () =>
-      scenarioGrid && isSimulationScenario(disasterScenario) && substations.length > 0
-        ? computeExposure(substations, scenarioGrid, currentTimestep, gaugePoints, gccPlan)
-        : null,
-    [scenarioGrid, disasterScenario, substations, currentTimestep, gaugePoints, gccPlan, floodLayersLoaded]
-  );
   const waterloggingRiskCount = useMemo(() => {
     return substations.filter(s => isSubstationWaterloggingRisk(s)).length;
   }, [substations, floodLayersLoaded]);
@@ -959,6 +994,30 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
   // Glide between steps: follows the device's reduced-motion setting until the viewer ticks the switch.
   const reducedMotion = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   const [animate, setAnimate] = useState(!reducedMotion);
+
+  // Open the directive once the map has settled on a new step (after the glide), and pause playback until "Next step". Not on
+  // the first load of the scenario: it starts with Play or a click on a step.
+  const settledHourRef = useRef<number | null>(null);
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
+  useEffect(() => {
+    if (!isSimulationScenario(disasterScenario)) {
+      settledHourRef.current = null;
+      return;
+    }
+    if (settledHourRef.current === null) {
+      settledHourRef.current = simulationHour;
+      return;
+    }
+    if (!directiveEachStep || settledHourRef.current === simulationHour) return;
+    const glide = animate ? (isPlayingRef.current ? GLIDE_PLAY_MS : GLIDE_CLICK_MS) : 0;
+    const timer = setTimeout(() => {
+      settledHourRef.current = simulationHour;
+      setIsPlaying(false);
+      setIsGeminiSopOpen(true);
+    }, glide + 300);
+    return () => clearTimeout(timer);
+  }, [simulationHour, disasterScenario, directiveEachStep, animate]);
   const trackAheadRef = useRef<google.maps.Polyline | null>(null);
   const trackDoneRef = useRef<google.maps.Polyline | null>(null);
   const stormMarkerRef = useRef<google.maps.Marker | null>(null);
@@ -1716,16 +1775,6 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         activeDirective={activeDirective}
         onOpenGeminiSop={() => setIsGeminiSopOpen(prev => !prev)}
         steps={timelineSteps}
-        footer={
-          disasterScenario === 'MICHAUNG_2023' && IMD_STEP_NOTES[simulationHour] ? (
-            <ImdAtTheTimeCard
-              isLight={isLight}
-              stepTime={istLabel(currentTimestep?.utc)}
-              note={IMD_STEP_NOTES[simulationHour]}
-              track={IMD_BEST_TRACK[simulationHour] ?? null}
-            />
-          ) : null
-        }
       />
 
       {/* Floating AI Directive dialog (official-quote SOP) */}
@@ -1735,6 +1784,11 @@ export const TnebGridMap: React.FC<TnebGridMapProps> = ({
         onClose={() => setIsGeminiSopOpen(false)}
         isPlaying={isPlaying}
         onTogglePlay={togglePlay}
+        stepFlow={
+          isSimulationScenario(disasterScenario)
+            ? { nextLabel: nextStep?.label ?? null, onNext: goToNextStep, eachStep: directiveEachStep, setEachStep: setDirectiveEachStep }
+            : undefined
+        }
         isLight={isLight}
         onSelectSubstation={(name) => {
           const query = name.toUpperCase().trim();

@@ -14,6 +14,42 @@ import {
   Maximize2
 } from 'lucide-react';
 import type { GeminiSopDirective, SopActionItem } from '../../services/geminiSopService';
+import {
+  IMD_BEST_TRACK,
+  IMD_BULLETINS,
+  IMD_STEP_NOTES,
+  TRACK_GRADE_NAMES,
+  distanceToChennaiKm,
+  istLabel,
+  type ImdQuote
+} from '../../data/imdBulletins';
+
+const RAIN_KINDS: ImdQuote['kind'][] = ['Observed rain', 'Rain warning'];
+const OTHER_KINDS: ImdQuote['kind'][] = ['Landfall', 'Wind warning', 'Damage expected', 'Observed wind', 'Forecast'];
+
+/**
+ * What IMD said for this step: its rain statement first, then one other (landfall, wind, damage), each with its bulletin.
+ * Before IMD's first bulletin in our set, IMD's observed best-track position from the final report instead.
+ */
+function imdForStep(hour: number): { kind: string; text: string; source: string; quoted: boolean }[] {
+  const quotes = IMD_STEP_NOTES[hour]?.quotes ?? [];
+  const pick = (kinds: ImdQuote['kind'][]) => kinds.map(k => quotes.find(q => q.kind === k)).find(Boolean);
+  const chosen = [pick(RAIN_KINDS), pick(OTHER_KINDS)].filter((q): q is ImdQuote => Boolean(q));
+  if (chosen.length > 0) {
+    return chosen.map(q => ({ kind: q.kind, text: q.text, source: IMD_BULLETINS[q.bulletin]?.label ?? q.bulletin, quoted: true }));
+  }
+  const t = IMD_BEST_TRACK[hour];
+  if (!t) return [];
+  const km = Math.round(distanceToChennaiKm(t.lat, t.lng) / 5) * 5;
+  return [
+    {
+      kind: 'Best track',
+      text: `${TRACK_GRADE_NAMES[t.grade]}, ${t.lat}°N ${t.lng}°E at ${istLabel(t.utc)}: ${t.windKt} kt, ${t.pressureHpa} hPa; about ${km} km from Chennai (our calculation).`,
+      source: 'IMD final report on Michaung, Table 1 (no IMD bulletin in our set before this step)',
+      quoted: false
+    }
+  ];
+}
 
 interface GeminiSopDialogProps {
   directive: GeminiSopDirective | null;
@@ -21,6 +57,8 @@ interface GeminiSopDialogProps {
   onClose: () => void;
   isPlaying: boolean;
   onTogglePlay: () => void;
+  /** During a replay: move to the next step (null label on the last step) and the "open at each step" switch. */
+  stepFlow?: { nextLabel: string | null; onNext: () => void; eachStep: boolean; setEachStep: (v: boolean) => void };
   isLight: boolean;
   onSelectSubstation?: (name: string) => void;
 }
@@ -31,6 +69,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
   onClose,
   isPlaying,
   onTogglePlay,
+  stepFlow,
   isLight,
   onSelectSubstation
 }) => {
@@ -109,7 +148,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
           <span className="font-bold tracking-tight">Gemini Copilot</span>
           <span className="text-slate-400">•</span>
           <span className="font-semibold text-indigo-400">{directive.label}</span>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
             {doneCount}/{totalCount} Done
           </span>
         </div>
@@ -144,15 +183,15 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                 <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white whitespace-nowrap">
                   Gemini Grid Commander
                 </span>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1.5 whitespace-nowrap ${urgencyTheme.badgeBg}`}>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full border flex items-center gap-1.5 whitespace-nowrap ${urgencyTheme.badgeBg}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${urgencyTheme.badgeDot}`}></span>
                   {directive.label}
                 </span>
               </div>
-              <div className="text-[11px] font-sans flex items-center gap-1.5 truncate mt-0.5">
+              <div className="text-xs font-sans flex items-center gap-1.5 truncate mt-0.5">
                 <span className={`font-semibold shrink-0 ${isLight ? 'text-indigo-700' : 'text-indigo-300'}`}>{directive.geminiModelTag}</span>
                 <span className={isLight ? 'text-slate-400' : 'text-slate-500'}>•</span>
-                <span className={`font-mono text-[10px] font-medium truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{directive.sources.join(' · ')}</span>
+                <span className={`text-xs font-medium truncate ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>{directive.sources.join(' · ')}</span>
               </div>
             </div>
           </div>
@@ -196,9 +235,9 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Wind className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Wind (area mean)</div>
-              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{Math.abs(directive.weatherSnapshot.windKmh).toFixed(1)} km/h</div>
-              <div className={`text-[10px] font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`} title="IMD cyclone class (MoP Power-Sector DMP 2021, Table-4)">
+              <div className={`text-xs uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Wind (area mean)</div>
+              <div className={`font-mono font-bold text-sm ${isLight ? 'text-slate-900' : 'text-white'}`}>{Math.abs(directive.weatherSnapshot.windKmh).toFixed(1)} km/h</div>
+              <div className={`text-xs font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`} title="IMD cyclone class (MoP Power-Sector DMP 2021, Table-4)">
                 {directive.weatherSnapshot.imdClass ? `IMD: ${directive.weatherSnapshot.imdClass}` : 'Below IMD Severe class (88 km/h)'}
               </div>
             </div>
@@ -211,8 +250,8 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Droplets className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Rain (area mean)</div>
-              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.rainMm.toFixed(1)} mm/h</div>
+              <div className={`text-xs uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Rain (area mean)</div>
+              <div className={`font-mono font-bold text-sm ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.rainMm.toFixed(1)} mm/h</div>
             </div>
           </div>
 
@@ -223,8 +262,8 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               <Waves className="w-3.5 h-3.5" />
             </div>
             <div>
-              <div className={`text-[10px] uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Surface Pressure</div>
-              <div className={`font-mono font-bold text-xs ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.pressureHpa === null ? 'n/a' : `${directive.weatherSnapshot.pressureHpa.toFixed(0)} hPa`}</div>
+              <div className={`text-xs uppercase font-bold tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Surface Pressure</div>
+              <div className={`font-mono font-bold text-sm ${isLight ? 'text-slate-900' : 'text-white'}`}>{directive.weatherSnapshot.pressureHpa === null ? 'n/a' : `${directive.weatherSnapshot.pressureHpa.toFixed(0)} hPa`}</div>
             </div>
           </div>
         </div>
@@ -237,16 +276,41 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
               ? 'bg-indigo-50/80 border-indigo-200 text-slate-900 shadow-xs'
               : 'bg-indigo-950/30 border-indigo-800/40 text-slate-100'
           }`}>
-            <h2 className={`font-extrabold text-sm tracking-tight mb-1.5 ${
+            <h2 className={`font-extrabold text-base tracking-tight mb-1.5 ${
               isLight ? 'text-indigo-950' : 'text-indigo-300'
             }`}>
               {directive.title}
             </h2>
-            <p className={`leading-relaxed text-xs ${
-              isLight ? 'text-slate-800 font-medium' : 'text-slate-200'
-            }`}>
-              {directive.summaryEn}
-            </p>
+            {(() => {
+              const imd = imdForStep(directive.hour);
+              if (imd.length === 0) {
+                return (
+                  <p className={`leading-relaxed text-[13px] ${isLight ? 'text-slate-800 font-medium' : 'text-slate-200'}`}>
+                    {directive.summaryEn}
+                  </p>
+                );
+              }
+              return (
+                <div className="space-y-2">
+                  <div className={`text-xs uppercase tracking-wider font-bold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>IMD said</div>
+                  {imd.map(line => (
+                    <div key={line.kind + line.text.slice(0, 20)}>
+                      <span
+                        className={`inline-block text-xs font-semibold px-1.5 py-0.5 rounded mr-1.5 ${
+                          isLight ? 'bg-white border border-slate-300 text-slate-700' : 'bg-slate-900 border border-slate-700 text-slate-300'
+                        }`}
+                      >
+                        {line.kind}
+                      </span>
+                      <span className={`text-[13px] leading-snug ${line.quoted ? 'italic' : ''} ${isLight ? 'text-slate-800' : 'text-slate-200'}`}>
+                        {line.quoted ? `\u201c${line.text}\u201d` : line.text}
+                      </span>
+                      <div className={`text-xs mt-0.5 ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>{line.source}</div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Impact Overview Metrics */}
@@ -256,12 +320,17 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             }`}>
               <AlertTriangle className={`w-4 h-4 shrink-0 ${isLight ? 'text-rose-600' : 'text-rose-400'}`} />
               <div>
-                <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-rose-950' : 'text-rose-100'}`}>
+                <div className={`font-mono font-bold text-base leading-tight ${isLight ? 'text-rose-950' : 'text-rose-100'}`}>
                   {directive.exposure.flood}
                 </div>
-                <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-rose-800' : 'text-rose-400'}`}>
-                  At/Below 2.0 m MSL
+                <div className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-rose-800' : 'text-rose-400'}`}>
+                  {directive.exposure.toCheck !== undefined ? 'Check first' : 'At/Below 2.0 m MSL'}
                 </div>
+                {directive.exposure.toCheck !== undefined && (
+                  <div className={`text-xs ${isLight ? 'text-rose-800/80' : 'text-rose-300/80'}`}>
+                    of {directive.exposure.toCheck} to check ({directive.exposure.withFloodFact} with a flood fact)
+                  </div>
+                )}
               </div>
             </div>
 
@@ -270,11 +339,11 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             }`}>
               <Radio className={`w-4 h-4 shrink-0 ${isLight ? 'text-amber-600' : 'text-amber-400'}`} />
               <div>
-                <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-amber-950' : 'text-amber-100'}`}>
+                <div className={`font-mono font-bold text-base leading-tight ${isLight ? 'text-amber-950' : 'text-amber-100'}`}>
                   {directive.exposure.overhead}
                 </div>
-                <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
-                  Overhead Substations
+                <div className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-amber-800' : 'text-amber-400'}`}>
+                  {directive.exposure.toCheck !== undefined ? 'To check, overhead feeders' : 'Overhead Substations'}
                 </div>
               </div>
             </div>
@@ -284,25 +353,56 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
             }`}>
               <ShieldCheck className={`w-4 h-4 shrink-0 ${isLight ? 'text-emerald-600' : 'text-emerald-400'}`} />
               <div>
-                <div className={`font-mono font-bold text-sm leading-tight ${isLight ? 'text-emerald-950' : 'text-emerald-100'}`}>
+                <div className={`font-mono font-bold text-base leading-tight ${isLight ? 'text-emerald-950' : 'text-emerald-100'}`}>
                   {directive.exposure.lifeline}
                 </div>
-                <div className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-emerald-800' : 'text-emerald-400'}`}>
-                  Hospital/Water Feeders
+                <div className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-emerald-800' : 'text-emerald-400'}`}>
+                  {directive.exposure.toCheck !== undefined ? 'Hospital/water feeders at them' : 'Hospital/Water Feeders'}
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Our order, and the sites to check first spread across the city */}
+          {directive.exposure.toCheck !== undefined && (
+            <div className="space-y-1.5">
+              <p className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                Order is ours: Heavy rain or worse here (satellite or the nearest IMD gauge) plus an official flood fact.
+              </p>
+              {directive.checkFirstSites && directive.checkFirstSites.length > 0 && (
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                    Sites to check first, across the city:
+                  </span>
+                  {directive.checkFirstSites.map(name => (
+                    <button
+                      key={name}
+                      type="button"
+                      onClick={() => onSelectSubstation?.(name)}
+                      className={`text-xs font-bold px-2 py-0.5 rounded-md border transition-all ${
+                        isLight
+                          ? 'bg-white hover:bg-rose-50 border-rose-300 hover:border-rose-500 text-slate-900'
+                          : 'bg-slate-900/90 hover:bg-rose-950 border-rose-800 hover:border-rose-500 text-slate-200'
+                      }`}
+                      title={`Focus on ${name} in grid map`}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Actionable SOP Checklist Section */}
           <div className="space-y-2.5 pt-1">
             <div className="flex items-center justify-between">
-              <span className={`text-[11px] font-bold uppercase tracking-wider ${
+              <span className={`text-xs font-bold uppercase tracking-wider ${
                 isLight ? 'text-slate-700' : 'text-slate-300'
               }`}>
                 Official Actions ({totalCount}), quoted from the plans
               </span>
-              <span className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold border ${
+              <span className={`text-xs px-2 py-0.5 rounded-full font-bold border ${
                 doneCount === totalCount
                   ? (isLight ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-emerald-950/60 text-emerald-300 border-emerald-600/60')
                   : (isLight ? 'bg-indigo-100 text-indigo-900 border-indigo-300' : 'bg-indigo-950/60 text-indigo-300 border-indigo-600/60')
@@ -343,24 +443,24 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                       {/* Content */}
                       <div className="flex-1 space-y-1.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className={`font-bold text-xs tracking-tight ${isDone ? 'line-through text-slate-400' : (isLight ? 'text-slate-950 font-extrabold' : 'text-slate-100')}`}>
+                          <span className={`font-bold text-sm tracking-tight ${isDone ? 'line-through text-slate-400' : (isLight ? 'text-slate-950 font-extrabold' : 'text-slate-100')}`}>
                             {item.title}
                           </span>
-                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border shrink-0 ${catBadge.container}`}>
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-bold tracking-wider uppercase border shrink-0 ${catBadge.container}`}>
                             {catBadge.label}
                           </span>
                         </div>
 
-                        <blockquote className={`text-[11px] leading-relaxed italic border-l-2 pl-2.5 ${
+                        <blockquote className={`text-[13px] leading-snug italic border-l-2 pl-2.5 ${
                           isLight ? 'text-slate-800 border-indigo-300' : 'text-slate-200 border-indigo-500/60'
                         }`}>
                           &ldquo;{item.quote}&rdquo;
-                          <span className={`block not-italic text-[10px] font-mono mt-0.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                          <span className={`block not-italic text-xs mt-0.5 ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                             {item.citation}
                           </span>
                         </blockquote>
                         {item.note && (
-                          <p className={`text-[11px] leading-relaxed ${isLight ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
+                          <p className={`text-[13px] leading-snug ${isLight ? 'text-slate-700 font-medium' : 'text-slate-300'}`}>
                             {item.note}
                           </p>
                         )}
@@ -368,7 +468,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                         {/* Interactive Clickable Target Substation Tags */}
                         {item.targetFeedersOrSubstations && item.targetFeedersOrSubstations.length > 0 && (
                           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                            <span className={`text-[10px] font-bold uppercase tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Targets:</span>
+                            <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Targets:</span>
                             {item.targetFeedersOrSubstations.map((name) => (
                               <button
                                 key={name}
@@ -377,7 +477,7 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
                                   e.stopPropagation();
                                   onSelectSubstation?.(name);
                                 }}
-                                className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 ${
+                                className={`text-xs font-bold px-2 py-0.5 rounded-md border transition-all flex items-center gap-1 ${
                                   isLight
                                     ? 'bg-white hover:bg-indigo-50 border-slate-300 hover:border-indigo-500 text-slate-900 hover:text-indigo-900 shadow-xs'
                                     : 'bg-slate-900/90 hover:bg-indigo-950 border-slate-700 hover:border-indigo-500 text-slate-200 hover:text-indigo-200 shadow-xs'
@@ -403,18 +503,35 @@ export const GeminiSopDialog: React.FC<GeminiSopDialogProps> = ({
         <div className={`px-5 py-3.5 border-t flex items-center justify-between shrink-0 ${
           isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/70 border-slate-800'
         }`}>
-          <button
-            type="button"
-            onClick={onTogglePlay}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md ${
-              isPlaying
-                ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/25'
-                : 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white shadow-indigo-600/30'
-            }`}
-          >
-            <Play className={`w-3.5 h-3.5 fill-current ${isPlaying ? 'rotate-90' : ''}`} />
-            <span>{isPlaying ? 'Pause Simulation' : 'Resume Simulation'}</span>
-          </button>
+          {stepFlow ? (
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={stepFlow.onNext}
+                className="px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-md bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white shadow-indigo-600/30"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>{stepFlow.nextLabel ? `Next step: ${stepFlow.nextLabel}` : 'Finish replay'}</span>
+              </button>
+              <label className={`inline-flex items-center gap-1.5 text-xs cursor-pointer select-none ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
+                <input type="checkbox" checked={stepFlow.eachStep} onChange={e => stepFlow.setEachStep(e.target.checked)} className="accent-indigo-600" />
+                Open at each step
+              </label>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={onTogglePlay}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md ${
+                isPlaying
+                  ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/25'
+                  : 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white shadow-indigo-600/30'
+              }`}
+            >
+              <Play className={`w-3.5 h-3.5 fill-current ${isPlaying ? 'rotate-90' : ''}`} />
+              <span>{isPlaying ? 'Pause Simulation' : 'Resume Simulation'}</span>
+            </button>
+          )}
 
           <div className="flex items-center gap-2">
             <button
